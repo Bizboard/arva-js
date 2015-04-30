@@ -1,0 +1,30 @@
+{
+  "name": "famous-mvc",
+  "version": "1.0.0-pre-1",
+  "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
+  "main": false,
+  "homepage": "https://github.com/Bizboard/famous-mvc",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Bizboard/famous-mvc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Bizboard/famous-mvc/issues"
+  },
+  "jspm": {
+    "directories": {
+      "lib": "src"
+    },
+    "dependencies": {
+      "arva-context": "github:Bizboard/arva-context@master",
+      "arva-ds": "github:Bizboard/arva-ds@master",
+      "di.js": "github:angular/di.js@master",
+      "famous": "npm:famous@^0.3.5",
+      "firebase": "github:firebase/firebase-bower@^2.2.0",
+      "lodash": "npm:lodash@^3.2.0",
+      "underscore": "npm:underscore@^1.8.2"
+    }
+  },
+  "author": "Tom Clement <tom.clement@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>",
+  "license": "MIT"
+}
