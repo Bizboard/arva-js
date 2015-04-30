@@ -1,15 +1,15 @@
 {
-  "name": "famous-mvc",
+  "name": "arva-mvc",
   "version": "1.0.0-pre-1",
   "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
   "main": false,
-  "homepage": "https://github.com/Bizboard/famous-mvc",
+  "homepage": "https://github.com/Bizboard/arva-mvc",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Bizboard/famous-mvc.git"
+    "url": "git://github.com/Bizboard/arva-mvc.git"
   },
   "bugs": {
-    "url": "https://github.com/Bizboard/famous-mvc/issues"
+    "url": "https://github.com/Bizboard/arva-mvc/issues"
   },
   "jspm": {
     "directories": {
