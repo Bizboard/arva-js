@@ -19,6 +19,3 @@ export function DefaultDataSource() {
 }
 
 annotate(DefaultDataSource, new Provide(DataSource));
-
-
-
