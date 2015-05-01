@@ -13,6 +13,10 @@ export default class HomeController extends Controller {
         super(router, context);
 
         this.messagesView = new MessagesView();
+
+        this.on('rendered', function(method) {
+            console.log(method);
+        });
     }
 
     ReRouteExample() {
@@ -22,5 +26,6 @@ export default class HomeController extends Controller {
     Index() {
         return this.messagesView;
     }
+
 }
 
