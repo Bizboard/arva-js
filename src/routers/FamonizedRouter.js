@@ -66,8 +66,10 @@ export class FamonizedRouter extends Router {
             history.pushState(null, null, hash);
         }
 
-        var result = controller[method].apply(controller, params);
-        controller.show(result);
+        this.run();
+
+        //var result = controller[method].apply(controller, params);
+        //controller.show(result);
     }
 
 
