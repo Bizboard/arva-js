@@ -42,16 +42,17 @@ export class Controller extends RenderController {
 
             if (typeof(this[r.method]) == "function") {
                 var result = this[r.method].apply(this, r.values);
-                if (result) this.show(result);
+                if (result) {
+                    // assemble a callback based on the execution scope and have that called when rendering is completed
+                    var callback = new Function('"use strict"; this._eventOutput.emit("rendered", "' + r.method + '");').bind(this);
+                    this.show(result, callback);
+                }
             }
             else
                 console.log("Route does not exist!");
         }.bind(this));
 
         ObjectHelper.bindAllMethods(this,this);
-
-        // add ourselfs (rendercontroller) to the maincontext
-
     }
 }
 
