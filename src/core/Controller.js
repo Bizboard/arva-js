@@ -44,8 +44,7 @@ export class Controller extends RenderController {
                 var result = this[r.method].apply(this, r.values);
                 if (result) {
                     // assemble a callback based on the execution scope and have that called when rendering is completed
-                    var callback = new Function('"use strict"; this._eventOutput.emit("rendered", "' + r.method + '");').bind(this);
-                    this.show(result, callback);
+                    this.show(result, this._eventOutput.emit("rendered", r.method));
                 }
             }
             else

@@ -13612,8 +13612,9 @@ System.register("core/Controller", ["github:angular/di.js@master", "core/Router"
           this.router.add(routeName, function(r) {
             if (typeof(this[r.method]) == "function") {
               var result = this[r.method].apply(this, r.values);
-              if (result)
-                this.show(result);
+              if (result) {
+                this.show(result, this._eventOutput.emit("rendered", r.method));
+              }
             } else
               console.log("Route does not exist!");
           }.bind(this));
@@ -18337,6 +18338,9 @@ System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "
         var HomeController = function HomeController(router, context) {
           $traceurRuntime.superConstructor(HomeController).call(this, router, context);
           this.messagesView = new MessagesView();
+          this.on('rendered', function(method) {
+            console.log(method);
+          });
         };
         return ($traceurRuntime.createClass)(HomeController, {
           ReRouteExample: function() {
