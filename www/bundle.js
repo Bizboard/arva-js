@@ -10038,8 +10038,7 @@ System.register("routers/FamonizedRouter", ["core/Router", "utils/objectHelper",
             if (history.pushState) {
               history.pushState(null, null, hash);
             }
-            var result = controller[method].apply(controller, params);
-            controller.show(result);
+            this.run();
           },
           add: function(route, handler) {
             var pieces = route.split('/'),
@@ -13610,10 +13609,13 @@ System.register("core/Controller", ["github:angular/di.js@master", "core/Router"
           var routeName = Object.getPrototypeOf(this).constructor.name.replace('Controller', '');
           routeName += "/:method";
           this.router.add(routeName, function(r) {
+            var $__0 = this;
             if (typeof(this[r.method]) == "function") {
               var result = this[r.method].apply(this, r.values);
               if (result) {
-                this.show(result, this._eventOutput.emit("rendered", r.method));
+                this.show(result, (function() {
+                  $__0._eventOutput.emit("rendered", r.method);
+                }));
               }
             } else
               console.log("Route does not exist!");
