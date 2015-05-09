@@ -1,10 +1,10 @@
 /**
- This Source Code Form is subject to the terms of the Mozilla Public
- License, v. 2.0. If a copy of the MPL was not distributed with this
- file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ This Source Code is licensed under the MIT license. If a copy of the
+ MIT-license was not distributed with this file, You can obtain one at:
+ http://opensource.org/licenses/mit-license.html.
 
  @author: Hans van den Akker (mysim1)
- @license MPL 2.0
+ @license MIT
  @copyright Bizboard, 2015
 
  */
@@ -14,7 +14,7 @@ import ObjectHelper                 from '../utils/objectHelper';
 import {Provide, Inject, annotate}  from 'di.js';
 import View                         from 'famous/core/View';
 
-export class FamonizedRouter extends Router {
+export class ArvaRouter extends Router {
 
     constructor() {
         super();
@@ -30,29 +30,25 @@ export class FamonizedRouter extends Router {
 
     }
 
+    /**
+     * Set the initial controller and method to be activated whenever the controllers are activated.
+     * @param controller
+     * @param method
+     */
     setDefault(controller, method = null) {
 
         this.defaultController = Object.getPrototypeOf(controller).constructor.name
             .replace('Controller','');
 
         if (method!=null) this.defaultMethod = method;
-
-        //var hash = '';//'#/' + method;
-        //this.run();
-
-
-        if (window.location.hash.length==0 || window.location.hash=="#") {
-            //if (history.pushState) {
-            //    history.replaceState(null, null, hash);
-            //}
-            //else {
-            //    location.hash = hash;
-            //}
-
-            //this.run();
-        }
     }
 
+    /**
+     * Force navigation to one of the controllers
+     * @param controller
+     * @param method
+     * @param params
+     */
     go(controller, method, params) {
 
         var controllerName = Object.getPrototypeOf(controller).constructor.name;
@@ -67,14 +63,14 @@ export class FamonizedRouter extends Router {
         }
 
         this.run();
-
-        //var result = controller[method].apply(controller, params);
-        //controller.show(result);
     }
 
 
-
-
+    /**
+     * Register a single controller
+     * @param route
+     * @param handler
+     */
     add(route, handler) {
         var pieces = route.split('/'),
             rules = this.routes;
@@ -94,6 +90,10 @@ export class FamonizedRouter extends Router {
 
     }
 
+    /**
+     * Have route changes activate the designated controller endpoints
+     * @returns {boolean}
+     */
     run() {
 
         //if (!url || typeof(url) == "object")
@@ -147,10 +147,6 @@ export class FamonizedRouter extends Router {
         }).call(this, querySplit.length > 1 ? querySplit[1] : '');
 
         if (rules && rules['@']) {
-            let controller = 0;
-            // have all controllers hide their state before we switch
-            for (controller in this.controllers)
-                this.controllers[controller].hide();
 
             // make the controller active for current scope
             rules['@']({
@@ -170,4 +166,4 @@ export class FamonizedRouter extends Router {
 
 }
 
-annotate(FamonizedRouter, new Provide(Router));
+annotate(ArvaRouter, new Provide(Router));

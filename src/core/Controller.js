@@ -9,29 +9,36 @@
 
  */
 
-import {Inject, annotate} from 'di.js';
-import {Router}           from './Router';
-import ObjectHelper       from '../utils/objectHelper';
-import Context            from 'famous/core/Context';
-import RenderController   from 'famous/Views/RenderController';
+import {Inject, annotate}   from 'di.js';
+import {Router}             from './Router';
+import ObjectHelper         from '../utils/objectHelper';
+import Context              from 'famous/core/Context';
+import RenderController     from 'famous/Views/RenderController';
+import EventHandler         from 'famous/core/EventHandler';
+import AnimationController  from 'famous-flex/src/AnimationController';
+
+
 
 /**
  * The Controller class provides the highest level of control regarding the application features. Within the Controller context
  * each method will registered to receive calls from the Routing engine. With direct access to the Famo.us Context, every method can
  * control the creation of Views and Transitions.
  */
-export class Controller extends RenderController {
+export class Controller {
 
-    constructor(router, context) {
-        super();
 
+
+    constructor(router, context, spec) {
+        //super();
+        this.spec = spec;
         this.router = router;
         this.context = context;
-        // register the controller object in the router
-        this.router.controllers.push(this);
+        this._eventOutput = new EventHandler();
 
-        // add the controller to the rendercontext
-        this.context.add(this);
+        // register the controller object in the router
+        //this.router.controllers.push(this);
+
+
 
         // add the controller route to the router
         var routeName = Object.getPrototypeOf(this).constructor.name.replace('Controller','');
@@ -44,7 +51,8 @@ export class Controller extends RenderController {
                 var result = this[r.method].apply(this, r.values);
                 if (result) {
                     // assemble a callback based on the execution scope and have that called when rendering is completed
-                    this.show(result, ()=> {this._eventOutput.emit("rendered", r.method)});
+                    this.context.show(result, spec, ()=> {this._eventOutput.emit("rendered", r.method)});
+                    //
                 }
             }
             else
@@ -52,8 +60,14 @@ export class Controller extends RenderController {
         }.bind(this));
 
         ObjectHelper.bindAllMethods(this,this);
+
+        console.log(this.Transferables);
+    }
+
+    on(event, handler) {
+        this._eventOutput.on(event, handler);
     }
 }
 
 annotate(Controller, new Inject(Router));
-annotate(Controller, new Inject(Context));
+annotate(Controller, new Inject(AnimationController));

@@ -11,29 +11,33 @@
 // hello world
 
 import {Injector, annotate, Provide}            from 'di.js'
-import {FamonizedRouter}                        from './routers/FamonizedRouter'
+import {ArvaRouter}                             from './routers/ArvaRouter'
 import Engine                                   from 'famous/core/Engine'
-import Context                                  from 'famous/core/Context'
-import {Context as ArvaContext}                 from 'arva-context/Context';
+import {Context}                                from 'arva-context/Context';
+import AnimationController                      from 'famous-flex/src/AnimationController';
 
-var defaultContext;
 
-function NewFamousContext() {
-    return Engine.createContext();
+
+function NewAnimationController() {
+    var context = Engine.createContext();
+    var controller = new AnimationController();
+
+    context.add(controller);
+    return controller;
 }
-annotate(NewFamousContext, new Provide(Context));
+
+annotate(NewAnimationController, new Provide(AnimationController));
 
 
 export function GetDefaultContext() {
-    return ArvaContext.getContext('Default');
+    return Context.getContext('Default');
 }
 
 export function ReCreateDefaultContext(dataSource = null) {
     if (dataSource)
-        ArvaContext.setContext('Default', new Injector([FamonizedRouter, NewFamousContext, dataSource]));
+        Context.setContext('Default', new Injector([ArvaRouter, NewAnimationController, dataSource]));
     else
-        ArvaContext.setContext('Default', new Injector([FamonizedRouter, NewFamousContext]));
+        Context.setContext('Default', new Injector([ArvaRouter, NewAnimationController]));
 
-    return ArvaContext.getContext('Default');
+    return Context.getContext('Default');
 }
-

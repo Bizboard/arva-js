@@ -19,15 +19,16 @@ import Easing               from 'famous/transitions/Easing';
 import AnimationController  from 'famous-flex/src/AnimationController';
 
 
-export default class HomeController extends Controller {
+export default class TestController extends Controller {
+
 
 
     constructor(router, context) {
         super(router, context, {
-            transition: {duration: 1000, curve: Easing.outBack},
-            animation: AnimationController.Animation.Slide.Left,
+            transition: {duration: 500, curve: Easing.outBack},
+            animation: AnimationController.Animation.Slide.Right,
             transfer: {
-                transition: {duration: 1000, curve: Easing.inOutExpo},
+                transition: {duration: 500, curve: Easing.inOutExpo},
                 zIndex: 1000,
                 items: {
                     'image': ['image', 'navBarImage'],
@@ -35,27 +36,19 @@ export default class HomeController extends Controller {
                 }
             }
         });
-
-        this.on('rendered', (arg)=>{
-           console.log(arg);
-        });
     }
 
     ReRouteExample() {
         this.router.go(this, "Index", ['a','b']);
     }
 
-    Index() {
-        return new FullImageView({
-            text: 'arva-mvc with famous-flex is magic!'
-        });
-    }
 
     Profile() {
         return new ProfileView();
     }
 
     NavBar() {
+
         return new NavBarView();
     }
 }

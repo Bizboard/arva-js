@@ -12,7 +12,7 @@
 
 import {annotate, Provide}          from 'di.js';
 import {DataSource}                 from 'arva-ds/core/DataSource';
-import {FirebaseDataSource} from 'arva-ds/datasources/FirebaseDataSource';
+import {FirebaseDataSource}         from 'arva-ds/datasources/FirebaseDataSource';
 
 export function DefaultDataSource() {
     return new FirebaseDataSource("https://<yourapp>.firebaseio.com");

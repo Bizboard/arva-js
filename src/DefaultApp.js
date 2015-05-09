@@ -12,18 +12,19 @@
 import {Inject, annotate}   from 'di.js'
 import {App}                from './core/App'
 import HomeController       from './controllers/HomeController'
+import TestController       from './controllers/TestController'
 
 
 export class DefaultApp extends App {
 
 
-    constructor(router, homeController) {
+    constructor(router, homeController, testController) {
         // make one of the controllers default
         router.setDefault(homeController, 'Index');
 
         super(router);
-
     }
 }
 
 annotate(DefaultApp, new Inject(HomeController));
+annotate(DefaultApp, new Inject(TestController));
