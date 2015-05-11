@@ -24,8 +24,6 @@ export default class HomeController extends Controller {
 
     constructor(router, context) {
         super(router, context, {
-            transition: {duration: 1000, curve: Easing.outBack},
-            animation: AnimationController.Animation.Slide.Left,
             transfer: {
                 transition: {duration: 1000, curve: Easing.inOutExpo},
                 zIndex: 1000,
@@ -36,7 +34,7 @@ export default class HomeController extends Controller {
             }
         });
 
-        this.on('rendered', (arg)=>{
+        this.on('renderend', (arg)=>{
            console.log(arg);
         });
     }

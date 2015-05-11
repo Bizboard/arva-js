@@ -25,8 +25,6 @@ export default class TestController extends Controller {
 
     constructor(router, context) {
         super(router, context, {
-            transition: {duration: 500, curve: Easing.outBack},
-            animation: AnimationController.Animation.Slide.Right,
             transfer: {
                 transition: {duration: 500, curve: Easing.inOutExpo},
                 zIndex: 1000,

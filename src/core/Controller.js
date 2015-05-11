@@ -9,13 +9,14 @@
 
  */
 
-import {Inject, annotate}   from 'di.js';
-import {Router}             from './Router';
-import ObjectHelper         from '../utils/objectHelper';
-import Context              from 'famous/core/Context';
-import RenderController     from 'famous/Views/RenderController';
-import EventHandler         from 'famous/core/EventHandler';
-import AnimationController  from 'famous-flex/src/AnimationController';
+import _                    from 'lodash'
+import {Inject, annotate}   from 'di.js'
+import {Router}             from './Router'
+import ObjectHelper         from '../utils/objectHelper'
+import Context              from 'famous/core/Context'
+import RenderController     from 'famous/Views/RenderController'
+import EventHandler         from 'famous/core/EventHandler'
+import AnimationController  from 'famous-flex/src/AnimationController'
 
 
 
@@ -25,8 +26,6 @@ import AnimationController  from 'famous-flex/src/AnimationController';
  * control the creation of Views and Transitions.
  */
 export class Controller {
-
-
 
     constructor(router, context, spec) {
         //super();
@@ -39,33 +38,36 @@ export class Controller {
         //this.router.controllers.push(this);
 
 
+        ObjectHelper.bindAllMethods(this,this);
+
 
         // add the controller route to the router
         var routeName = Object.getPrototypeOf(this).constructor.name.replace('Controller','');
         routeName += "/:method";
 
         // handle router url changes and execute the appropiate controller method
-        this.router.add(routeName, function(r) {
-
-            if (typeof(this[r.method]) == "function") {
-                var result = this[r.method].apply(this, r.values);
-                if (result) {
-                    // assemble a callback based on the execution scope and have that called when rendering is completed
-                    this.context.show(result, spec, ()=> {this._eventOutput.emit("rendered", r.method)});
-                    //
-                }
-            }
-            else
-                console.log("Route does not exist!");
-        }.bind(this));
-
-        ObjectHelper.bindAllMethods(this,this);
+        this.router.add(routeName, this.onRouteCalled);
 
         console.log(this.Transferables);
     }
 
     on(event, handler) {
         this._eventOutput.on(event, handler);
+    }
+
+    onRouteCalled(route) {
+        if (typeof(this[route.method]) == "function") {
+            var result = this[route.method].apply(this, route.values);
+            if (result) {
+                this._eventOutput.emit("renderstart", route.method);
+
+                // assemble a callback based on the execution scope and have that called when rendering is completed
+                this.context.show(result, _.extend(route.spec, this.spec), () => {this._eventOutput.emit("renderend", route.method)});
+            }
+        }
+        else {
+            console.log("Route does not exist!");
+        }
     }
 }
 
