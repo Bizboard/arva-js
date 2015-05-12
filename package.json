@@ -11,6 +11,9 @@
   "bugs": {
     "url": "https://github.com/Bizboard/arva-mvc/issues"
   },
+  "dependencies": {
+    "eslint": "latest"
+  },
   "jspm": {
     "directories": {
       "lib": "src"

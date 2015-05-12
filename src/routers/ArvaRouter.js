@@ -9,13 +9,13 @@
 
  */
 
-import _                            from 'lodash'
-import {Router}                     from '../core/Router'
-import ObjectHelper                 from '../utils/objectHelper'
-import {Provide, Inject, annotate}  from 'di.js'
-import View                         from 'famous/core/View'
-import Easing                       from 'famous/transitions/Easing'
-import AnimationController          from 'famous-flex/src/AnimationController'
+import _                            from 'lodash';
+import {Router}                     from '../core/Router';
+import ObjectHelper                 from '../utils/objectHelper';
+import {Provide, Inject, annotate}  from 'di.js';
+import View                         from 'famous/core/View';
+import Easing                       from 'famous/transitions/Easing';
+import AnimationController          from 'famous-flex/src/AnimationController';
 
 export class ArvaRouter extends Router {
 
@@ -104,7 +104,7 @@ export class ArvaRouter extends Router {
      */
     run() {
 
-        //if (!url || typeof(url) == "object")
+        //if (!url || typeof(url) == 'object')
         let url = window.location.hash.replace('#', ''); // || '#';
 
         if (url !== '') {

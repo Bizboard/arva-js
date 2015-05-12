@@ -1,7 +1,6 @@
 /**
  * Created by mysim1 on 26/03/15.
  */
-import Engine                       from 'famous/core/Engine';
 import Surface                      from 'famous/core/Surface';
 import View                         from 'famous/core/View';
 import ObjectHelper                 from '../utils/objectHelper';
@@ -16,14 +15,14 @@ const DEFAULT_OPTIONS = {
             left: false
         },
         profileText: 'Scarlett Johansson was born in New York City. Her mother, Melanie Sloan, is from an Ashkenazi Jewish family, and her father, Karsten Johansson, is Danish. Scarlett showed a passion for acting at a young age and starred in many plays.<br><br>She has a sister named Vanessa Johansson, a brother named Adrian, and a twin brother named Hunter Johansson born three minutes after her. She began her acting career starring as Laura Nelson in the comedy film North (1994).<br><br>The acclaimed drama film The Horse Whisperer (1998) brought Johansson critical praise and worldwide recognition. Following the film\'s success, she starred in many other films including the critically acclaimed cult film Ghost World (2001) and then the hit Lost in Translation (2003) with Bill Murray in which she again stunned critics. Later on, she appeared in the drama film Girl with a Pearl Earring (2003).'
-}
+};
 
 export class NavBarView extends View {
 
     constructor() {
         super(DEFAULT_OPTIONS);
 
-        /* Bind all local methods to the current object instance, so we can refer to "this"
+        /* Bind all local methods to the current object instance, so we can refer to 'this'
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
 

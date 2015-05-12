@@ -10,7 +10,6 @@
  */
 
 import {DefaultApp}                             from './DefaultApp';
-import Engine                                   from 'famous/core/Engine';
 import {DefaultDataSource}                      from './settings';
 import {ReCreateDefaultContext}                 from './DefaultContext';
 

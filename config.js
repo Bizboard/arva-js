@@ -16,7 +16,7 @@ System.config({
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
     "famous-flex": "github:ijzerenhein/famous-flex@0.3.1",
     "firebase": "github:firebase/firebase-bower@2.2.4",
-    "lodash": "npm:lodash@3.7.0",
+    "lodash": "npm:lodash@3.8.0",
     "traceur": "github:jmcriffey/bower-traceur@0.0.87",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.87",
     "underscore": "npm:underscore@1.8.3",
@@ -24,10 +24,10 @@ System.config({
       "arva-context": "github:Bizboard/arva-context@master",
       "di.js": "github:angular/di.js@master",
       "firebase": "github:firebase/firebase-bower@2.2.4",
-      "lodash": "npm:lodash@3.7.0"
+      "lodash": "npm:lodash@3.8.0"
     },
     "github:jspm/nodelibs-buffer@0.1.0": {
-      "buffer": "npm:buffer@3.2.1"
+      "buffer": "npm:buffer@3.2.2"
     },
     "github:jspm/nodelibs-events@0.1.0": {
       "events-browserify": "npm:events-browserify@0.0.1"
@@ -50,9 +50,9 @@ System.config({
       "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
-    "npm:buffer@3.2.1": {
+    "npm:buffer@3.2.2": {
       "base64-js": "npm:base64-js@0.0.8",
-      "ieee754": "npm:ieee754@1.1.4",
+      "ieee754": "npm:ieee754@1.1.5",
       "is-array": "npm:is-array@1.0.1"
     },
     "npm:core-util-is@1.0.1": {
@@ -91,7 +91,7 @@ System.config({
     "npm:inherits@2.0.1": {
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
-    "npm:lodash@3.7.0": {
+    "npm:lodash@3.8.0": {
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
     "npm:path-browserify@0.0.0": {

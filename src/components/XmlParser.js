@@ -18,9 +18,9 @@ export function ParseStringToXml (text) {
         if ( window.DOMParser ) {
 
             var parser = new DOMParser();
-            xml = parser.parseFromString( text, "text/xml" );
+            xml = parser.parseFromString( text, "text/xml' );
 
-            var found = xml.getElementsByTagName( "parsererror" );
+            var found = xml.getElementsByTagName( 'parsererror' );
 
             if ( !found || !found.length || !found[ 0 ].childNodes.length ) {
                 return xml;
@@ -29,7 +29,7 @@ export function ParseStringToXml (text) {
             return null;
         } else {
 
-            xml = new ActiveXObject( "Microsoft.XMLDOM" );
+            xml = new ActiveXObject( 'Microsoft.XMLDOM' );
 
             xml.async = false;
             xml.loadXML( text );

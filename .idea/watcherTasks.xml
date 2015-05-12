@@ -16,7 +16,7 @@
       <option name="outputFromStdout" value="false" />
       <option name="passParentEnvs" value="true" />
       <option name="program" value="/usr/local/lib/node_modules/jspm/jspm.js" />
-      <option name="scopeName" value="src" />
+      <option name="scopeName" value="Source Files" />
       <option name="trackOnlyRoot" value="true" />
       <option name="workingDir" value="$ProjectFileDir$" />
       <envs />

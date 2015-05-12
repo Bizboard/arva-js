@@ -144,9 +144,8 @@ class ObjectHelper {
                             newValue: value
                         });
                     }
-                }
-                else {
-                    throw new ReferenceError('Attempted to write to non-writable property "' + propName + '".');
+                } else {
+                    throw new ReferenceError('Attempted to write to non-writable property ' + propName + '.');
                 }
             }
         };

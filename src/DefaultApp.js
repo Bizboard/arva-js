@@ -9,7 +9,7 @@
 
  */
 
-import {Inject, annotate}   from 'di.js'
+import {Inject, annotate}   from 'di.js';
 import {App}                from './core/App'
 import HomeController       from './controllers/HomeController'
 import TestController       from './controllers/TestController'

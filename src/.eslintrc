@@ -1,0 +1,20 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "ecmaFeatures": {
+    "modules": true
+  },
+  "rules": {
+    "comma-dangle": [2, "never"],
+    "valid-jsdoc": 2,
+    "default-case": 2,
+    "brace-style": [2, "1tbs", { "allowSingleLine": true }],
+    "no-multi-spaces": [2, {"exceptions": {"VariableDeclarator": true, "ImportDeclaration": true}}],
+    "no-console": 1,
+    "no-underscore-dangle": 0,
+    "quotes": [2, "single"],
+    "semi": 2
+  }
+}

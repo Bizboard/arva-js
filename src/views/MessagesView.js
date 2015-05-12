@@ -1,19 +1,17 @@
 /**
  * Created by mysim1 on 26/03/15.
  */
-import Engine                       from 'famous/core/Engine';
 import Surface                      from 'famous/core/Surface';
 import Scrollview                   from 'famous/views/Scrollview';
 import ObjectHelper                 from '../utils/objectHelper';
-import {ChatMessage,ChatMessages}   from '../models/ChatMessages';
-import {DataSource}                 from 'arva-ds/core/DataSource';
+import {ChatMessages}               from '../models/ChatMessages';
 
 
 export class MessagesView extends Scrollview {
     constructor() {
         super();
 
-        /* Bind all local methods to the current object instance, so we can refer to "this"
+        /* Bind all local methods to the current object instance, so we can refer to 'this'
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
 
@@ -38,12 +36,12 @@ export class MessagesView extends Scrollview {
         this.sequenceFrom(this.surfaces);
 
         var firstOne = new Surface({
-            content: "Loading content...",
+            content: 'Loading content...',
             size: [undefined, 50],
             properties: {
-                backgroundColor: "hsl(" + ((i%2==0?15:30) * 360 / 40) + ", 100%, 50%)",
-                lineHeight: "50px",
-                textAlign: "center"
+                backgroundColor: 'hsl(' + ((i%2==0?15:30) * 360 / 40) + ', 100%, 50%)',
+                lineHeight: '50px',
+                textAlign: 'center'
             }
         });
 
@@ -52,12 +50,12 @@ export class MessagesView extends Scrollview {
 
         for (var i = 0, temp; i < 40; i++) {
             temp = new Surface({
-                //content: "Surface: " + (i + 1),
+                //content: 'Surface: ' + (i + 1),
                 size: [undefined, 0],
                 properties: {
-                    backgroundColor: "hsl(" + ((i%2==0?15:30) * 360 / 40) + ", 100%, 50%)",
-                    lineHeight: "50px",
-                    textAlign: "center"
+                    backgroundColor: 'hsl(' + ((i%2==0?15:30) * 360 / 40) + ', 100%, 50%)',
+                    lineHeight: '50px',
+                    textAlign: 'center'
                 }
             });
 

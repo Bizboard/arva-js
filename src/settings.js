@@ -15,7 +15,7 @@ import {DataSource}                 from 'arva-ds/core/DataSource';
 import {FirebaseDataSource}         from 'arva-ds/datasources/FirebaseDataSource';
 
 export function DefaultDataSource() {
-    return new FirebaseDataSource("https://<yourapp>.firebaseio.com");
+    return new FirebaseDataSource('https://<yourapp>.firebaseio.com');
 }
 
 annotate(DefaultDataSource, new Provide(DataSource));

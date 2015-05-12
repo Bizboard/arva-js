@@ -9,14 +9,12 @@
 
  */
 
-import _                    from 'lodash'
-import {Inject, annotate}   from 'di.js'
-import {Router}             from './Router'
-import ObjectHelper         from '../utils/objectHelper'
-import Context              from 'famous/core/Context'
-import RenderController     from 'famous/Views/RenderController'
-import EventHandler         from 'famous/core/EventHandler'
-import AnimationController  from 'famous-flex/src/AnimationController'
+import _                    from 'lodash';
+import {Inject, annotate}   from 'di.js';
+import {Router}             from './Router';
+import ObjectHelper         from '../utils/objectHelper';
+import EventHandler         from 'famous/core/EventHandler';
+import AnimationController  from 'famous-flex/src/AnimationController';
 
 
 
@@ -43,7 +41,7 @@ export class Controller {
 
         // add the controller route to the router
         var routeName = Object.getPrototypeOf(this).constructor.name.replace('Controller','');
-        routeName += "/:method";
+        routeName += '/:method';
 
         // handle router url changes and execute the appropiate controller method
         this.router.add(routeName, this.onRouteCalled);
@@ -56,17 +54,17 @@ export class Controller {
     }
 
     onRouteCalled(route) {
-        if (typeof(this[route.method]) == "function") {
+        if (typeof(this[route.method]) == 'function') {
             var result = this[route.method].apply(this, route.values);
             if (result) {
-                this._eventOutput.emit("renderstart", route.method);
+                this._eventOutput.emit('renderstart', route.method);
 
                 // assemble a callback based on the execution scope and have that called when rendering is completed
-                this.context.show(result, _.extend(route.spec, this.spec), () => {this._eventOutput.emit("renderend", route.method)});
+                this.context.show(result, _.extend(route.spec, this.spec), () => {this._eventOutput.emit('renderend', route.method)});
             }
         }
         else {
-            console.log("Route does not exist!");
+            console.log('Route does not exist!');
         }
     }
 }

@@ -1,7 +1,6 @@
 /**
  * Created by mysim1 on 26/03/15.
  */
-import Engine                       from 'famous/core/Engine';
 import Surface                      from 'famous/core/Surface';
 import View                         from 'famous/core/View';
 import ObjectHelper                 from '../utils/objectHelper';
@@ -22,7 +21,7 @@ export class FullImageView extends View {
     constructor() {
         super(DEFAULT_OPTIONS);
 
-        /* Bind all local methods to the current object instance, so we can refer to "this"
+        /* Bind all local methods to the current object instance, so we can refer to 'this'
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
 

@@ -9,9 +9,9 @@
 
  */
 
-import ObjectHelper from '../objectHelper'
-import FirebaseDataSource from '../../models/core/datasources/firebaseDataSource'
-import PrioritisedObject from '../../models/core/prioritisedObject'
+import ObjectHelper from '../objectHelper';
+import FirebaseDataSource from '../../models/core/datasources/firebaseDataSource';
+import PrioritisedObject from '../../models/core/prioritisedObject';
 
 export default
 class FirebaseBench {
@@ -19,7 +19,7 @@ class FirebaseBench {
         this.startTime = null;
         this.endTime = null;
 
-        /* Bind all local methods to the current object instance, so we can refer to "this"
+        /* Bind all local methods to the current object instance, so we can refer to 'this'
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
     }
@@ -29,7 +29,7 @@ class FirebaseBench {
         let source = new FirebaseDataSource('https://es6test.firebaseio.com').child('fb-bench');
         PrioritisedObject.buildFromDataSourcePath(source, function(priorityObject){
             priorityObject.setValueChangedCallback(function(data){
-                if(data.time == "done"){
+                if(data.time == 'done'){
                     this.endTime = Date.now();
                     console.log('Writing ' + amountOfWrites + ' times to firebase took ' + (this.endTime - this.startTime) + 'ms');
                     priorityObject.removeValueChangedCallback();
@@ -41,7 +41,7 @@ class FirebaseBench {
 
     writeToFirebase(priorityObject, currentIteration, maxIterations) {
         if (currentIteration >= maxIterations) {
-            priorityObject.time = "done";
+            priorityObject.time = 'done';
             return;
         }
 

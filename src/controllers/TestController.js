@@ -9,19 +9,12 @@
 
  */
 
-import Engine               from 'famous/core/Engine';
-import Surface              from 'famous/core/Surface';
 import {Controller}         from '../core/Controller';
 import {ProfileView}        from '../views/ProfileView';
-import {FullImageView}      from '../views/FullImageView';
 import {NavBarView}         from '../views/NavBarView';
 import Easing               from 'famous/transitions/Easing';
-import AnimationController  from 'famous-flex/src/AnimationController';
-
 
 export default class TestController extends Controller {
-
-
 
     constructor(router, context) {
         super(router, context, {
@@ -37,7 +30,7 @@ export default class TestController extends Controller {
     }
 
     ReRouteExample() {
-        this.router.go(this, "Index", ['a','b']);
+        this.router.go(this, 'Index', ['a','b']);
     }
 
 
