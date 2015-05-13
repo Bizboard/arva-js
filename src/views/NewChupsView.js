@@ -42,6 +42,11 @@ export class NewChupsView extends View {
 
 
         this._renderables = {
+            background: new Surface({
+                properties: {
+                    'background-color':'#e6e6e6'
+                }
+            }),
             infopanel: new BkImageSurface({
                 content: 'img/sf0.jpg',
                 sizeMode: 'cover'
@@ -50,28 +55,32 @@ export class NewChupsView extends View {
                 content: 'img/sf1.jpg',
                 sizeMode: 'cover',
                 properties: {
-                    id: 1
+                    id: 1,
+                    '-webkit-box-shadow': '0px 4px 4px 0px rgba(50, 50, 50, 0.34)'
                 }
             }),
             topright: new BkImageSurface({
                 content: 'img/sf2.jpg',
                 sizeMode: 'cover',
                 properties: {
-                    id: 2
+                    id: 2,
+                    '-webkit-box-shadow': '0px 4px 4px 0px rgba(50, 50, 50, 0.34)'
                 }
             }),
             bottomleft: new BkImageSurface({
                 content: 'img/sf3.jpg',
                 sizeMode: 'cover',
                 properties: {
-                    id: 3
+                    id: 3,
+                    '-webkit-box-shadow': '0px 4px 4px 0px rgba(50, 50, 50, 0.34)'
                 }
             }),
             bottomright: new BkImageSurface({
                 content: 'img/sf4.jpg',
                 sizeMode: 'cover',
                 properties: {
-                    id: 4
+                    id: 4,
+                    '-webkit-box-shadow': '0px 4px 4px 0px rgba(50, 50, 50, 0.34)'
                 }
             })
         };
@@ -108,9 +117,12 @@ export class NewChupsView extends View {
                     context.size[1]*0.2];
 
                 var centre = context.size[0]/2;
-                var imgSize = [centre-(this.options.margin*2),centre-(this.options.margin*2)];
+                var imgSize = [centre-(this.options.margin*1.5),centre-(this.options.margin*2)];
 
-
+                context.set('background', {
+                   size: [context.size[0],context.size[1]],
+                    translate: [0,0,-2]
+                });
                 context.set('infopanel', {
                     size: infoPanelSize
                 });
@@ -118,22 +130,22 @@ export class NewChupsView extends View {
 
                 context.set('topleft', {
                     size: imgSize,
-                    translate: [this.options.margin*2, (context.size[1]*0.2)+this.options.margin, 1]
+                    translate: [this.options.margin, (context.size[1]*0.2)+this.options.margin, 1]
                 });
 
                 context.set('topright', {
                     size: imgSize,
-                    translate: [centre, (context.size[1]*0.2)+this.options.margin, 1]
+                    translate: [centre + this.options.margin*0.5, (context.size[1]*0.2)+this.options.margin, 1]
                 });
 
                 context.set('bottomleft', {
                     size: imgSize,
-                    translate: [this.options.margin*2, (context.size[1]*0.2)+centre, 1]
+                    translate: [this.options.margin, (context.size[1]*0.2)+centre, 1]
                 });
 
                 context.set('bottomright', {
                     size: imgSize,
-                    translate: [centre, (context.size[1]*0.2)+centre, 1]
+                    translate: [centre + this.options.margin*0.5, (context.size[1]*0.2)+centre, 1]
                 });
 
 

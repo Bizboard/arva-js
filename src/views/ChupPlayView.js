@@ -46,7 +46,15 @@ export class ChupPlayView extends View {
         });
 
         scrollView.push(new Surface({
-            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. Suspendisse vitae accumsan risus, a congue quam. Integer eget lacinia ligula. Sed consectetur tellus consequat ex aliquet, vel commodo arcu rhoncus. Nam laoreet, ligula non pharetra vehicula, urna lorem auctor odio, ut vehicula lacus metus vel eros. Praesent vitae fermentum nibh. Morbi nec ornare dui, sit amet viverra massa. Nullam imperdiet mattis ex, non volutpat sem. Phasellus sit amet varius nunc. Aenean consectetur ac ipsum auctor lacinia. Vestibulum aliquam congue porttitor. Pellentesque at nisl auctor, eleifend enim id, blandit augue. Nunc ornare ut ex quis semper. Aliquam blandit, diam nec commodo malesuada, nulla enim maximus sapien, sit amet gravida leo massa quis magna. Cras pretium neque vel mi dignissim, non blandit leo lobortis. Integer tincidunt posuere nisi. Praesent nisi ipsum, blandit vitae maximus ut, rutrum vitae odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. Suspendisse vitae accumsan risus, a congue quam. Integer eget lacinia ligula. Sed consectetur tellus consequat ex aliquet, vel commodo arcu rhoncus. Nam laoreet, ligula non pharetra vehicula, urna lorem auctor odio, ut vehicula lacus metus vel eros. Praesent vitae fermentum nibh. Morbi nec ornare dui, sit amet viverra massa. Nullam imperdiet mattis ex, non volutpat sem. Phasellus sit amet varius nunc. Aenean consectetur ac ipsum auctor lacinia. Vestibulum aliquam congue porttitor. Pellentesque at nisl auctor, eleifend enim id, blandit augue. Nunc ornare ut ex quis semper. Aliquam blandit, diam nec commodo malesuada, nulla enim maximus sapien, sit amet gravida leo massa quis magna. Cras pretium neque vel mi dignissim, non blandit leo lobortis. Integer tincidunt posuere nisi. Praesent nisi ipsum, blandit vitae maximus ut, rutrum vitae odio.',
+            properties: {
+                'background-color':'white',
+                'border-radius':'4px',
+                '-webkit-box-shadow': '0px 4px 4px 0px rgba(50, 50, 50, 0.34)',
+                'padding':'10px',
+                'line-height':'1.4'
+
+            },
+            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. Suspendisse vitae accumsan risus, a congue quam. Integer eget lacinia ligula. Sed consectetur tellus consequat ex aliquet, vel commodo arcu rhoncus. Nam laoreet, ligula non pharetra vehicula, urna lorem auctor odio, ut vehicula lacus metus vel eros. Praesent vitae fermentum nibh. Morbi nec ornare dui, sit amet viverra massa. Nullam imperdiet mattis ex, non volutpat sem. Phasellus sit amet varius nunc. Aenean consectetur ac ipsum auctor lacinia. Vestibulum aliquam congue porttitor. Pellentesque at nisl auctor, eleifend enim id, blandit augue. Nunc ornare ut ex quis semper. Aliquam blandit, diam nec commodo malesuada, nulla enim maximus sapien, sit amet gravida leo massa quis magna. Cras pretium neque vel mi dignissim, non blandit leo lobortis. Integer tincidunt posuere nisi. Praesent nisi ipsum, blandit vitae maximus ut, rutrum vitae odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. Sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. '
         }));
 
         scrollView.push(new Surface({
@@ -57,6 +65,11 @@ export class ChupPlayView extends View {
 
         this._renderables = {
             infopanel: scrollView,
+            background: new Surface({
+                properties: {
+                    'background-color':'#e6e6e6'
+                }
+            }),
             next: new BkImageSurface({
                 size: [32,32],
                 content: 'img/next.png',
@@ -80,6 +93,11 @@ export class ChupPlayView extends View {
                     context.size[0],
                     context.size[1]*0.2];
 
+                context.set('background', {
+                    size: [context.size[0],context.size[1]],
+                    translate: [0,0,-2]
+                });
+
                 context.set('chupheader' + this.id, {
                     size: infoPanelSize,
                     translate: [0,0,1]
@@ -95,8 +113,6 @@ export class ChupPlayView extends View {
                     align: [0.9,0.1],
                     translate: [0,0,2]
                 });
-
-
 
             }.bind(this),
             dataSource: this._renderables
