@@ -7,9 +7,9 @@
     "modules": true
   },
   "rules": {
+    "brace-style": [2, "1tbs", { "allowSingleLine": true }],
     "comma-dangle": [2, "never"],
     "default-case": 2,
-    "brace-style": [2, "1tbs", { "allowSingleLine": true }],
     "no-multi-spaces": [2, {"exceptions": {"VariableDeclarator": true, "ImportDeclaration": true}}],
     "no-console": 0,
     "no-underscore-dangle": 0,
