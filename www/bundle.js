@@ -3711,15 +3711,677 @@ System.register("views/NavBarView", ["npm:famous@0.3.5/core/Engine", "npm:famous
 
 
 
-System.register("controllers/TestController", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "core/Controller", "views/ProfileView", "views/FullImageView", "views/NavBarView", "npm:famous@0.3.5/transitions/Easing", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
+System.register("npm:famous@0.3.5/surfaces/ContainerSurface", ["npm:famous@0.3.5/core/Surface", "npm:famous@0.3.5/core/Context"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var Surface = require("npm:famous@0.3.5/core/Surface");
+  var Context = require("npm:famous@0.3.5/core/Context");
+  function ContainerSurface(options) {
+    Surface.call(this, options);
+    this._container = document.createElement('div');
+    this._container.classList.add('famous-group');
+    this._container.classList.add('famous-container-group');
+    this._shouldRecalculateSize = false;
+    this.context = new Context(this._container);
+    this.setContent(this._container);
+  }
+  ContainerSurface.prototype = Object.create(Surface.prototype);
+  ContainerSurface.prototype.constructor = ContainerSurface;
+  ContainerSurface.prototype.elementType = 'div';
+  ContainerSurface.prototype.elementClass = 'famous-surface';
+  ContainerSurface.prototype.add = function add() {
+    return this.context.add.apply(this.context, arguments);
+  };
+  ContainerSurface.prototype.render = function render() {
+    if (this._sizeDirty)
+      this._shouldRecalculateSize = true;
+    return Surface.prototype.render.apply(this, arguments);
+  };
+  ContainerSurface.prototype.deploy = function deploy() {
+    this._shouldRecalculateSize = true;
+    return Surface.prototype.deploy.apply(this, arguments);
+  };
+  ContainerSurface.prototype.commit = function commit(context, transform, opacity, origin, size) {
+    var previousSize = this._size ? [this._size[0], this._size[1]] : null;
+    var result = Surface.prototype.commit.apply(this, arguments);
+    if (this._shouldRecalculateSize || previousSize && (this._size[0] !== previousSize[0] || this._size[1] !== previousSize[1])) {
+      this.context.setSize();
+      this._shouldRecalculateSize = false;
+    }
+    this.context.update();
+    return result;
+  };
+  module.exports = ContainerSurface;
+  global.define = __define;
+  return module.exports;
+});
+
+
+
+System.register("npm:famous@0.3.5/core/Group", ["npm:famous@0.3.5/core/Context", "npm:famous@0.3.5/core/Transform", "npm:famous@0.3.5/core/Surface"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var Context = require("npm:famous@0.3.5/core/Context");
+  var Transform = require("npm:famous@0.3.5/core/Transform");
+  var Surface = require("npm:famous@0.3.5/core/Surface");
+  function Group(options) {
+    Surface.call(this, options);
+    this._shouldRecalculateSize = false;
+    this._container = document.createDocumentFragment();
+    this.context = new Context(this._container);
+    this.setContent(this._container);
+    this._groupSize = [undefined, undefined];
+  }
+  Group.SIZE_ZERO = [0, 0];
+  Group.prototype = Object.create(Surface.prototype);
+  Group.prototype.elementType = 'div';
+  Group.prototype.elementClass = 'famous-group';
+  Group.prototype.add = function add() {
+    return this.context.add.apply(this.context, arguments);
+  };
+  Group.prototype.render = function render() {
+    return Surface.prototype.render.call(this);
+  };
+  Group.prototype.deploy = function deploy(target) {
+    this.context.migrate(target);
+  };
+  Group.prototype.recall = function recall(target) {
+    this._container = document.createDocumentFragment();
+    this.context.migrate(this._container);
+  };
+  Group.prototype.commit = function commit(context) {
+    var transform = context.transform;
+    var origin = context.origin;
+    var opacity = context.opacity;
+    var size = context.size;
+    var result = Surface.prototype.commit.call(this, {
+      allocator: context.allocator,
+      transform: Transform.thenMove(transform, [-origin[0] * size[0], -origin[1] * size[1], 0]),
+      opacity: opacity,
+      origin: origin,
+      size: Group.SIZE_ZERO
+    });
+    if (size[0] !== this._groupSize[0] || size[1] !== this._groupSize[1]) {
+      this._groupSize[0] = size[0];
+      this._groupSize[1] = size[1];
+      this.context.setSize(size);
+    }
+    this.context.update({
+      transform: Transform.translate(-origin[0] * size[0], -origin[1] * size[1], 0),
+      origin: origin,
+      size: size
+    });
+    return result;
+  };
+  module.exports = Group;
+  global.define = __define;
+  return module.exports;
+});
+
+
+
+System.register("npm:famous@0.3.5/physics/forces/Drag", ["npm:famous@0.3.5/physics/forces/Force"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var Force = require("npm:famous@0.3.5/physics/forces/Force");
+  function Drag(options) {
+    this.options = Object.create(this.constructor.DEFAULT_OPTIONS);
+    if (options)
+      this.setOptions(options);
+    Force.call(this);
+  }
+  Drag.prototype = Object.create(Force.prototype);
+  Drag.prototype.constructor = Drag;
+  Drag.FORCE_FUNCTIONS = {
+    LINEAR: function(velocity) {
+      return velocity;
+    },
+    QUADRATIC: function(velocity) {
+      return velocity.mult(velocity.norm());
+    }
+  };
+  Drag.DEFAULT_OPTIONS = {
+    strength: 0.01,
+    forceFunction: Drag.FORCE_FUNCTIONS.LINEAR
+  };
+  Drag.prototype.applyForce = function applyForce(targets) {
+    var strength = this.options.strength;
+    var forceFunction = this.options.forceFunction;
+    var force = this.force;
+    var index;
+    var particle;
+    for (index = 0; index < targets.length; index++) {
+      particle = targets[index];
+      forceFunction(particle.velocity).mult(-strength).put(force);
+      particle.applyForce(force);
+    }
+  };
+  Drag.prototype.setOptions = function setOptions(options) {
+    for (var key in options)
+      this.options[key] = options[key];
+  };
+  module.exports = Drag;
+  global.define = __define;
+  return module.exports;
+});
+
+
+
+System.register("npm:famous@0.3.5/inputs/ScrollSync", ["npm:famous@0.3.5/core/EventHandler", "npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/OptionsManager"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var EventHandler = require("npm:famous@0.3.5/core/EventHandler");
+  var Engine = require("npm:famous@0.3.5/core/Engine");
+  var OptionsManager = require("npm:famous@0.3.5/core/OptionsManager");
+  function ScrollSync(options) {
+    this.options = Object.create(ScrollSync.DEFAULT_OPTIONS);
+    this._optionsManager = new OptionsManager(this.options);
+    if (options)
+      this.setOptions(options);
+    this._payload = {
+      delta: null,
+      position: null,
+      velocity: null,
+      slip: true
+    };
+    this._eventInput = new EventHandler();
+    this._eventOutput = new EventHandler();
+    EventHandler.setInputHandler(this, this._eventInput);
+    EventHandler.setOutputHandler(this, this._eventOutput);
+    this._position = this.options.direction === undefined ? [0, 0] : 0;
+    this._prevTime = undefined;
+    this._prevVel = undefined;
+    this._eventInput.on('mousewheel', _handleMove.bind(this));
+    this._eventInput.on('wheel', _handleMove.bind(this));
+    this._inProgress = false;
+    this._loopBound = false;
+  }
+  ScrollSync.DEFAULT_OPTIONS = {
+    direction: undefined,
+    minimumEndSpeed: Infinity,
+    rails: false,
+    scale: 1,
+    stallTime: 50,
+    lineHeight: 40,
+    preventDefault: true
+  };
+  ScrollSync.DIRECTION_X = 0;
+  ScrollSync.DIRECTION_Y = 1;
+  var MINIMUM_TICK_TIME = 8;
+  var _now = Date.now;
+  function _newFrame() {
+    if (this._inProgress && _now() - this._prevTime > this.options.stallTime) {
+      this._inProgress = false;
+      var finalVel = Math.abs(this._prevVel) >= this.options.minimumEndSpeed ? this._prevVel : 0;
+      var payload = this._payload;
+      payload.position = this._position;
+      payload.velocity = finalVel;
+      payload.slip = true;
+      this._eventOutput.emit('end', payload);
+    }
+  }
+  function _handleMove(event) {
+    if (this.options.preventDefault)
+      event.preventDefault();
+    if (!this._inProgress) {
+      this._inProgress = true;
+      this._position = this.options.direction === undefined ? [0, 0] : 0;
+      payload = this._payload;
+      payload.slip = true;
+      payload.position = this._position;
+      payload.clientX = event.clientX;
+      payload.clientY = event.clientY;
+      payload.offsetX = event.offsetX;
+      payload.offsetY = event.offsetY;
+      this._eventOutput.emit('start', payload);
+      if (!this._loopBound) {
+        Engine.on('prerender', _newFrame.bind(this));
+        this._loopBound = true;
+      }
+    }
+    var currTime = _now();
+    var prevTime = this._prevTime || currTime;
+    var diffX = event.wheelDeltaX !== undefined ? event.wheelDeltaX : -event.deltaX;
+    var diffY = event.wheelDeltaY !== undefined ? event.wheelDeltaY : -event.deltaY;
+    if (event.deltaMode === 1) {
+      diffX *= this.options.lineHeight;
+      diffY *= this.options.lineHeight;
+    }
+    if (this.options.rails) {
+      if (Math.abs(diffX) > Math.abs(diffY))
+        diffY = 0;
+      else
+        diffX = 0;
+    }
+    var diffTime = Math.max(currTime - prevTime, MINIMUM_TICK_TIME);
+    var velX = diffX / diffTime;
+    var velY = diffY / diffTime;
+    var scale = this.options.scale;
+    var nextVel;
+    var nextDelta;
+    if (this.options.direction === ScrollSync.DIRECTION_X) {
+      nextDelta = scale * diffX;
+      nextVel = scale * velX;
+      this._position += nextDelta;
+    } else if (this.options.direction === ScrollSync.DIRECTION_Y) {
+      nextDelta = scale * diffY;
+      nextVel = scale * velY;
+      this._position += nextDelta;
+    } else {
+      nextDelta = [scale * diffX, scale * diffY];
+      nextVel = [scale * velX, scale * velY];
+      this._position[0] += nextDelta[0];
+      this._position[1] += nextDelta[1];
+    }
+    var payload = this._payload;
+    payload.delta = nextDelta;
+    payload.velocity = nextVel;
+    payload.position = this._position;
+    payload.slip = true;
+    this._eventOutput.emit('update', payload);
+    this._prevTime = currTime;
+    this._prevVel = nextVel;
+  }
+  ScrollSync.prototype.getOptions = function getOptions() {
+    return this.options;
+  };
+  ScrollSync.prototype.setOptions = function setOptions(options) {
+    return this._optionsManager.setOptions(options);
+  };
+  module.exports = ScrollSync;
+  global.define = __define;
+  return module.exports;
+});
+
+
+
+(function() {
+function define(){};  define.amd = {};
+System.register("github:ijzerenhein/famous-flex@0.3.1/src/layouts/ListLayout", ["npm:famous@0.3.5/utilities/Utility", "github:ijzerenhein/famous-flex@0.3.1/src/LayoutUtility"], false, function(__require, __exports, __module) {
+  return (function(require, exports, module) {
+    var Utility = require("npm:famous@0.3.5/utilities/Utility");
+    var LayoutUtility = require("github:ijzerenhein/famous-flex@0.3.1/src/LayoutUtility");
+    var capabilities = {
+      sequence: true,
+      direction: [Utility.Direction.Y, Utility.Direction.X],
+      scrolling: true,
+      trueSize: true,
+      sequentialScrollingOptimized: true
+    };
+    var set = {
+      size: [0, 0],
+      translate: [0, 0, 0],
+      scrollLength: undefined
+    };
+    var margin = [0, 0];
+    function ListLayout(context, options) {
+      var size = context.size;
+      var direction = context.direction;
+      var alignment = context.alignment;
+      var revDirection = direction ? 0 : 1;
+      var offset;
+      var margins = LayoutUtility.normalizeMargins(options.margins);
+      var spacing = options.spacing || 0;
+      var node;
+      var nodeSize;
+      var itemSize;
+      var getItemSize;
+      var lastSectionBeforeVisibleCell;
+      var lastSectionBeforeVisibleCellOffset;
+      var lastSectionBeforeVisibleCellLength;
+      var lastSectionBeforeVisibleCellScrollLength;
+      var lastSectionBeforeVisibleCellTopReached;
+      var firstVisibleCell;
+      var lastNode;
+      var lastCellOffsetInFirstVisibleSection;
+      var isSectionCallback = options.isSectionCallback;
+      var bound;
+      set.size[0] = size[0];
+      set.size[1] = size[1];
+      set.size[revDirection] -= (margins[1 - revDirection] + margins[3 - revDirection]);
+      set.translate[0] = 0;
+      set.translate[1] = 0;
+      set.translate[2] = 0;
+      set.translate[revDirection] = margins[direction ? 3 : 0];
+      if ((options.itemSize === true) || !options.hasOwnProperty('itemSize')) {
+        itemSize = true;
+      } else if (options.itemSize instanceof Function) {
+        getItemSize = options.itemSize;
+      } else {
+        itemSize = (options.itemSize === undefined) ? size[direction] : options.itemSize;
+      }
+      margin[0] = margins[direction ? 0 : 3];
+      margin[1] = -margins[direction ? 2 : 1];
+      offset = context.scrollOffset + margin[alignment];
+      bound = context.scrollEnd + margin[alignment];
+      while (offset < (bound + spacing)) {
+        lastNode = node;
+        node = context.next();
+        if (!node) {
+          break;
+        }
+        nodeSize = getItemSize ? getItemSize(node.renderNode) : itemSize;
+        nodeSize = (nodeSize === true) ? context.resolveSize(node, size)[direction] : nodeSize;
+        set.size[direction] = nodeSize;
+        set.translate[direction] = offset + (alignment ? spacing : 0);
+        set.scrollLength = nodeSize + spacing;
+        context.set(node, set);
+        offset += set.scrollLength;
+        if (isSectionCallback && isSectionCallback(node.renderNode)) {
+          if ((set.translate[direction] <= margin[0]) && !lastSectionBeforeVisibleCellTopReached) {
+            lastSectionBeforeVisibleCellTopReached = true;
+            set.translate[direction] = margin[0];
+            context.set(node, set);
+          }
+          if (!firstVisibleCell) {
+            lastSectionBeforeVisibleCell = node;
+            lastSectionBeforeVisibleCellOffset = offset - nodeSize;
+            lastSectionBeforeVisibleCellLength = nodeSize;
+            lastSectionBeforeVisibleCellScrollLength = nodeSize;
+          } else if (lastCellOffsetInFirstVisibleSection === undefined) {
+            lastCellOffsetInFirstVisibleSection = offset - nodeSize;
+          }
+        } else if (!firstVisibleCell && (offset >= 0)) {
+          firstVisibleCell = node;
+        }
+      }
+      if (lastNode && !node && !alignment) {
+        set.scrollLength = nodeSize + margin[0] + -margin[1];
+        context.set(lastNode, set);
+      }
+      lastNode = undefined;
+      node = undefined;
+      offset = context.scrollOffset + margin[alignment];
+      bound = context.scrollStart + margin[alignment];
+      while (offset > (bound - spacing)) {
+        lastNode = node;
+        node = context.prev();
+        if (!node) {
+          break;
+        }
+        nodeSize = getItemSize ? getItemSize(node.renderNode) : itemSize;
+        nodeSize = (nodeSize === true) ? context.resolveSize(node, size)[direction] : nodeSize;
+        set.scrollLength = nodeSize + spacing;
+        offset -= set.scrollLength;
+        set.size[direction] = nodeSize;
+        set.translate[direction] = offset + (alignment ? spacing : 0);
+        context.set(node, set);
+        if (isSectionCallback && isSectionCallback(node.renderNode)) {
+          if ((set.translate[direction] <= margin[0]) && !lastSectionBeforeVisibleCellTopReached) {
+            lastSectionBeforeVisibleCellTopReached = true;
+            set.translate[direction] = margin[0];
+            context.set(node, set);
+          }
+          if (!lastSectionBeforeVisibleCell) {
+            lastSectionBeforeVisibleCell = node;
+            lastSectionBeforeVisibleCellOffset = offset;
+            lastSectionBeforeVisibleCellLength = nodeSize;
+            lastSectionBeforeVisibleCellScrollLength = set.scrollLength;
+          }
+        } else if ((offset + nodeSize) >= 0) {
+          firstVisibleCell = node;
+          if (lastSectionBeforeVisibleCell) {
+            lastCellOffsetInFirstVisibleSection = offset + nodeSize;
+          }
+          lastSectionBeforeVisibleCell = undefined;
+        }
+      }
+      if (lastNode && !node && alignment) {
+        set.scrollLength = nodeSize + margin[0] + -margin[1];
+        context.set(lastNode, set);
+        if (lastSectionBeforeVisibleCell === lastNode) {
+          lastSectionBeforeVisibleCellScrollLength = set.scrollLength;
+        }
+      }
+      if (isSectionCallback && !lastSectionBeforeVisibleCell) {
+        node = context.prev();
+        while (node) {
+          if (isSectionCallback(node.renderNode)) {
+            lastSectionBeforeVisibleCell = node;
+            nodeSize = options.itemSize || context.resolveSize(node, size)[direction];
+            lastSectionBeforeVisibleCellOffset = offset - nodeSize;
+            lastSectionBeforeVisibleCellLength = nodeSize;
+            lastSectionBeforeVisibleCellScrollLength = undefined;
+            break;
+          } else {
+            node = context.prev();
+          }
+        }
+      }
+      if (lastSectionBeforeVisibleCell) {
+        var correctedOffset = Math.max(margin[0], lastSectionBeforeVisibleCellOffset);
+        if ((lastCellOffsetInFirstVisibleSection !== undefined) && (lastSectionBeforeVisibleCellLength > (lastCellOffsetInFirstVisibleSection - margin[0]))) {
+          correctedOffset = ((lastCellOffsetInFirstVisibleSection - lastSectionBeforeVisibleCellLength));
+        }
+        set.size[direction] = lastSectionBeforeVisibleCellLength;
+        set.translate[direction] = correctedOffset;
+        set.scrollLength = lastSectionBeforeVisibleCellScrollLength;
+        context.set(lastSectionBeforeVisibleCell, set);
+      }
+    }
+    ListLayout.Capabilities = capabilities;
+    ListLayout.Name = 'ListLayout';
+    ListLayout.Description = 'List-layout with margins, spacing and sticky headers';
+    module.exports = ListLayout;
+  }).call(__exports, __require, __exports, __module);
+});
+
+
+})();
+System.register("views/NewChupsView", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "npm:famous@0.3.5/core/View", "utils/objectHelper", "github:ijzerenhein/famous-flex@0.3.1/src/LayoutController", "github:ijzerenhein/famous-bkimagesurface@1.0.3/BkImageSurface"], function($__export) {
   "use strict";
-  var __moduleName = "controllers/TestController";
+  var __moduleName = "views/NewChupsView";
+  var Engine,
+      Surface,
+      View,
+      ObjectHelper,
+      LayoutController,
+      BkImageSurface,
+      DEFAULT_OPTIONS,
+      NewChupsView;
+  return {
+    setters: [function($__m) {
+      Engine = $__m.default;
+    }, function($__m) {
+      Surface = $__m.default;
+    }, function($__m) {
+      View = $__m.default;
+    }, function($__m) {
+      ObjectHelper = $__m.default;
+    }, function($__m) {
+      LayoutController = $__m.default;
+    }, function($__m) {
+      BkImageSurface = $__m.default;
+    }],
+    execute: function() {
+      DEFAULT_OPTIONS = {margin: 10};
+      NewChupsView = $__export("NewChupsView", (function($__super) {
+        var NewChupsView = function NewChupsView() {
+          $traceurRuntime.superConstructor(NewChupsView).call(this, DEFAULT_OPTIONS);
+          ObjectHelper.bindAllMethods(this, this);
+          ObjectHelper.hideMethodsAndPrivatePropertiesFromObject(this);
+          ObjectHelper.hidePropertyFromObject(Object.getPrototypeOf(this), 'length');
+          this._createRenderables();
+          this._createLayout();
+        };
+        return ($traceurRuntime.createClass)(NewChupsView, {
+          _createRenderables: function() {
+            this._renderables = {
+              infopanel: new BkImageSurface({
+                content: 'img/sf0.jpg',
+                sizeMode: 'cover'
+              }),
+              topleft: new BkImageSurface({
+                content: 'img/sf1.jpg',
+                sizeMode: 'cover',
+                properties: {id: 1}
+              }),
+              topright: new BkImageSurface({
+                content: 'img/sf2.jpg',
+                sizeMode: 'cover',
+                properties: {id: 2}
+              }),
+              bottomleft: new BkImageSurface({
+                content: 'img/sf3.jpg',
+                sizeMode: 'cover',
+                properties: {id: 3}
+              }),
+              bottomright: new BkImageSurface({
+                content: 'img/sf4.jpg',
+                sizeMode: 'cover',
+                properties: {id: 4}
+              })
+            };
+            var self = this;
+            this._renderables.topleft.on('click', function() {
+              var id = this.properties.id;
+              self._eventOutput.emit('play', id);
+            });
+            this._renderables.topright.on('click', function() {
+              var id = this.properties.id;
+              self._eventOutput.emit('play', id);
+            });
+            this._renderables.bottomleft.on('click', function() {
+              var id = this.properties.id;
+              self._eventOutput.emit('play', id);
+            });
+            this._renderables.bottomright.on('click', function() {
+              var id = this.properties.id;
+              self._eventOutput.emit('play', id);
+            });
+          },
+          _createLayout: function() {
+            this.layout = new LayoutController({
+              autoPipeEvents: true,
+              layout: function(context, options) {
+                var infoPanelSize = [context.size[0], context.size[1] * 0.2];
+                var centre = context.size[0] / 2;
+                var imgSize = [centre - (this.options.margin * 2), centre - (this.options.margin * 2)];
+                context.set('infopanel', {size: infoPanelSize});
+                context.set('topleft', {
+                  size: imgSize,
+                  translate: [this.options.margin * 2, (context.size[1] * 0.2) + this.options.margin, 1]
+                });
+                context.set('topright', {
+                  size: imgSize,
+                  translate: [centre, (context.size[1] * 0.2) + this.options.margin, 1]
+                });
+                context.set('bottomleft', {
+                  size: imgSize,
+                  translate: [this.options.margin * 2, (context.size[1] * 0.2) + centre, 1]
+                });
+                context.set('bottomright', {
+                  size: imgSize,
+                  translate: [centre, (context.size[1] * 0.2) + centre, 1]
+                });
+              }.bind(this),
+              dataSource: this._renderables
+            });
+            this.add(this.layout);
+            this.layout.pipe(this._eventOutput);
+          }
+        }, {}, $__super);
+      }(View)));
+    }
+  };
+});
+
+
+
+System.register("npm:famous@0.3.5/views/Flipper", ["npm:famous@0.3.5/core/Transform", "npm:famous@0.3.5/transitions/Transitionable", "npm:famous@0.3.5/core/RenderNode", "npm:famous@0.3.5/core/OptionsManager"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var Transform = require("npm:famous@0.3.5/core/Transform");
+  var Transitionable = require("npm:famous@0.3.5/transitions/Transitionable");
+  var RenderNode = require("npm:famous@0.3.5/core/RenderNode");
+  var OptionsManager = require("npm:famous@0.3.5/core/OptionsManager");
+  function Flipper(options) {
+    this.options = Object.create(Flipper.DEFAULT_OPTIONS);
+    this._optionsManager = new OptionsManager(this.options);
+    if (options)
+      this.setOptions(options);
+    this.angle = new Transitionable(0);
+    this.frontNode = undefined;
+    this.backNode = undefined;
+    this.flipped = false;
+  }
+  Flipper.DIRECTION_X = 0;
+  Flipper.DIRECTION_Y = 1;
+  var SEPERATION_LENGTH = 1;
+  Flipper.DEFAULT_OPTIONS = {
+    transition: true,
+    direction: Flipper.DIRECTION_X
+  };
+  Flipper.prototype.flip = function flip(transition, callback) {
+    var angle = this.flipped ? 0 : Math.PI;
+    this.setAngle(angle, transition, callback);
+    this.flipped = !this.flipped;
+  };
+  Flipper.prototype.setAngle = function setAngle(angle, transition, callback) {
+    if (transition === undefined)
+      transition = this.options.transition;
+    if (this.angle.isActive())
+      this.angle.halt();
+    this.angle.set(angle, transition, callback);
+  };
+  Flipper.prototype.setOptions = function setOptions(options) {
+    return this._optionsManager.setOptions(options);
+  };
+  Flipper.prototype.setFront = function setFront(node) {
+    this.frontNode = node;
+  };
+  Flipper.prototype.setBack = function setBack(node) {
+    this.backNode = node;
+  };
+  Flipper.prototype.render = function render() {
+    var angle = this.angle.get();
+    var frontTransform;
+    var backTransform;
+    if (this.options.direction === Flipper.DIRECTION_X) {
+      frontTransform = Transform.rotateY(angle);
+      backTransform = Transform.rotateY(angle + Math.PI);
+    } else {
+      frontTransform = Transform.rotateX(angle);
+      backTransform = Transform.rotateX(angle + Math.PI);
+    }
+    var result = [];
+    if (this.frontNode) {
+      result.push({
+        transform: frontTransform,
+        target: this.frontNode.render()
+      });
+    }
+    if (this.backNode) {
+      result.push({
+        transform: Transform.moveThen([0, 0, SEPERATION_LENGTH], backTransform),
+        target: this.backNode.render()
+      });
+    }
+    return result;
+  };
+  module.exports = Flipper;
+  global.define = __define;
+  return module.exports;
+});
+
+
+
+System.register("controllers/PlayController", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "core/Controller", "views/ProfileView", "views/FullImageView", "views/NavBarView", "views/ChupPlayView", "views/NewChupsView", "npm:famous@0.3.5/transitions/Easing", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
+  "use strict";
+  var __moduleName = "controllers/PlayController";
   var Engine,
       Surface,
       Controller,
       ProfileView,
       FullImageView,
       NavBarView,
+      ChupPlayView,
+      NewChupsView,
       Easing,
       AnimationController;
   return {
@@ -3736,43 +4398,41 @@ System.register("controllers/TestController", ["npm:famous@0.3.5/core/Engine", "
     }, function($__m) {
       NavBarView = $__m.NavBarView;
     }, function($__m) {
+      ChupPlayView = $__m.ChupPlayView;
+    }, function($__m) {
+      NewChupsView = $__m.NewChupsView;
+    }, function($__m) {
       Easing = $__m.default;
     }, function($__m) {
       AnimationController = $__m.default;
     }],
     execute: function() {
       $__export('default', (function($__super) {
-        var TestController = function TestController(router, context) {
-          $traceurRuntime.superConstructor(TestController).call(this, router, context, {
-            transition: {
-              duration: 500,
-              curve: Easing.outBack
-            },
-            animation: AnimationController.Animation.Slide.Right,
-            transfer: {
+        var PlayController = function PlayController(router, context) {
+          $traceurRuntime.superConstructor(PlayController).call(this, router, context, {transfer: {
               transition: {
-                duration: 500,
-                curve: Easing.inOutExpo
+                duration: 200,
+                curve: Easing.inQuad
               },
               zIndex: 1000,
               items: {
-                'image': ['image', 'navBarImage'],
-                'navBarImage': ['image', 'navBarImage']
+                'topleft': ['topleft', 'chupheader1'],
+                'topright': ['topright', 'chupheader2'],
+                'bottomleft': ['bottomleft', 'chupheader3'],
+                'bottomright': ['bottomright', 'chupheader4'],
+                'chupheader1': ['topleft', 'chupheader1'],
+                'chupheader2': ['topright', 'chupheader2'],
+                'chupheader3': ['bottomleft', 'chupheader3'],
+                'chupheader4': ['bottomright', 'chupheader4']
               }
-            }
-          });
+            }});
+          this.on('renderend', (function(arg) {
+            console.log(arg);
+          }));
         };
-        return ($traceurRuntime.createClass)(TestController, {
-          ReRouteExample: function() {
-            this.router.go(this, "Index", ['a', 'b']);
-          },
-          Profile: function() {
-            return new ProfileView();
-          },
-          NavBar: function() {
-            return new NavBarView();
-          }
-        }, {}, $__super);
+        return ($traceurRuntime.createClass)(PlayController, {Chup: function(id) {
+            return new ChupPlayView(id);
+          }}, {}, $__super);
       }(Controller)));
     }
   };
@@ -10682,18 +11342,23 @@ System.register("github:firebase/firebase-bower@2.2.4/firebase", [], false, func
 
 
 
-System.register("routers/ArvaRouter", ["core/Router", "utils/objectHelper", "github:angular/di.js@master", "npm:famous@0.3.5/core/View"], function($__export) {
+System.register("routers/ArvaRouter", ["npm:lodash@3.7.0", "core/Router", "utils/objectHelper", "github:angular/di.js@master", "npm:famous@0.3.5/core/View", "npm:famous@0.3.5/transitions/Easing", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
   "use strict";
   var __moduleName = "routers/ArvaRouter";
-  var Router,
+  var _,
+      Router,
       ObjectHelper,
       Provide,
       Inject,
       annotate,
       View,
+      Easing,
+      AnimationController,
       ArvaRouter;
   return {
     setters: [function($__m) {
+      _ = $__m.default;
+    }, function($__m) {
       Router = $__m.Router;
     }, function($__m) {
       ObjectHelper = $__m.default;
@@ -10703,6 +11368,10 @@ System.register("routers/ArvaRouter", ["core/Router", "utils/objectHelper", "git
       annotate = $__m.annotate;
     }, function($__m) {
       View = $__m.default;
+    }, function($__m) {
+      Easing = $__m.default;
+    }, function($__m) {
+      AnimationController = $__m.default;
     }],
     execute: function() {
       ArvaRouter = $__export("ArvaRouter", (function($__super) {
@@ -10712,6 +11381,7 @@ System.register("routers/ArvaRouter", ["core/Router", "utils/objectHelper", "git
             return ;
           }
           this.routes = {};
+          this.history = [];
           this.decode = decodeURIComponent;
           window.addEventListener('hashchange', this.run);
         };
@@ -10722,10 +11392,25 @@ System.register("routers/ArvaRouter", ["core/Router", "utils/objectHelper", "git
             if (method != null)
               this.defaultMethod = method;
           },
-          go: function(controller, method, params) {
-            var controllerName = Object.getPrototypeOf(controller).constructor.name;
+          setControllerSpecs: function(specs) {
+            this.specs = specs;
+          },
+          go: function(controller, method) {
+            var params = arguments[2] !== (void 0) ? arguments[2] : null;
+            var controllerName = '';
+            if (Object.getPrototypeOf(controller).constructor.name == "Function")
+              controllerName = controller.name;
+            else
+              controllerName = Object.getPrototypeOf(controller).constructor.name;
             var routeRoot = controllerName.replace(this.defaultController, '').replace('Controller', '');
             var hash = '#' + (routeRoot.length > 0 ? '/' + routeRoot : '') + ('/' + method);
+            if (params) {
+              for (var i = 0; i < Object.keys(params).length; i++) {
+                var key = Object.keys(params)[i];
+                hash += i == 0 ? '?' : '&';
+                hash += (key + '=' + params[key]);
+              }
+            }
             if (history.pushState) {
               history.pushState(null, null, hash);
             }
@@ -10757,18 +11442,22 @@ System.register("routers/ArvaRouter", ["core/Router", "utils/objectHelper", "git
                 values = [],
                 keys = [],
                 method = '';
+            var rule = null;
+            var controller = null;
             if (pieces.length == 1 && pieces[0].length == 0) {
               pieces[0] = this.defaultController;
               pieces.push(this.defaultMethod);
-            } else if (pieces.length == 1 && pieces[0].length > 0)
+            } else if (pieces.length == 1 && pieces[0].length > 0) {
               pieces.unshift(this.defaultController);
+            }
+            controller = pieces[0];
             for (var i = 0; i < pieces.length && rules; ++i) {
-              var piece = this.decode(pieces[i]),
-                  rule = rules[piece];
+              var piece = this.decode(pieces[i]);
+              rule = rules[piece];
               if (!rule && (rule = rules[':'])) {
                 method = piece;
               }
-              rules = rule;
+              rules = rules[piece];
             }
             (function parseQuery(q) {
               var query = q.split('&');
@@ -10780,18 +11469,88 @@ System.register("routers/ArvaRouter", ["core/Router", "utils/objectHelper", "git
                 }
               }
             }).call(this, querySplit.length > 1 ? querySplit[1] : '');
-            if (rules && rules['@']) {
-              rules['@']({
+            if (rule && rule['@']) {
+              var previousRoute = this.history.length ? this.history[this.history.length - 1] : undefined;
+              var currentRoute = {
                 url: url,
+                controller: controller,
                 method: method,
                 keys: keys,
                 values: values
-              });
+              };
+              currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : {};
+              this._setHistory(currentRoute);
+              rule['@'](currentRoute);
               return true;
             } else {
               console.log('Controller doesn\'t exist!');
             }
             return false;
+          },
+          _setHistory: function(currentRoute) {
+            for (var i = 0; i < this.history.length; i++) {
+              var previousRoute = this.history[i];
+              if (currentRoute.controller === previousRoute.controller && currentRoute.method === previousRoute.method && _.isEqual(currentRoute.values, previousRoute.values)) {
+                this.history.splice(i, this.history.length - i);
+                break;
+              }
+            }
+            this.history.push(currentRoute);
+          },
+          _hasVisited: function(currentRoute) {
+            for (var i = 0; i < this.history.length; i++) {
+              var previousRoute = this.history[i];
+              if (currentRoute.controller === previousRoute.controller && currentRoute.method === previousRoute.method && _.isEqual(currentRoute.values, previousRoute.values)) {
+                return true;
+              }
+            }
+            return false;
+          },
+          _getAnimationSpec: function(previousRoute, currentRoute) {
+            var fromController = previousRoute.controller;
+            var toController = currentRoute.controller;
+            if (fromController.indexOf('Controller') === -1) {
+              fromController += 'Controller';
+            }
+            if (toController.indexOf('Controller') === -1) {
+              toController += 'Controller';
+            }
+            if (currentRoute.controller === previousRoute.controller && currentRoute.method === previousRoute.method && _.isEqual(currentRoute.values, previousRoute.values)) {
+              return {};
+            }
+            if (currentRoute.controller === previousRoute.controller) {
+              var direction = this._hasVisited(currentRoute) ? 'previous' : 'next';
+              if (this.specs && this.specs[fromController] && this.specs[fromController].methods) {
+                return this.specs[fromController].methods[direction];
+              }
+              var defaults = {
+                'previous': {
+                  transition: {
+                    duration: 1000,
+                    curve: Easing.outBack
+                  },
+                  animation: AnimationController.Animation.Slide.Right
+                },
+                'next': {
+                  transition: {
+                    duration: 1000,
+                    curve: Easing.outBack
+                  },
+                  animation: AnimationController.Animation.Slide.Left
+                }
+              };
+              return defaults[direction];
+            }
+            if (this.specs && this.specs.hasOwnProperty(toController) && this.specs[toController].controllers) {
+              var controllerSpecs = this.specs[toController].controllers;
+              for (var specIndex in controllerSpecs) {
+                var spec = controllerSpecs[specIndex];
+                if (spec.activeFrom && spec.activeFrom.indexOf(fromController) !== -1) {
+                  return spec;
+                }
+              }
+            }
+            throw new Error('No spec defined from ' + fromController + ' to ' + toController + '. Please check router.setControllerSpecs() in your app constructor.');
           }
         }, {}, $__super);
       }(Router)));
@@ -12696,6 +13455,1317 @@ System.register("views/ProfileView", ["npm:famous@0.3.5/core/Engine", "npm:famou
 
 
 
+(function() {
+function define(){};  define.amd = {};
+System.register("github:ijzerenhein/famous-flex@0.3.1/src/ScrollController", ["github:ijzerenhein/famous-flex@0.3.1/src/LayoutUtility", "github:ijzerenhein/famous-flex@0.3.1/src/LayoutController", "github:ijzerenhein/famous-flex@0.3.1/src/LayoutNode", "github:ijzerenhein/famous-flex@0.3.1/src/FlowLayoutNode", "github:ijzerenhein/famous-flex@0.3.1/src/LayoutNodeManager", "npm:famous@0.3.5/surfaces/ContainerSurface", "npm:famous@0.3.5/core/Transform", "npm:famous@0.3.5/core/EventHandler", "npm:famous@0.3.5/core/Group", "npm:famous@0.3.5/math/Vector", "npm:famous@0.3.5/physics/PhysicsEngine", "npm:famous@0.3.5/physics/bodies/Particle", "npm:famous@0.3.5/physics/forces/Drag", "npm:famous@0.3.5/physics/forces/Spring", "npm:famous@0.3.5/inputs/ScrollSync", "npm:famous@0.3.5/core/ViewSequence"], false, function(__require, __exports, __module) {
+  return (function(require, exports, module) {
+    var LayoutUtility = require("github:ijzerenhein/famous-flex@0.3.1/src/LayoutUtility");
+    var LayoutController = require("github:ijzerenhein/famous-flex@0.3.1/src/LayoutController");
+    var LayoutNode = require("github:ijzerenhein/famous-flex@0.3.1/src/LayoutNode");
+    var FlowLayoutNode = require("github:ijzerenhein/famous-flex@0.3.1/src/FlowLayoutNode");
+    var LayoutNodeManager = require("github:ijzerenhein/famous-flex@0.3.1/src/LayoutNodeManager");
+    var ContainerSurface = require("npm:famous@0.3.5/surfaces/ContainerSurface");
+    var Transform = require("npm:famous@0.3.5/core/Transform");
+    var EventHandler = require("npm:famous@0.3.5/core/EventHandler");
+    var Group = require("npm:famous@0.3.5/core/Group");
+    var Vector = require("npm:famous@0.3.5/math/Vector");
+    var PhysicsEngine = require("npm:famous@0.3.5/physics/PhysicsEngine");
+    var Particle = require("npm:famous@0.3.5/physics/bodies/Particle");
+    var Drag = require("npm:famous@0.3.5/physics/forces/Drag");
+    var Spring = require("npm:famous@0.3.5/physics/forces/Spring");
+    var ScrollSync = require("npm:famous@0.3.5/inputs/ScrollSync");
+    var ViewSequence = require("npm:famous@0.3.5/core/ViewSequence");
+    var Bounds = {
+      NONE: 0,
+      PREV: 1,
+      NEXT: 2,
+      BOTH: 3
+    };
+    var SpringSource = {
+      NONE: 'none',
+      NEXTBOUNDS: 'next-bounds',
+      PREVBOUNDS: 'prev-bounds',
+      MINSIZE: 'minimal-size',
+      GOTOSEQUENCE: 'goto-sequence',
+      ENSUREVISIBLE: 'ensure-visible',
+      GOTOPREVDIRECTION: 'goto-prev-direction',
+      GOTONEXTDIRECTION: 'goto-next-direction'
+    };
+    var PaginationMode = {
+      PAGE: 0,
+      SCROLL: 1
+    };
+    function ScrollController(options) {
+      options = LayoutUtility.combineOptions(ScrollController.DEFAULT_OPTIONS, options);
+      var layoutManager = new LayoutNodeManager(options.flow ? FlowLayoutNode : LayoutNode, _initLayoutNode.bind(this));
+      LayoutController.call(this, options, layoutManager);
+      this._scroll = {
+        activeTouches: [],
+        pe: new PhysicsEngine(),
+        particle: new Particle(this.options.scrollParticle),
+        dragForce: new Drag(this.options.scrollDrag),
+        frictionForce: new Drag(this.options.scrollFriction),
+        springValue: undefined,
+        springForce: new Spring(this.options.scrollSpring),
+        springEndState: new Vector([0, 0, 0]),
+        groupStart: 0,
+        groupTranslate: [0, 0, 0],
+        scrollDelta: 0,
+        normalizedScrollDelta: 0,
+        scrollForce: 0,
+        scrollForceCount: 0,
+        unnormalizedScrollOffset: 0,
+        isScrolling: false
+      };
+      this._debug = {
+        layoutCount: 0,
+        commitCount: 0
+      };
+      this.group = new Group();
+      this.group.add({render: _innerRender.bind(this)});
+      this._scroll.pe.addBody(this._scroll.particle);
+      if (!this.options.scrollDrag.disabled) {
+        this._scroll.dragForceId = this._scroll.pe.attach(this._scroll.dragForce, this._scroll.particle);
+      }
+      if (!this.options.scrollFriction.disabled) {
+        this._scroll.frictionForceId = this._scroll.pe.attach(this._scroll.frictionForce, this._scroll.particle);
+      }
+      this._scroll.springForce.setOptions({anchor: this._scroll.springEndState});
+      this._eventInput.on('touchstart', _touchStart.bind(this));
+      this._eventInput.on('touchmove', _touchMove.bind(this));
+      this._eventInput.on('touchend', _touchEnd.bind(this));
+      this._eventInput.on('touchcancel', _touchEnd.bind(this));
+      this._eventInput.on('mousedown', _mouseDown.bind(this));
+      this._eventInput.on('mouseup', _mouseUp.bind(this));
+      this._eventInput.on('mousemove', _mouseMove.bind(this));
+      this._scrollSync = new ScrollSync(this.options.scrollSync);
+      this._eventInput.pipe(this._scrollSync);
+      this._scrollSync.on('update', _scrollUpdate.bind(this));
+      if (this.options.useContainer) {
+        this.container = new ContainerSurface(this.options.container);
+        this.container.add({render: function() {
+            return this.id;
+          }.bind(this)});
+        if (!this.options.autoPipeEvents) {
+          this.subscribe(this.container);
+          EventHandler.setInputHandler(this.container, this);
+          EventHandler.setOutputHandler(this.container, this);
+        }
+      }
+    }
+    ScrollController.prototype = Object.create(LayoutController.prototype);
+    ScrollController.prototype.constructor = ScrollController;
+    ScrollController.Bounds = Bounds;
+    ScrollController.PaginationMode = PaginationMode;
+    ScrollController.DEFAULT_OPTIONS = {
+      useContainer: false,
+      container: {properties: {overflow: 'hidden'}},
+      scrollParticle: {},
+      scrollDrag: {
+        forceFunction: Drag.FORCE_FUNCTIONS.QUADRATIC,
+        strength: 0.001,
+        disabled: true
+      },
+      scrollFriction: {
+        forceFunction: Drag.FORCE_FUNCTIONS.LINEAR,
+        strength: 0.0025,
+        disabled: false
+      },
+      scrollSpring: {
+        dampingRatio: 1.0,
+        period: 350
+      },
+      scrollSync: {scale: 0.2},
+      overscroll: true,
+      paginated: false,
+      paginationMode: PaginationMode.PAGE,
+      paginationEnergyThresshold: 0.01,
+      alignment: 0,
+      touchMoveDirectionThresshold: undefined,
+      touchMoveNoVelocityDuration: 100,
+      mouseMove: false,
+      enabled: true,
+      layoutAll: false,
+      alwaysLayout: false,
+      extraBoundsSpace: [100, 100],
+      debug: false
+    };
+    ScrollController.prototype.setOptions = function(options) {
+      LayoutController.prototype.setOptions.call(this, options);
+      if (this._scroll) {
+        if (options.scrollSpring) {
+          this._scroll.springForce.setOptions(options.scrollSpring);
+        }
+        if (options.scrollDrag) {
+          this._scroll.dragForce.setOptions(options.scrollDrag);
+        }
+      }
+      if (options.scrollSync && this._scrollSync) {
+        this._scrollSync.setOptions(options.scrollSync);
+      }
+      return this;
+    };
+    function _initLayoutNode(node, spec) {
+      if (!spec && this.options.flowOptions.insertSpec) {
+        node.setSpec(this.options.flowOptions.insertSpec);
+      }
+    }
+    function _updateSpring() {
+      var springValue = this._scroll.scrollForceCount ? undefined : this._scroll.springPosition;
+      if (this._scroll.springValue !== springValue) {
+        this._scroll.springValue = springValue;
+        if (springValue === undefined) {
+          if (this._scroll.springForceId !== undefined) {
+            this._scroll.pe.detach(this._scroll.springForceId);
+            this._scroll.springForceId = undefined;
+          }
+        } else {
+          if (this._scroll.springForceId === undefined) {
+            this._scroll.springForceId = this._scroll.pe.attach(this._scroll.springForce, this._scroll.particle);
+          }
+          this._scroll.springEndState.set1D(springValue);
+          this._scroll.pe.wake();
+        }
+      }
+    }
+    function _mouseDown(event) {
+      if (!this.options.mouseMove) {
+        return ;
+      }
+      if (this._scroll.mouseMove) {
+        this.releaseScrollForce(this._scroll.mouseMove.delta);
+      }
+      var current = [event.clientX, event.clientY];
+      var time = Date.now();
+      this._scroll.mouseMove = {
+        delta: 0,
+        start: current,
+        current: current,
+        prev: current,
+        time: time,
+        prevTime: time
+      };
+      this.applyScrollForce(this._scroll.mouseMove.delta);
+    }
+    function _mouseMove(event) {
+      if (!this._scroll.mouseMove || !this.options.enabled) {
+        return ;
+      }
+      var moveDirection = Math.atan2(Math.abs(event.clientY - this._scroll.mouseMove.prev[1]), Math.abs(event.clientX - this._scroll.mouseMove.prev[0])) / (Math.PI / 2.0);
+      var directionDiff = Math.abs(this._direction - moveDirection);
+      if ((this.options.touchMoveDirectionThresshold === undefined) || (directionDiff <= this.options.touchMoveDirectionThresshold)) {
+        this._scroll.mouseMove.prev = this._scroll.mouseMove.current;
+        this._scroll.mouseMove.current = [event.clientX, event.clientY];
+        this._scroll.mouseMove.prevTime = this._scroll.mouseMove.time;
+        this._scroll.mouseMove.direction = moveDirection;
+        this._scroll.mouseMove.time = Date.now();
+      }
+      var delta = this._scroll.mouseMove.current[this._direction] - this._scroll.mouseMove.start[this._direction];
+      this.updateScrollForce(this._scroll.mouseMove.delta, delta);
+      this._scroll.mouseMove.delta = delta;
+    }
+    function _mouseUp(event) {
+      if (!this._scroll.mouseMove) {
+        return ;
+      }
+      var velocity = 0;
+      var diffTime = this._scroll.mouseMove.time - this._scroll.mouseMove.prevTime;
+      if ((diffTime > 0) && ((Date.now() - this._scroll.mouseMove.time) <= this.options.touchMoveNoVelocityDuration)) {
+        var diffOffset = this._scroll.mouseMove.current[this._direction] - this._scroll.mouseMove.prev[this._direction];
+        velocity = diffOffset / diffTime;
+      }
+      this.releaseScrollForce(this._scroll.mouseMove.delta, velocity);
+      this._scroll.mouseMove = undefined;
+    }
+    function _touchStart(event) {
+      if (!this._touchEndEventListener) {
+        this._touchEndEventListener = function(event2) {
+          event2.target.removeEventListener('touchend', this._touchEndEventListener);
+          _touchEnd.call(this, event2);
+        }.bind(this);
+      }
+      var oldTouchesCount = this._scroll.activeTouches.length;
+      var i = 0;
+      var j;
+      var touchFound;
+      while (i < this._scroll.activeTouches.length) {
+        var activeTouch = this._scroll.activeTouches[i];
+        touchFound = false;
+        for (j = 0; j < event.touches.length; j++) {
+          var touch = event.touches[j];
+          if (touch.identifier === activeTouch.id) {
+            touchFound = true;
+            break;
+          }
+        }
+        if (!touchFound) {
+          this._scroll.activeTouches.splice(i, 1);
+        } else {
+          i++;
+        }
+      }
+      for (i = 0; i < event.touches.length; i++) {
+        var changedTouch = event.touches[i];
+        touchFound = false;
+        for (j = 0; j < this._scroll.activeTouches.length; j++) {
+          if (this._scroll.activeTouches[j].id === changedTouch.identifier) {
+            touchFound = true;
+            break;
+          }
+        }
+        if (!touchFound) {
+          var current = [changedTouch.clientX, changedTouch.clientY];
+          var time = Date.now();
+          this._scroll.activeTouches.push({
+            id: changedTouch.identifier,
+            start: current,
+            current: current,
+            prev: current,
+            time: time,
+            prevTime: time
+          });
+          changedTouch.target.addEventListener('touchend', this._touchEndEventListener);
+        }
+      }
+      if (!oldTouchesCount && this._scroll.activeTouches.length) {
+        this.applyScrollForce(0);
+        this._scroll.touchDelta = 0;
+      }
+    }
+    function _touchMove(event) {
+      if (!this.options.enabled) {
+        return ;
+      }
+      var primaryTouch;
+      for (var i = 0; i < event.changedTouches.length; i++) {
+        var changedTouch = event.changedTouches[i];
+        for (var j = 0; j < this._scroll.activeTouches.length; j++) {
+          var touch = this._scroll.activeTouches[j];
+          if (touch.id === changedTouch.identifier) {
+            var moveDirection = Math.atan2(Math.abs(changedTouch.clientY - touch.prev[1]), Math.abs(changedTouch.clientX - touch.prev[0])) / (Math.PI / 2.0);
+            var directionDiff = Math.abs(this._direction - moveDirection);
+            if ((this.options.touchMoveDirectionThresshold === undefined) || (directionDiff <= this.options.touchMoveDirectionThresshold)) {
+              touch.prev = touch.current;
+              touch.current = [changedTouch.clientX, changedTouch.clientY];
+              touch.prevTime = touch.time;
+              touch.direction = moveDirection;
+              touch.time = Date.now();
+              primaryTouch = (j === 0) ? touch : undefined;
+            }
+          }
+        }
+      }
+      if (primaryTouch) {
+        var delta = primaryTouch.current[this._direction] - primaryTouch.start[this._direction];
+        this.updateScrollForce(this._scroll.touchDelta, delta);
+        this._scroll.touchDelta = delta;
+      }
+    }
+    function _touchEnd(event) {
+      var primaryTouch = this._scroll.activeTouches.length ? this._scroll.activeTouches[0] : undefined;
+      for (var i = 0; i < event.changedTouches.length; i++) {
+        var changedTouch = event.changedTouches[i];
+        for (var j = 0; j < this._scroll.activeTouches.length; j++) {
+          var touch = this._scroll.activeTouches[j];
+          if (touch.id === changedTouch.identifier) {
+            this._scroll.activeTouches.splice(j, 1);
+            if ((j === 0) && this._scroll.activeTouches.length) {
+              var newPrimaryTouch = this._scroll.activeTouches[0];
+              newPrimaryTouch.start[0] = newPrimaryTouch.current[0] - (touch.current[0] - touch.start[0]);
+              newPrimaryTouch.start[1] = newPrimaryTouch.current[1] - (touch.current[1] - touch.start[1]);
+            }
+            break;
+          }
+        }
+      }
+      if (!primaryTouch || this._scroll.activeTouches.length) {
+        return ;
+      }
+      var velocity = 0;
+      var diffTime = primaryTouch.time - primaryTouch.prevTime;
+      if ((diffTime > 0) && ((Date.now() - primaryTouch.time) <= this.options.touchMoveNoVelocityDuration)) {
+        var diffOffset = primaryTouch.current[this._direction] - primaryTouch.prev[this._direction];
+        velocity = diffOffset / diffTime;
+      }
+      var delta = this._scroll.touchDelta;
+      this.releaseScrollForce(delta, velocity);
+      this._scroll.touchDelta = 0;
+    }
+    function _scrollUpdate(event) {
+      if (!this.options.enabled) {
+        return ;
+      }
+      var offset = Array.isArray(event.delta) ? event.delta[this._direction] : event.delta;
+      this.scroll(offset);
+    }
+    function _setParticle(position, velocity, phase) {
+      if (position !== undefined) {
+        this._scroll.particleValue = position;
+        this._scroll.particle.setPosition1D(position);
+      }
+      if (velocity !== undefined) {
+        var oldVelocity = this._scroll.particle.getVelocity1D();
+        if (oldVelocity !== velocity) {
+          this._scroll.particle.setVelocity1D(velocity);
+        }
+      }
+    }
+    function _calcScrollOffset(normalize, refreshParticle) {
+      if (refreshParticle || (this._scroll.particleValue === undefined)) {
+        this._scroll.particleValue = this._scroll.particle.getPosition1D();
+        this._scroll.particleValue = Math.round(this._scroll.particleValue * 1000) / 1000;
+      }
+      var scrollOffset = this._scroll.particleValue;
+      if (this._scroll.scrollDelta || this._scroll.normalizedScrollDelta) {
+        scrollOffset += this._scroll.scrollDelta + this._scroll.normalizedScrollDelta;
+        if (((this._scroll.boundsReached & Bounds.PREV) && (scrollOffset > this._scroll.springPosition)) || ((this._scroll.boundsReached & Bounds.NEXT) && (scrollOffset < this._scroll.springPosition)) || (this._scroll.boundsReached === Bounds.BOTH)) {
+          scrollOffset = this._scroll.springPosition;
+        }
+        if (normalize) {
+          if (!this._scroll.scrollDelta) {
+            this._scroll.normalizedScrollDelta = 0;
+            _setParticle.call(this, scrollOffset, undefined, '_calcScrollOffset');
+          }
+          this._scroll.normalizedScrollDelta += this._scroll.scrollDelta;
+          this._scroll.scrollDelta = 0;
+        }
+      }
+      if (this._scroll.scrollForceCount && this._scroll.scrollForce) {
+        if (this._scroll.springPosition !== undefined) {
+          scrollOffset = (scrollOffset + this._scroll.scrollForce + this._scroll.springPosition) / 2.0;
+        } else {
+          scrollOffset += this._scroll.scrollForce;
+        }
+      }
+      if (!this.options.overscroll) {
+        if ((this._scroll.boundsReached === Bounds.BOTH) || ((this._scroll.boundsReached === Bounds.PREV) && (scrollOffset > this._scroll.springPosition)) || ((this._scroll.boundsReached === Bounds.NEXT) && (scrollOffset < this._scroll.springPosition))) {
+          scrollOffset = this._scroll.springPosition;
+        }
+      }
+      return scrollOffset;
+    }
+    ScrollController.prototype._calcScrollHeight = function(next, lastNodeOnly) {
+      var calcedHeight = 0;
+      var node = this._nodes.getStartEnumNode(next);
+      while (node) {
+        if (node._invalidated) {
+          if (node.trueSizeRequested) {
+            calcedHeight = undefined;
+            break;
+          }
+          if (node.scrollLength !== undefined) {
+            calcedHeight = lastNodeOnly ? node.scrollLength : (calcedHeight + node.scrollLength);
+            if (!next && lastNodeOnly) {
+              break;
+            }
+          }
+        }
+        node = next ? node._next : node._prev;
+      }
+      return calcedHeight;
+    };
+    function _calcBounds(size, scrollOffset) {
+      var prevHeight = this._calcScrollHeight(false);
+      var nextHeight = this._calcScrollHeight(true);
+      var enforeMinSize = this._layout.capabilities && this._layout.capabilities.sequentialScrollingOptimized;
+      var totalHeight;
+      if (enforeMinSize) {
+        if ((nextHeight !== undefined) && (prevHeight !== undefined)) {
+          totalHeight = prevHeight + nextHeight;
+        }
+        if ((totalHeight !== undefined) && (totalHeight <= size[this._direction])) {
+          this._scroll.boundsReached = Bounds.BOTH;
+          this._scroll.springPosition = this.options.alignment ? -nextHeight : prevHeight;
+          this._scroll.springSource = SpringSource.MINSIZE;
+          return ;
+        }
+      }
+      if (this.options.alignment) {
+        if (enforeMinSize) {
+          if ((nextHeight !== undefined) && ((scrollOffset + nextHeight) <= 0)) {
+            this._scroll.boundsReached = Bounds.NEXT;
+            this._scroll.springPosition = -nextHeight;
+            this._scroll.springSource = SpringSource.NEXTBOUNDS;
+            return ;
+          }
+        } else {
+          var firstPrevItemHeight = this._calcScrollHeight(false, true);
+          if ((nextHeight !== undefined) && firstPrevItemHeight && ((scrollOffset + nextHeight + size[this._direction]) <= firstPrevItemHeight)) {
+            this._scroll.boundsReached = Bounds.NEXT;
+            this._scroll.springPosition = nextHeight - (size[this._direction] - firstPrevItemHeight);
+            this._scroll.springSource = SpringSource.NEXTBOUNDS;
+            return ;
+          }
+        }
+      } else {
+        if ((prevHeight !== undefined) && ((scrollOffset - prevHeight) >= 0)) {
+          this._scroll.boundsReached = Bounds.PREV;
+          this._scroll.springPosition = prevHeight;
+          this._scroll.springSource = SpringSource.PREVBOUNDS;
+          return ;
+        }
+      }
+      if (this.options.alignment) {
+        if ((prevHeight !== undefined) && ((scrollOffset - prevHeight) >= -size[this._direction])) {
+          this._scroll.boundsReached = Bounds.PREV;
+          this._scroll.springPosition = -size[this._direction] + prevHeight;
+          this._scroll.springSource = SpringSource.PREVBOUNDS;
+          return ;
+        }
+      } else {
+        var nextBounds = enforeMinSize ? size[this._direction] : this._calcScrollHeight(true, true);
+        if ((nextHeight !== undefined) && ((scrollOffset + nextHeight) <= nextBounds)) {
+          this._scroll.boundsReached = Bounds.NEXT;
+          this._scroll.springPosition = nextBounds - nextHeight;
+          this._scroll.springSource = SpringSource.NEXTBOUNDS;
+          return ;
+        }
+      }
+      this._scroll.boundsReached = Bounds.NONE;
+      this._scroll.springPosition = undefined;
+      this._scroll.springSource = SpringSource.NONE;
+    }
+    function _calcScrollToOffset(size, scrollOffset) {
+      var scrollToRenderNode = this._scroll.scrollToRenderNode || this._scroll.ensureVisibleRenderNode;
+      if (!scrollToRenderNode) {
+        return ;
+      }
+      if ((this._scroll.boundsReached === Bounds.BOTH) || (!this._scroll.scrollToDirection && (this._scroll.boundsReached === Bounds.PREV)) || (this._scroll.scrollToDirection && (this._scroll.boundsReached === Bounds.NEXT))) {
+        return ;
+      }
+      var foundNode;
+      var scrollToOffset = 0;
+      var node = this._nodes.getStartEnumNode(true);
+      var count = 0;
+      while (node) {
+        count++;
+        if (!node._invalidated || (node.scrollLength === undefined)) {
+          break;
+        }
+        if (this.options.alignment) {
+          scrollToOffset -= node.scrollLength;
+        }
+        if (node.renderNode === scrollToRenderNode) {
+          foundNode = node;
+          break;
+        }
+        if (!this.options.alignment) {
+          scrollToOffset -= node.scrollLength;
+        }
+        node = node._next;
+      }
+      if (!foundNode) {
+        scrollToOffset = 0;
+        node = this._nodes.getStartEnumNode(false);
+        while (node) {
+          if (!node._invalidated || (node.scrollLength === undefined)) {
+            break;
+          }
+          if (!this.options.alignment) {
+            scrollToOffset += node.scrollLength;
+          }
+          if (node.renderNode === scrollToRenderNode) {
+            foundNode = node;
+            break;
+          }
+          if (this.options.alignment) {
+            scrollToOffset += node.scrollLength;
+          }
+          node = node._prev;
+        }
+      }
+      if (foundNode) {
+        if (this._scroll.ensureVisibleRenderNode) {
+          if (this.options.alignment) {
+            if ((scrollToOffset - foundNode.scrollLength) < 0) {
+              this._scroll.springPosition = scrollToOffset;
+              this._scroll.springSource = SpringSource.ENSUREVISIBLE;
+            } else if (scrollToOffset > size[this._direction]) {
+              this._scroll.springPosition = size[this._direction] - scrollToOffset;
+              this._scroll.springSource = SpringSource.ENSUREVISIBLE;
+            } else {
+              if (!foundNode.trueSizeRequested) {
+                this._scroll.ensureVisibleRenderNode = undefined;
+              }
+            }
+          } else {
+            scrollToOffset = -scrollToOffset;
+            if (scrollToOffset < 0) {
+              this._scroll.springPosition = scrollToOffset;
+              this._scroll.springSource = SpringSource.ENSUREVISIBLE;
+            } else if ((scrollToOffset + foundNode.scrollLength) > size[this._direction]) {
+              this._scroll.springPosition = size[this._direction] - (scrollToOffset + foundNode.scrollLength);
+              this._scroll.springSource = SpringSource.ENSUREVISIBLE;
+            } else {
+              if (!foundNode.trueSizeRequested) {
+                this._scroll.ensureVisibleRenderNode = undefined;
+              }
+            }
+          }
+        } else {
+          this._scroll.springPosition = scrollToOffset;
+          this._scroll.springSource = SpringSource.GOTOSEQUENCE;
+        }
+        return ;
+      }
+      if (this._scroll.scrollToDirection) {
+        this._scroll.springPosition = scrollOffset - size[this._direction];
+        this._scroll.springSource = SpringSource.GOTONEXTDIRECTION;
+      } else {
+        this._scroll.springPosition = scrollOffset + size[this._direction];
+        this._scroll.springSource = SpringSource.GOTOPREVDIRECTION;
+      }
+      if (this._viewSequence.cleanup) {
+        var viewSequence = this._viewSequence;
+        while (viewSequence.get() !== scrollToRenderNode) {
+          viewSequence = this._scroll.scrollToDirection ? viewSequence.getNext(true) : viewSequence.getPrevious(true);
+          if (!viewSequence) {
+            break;
+          }
+        }
+      }
+    }
+    function _snapToPage() {
+      if (!this.options.paginated || this._scroll.scrollForceCount || (this._scroll.springPosition !== undefined)) {
+        return ;
+      }
+      var item;
+      switch (this.options.paginationMode) {
+        case PaginationMode.SCROLL:
+          if (!this.options.paginationEnergyThresshold || (Math.abs(this._scroll.particle.getEnergy()) <= this.options.paginationEnergyThresshold)) {
+            item = this.options.alignment ? this.getLastVisibleItem() : this.getFirstVisibleItem();
+            if (item && item.renderNode) {
+              this.goToRenderNode(item.renderNode);
+            }
+          }
+          break;
+        case PaginationMode.PAGE:
+          item = this.options.alignment ? this.getLastVisibleItem() : this.getFirstVisibleItem();
+          if (item && item.renderNode) {
+            this.goToRenderNode(item.renderNode);
+          }
+          break;
+      }
+    }
+    function _normalizePrevViewSequence(scrollOffset) {
+      var count = 0;
+      var normalizedScrollOffset = scrollOffset;
+      var normalizeNextPrev = false;
+      var node = this._nodes.getStartEnumNode(false);
+      while (node) {
+        if (!node._invalidated || !node._viewSequence) {
+          break;
+        }
+        if (normalizeNextPrev) {
+          this._viewSequence = node._viewSequence;
+          normalizedScrollOffset = scrollOffset;
+          normalizeNextPrev = false;
+        }
+        if ((node.scrollLength === undefined) || node.trueSizeRequested || (scrollOffset < 0)) {
+          break;
+        }
+        scrollOffset -= node.scrollLength;
+        count++;
+        if (node.scrollLength) {
+          if (this.options.alignment) {
+            normalizeNextPrev = (scrollOffset >= 0);
+          } else {
+            this._viewSequence = node._viewSequence;
+            normalizedScrollOffset = scrollOffset;
+          }
+        }
+        node = node._prev;
+      }
+      return normalizedScrollOffset;
+    }
+    function _normalizeNextViewSequence(scrollOffset) {
+      var count = 0;
+      var normalizedScrollOffset = scrollOffset;
+      var node = this._nodes.getStartEnumNode(true);
+      while (node) {
+        if (!node._invalidated || (node.scrollLength === undefined) || node.trueSizeRequested || !node._viewSequence || ((scrollOffset > 0) && (!this.options.alignment || (node.scrollLength !== 0)))) {
+          break;
+        }
+        if (this.options.alignment) {
+          scrollOffset += node.scrollLength;
+          count++;
+        }
+        if (node.scrollLength || this.options.alignment) {
+          this._viewSequence = node._viewSequence;
+          normalizedScrollOffset = scrollOffset;
+        }
+        if (!this.options.alignment) {
+          scrollOffset += node.scrollLength;
+          count++;
+        }
+        node = node._next;
+      }
+      return normalizedScrollOffset;
+    }
+    function _normalizeViewSequence(size, scrollOffset) {
+      var caps = this._layout.capabilities;
+      if (caps && caps.debug && (caps.debug.normalize !== undefined) && !caps.debug.normalize) {
+        return scrollOffset;
+      }
+      if (this._scroll.scrollForceCount) {
+        return scrollOffset;
+      }
+      var normalizedScrollOffset = scrollOffset;
+      if (this.options.alignment && (scrollOffset < 0)) {
+        normalizedScrollOffset = _normalizeNextViewSequence.call(this, scrollOffset);
+      } else if (!this.options.alignment && (scrollOffset > 0)) {
+        normalizedScrollOffset = _normalizePrevViewSequence.call(this, scrollOffset);
+      }
+      if (normalizedScrollOffset === scrollOffset) {
+        if (this.options.alignment && (scrollOffset > 0)) {
+          normalizedScrollOffset = _normalizePrevViewSequence.call(this, scrollOffset);
+        } else if (!this.options.alignment && (scrollOffset < 0)) {
+          normalizedScrollOffset = _normalizeNextViewSequence.call(this, scrollOffset);
+        }
+      }
+      if (normalizedScrollOffset !== scrollOffset) {
+        var delta = normalizedScrollOffset - scrollOffset;
+        var particleValue = this._scroll.particle.getPosition1D();
+        _setParticle.call(this, particleValue + delta, undefined, 'normalize');
+        if (this._scroll.springPosition !== undefined) {
+          this._scroll.springPosition += delta;
+        }
+        if (caps && caps.sequentialScrollingOptimized) {
+          this._scroll.groupStart -= delta;
+        }
+      }
+      return normalizedScrollOffset;
+    }
+    ScrollController.prototype.getVisibleItems = function() {
+      var size = this._contextSizeCache;
+      var scrollOffset = this.options.alignment ? (this._scroll.unnormalizedScrollOffset + size[this._direction]) : this._scroll.unnormalizedScrollOffset;
+      var result = [];
+      var node = this._nodes.getStartEnumNode(true);
+      while (node) {
+        if (!node._invalidated || (node.scrollLength === undefined) || (scrollOffset > size[this._direction])) {
+          break;
+        }
+        scrollOffset += node.scrollLength;
+        if ((scrollOffset >= 0) && node._viewSequence) {
+          result.push({
+            index: node._viewSequence.getIndex(),
+            viewSequence: node._viewSequence,
+            renderNode: node.renderNode,
+            visiblePerc: node.scrollLength ? ((Math.min(scrollOffset, size[this._direction]) - Math.max(scrollOffset - node.scrollLength, 0)) / node.scrollLength) : 1,
+            scrollOffset: scrollOffset - node.scrollLength,
+            scrollLength: node.scrollLength,
+            _node: node
+          });
+        }
+        node = node._next;
+      }
+      scrollOffset = this.options.alignment ? (this._scroll.unnormalizedScrollOffset + size[this._direction]) : this._scroll.unnormalizedScrollOffset;
+      node = this._nodes.getStartEnumNode(false);
+      while (node) {
+        if (!node._invalidated || (node.scrollLength === undefined) || (scrollOffset < 0)) {
+          break;
+        }
+        scrollOffset -= node.scrollLength;
+        if ((scrollOffset < size[this._direction]) && node._viewSequence) {
+          result.unshift({
+            index: node._viewSequence.getIndex(),
+            viewSequence: node._viewSequence,
+            renderNode: node.renderNode,
+            visiblePerc: node.scrollLength ? ((Math.min(scrollOffset + node.scrollLength, size[this._direction]) - Math.max(scrollOffset, 0)) / node.scrollLength) : 1,
+            scrollOffset: scrollOffset,
+            scrollLength: node.scrollLength,
+            _node: node
+          });
+        }
+        node = node._prev;
+      }
+      return result;
+    };
+    function _getVisibleItem(first) {
+      var result = {};
+      var diff;
+      var prevDiff = 10000000;
+      var diffDelta = (first && this.options.alignment) ? -this._contextSizeCache[this._direction] : ((!first && !this.options.alignment) ? this._contextSizeCache[this._direction] : 0);
+      var scrollOffset = this._scroll.unnormalizedScrollOffset;
+      var node = this._nodes.getStartEnumNode(true);
+      while (node) {
+        if (!node._invalidated || (node.scrollLength === undefined)) {
+          break;
+        }
+        if (node._viewSequence) {
+          diff = Math.abs(diffDelta - (scrollOffset + (!first ? node.scrollLength : 0)));
+          if (diff >= prevDiff) {
+            break;
+          }
+          prevDiff = diff;
+          result.scrollOffset = scrollOffset;
+          result._node = node;
+          scrollOffset += node.scrollLength;
+        }
+        node = node._next;
+      }
+      scrollOffset = this._scroll.unnormalizedScrollOffset;
+      node = this._nodes.getStartEnumNode(false);
+      while (node) {
+        if (!node._invalidated || (node.scrollLength === undefined)) {
+          break;
+        }
+        if (node._viewSequence) {
+          scrollOffset -= node.scrollLength;
+          diff = Math.abs(diffDelta - (scrollOffset + (!first ? node.scrollLength : 0)));
+          if (diff >= prevDiff) {
+            break;
+          }
+          prevDiff = diff;
+          result.scrollOffset = scrollOffset;
+          result._node = node;
+        }
+        node = node._prev;
+      }
+      if (!result._node) {
+        return undefined;
+      }
+      result.scrollLength = result._node.scrollLength;
+      if (this.options.alignment) {
+        result.visiblePerc = (Math.min(result.scrollOffset + result.scrollLength, 0) - Math.max(result.scrollOffset, -this._contextSizeCache[this._direction])) / result.scrollLength;
+      } else {
+        result.visiblePerc = (Math.min(result.scrollOffset + result.scrollLength, this._contextSizeCache[this._direction]) - Math.max(result.scrollOffset, 0)) / result.scrollLength;
+      }
+      result.index = result._node._viewSequence.getIndex();
+      result.viewSequence = result._node._viewSequence;
+      result.renderNode = result._node.renderNode;
+      return result;
+    }
+    ScrollController.prototype.getFirstVisibleItem = function() {
+      return _getVisibleItem.call(this, true);
+    };
+    ScrollController.prototype.getLastVisibleItem = function() {
+      return _getVisibleItem.call(this, false);
+    };
+    function _goToSequence(viewSequence, next, noAnimation) {
+      if (noAnimation) {
+        this._viewSequence = viewSequence;
+        this._scroll.springPosition = undefined;
+        _updateSpring.call(this);
+        this.halt();
+        this._scroll.scrollDelta = 0;
+        _setParticle.call(this, 0, 0, '_goToSequence');
+        this._isDirty = true;
+      } else {
+        this._scroll.scrollToSequence = viewSequence;
+        this._scroll.scrollToRenderNode = viewSequence.get();
+        this._scroll.ensureVisibleRenderNode = undefined;
+        this._scroll.scrollToDirection = next;
+        this._scroll.scrollDirty = true;
+      }
+    }
+    function _ensureVisibleSequence(viewSequence, next) {
+      this._scroll.scrollToSequence = undefined;
+      this._scroll.scrollToRenderNode = undefined;
+      this._scroll.ensureVisibleRenderNode = viewSequence.get();
+      this._scroll.scrollToDirection = next;
+      this._scroll.scrollDirty = true;
+    }
+    function _goToPage(amount, noAnimation) {
+      var viewSequence = (!noAnimation ? this._scroll.scrollToSequence : undefined) || this._viewSequence;
+      if (!this._scroll.scrollToSequence && !noAnimation) {
+        var firstVisibleItem = this.getFirstVisibleItem();
+        if (firstVisibleItem) {
+          viewSequence = firstVisibleItem.viewSequence;
+          if (((amount < 0) && (firstVisibleItem.scrollOffset < 0)) || ((amount > 0) && (firstVisibleItem.scrollOffset > 0))) {
+            amount = 0;
+          }
+        }
+      }
+      if (!viewSequence) {
+        return ;
+      }
+      for (var i = 0; i < Math.abs(amount); i++) {
+        var nextViewSequence = (amount > 0) ? viewSequence.getNext() : viewSequence.getPrevious();
+        if (nextViewSequence) {
+          viewSequence = nextViewSequence;
+        } else {
+          break;
+        }
+      }
+      _goToSequence.call(this, viewSequence, amount >= 0, noAnimation);
+    }
+    ScrollController.prototype.goToFirstPage = function(noAnimation) {
+      if (!this._viewSequence) {
+        return this;
+      }
+      if (this._viewSequence._ && this._viewSequence._.loop) {
+        LayoutUtility.error('Unable to go to first item of looped ViewSequence');
+        return this;
+      }
+      var viewSequence = this._viewSequence;
+      while (viewSequence) {
+        var prev = viewSequence.getPrevious();
+        if (prev && prev.get()) {
+          viewSequence = prev;
+        } else {
+          break;
+        }
+      }
+      _goToSequence.call(this, viewSequence, false, noAnimation);
+      return this;
+    };
+    ScrollController.prototype.goToPreviousPage = function(noAnimation) {
+      _goToPage.call(this, -1, noAnimation);
+      return this;
+    };
+    ScrollController.prototype.goToNextPage = function(noAnimation) {
+      _goToPage.call(this, 1, noAnimation);
+      return this;
+    };
+    ScrollController.prototype.goToLastPage = function(noAnimation) {
+      if (!this._viewSequence) {
+        return this;
+      }
+      if (this._viewSequence._ && this._viewSequence._.loop) {
+        LayoutUtility.error('Unable to go to last item of looped ViewSequence');
+        return this;
+      }
+      var viewSequence = this._viewSequence;
+      while (viewSequence) {
+        var next = viewSequence.getNext();
+        if (next && next.get()) {
+          viewSequence = next;
+        } else {
+          break;
+        }
+      }
+      _goToSequence.call(this, viewSequence, true, noAnimation);
+      return this;
+    };
+    ScrollController.prototype.goToRenderNode = function(node, noAnimation) {
+      if (!this._viewSequence || !node) {
+        return this;
+      }
+      if (this._viewSequence.get() === node) {
+        var next = _calcScrollOffset.call(this) >= 0;
+        _goToSequence.call(this, this._viewSequence, next, noAnimation);
+        return this;
+      }
+      var nextSequence = this._viewSequence.getNext();
+      var prevSequence = this._viewSequence.getPrevious();
+      while ((nextSequence || prevSequence) && (nextSequence !== this._viewSequence)) {
+        var nextNode = nextSequence ? nextSequence.get() : undefined;
+        if (nextNode === node) {
+          _goToSequence.call(this, nextSequence, true, noAnimation);
+          break;
+        }
+        var prevNode = prevSequence ? prevSequence.get() : undefined;
+        if (prevNode === node) {
+          _goToSequence.call(this, prevSequence, false, noAnimation);
+          break;
+        }
+        nextSequence = nextNode ? nextSequence.getNext() : undefined;
+        prevSequence = prevNode ? prevSequence.getPrevious() : undefined;
+      }
+      return this;
+    };
+    ScrollController.prototype.ensureVisible = function(node) {
+      if (node instanceof ViewSequence) {
+        node = node.get();
+      } else if ((node instanceof Number) || (typeof node === 'number')) {
+        var viewSequence = this._viewSequence;
+        while (viewSequence.getIndex() < node) {
+          viewSequence = viewSequence.getNext();
+          if (!viewSequence) {
+            return this;
+          }
+        }
+        while (viewSequence.getIndex() > node) {
+          viewSequence = viewSequence.getPrevious();
+          if (!viewSequence) {
+            return this;
+          }
+        }
+      }
+      if (this._viewSequence.get() === node) {
+        var next = _calcScrollOffset.call(this) >= 0;
+        _ensureVisibleSequence.call(this, this._viewSequence, next);
+        return this;
+      }
+      var nextSequence = this._viewSequence.getNext();
+      var prevSequence = this._viewSequence.getPrevious();
+      while ((nextSequence || prevSequence) && (nextSequence !== this._viewSequence)) {
+        var nextNode = nextSequence ? nextSequence.get() : undefined;
+        if (nextNode === node) {
+          _ensureVisibleSequence.call(this, nextSequence, true);
+          break;
+        }
+        var prevNode = prevSequence ? prevSequence.get() : undefined;
+        if (prevNode === node) {
+          _ensureVisibleSequence.call(this, prevSequence, false);
+          break;
+        }
+        nextSequence = nextNode ? nextSequence.getNext() : undefined;
+        prevSequence = prevNode ? prevSequence.getPrevious() : undefined;
+      }
+      return this;
+    };
+    ScrollController.prototype.scroll = function(delta) {
+      this.halt();
+      this._scroll.scrollDelta += delta;
+      return this;
+    };
+    ScrollController.prototype.canScroll = function(delta) {
+      var scrollOffset = _calcScrollOffset.call(this);
+      var prevHeight = this._calcScrollHeight(false);
+      var nextHeight = this._calcScrollHeight(true);
+      var totalHeight;
+      if ((nextHeight !== undefined) && (prevHeight !== undefined)) {
+        totalHeight = prevHeight + nextHeight;
+      }
+      if ((totalHeight !== undefined) && (totalHeight <= this._contextSizeCache[this._direction])) {
+        return 0;
+      }
+      if ((delta < 0) && (nextHeight !== undefined)) {
+        var nextOffset = this._contextSizeCache[this._direction] - (scrollOffset + nextHeight);
+        return Math.max(nextOffset, delta);
+      } else if ((delta > 0) && (prevHeight !== undefined)) {
+        var prevOffset = -(scrollOffset - prevHeight);
+        return Math.min(prevOffset, delta);
+      }
+      return delta;
+    };
+    ScrollController.prototype.halt = function() {
+      this._scroll.scrollToSequence = undefined;
+      this._scroll.scrollToRenderNode = undefined;
+      this._scroll.ensureVisibleRenderNode = undefined;
+      _setParticle.call(this, undefined, 0, 'halt');
+      return this;
+    };
+    ScrollController.prototype.isScrolling = function() {
+      return this._scroll.isScrolling;
+    };
+    ScrollController.prototype.getBoundsReached = function() {
+      return this._scroll.boundsReached;
+    };
+    ScrollController.prototype.getVelocity = function() {
+      return this._scroll.particle.getVelocity1D();
+    };
+    ScrollController.prototype.getEnergy = function() {
+      return this._scroll.particle.getEnergy();
+    };
+    ScrollController.prototype.setVelocity = function(velocity) {
+      return this._scroll.particle.setVelocity1D(velocity);
+    };
+    ScrollController.prototype.applyScrollForce = function(delta) {
+      this.halt();
+      if (this._scroll.scrollForceCount === 0) {
+        this._scroll.scrollForceStartItem = this.options.alignment ? this.getLastVisibleItem() : this.getFirstVisibleItem();
+      }
+      this._scroll.scrollForceCount++;
+      this._scroll.scrollForce += delta;
+      return this;
+    };
+    ScrollController.prototype.updateScrollForce = function(prevDelta, newDelta) {
+      this.halt();
+      newDelta -= prevDelta;
+      this._scroll.scrollForce += newDelta;
+      return this;
+    };
+    ScrollController.prototype.releaseScrollForce = function(delta, velocity) {
+      this.halt();
+      if (this._scroll.scrollForceCount === 1) {
+        var scrollOffset = _calcScrollOffset.call(this);
+        _setParticle.call(this, scrollOffset, velocity, 'releaseScrollForce');
+        this._scroll.pe.wake();
+        this._scroll.scrollForce = 0;
+        this._scroll.scrollDirty = true;
+        if (this._scroll.scrollForceStartItem && this.options.paginated && (this.options.paginationMode === PaginationMode.PAGE)) {
+          var item = this.options.alignment ? this.getLastVisibleItem(true) : this.getFirstVisibleItem(true);
+          if (item) {
+            if (item.renderNode !== this._scroll.scrollForceStartItem.renderNode) {
+              this.goToRenderNode(item.renderNode);
+            } else if (this.options.paginationEnergyThresshold && (Math.abs(this._scroll.particle.getEnergy()) >= this.options.paginationEnergyThresshold)) {
+              velocity = velocity || 0;
+              if ((velocity < 0) && item._node._next && item._node._next.renderNode) {
+                this.goToRenderNode(item._node._next.renderNode);
+              } else if ((velocity >= 0) && item._node._prev && item._node._prev.renderNode) {
+                this.goToRenderNode(item._node._prev.renderNode);
+              }
+            } else {
+              this.goToRenderNode(item.renderNode);
+            }
+          }
+        }
+        this._scroll.scrollForceStartItem = undefined;
+      } else {
+        this._scroll.scrollForce -= delta;
+      }
+      this._scroll.scrollForceCount--;
+      return this;
+    };
+    ScrollController.prototype.getSpec = function(node, normalize) {
+      var spec = LayoutController.prototype.getSpec.apply(this, arguments);
+      if (spec && this._layout.capabilities && this._layout.capabilities.sequentialScrollingOptimized) {
+        spec = {
+          origin: spec.origin,
+          align: spec.align,
+          opacity: spec.opacity,
+          size: spec.size,
+          renderNode: spec.renderNode,
+          transform: spec.transform
+        };
+        var translate = [0, 0, 0];
+        translate[this._direction] = this._scrollOffsetCache + this._scroll.groupStart;
+        spec.transform = Transform.thenMove(spec.transform, translate);
+      }
+      return spec;
+    };
+    function _layout(size, scrollOffset, nested) {
+      this._debug.layoutCount++;
+      var scrollStart = 0 - Math.max(this.options.extraBoundsSpace[0], 1);
+      var scrollEnd = size[this._direction] + Math.max(this.options.extraBoundsSpace[1], 1);
+      if (this.options.layoutAll) {
+        scrollStart = -1000000;
+        scrollEnd = 1000000;
+      }
+      var layoutContext = this._nodes.prepareForLayout(this._viewSequence, this._nodesById, {
+        size: size,
+        direction: this._direction,
+        reverse: this.options.alignment ? true : false,
+        scrollOffset: this.options.alignment ? (scrollOffset + size[this._direction]) : scrollOffset,
+        scrollStart: scrollStart,
+        scrollEnd: scrollEnd
+      });
+      if (this._layout._function) {
+        this._layout._function(layoutContext, this._layout.options);
+      }
+      this._scroll.unnormalizedScrollOffset = scrollOffset;
+      if (this._postLayout) {
+        this._postLayout(size, scrollOffset);
+      }
+      this._nodes.removeNonInvalidatedNodes(this.options.flowOptions.removeSpec);
+      _calcBounds.call(this, size, scrollOffset);
+      _calcScrollToOffset.call(this, size, scrollOffset);
+      _snapToPage.call(this);
+      var newScrollOffset = _calcScrollOffset.call(this, true);
+      if (!nested && (newScrollOffset !== scrollOffset)) {
+        return _layout.call(this, size, newScrollOffset, true);
+      }
+      scrollOffset = _normalizeViewSequence.call(this, size, scrollOffset);
+      _updateSpring.call(this);
+      this._nodes.removeVirtualViewSequenceNodes();
+      if (this.options.size && (this.options.size[this._direction] === true)) {
+        var scrollLength = 0;
+        var node = this._nodes.getStartEnumNode();
+        while (node) {
+          if (node._invalidated && node.scrollLength) {
+            scrollLength += node.scrollLength;
+          }
+          node = node._next;
+        }
+        this._size = this._size || [0, 0];
+        this._size[0] = this.options.size[0];
+        this._size[1] = this.options.size[1];
+        this._size[this._direction] = scrollLength;
+      }
+      return scrollOffset;
+    }
+    function _innerRender() {
+      var specs = this._specs;
+      for (var i3 = 0,
+          j3 = specs.length; i3 < j3; i3++) {
+        if (specs[i3].renderNode) {
+          specs[i3].target = specs[i3].renderNode.render();
+        }
+      }
+      if (!specs.length || (specs[specs.length - 1] !== this._cleanupRegistration)) {
+        specs.push(this._cleanupRegistration);
+      }
+      return specs;
+    }
+    ScrollController.prototype.commit = function commit(context) {
+      var size = context.size;
+      this._debug.commitCount++;
+      if (this._resetFlowState) {
+        this._resetFlowState = false;
+        this._isDirty = true;
+        this._nodes.removeAll();
+      }
+      var scrollOffset = _calcScrollOffset.call(this, true, true);
+      if (this._scrollOffsetCache === undefined) {
+        this._scrollOffsetCache = scrollOffset;
+      }
+      var emitEndScrollingEvent = false;
+      var emitScrollEvent = false;
+      var eventData;
+      if (size[0] !== this._contextSizeCache[0] || size[1] !== this._contextSizeCache[1] || this._isDirty || this._scroll.scrollDirty || this._nodes._trueSizeRequested || this.options.alwaysLayout || this._scrollOffsetCache !== scrollOffset) {
+        eventData = {
+          target: this,
+          oldSize: this._contextSizeCache,
+          size: size,
+          oldScrollOffset: -(this._scrollOffsetCache + this._scroll.groupStart),
+          scrollOffset: -(scrollOffset + this._scroll.groupStart)
+        };
+        if (this._scrollOffsetCache !== scrollOffset) {
+          if (!this._scroll.isScrolling) {
+            this._scroll.isScrolling = true;
+            this._eventOutput.emit('scrollstart', eventData);
+          }
+          emitScrollEvent = true;
+        } else if (this._scroll.isScrolling && !this._scroll.scrollForceCount) {
+          emitEndScrollingEvent = true;
+        }
+        this._eventOutput.emit('layoutstart', eventData);
+        if (this.options.flow && (this._isDirty || (this.options.flowOptions.reflowOnResize && ((size[0] !== this._contextSizeCache[0]) || (size[1] !== this._contextSizeCache[1]))))) {
+          var node = this._nodes.getStartEnumNode();
+          while (node) {
+            node.releaseLock(true);
+            node = node._next;
+          }
+        }
+        this._contextSizeCache[0] = size[0];
+        this._contextSizeCache[1] = size[1];
+        this._isDirty = false;
+        this._scroll.scrollDirty = false;
+        scrollOffset = _layout.call(this, size, scrollOffset);
+        this._scrollOffsetCache = scrollOffset;
+        eventData.scrollOffset = -(this._scrollOffsetCache + this._scroll.groupStart);
+      } else if (this._scroll.isScrolling && !this._scroll.scrollForceCount) {
+        emitEndScrollingEvent = true;
+      }
+      var groupTranslate = this._scroll.groupTranslate;
+      groupTranslate[0] = 0;
+      groupTranslate[1] = 0;
+      groupTranslate[2] = 0;
+      groupTranslate[this._direction] = -this._scroll.groupStart - scrollOffset;
+      var sequentialScrollingOptimized = this._layout.capabilities ? this._layout.capabilities.sequentialScrollingOptimized : false;
+      var result = this._nodes.buildSpecAndDestroyUnrenderedNodes(sequentialScrollingOptimized ? groupTranslate : undefined);
+      this._specs = result.specs;
+      if (!this._specs.length) {
+        this._scroll.groupStart = 0;
+      }
+      if (eventData) {
+        this._eventOutput.emit('layoutend', eventData);
+      }
+      if (result.modified) {
+        this._eventOutput.emit('reflow', {target: this});
+      }
+      if (emitScrollEvent) {
+        this._eventOutput.emit('scroll', eventData);
+      }
+      if (eventData) {
+        var visibleItem = this.options.alignment ? this.getLastVisibleItem() : this.getFirstVisibleItem();
+        if ((visibleItem && !this._visibleItemCache) || (!visibleItem && this._visibleItemCache) || (visibleItem && this._visibleItemCache && (visibleItem.renderNode !== this._visibleItemCache.renderNode))) {
+          this._eventOutput.emit('pagechange', {
+            target: this,
+            oldViewSequence: this._visibleItemCache ? this._visibleItemCache.viewSequence : undefined,
+            viewSequence: visibleItem ? visibleItem.viewSequence : undefined,
+            oldIndex: this._visibleItemCache ? this._visibleItemCache.index : undefined,
+            index: visibleItem ? visibleItem.index : undefined,
+            renderNode: visibleItem ? visibleItem.renderNode : undefined,
+            oldRenderNode: this._visibleItemCache ? this._visibleItemCache.renderNode : undefined
+          });
+          this._visibleItemCache = visibleItem;
+        }
+      }
+      if (emitEndScrollingEvent) {
+        this._scroll.isScrolling = false;
+        eventData = {
+          target: this,
+          oldSize: size,
+          size: size,
+          oldScrollOffset: -(this._scroll.groupStart + scrollOffset),
+          scrollOffset: -(this._scroll.groupStart + scrollOffset)
+        };
+        this._eventOutput.emit('scrollend', eventData);
+      }
+      var transform = context.transform;
+      if (sequentialScrollingOptimized) {
+        var windowOffset = scrollOffset + this._scroll.groupStart;
+        var translate = [0, 0, 0];
+        translate[this._direction] = windowOffset;
+        transform = Transform.thenMove(transform, translate);
+      }
+      return {
+        transform: transform,
+        size: size,
+        opacity: context.opacity,
+        origin: context.origin,
+        target: this.group.render()
+      };
+    };
+    ScrollController.prototype.render = function render() {
+      if (this.container) {
+        return this.container.render.apply(this.container, arguments);
+      } else {
+        return this.id;
+      }
+    };
+    module.exports = ScrollController;
+  }).call(__exports, __require, __exports, __module);
+});
+
+
+})();
+System.register("views/MainFlippedView", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "npm:famous@0.3.5/core/View", "utils/objectHelper", "github:ijzerenhein/famous-flex@0.3.1/src/LayoutController", "github:ijzerenhein/famous-bkimagesurface@1.0.3/BkImageSurface", "github:ijzerenhein/famous-flex@0.3.1/src/FlexScrollView", "npm:famous@0.3.5/utilities/Utility", "npm:famous@0.3.5/views/Flipper", "views/NewChupsView"], function($__export) {
+  "use strict";
+  var __moduleName = "views/MainFlippedView";
+  var Engine,
+      Surface,
+      View,
+      ObjectHelper,
+      LayoutController,
+      BkImageSurface,
+      FlexScrollView,
+      Utility,
+      Flipper,
+      NewChupsView,
+      MainFlippedView;
+  return {
+    setters: [function($__m) {
+      Engine = $__m.default;
+    }, function($__m) {
+      Surface = $__m.default;
+    }, function($__m) {
+      View = $__m.default;
+    }, function($__m) {
+      ObjectHelper = $__m.default;
+    }, function($__m) {
+      LayoutController = $__m.default;
+    }, function($__m) {
+      BkImageSurface = $__m.default;
+    }, function($__m) {
+      FlexScrollView = $__m.default;
+    }, function($__m) {
+      Utility = $__m.default;
+    }, function($__m) {
+      Flipper = $__m.default;
+    }, function($__m) {
+      NewChupsView = $__m.NewChupsView;
+    }],
+    execute: function() {
+      MainFlippedView = $__export("MainFlippedView", (function($__super) {
+        var MainFlippedView = function MainFlippedView() {
+          $traceurRuntime.superConstructor(MainFlippedView).call(this);
+          ObjectHelper.bindAllMethods(this, this);
+          ObjectHelper.hideMethodsAndPrivatePropertiesFromObject(this);
+          ObjectHelper.hidePropertyFromObject(Object.getPrototypeOf(this), 'length');
+          this.setFront(new NewChupsView());
+          this.setBack(new Surface({
+            content: 'back',
+            properties: {
+              background: 'blue',
+              color: 'white',
+              lineHeight: '200px',
+              textAlign: 'center'
+            }
+          }));
+        };
+        return ($traceurRuntime.createClass)(MainFlippedView, {}, {}, $__super);
+      }(Flipper)));
+    }
+  };
+});
+
+
+
 System.register("github:firebase/firebase-bower@2.2.4", ["github:firebase/firebase-bower@2.2.4/firebase"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -13853,6 +15923,409 @@ System.register("github:ijzerenhein/famous-flex@0.3.1/src/FlowLayoutNode", ["npm
 
 
 })();
+(function() {
+function define(){};  define.amd = {};
+System.register("github:ijzerenhein/famous-flex@0.3.1/src/FlexScrollView", ["github:ijzerenhein/famous-flex@0.3.1/src/LayoutUtility", "github:ijzerenhein/famous-flex@0.3.1/src/ScrollController", "github:ijzerenhein/famous-flex@0.3.1/src/layouts/ListLayout"], false, function(__require, __exports, __module) {
+  return (function(require, exports, module) {
+    var LayoutUtility = require("github:ijzerenhein/famous-flex@0.3.1/src/LayoutUtility");
+    var ScrollController = require("github:ijzerenhein/famous-flex@0.3.1/src/ScrollController");
+    var ListLayout = require("github:ijzerenhein/famous-flex@0.3.1/src/layouts/ListLayout");
+    var PullToRefreshState = {
+      HIDDEN: 0,
+      PULLING: 1,
+      ACTIVE: 2,
+      COMPLETED: 3,
+      HIDDING: 4
+    };
+    function FlexScrollView(options) {
+      ScrollController.call(this, LayoutUtility.combineOptions(FlexScrollView.DEFAULT_OPTIONS, options));
+      this._thisScrollViewDelta = 0;
+      this._leadingScrollViewDelta = 0;
+      this._trailingScrollViewDelta = 0;
+    }
+    FlexScrollView.prototype = Object.create(ScrollController.prototype);
+    FlexScrollView.prototype.constructor = FlexScrollView;
+    FlexScrollView.PullToRefreshState = PullToRefreshState;
+    FlexScrollView.Bounds = ScrollController.Bounds;
+    FlexScrollView.PaginationMode = ScrollController.PaginationMode;
+    FlexScrollView.DEFAULT_OPTIONS = {
+      layout: ListLayout,
+      direction: undefined,
+      paginated: false,
+      alignment: 0,
+      flow: false,
+      mouseMove: false,
+      useContainer: false,
+      visibleItemThresshold: 0.5,
+      pullToRefreshHeader: undefined,
+      pullToRefreshFooter: undefined,
+      leadingScrollView: undefined,
+      trailingScrollView: undefined
+    };
+    FlexScrollView.prototype.setOptions = function(options) {
+      ScrollController.prototype.setOptions.call(this, options);
+      if (options.pullToRefreshHeader || options.pullToRefreshFooter || this._pullToRefresh) {
+        if (options.pullToRefreshHeader) {
+          this._pullToRefresh = this._pullToRefresh || [undefined, undefined];
+          if (!this._pullToRefresh[0]) {
+            this._pullToRefresh[0] = {
+              state: PullToRefreshState.HIDDEN,
+              prevState: PullToRefreshState.HIDDEN,
+              footer: false
+            };
+          }
+          this._pullToRefresh[0].node = options.pullToRefreshHeader;
+        } else if (!this.options.pullToRefreshHeader && this._pullToRefresh) {
+          this._pullToRefresh[0] = undefined;
+        }
+        if (options.pullToRefreshFooter) {
+          this._pullToRefresh = this._pullToRefresh || [undefined, undefined];
+          if (!this._pullToRefresh[1]) {
+            this._pullToRefresh[1] = {
+              state: PullToRefreshState.HIDDEN,
+              prevState: PullToRefreshState.HIDDEN,
+              footer: true
+            };
+          }
+          this._pullToRefresh[1].node = options.pullToRefreshFooter;
+        } else if (!this.options.pullToRefreshFooter && this._pullToRefresh) {
+          this._pullToRefresh[1] = undefined;
+        }
+        if (this._pullToRefresh && !this._pullToRefresh[0] && !this._pullToRefresh[1]) {
+          this._pullToRefresh = undefined;
+        }
+      }
+      return this;
+    };
+    FlexScrollView.prototype.sequenceFrom = function(node) {
+      return this.setDataSource(node);
+    };
+    FlexScrollView.prototype.getCurrentIndex = function() {
+      var item = this.getFirstVisibleItem();
+      return item ? item.viewSequence.getIndex() : -1;
+    };
+    FlexScrollView.prototype.goToPage = function(index, noAnimation) {
+      var viewSequence = this._viewSequence;
+      if (!viewSequence) {
+        return this;
+      }
+      while (viewSequence.getIndex() < index) {
+        viewSequence = viewSequence.getNext();
+        if (!viewSequence) {
+          return this;
+        }
+      }
+      while (viewSequence.getIndex() > index) {
+        viewSequence = viewSequence.getPrevious();
+        if (!viewSequence) {
+          return this;
+        }
+      }
+      this.goToRenderNode(viewSequence.get(), noAnimation);
+      return this;
+    };
+    FlexScrollView.prototype.getOffset = function() {
+      return this._scrollOffsetCache;
+    };
+    FlexScrollView.prototype.getPosition = FlexScrollView.prototype.getOffset;
+    FlexScrollView.prototype.getAbsolutePosition = function() {
+      return -(this._scrollOffsetCache + this._scroll.groupStart);
+    };
+    function _setPullToRefreshState(pullToRefresh, state) {
+      if (pullToRefresh.state !== state) {
+        pullToRefresh.state = state;
+        if (pullToRefresh.node && pullToRefresh.node.setPullToRefreshStatus) {
+          pullToRefresh.node.setPullToRefreshStatus(state);
+        }
+      }
+    }
+    function _getPullToRefresh(footer) {
+      return this._pullToRefresh ? this._pullToRefresh[footer ? 1 : 0] : undefined;
+    }
+    FlexScrollView.prototype._postLayout = function(size, scrollOffset) {
+      if (!this._pullToRefresh) {
+        return ;
+      }
+      if (this.options.alignment) {
+        scrollOffset += size[this._direction];
+      }
+      var prevHeight;
+      var nextHeight;
+      var totalHeight;
+      for (var i = 0; i < 2; i++) {
+        var pullToRefresh = this._pullToRefresh[i];
+        if (pullToRefresh) {
+          var length = pullToRefresh.node.getSize()[this._direction];
+          var pullLength = pullToRefresh.node.getPullToRefreshSize ? pullToRefresh.node.getPullToRefreshSize()[this._direction] : length;
+          var offset;
+          if (!pullToRefresh.footer) {
+            prevHeight = this._calcScrollHeight(false);
+            prevHeight = (prevHeight === undefined) ? -1 : prevHeight;
+            offset = (prevHeight >= 0) ? (scrollOffset - prevHeight) : prevHeight;
+            if (this.options.alignment) {
+              nextHeight = this._calcScrollHeight(true);
+              nextHeight = (nextHeight === undefined) ? -1 : nextHeight;
+              totalHeight = ((prevHeight >= 0) && (nextHeight >= 0)) ? (prevHeight + nextHeight) : -1;
+              if ((totalHeight >= 0) && (totalHeight < size[this._direction])) {
+                offset = Math.round((scrollOffset - size[this._direction]) + nextHeight);
+              }
+            }
+          } else {
+            nextHeight = (nextHeight === undefined) ? nextHeight = this._calcScrollHeight(true) : nextHeight;
+            nextHeight = (nextHeight === undefined) ? -1 : nextHeight;
+            offset = (nextHeight >= 0) ? (scrollOffset + nextHeight) : (size[this._direction] + 1);
+            if (!this.options.alignment) {
+              prevHeight = (prevHeight === undefined) ? this._calcScrollHeight(false) : prevHeight;
+              prevHeight = (prevHeight === undefined) ? -1 : prevHeight;
+              totalHeight = ((prevHeight >= 0) && (nextHeight >= 0)) ? (prevHeight + nextHeight) : -1;
+              if ((totalHeight >= 0) && (totalHeight < size[this._direction])) {
+                offset = Math.round((scrollOffset - prevHeight) + size[this._direction]);
+              }
+            }
+            offset = -(offset - size[this._direction]);
+          }
+          var visiblePerc = Math.max(Math.min(offset / pullLength, 1), 0);
+          switch (pullToRefresh.state) {
+            case PullToRefreshState.HIDDEN:
+              if (this._scroll.scrollForceCount) {
+                if (visiblePerc >= 1) {
+                  _setPullToRefreshState(pullToRefresh, PullToRefreshState.ACTIVE);
+                } else if (offset >= 0.2) {
+                  _setPullToRefreshState(pullToRefresh, PullToRefreshState.PULLING);
+                }
+              }
+              break;
+            case PullToRefreshState.PULLING:
+              if (this._scroll.scrollForceCount && (visiblePerc >= 1)) {
+                _setPullToRefreshState(pullToRefresh, PullToRefreshState.ACTIVE);
+              } else if (offset < 0.2) {
+                _setPullToRefreshState(pullToRefresh, PullToRefreshState.HIDDEN);
+              }
+              break;
+            case PullToRefreshState.ACTIVE:
+              break;
+            case PullToRefreshState.COMPLETED:
+              if (!this._scroll.scrollForceCount) {
+                if (offset >= 0.2) {
+                  _setPullToRefreshState(pullToRefresh, PullToRefreshState.HIDDING);
+                } else {
+                  _setPullToRefreshState(pullToRefresh, PullToRefreshState.HIDDEN);
+                }
+              }
+              break;
+            case PullToRefreshState.HIDDING:
+              if (offset < 0.2) {
+                _setPullToRefreshState(pullToRefresh, PullToRefreshState.HIDDEN);
+              }
+              break;
+          }
+          if (pullToRefresh.state !== PullToRefreshState.HIDDEN) {
+            var contextNode = {
+              renderNode: pullToRefresh.node,
+              prev: !pullToRefresh.footer,
+              next: pullToRefresh.footer,
+              index: !pullToRefresh.footer ? --this._nodes._contextState.prevGetIndex : ++this._nodes._contextState.nextGetIndex
+            };
+            var scrollLength;
+            if (pullToRefresh.state === PullToRefreshState.ACTIVE) {
+              scrollLength = length;
+            } else if (this._scroll.scrollForceCount) {
+              scrollLength = Math.min(offset, length);
+            }
+            var set = {
+              size: [size[0], size[1]],
+              translate: [0, 0, -1e-3],
+              scrollLength: scrollLength
+            };
+            set.size[this._direction] = Math.max(Math.min(offset, pullLength), 0);
+            set.translate[this._direction] = pullToRefresh.footer ? (size[this._direction] - length) : 0;
+            this._nodes._context.set(contextNode, set);
+          }
+        }
+      }
+    };
+    FlexScrollView.prototype.showPullToRefresh = function(footer) {
+      var pullToRefresh = _getPullToRefresh.call(this, footer);
+      if (pullToRefresh) {
+        _setPullToRefreshState(pullToRefresh, PullToRefreshState.ACTIVE);
+        this._scroll.scrollDirty = true;
+      }
+    };
+    FlexScrollView.prototype.hidePullToRefresh = function(footer) {
+      var pullToRefresh = _getPullToRefresh.call(this, footer);
+      if (pullToRefresh && (pullToRefresh.state === PullToRefreshState.ACTIVE)) {
+        _setPullToRefreshState(pullToRefresh, PullToRefreshState.COMPLETED);
+        this._scroll.scrollDirty = true;
+      }
+      return this;
+    };
+    FlexScrollView.prototype.isPullToRefreshVisible = function(footer) {
+      var pullToRefresh = _getPullToRefresh.call(this, footer);
+      return pullToRefresh ? (pullToRefresh.state === PullToRefreshState.ACTIVE) : false;
+    };
+    FlexScrollView.prototype.applyScrollForce = function(delta) {
+      var leadingScrollView = this.options.leadingScrollView;
+      var trailingScrollView = this.options.trailingScrollView;
+      if (!leadingScrollView && !trailingScrollView) {
+        return ScrollController.prototype.applyScrollForce.call(this, delta);
+      }
+      var partialDelta;
+      if (delta < 0) {
+        if (leadingScrollView) {
+          partialDelta = leadingScrollView.canScroll(delta);
+          this._leadingScrollViewDelta += partialDelta;
+          leadingScrollView.applyScrollForce(partialDelta);
+          delta -= partialDelta;
+        }
+        if (trailingScrollView) {
+          partialDelta = this.canScroll(delta);
+          ScrollController.prototype.applyScrollForce.call(this, partialDelta);
+          this._thisScrollViewDelta += partialDelta;
+          delta -= partialDelta;
+          trailingScrollView.applyScrollForce(delta);
+          this._trailingScrollViewDelta += delta;
+        } else {
+          ScrollController.prototype.applyScrollForce.call(this, delta);
+          this._thisScrollViewDelta += delta;
+        }
+      } else {
+        if (trailingScrollView) {
+          partialDelta = trailingScrollView.canScroll(delta);
+          trailingScrollView.applyScrollForce(partialDelta);
+          this._trailingScrollViewDelta += partialDelta;
+          delta -= partialDelta;
+        }
+        if (leadingScrollView) {
+          partialDelta = this.canScroll(delta);
+          ScrollController.prototype.applyScrollForce.call(this, partialDelta);
+          this._thisScrollViewDelta += partialDelta;
+          delta -= partialDelta;
+          leadingScrollView.applyScrollForce(delta);
+          this._leadingScrollViewDelta += delta;
+        } else {
+          ScrollController.prototype.applyScrollForce.call(this, delta);
+          this._thisScrollViewDelta += delta;
+        }
+      }
+      return this;
+    };
+    FlexScrollView.prototype.updateScrollForce = function(prevDelta, newDelta) {
+      var leadingScrollView = this.options.leadingScrollView;
+      var trailingScrollView = this.options.trailingScrollView;
+      if (!leadingScrollView && !trailingScrollView) {
+        return ScrollController.prototype.updateScrollForce.call(this, prevDelta, newDelta);
+      }
+      var partialDelta;
+      var delta = newDelta - prevDelta;
+      if (delta < 0) {
+        if (leadingScrollView) {
+          partialDelta = leadingScrollView.canScroll(delta);
+          leadingScrollView.updateScrollForce(this._leadingScrollViewDelta, this._leadingScrollViewDelta + partialDelta);
+          this._leadingScrollViewDelta += partialDelta;
+          delta -= partialDelta;
+        }
+        if (trailingScrollView && delta) {
+          partialDelta = this.canScroll(delta);
+          ScrollController.prototype.updateScrollForce.call(this, this._thisScrollViewDelta, this._thisScrollViewDelta + partialDelta);
+          this._thisScrollViewDelta += partialDelta;
+          delta -= partialDelta;
+          this._trailingScrollViewDelta += delta;
+          trailingScrollView.updateScrollForce(this._trailingScrollViewDelta, this._trailingScrollViewDelta + delta);
+        } else if (delta) {
+          ScrollController.prototype.updateScrollForce.call(this, this._thisScrollViewDelta, this._thisScrollViewDelta + delta);
+          this._thisScrollViewDelta += delta;
+        }
+      } else {
+        if (trailingScrollView) {
+          partialDelta = trailingScrollView.canScroll(delta);
+          trailingScrollView.updateScrollForce(this._trailingScrollViewDelta, this._trailingScrollViewDelta + partialDelta);
+          this._trailingScrollViewDelta += partialDelta;
+          delta -= partialDelta;
+        }
+        if (leadingScrollView) {
+          partialDelta = this.canScroll(delta);
+          ScrollController.prototype.updateScrollForce.call(this, this._thisScrollViewDelta, this._thisScrollViewDelta + partialDelta);
+          this._thisScrollViewDelta += partialDelta;
+          delta -= partialDelta;
+          leadingScrollView.updateScrollForce(this._leadingScrollViewDelta, this._leadingScrollViewDelta + delta);
+          this._leadingScrollViewDelta += delta;
+        } else {
+          ScrollController.prototype.updateScrollForce.call(this, this._thisScrollViewDelta, this._thisScrollViewDelta + delta);
+          this._thisScrollViewDelta += delta;
+        }
+      }
+      return this;
+    };
+    FlexScrollView.prototype.releaseScrollForce = function(delta, velocity) {
+      var leadingScrollView = this.options.leadingScrollView;
+      var trailingScrollView = this.options.trailingScrollView;
+      if (!leadingScrollView && !trailingScrollView) {
+        return ScrollController.prototype.releaseScrollForce.call(this, delta, velocity);
+      }
+      var partialDelta;
+      if (delta < 0) {
+        if (leadingScrollView) {
+          partialDelta = Math.max(this._leadingScrollViewDelta, delta);
+          this._leadingScrollViewDelta -= partialDelta;
+          delta -= partialDelta;
+          leadingScrollView.releaseScrollForce(this._leadingScrollViewDelta, delta ? 0 : velocity);
+        }
+        if (trailingScrollView) {
+          partialDelta = Math.max(this._thisScrollViewDelta, delta);
+          this._thisScrollViewDelta -= partialDelta;
+          delta -= partialDelta;
+          ScrollController.prototype.releaseScrollForce.call(this, this._thisScrollViewDelta, delta ? 0 : velocity);
+          this._trailingScrollViewDelta -= delta;
+          trailingScrollView.releaseScrollForce(this._trailingScrollViewDelta, delta ? velocity : 0);
+        } else {
+          this._thisScrollViewDelta -= delta;
+          ScrollController.prototype.releaseScrollForce.call(this, this._thisScrollViewDelta, delta ? velocity : 0);
+        }
+      } else {
+        if (trailingScrollView) {
+          partialDelta = Math.min(this._trailingScrollViewDelta, delta);
+          this._trailingScrollViewDelta -= partialDelta;
+          delta -= partialDelta;
+          trailingScrollView.releaseScrollForce(this._trailingScrollViewDelta, delta ? 0 : velocity);
+        }
+        if (leadingScrollView) {
+          partialDelta = Math.min(this._thisScrollViewDelta, delta);
+          this._thisScrollViewDelta -= partialDelta;
+          delta -= partialDelta;
+          ScrollController.prototype.releaseScrollForce.call(this, this._thisScrollViewDelta, delta ? 0 : velocity);
+          this._leadingScrollViewDelta -= delta;
+          leadingScrollView.releaseScrollForce(this._leadingScrollViewDelta, delta ? velocity : 0);
+        } else {
+          this._thisScrollViewDelta -= delta;
+          ScrollController.prototype.updateScrollForce.call(this, this._thisScrollViewDelta, delta ? velocity : 0);
+        }
+      }
+      return this;
+    };
+    FlexScrollView.prototype.commit = function(context) {
+      var result = ScrollController.prototype.commit.call(this, context);
+      if (this._pullToRefresh) {
+        for (var i = 0; i < 2; i++) {
+          var pullToRefresh = this._pullToRefresh[i];
+          if (pullToRefresh) {
+            if ((pullToRefresh.state === PullToRefreshState.ACTIVE) && (pullToRefresh.prevState !== PullToRefreshState.ACTIVE)) {
+              this._eventOutput.emit('refresh', {
+                target: this,
+                footer: pullToRefresh.footer
+              });
+            }
+            pullToRefresh.prevState = pullToRefresh.state;
+          }
+        }
+      }
+      return result;
+    };
+    module.exports = FlexScrollView;
+  }).call(__exports, __require, __exports, __module);
+});
+
+
+})();
 System.register("github:Bizboard/arva-ds@master/datasources/FirebaseDataSource", ["github:Bizboard/arva-ds@master/utils/objectHelper", "github:Bizboard/arva-ds@master/core/DataSource", "github:firebase/firebase-bower@2.2.4", "github:angular/di.js@master"], function($__export) {
   "use strict";
   var __moduleName = "github:Bizboard/arva-ds@master/datasources/FirebaseDataSource";
@@ -14772,6 +17245,105 @@ System.register("github:ijzerenhein/famous-flex@0.3.1/src/LayoutController", ["n
 
 
 })();
+System.register("views/ChupPlayView", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "npm:famous@0.3.5/core/View", "utils/objectHelper", "github:ijzerenhein/famous-flex@0.3.1/src/LayoutController", "github:ijzerenhein/famous-bkimagesurface@1.0.3/BkImageSurface", "github:ijzerenhein/famous-flex@0.3.1/src/FlexScrollView", "npm:famous@0.3.5/utilities/Utility"], function($__export) {
+  "use strict";
+  var __moduleName = "views/ChupPlayView";
+  var Engine,
+      Surface,
+      View,
+      ObjectHelper,
+      LayoutController,
+      BkImageSurface,
+      FlexScrollView,
+      Utility,
+      DEFAULT_OPTIONS,
+      ChupPlayView;
+  return {
+    setters: [function($__m) {
+      Engine = $__m.default;
+    }, function($__m) {
+      Surface = $__m.default;
+    }, function($__m) {
+      View = $__m.default;
+    }, function($__m) {
+      ObjectHelper = $__m.default;
+    }, function($__m) {
+      LayoutController = $__m.default;
+    }, function($__m) {
+      BkImageSurface = $__m.default;
+    }, function($__m) {
+      FlexScrollView = $__m.default;
+    }, function($__m) {
+      Utility = $__m.default;
+    }],
+    execute: function() {
+      DEFAULT_OPTIONS = {margin: 10};
+      ChupPlayView = $__export("ChupPlayView", (function($__super) {
+        var ChupPlayView = function ChupPlayView(options) {
+          $traceurRuntime.superConstructor(ChupPlayView).call(this, DEFAULT_OPTIONS);
+          this.id = options;
+          ObjectHelper.bindAllMethods(this, this);
+          ObjectHelper.hideMethodsAndPrivatePropertiesFromObject(this);
+          ObjectHelper.hidePropertyFromObject(Object.getPrototypeOf(this), 'length');
+          this._createRenderables(this.id);
+          this._createLayout(this.id);
+        };
+        return ($traceurRuntime.createClass)(ChupPlayView, {
+          _createRenderables: function(options) {
+            var scrollView = new FlexScrollView({
+              autoPipeEvents: true,
+              mouseMove: true
+            });
+            scrollView.push(new Surface({content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. Suspendisse vitae accumsan risus, a congue quam. Integer eget lacinia ligula. Sed consectetur tellus consequat ex aliquet, vel commodo arcu rhoncus. Nam laoreet, ligula non pharetra vehicula, urna lorem auctor odio, ut vehicula lacus metus vel eros. Praesent vitae fermentum nibh. Morbi nec ornare dui, sit amet viverra massa. Nullam imperdiet mattis ex, non volutpat sem. Phasellus sit amet varius nunc. Aenean consectetur ac ipsum auctor lacinia. Vestibulum aliquam congue porttitor. Pellentesque at nisl auctor, eleifend enim id, blandit augue. Nunc ornare ut ex quis semper. Aliquam blandit, diam nec commodo malesuada, nulla enim maximus sapien, sit amet gravida leo massa quis magna. Cras pretium neque vel mi dignissim, non blandit leo lobortis. Integer tincidunt posuere nisi. Praesent nisi ipsum, blandit vitae maximus ut, rutrum vitae odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. Suspendisse vitae accumsan risus, a congue quam. Integer eget lacinia ligula. Sed consectetur tellus consequat ex aliquet, vel commodo arcu rhoncus. Nam laoreet, ligula non pharetra vehicula, urna lorem auctor odio, ut vehicula lacus metus vel eros. Praesent vitae fermentum nibh. Morbi nec ornare dui, sit amet viverra massa. Nullam imperdiet mattis ex, non volutpat sem. Phasellus sit amet varius nunc. Aenean consectetur ac ipsum auctor lacinia. Vestibulum aliquam congue porttitor. Pellentesque at nisl auctor, eleifend enim id, blandit augue. Nunc ornare ut ex quis semper. Aliquam blandit, diam nec commodo malesuada, nulla enim maximus sapien, sit amet gravida leo massa quis magna. Cras pretium neque vel mi dignissim, non blandit leo lobortis. Integer tincidunt posuere nisi. Praesent nisi ipsum, blandit vitae maximus ut, rutrum vitae odio.'}));
+            scrollView.push(new Surface({
+              size: [undefined, 200],
+              content: ''
+            }));
+            this._renderables = {
+              infopanel: scrollView,
+              next: new BkImageSurface({
+                size: [32, 32],
+                content: 'img/next.png',
+                backgroundColor: 'yellow'
+              })
+            };
+            this._renderables['chupheader' + this.id] = new BkImageSurface({
+              content: 'img/sf' + this.id + '.jpg',
+              sizeMode: 'cover'
+            });
+          },
+          _createLayout: function(id) {
+            this.layout = new LayoutController({
+              autoPipeEvents: true,
+              layout: function(context, options) {
+                var infoPanelSize = [context.size[0], context.size[1] * 0.2];
+                context.set('chupheader' + this.id, {
+                  size: infoPanelSize,
+                  translate: [0, 0, 1]
+                });
+                context.set('infopanel', {
+                  size: [context.size[0] - this.options.margin * 2, undefined],
+                  translate: [this.options.margin, (context.size[1] * 0.2) + this.options.margin, -1]
+                });
+                context.set('next', {
+                  origin: [0.5, 0.5],
+                  align: [0.9, 0.1],
+                  translate: [0, 0, 2]
+                });
+              }.bind(this),
+              dataSource: this._renderables
+            });
+            this.add(this.layout);
+            this.layout.pipe(this._eventOutput);
+          }
+        }, {}, $__super);
+      }(View)));
+    }
+  };
+});
+
+
+
 System.register("settings", ["github:angular/di.js@master", "github:Bizboard/arva-ds@master/core/DataSource", "github:Bizboard/arva-ds@master/datasources/FirebaseDataSource"], function($__export) {
   "use strict";
   var __moduleName = "settings";
@@ -19754,10 +22326,11 @@ System.register("npm:lodash@3.7.0", ["npm:lodash@3.7.0/index"], true, function(r
 
 
 
-System.register("core/Controller", ["github:angular/di.js@master", "core/Router", "utils/objectHelper", "npm:famous@0.3.5/core/Context", "npm:famous@0.3.5/Views/RenderController", "npm:famous@0.3.5/core/EventHandler", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
+System.register("core/Controller", ["npm:lodash@3.7.0", "github:angular/di.js@master", "core/Router", "utils/objectHelper", "npm:famous@0.3.5/core/Context", "npm:famous@0.3.5/Views/RenderController", "npm:famous@0.3.5/core/EventHandler", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
   "use strict";
   var __moduleName = "core/Controller";
-  var Inject,
+  var _,
+      Inject,
       annotate,
       Router,
       ObjectHelper,
@@ -19768,6 +22341,8 @@ System.register("core/Controller", ["github:angular/di.js@master", "core/Router"
       Controller;
   return {
     setters: [function($__m) {
+      _ = $__m.default;
+    }, function($__m) {
       Inject = $__m.Inject;
       annotate = $__m.annotate;
     }, function($__m) {
@@ -19790,26 +22365,30 @@ System.register("core/Controller", ["github:angular/di.js@master", "core/Router"
           this.router = router;
           this.context = context;
           this._eventOutput = new EventHandler();
+          ObjectHelper.bindAllMethods(this, this);
           var routeName = Object.getPrototypeOf(this).constructor.name.replace('Controller', '');
           routeName += "/:method";
-          this.router.add(routeName, function(r) {
+          this.router.add(routeName, this.onRouteCalled);
+        };
+        return ($traceurRuntime.createClass)(Controller, {
+          on: function(event, handler) {
+            this._eventOutput.on(event, handler);
+          },
+          onRouteCalled: function(route) {
             var $__0 = this;
-            if (typeof(this[r.method]) == "function") {
-              var result = this[r.method].apply(this, r.values);
+            if (typeof(this[route.method]) == "function") {
+              var result = this[route.method].apply(this, route.values);
               if (result) {
-                this.context.show(result, spec, (function() {
-                  $__0._eventOutput.emit("rendered", r.method);
+                this._eventOutput.emit("renderstart", route.method);
+                this.context.show(result, _.extend(route.spec, this.spec), (function() {
+                  $__0._eventOutput.emit("renderend", route.method);
                 }));
               }
-            } else
+            } else {
               console.log("Route does not exist!");
-          }.bind(this));
-          ObjectHelper.bindAllMethods(this, this);
-          console.log(this.Transferables);
-        };
-        return ($traceurRuntime.createClass)(Controller, {on: function(event, handler) {
-            this._eventOutput.on(event, handler);
-          }}, {});
+            }
+          }
+        }, {});
       }()));
       annotate(Controller, new Inject(Router));
       annotate(Controller, new Inject(AnimationController));
@@ -20019,7 +22598,7 @@ System.register("utils/objectHelper", ["npm:lodash@3.7.0"], function($__export) 
 
 
 
-System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "core/Controller", "views/ProfileView", "views/FullImageView", "views/NavBarView", "npm:famous@0.3.5/transitions/Easing", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
+System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "core/Controller", "views/ProfileView", "views/FullImageView", "views/NavBarView", "views/ChupPlayView", "views/NewChupsView", "views/MainFlippedView", "controllers/PlayController", "npm:famous@0.3.5/transitions/Easing", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
   "use strict";
   var __moduleName = "controllers/HomeController";
   var Engine,
@@ -20028,6 +22607,10 @@ System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "
       ProfileView,
       FullImageView,
       NavBarView,
+      ChupPlayView,
+      NewChupsView,
+      MainFlippedView,
+      PlayController,
       Easing,
       AnimationController;
   return {
@@ -20044,6 +22627,14 @@ System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "
     }, function($__m) {
       NavBarView = $__m.NavBarView;
     }, function($__m) {
+      ChupPlayView = $__m.ChupPlayView;
+    }, function($__m) {
+      NewChupsView = $__m.NewChupsView;
+    }, function($__m) {
+      MainFlippedView = $__m.MainFlippedView;
+    }, function($__m) {
+      PlayController = $__m.default;
+    }, function($__m) {
       Easing = $__m.default;
     }, function($__m) {
       AnimationController = $__m.default;
@@ -20051,40 +22642,43 @@ System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "
     execute: function() {
       $__export('default', (function($__super) {
         var HomeController = function HomeController(router, context) {
-          $traceurRuntime.superConstructor(HomeController).call(this, router, context, {
-            transition: {
-              duration: 1000,
-              curve: Easing.outBack
-            },
-            animation: AnimationController.Animation.Slide.Left,
-            transfer: {
+          var $__0 = this;
+          $traceurRuntime.superConstructor(HomeController).call(this, router, context, {transfer: {
               transition: {
-                duration: 1000,
-                curve: Easing.inOutExpo
+                duration: 500,
+                curve: Easing.inOutElastic
               },
               zIndex: 1000,
               items: {
-                'image': ['image', 'navBarImage'],
-                'navBarImage': ['image', 'navBarImage']
+                'topleft': ['topleft', 'chupheader1'],
+                'topright': ['topright', 'chupheader2'],
+                'bottomleft': ['bottomleft', 'chupheader3'],
+                'bottomright': ['bottomright', 'chupheader4'],
+                'chupheader1': ['topleft', 'chupheader1'],
+                'chupheader2': ['topright', 'chupheader2'],
+                'chupheader3': ['bottomleft', 'chupheader3'],
+                'chupheader4': ['bottomright', 'chupheader4']
               }
-            }
-          });
-          this.on('rendered', (function(arg) {
+            }});
+          this.mainView = new NewChupsView();
+          this.mainView.on('play', (function(id) {
+            $__0.router.go(PlayController, 'Chup', {id: id});
+          }));
+          this.flip = new MainFlippedView();
+          this.on('renderend', (function(arg) {
             console.log(arg);
           }));
         };
         return ($traceurRuntime.createClass)(HomeController, {
-          ReRouteExample: function() {
-            this.router.go(this, "Index", ['a', 'b']);
+          Main: function() {
+            return this.mainView;
           },
-          Index: function() {
-            return new FullImageView({text: 'arva-mvc with famous-flex is magic!'});
-          },
-          Profile: function() {
-            return new ProfileView();
-          },
-          NavBar: function() {
-            return new NavBarView();
+          Settings: function() {
+            this.flip.setAngle(Math.PI, {
+              curve: 'easeOutBounce',
+              duration: 500
+            });
+            return this.flip;
           }
         }, {}, $__super);
       }(Controller)));
@@ -20152,14 +22746,16 @@ System.register("core/App", ["github:angular/di.js@master", "core/Router"], func
 
 
 
-System.register("DefaultApp", ["github:angular/di.js@master", "core/App", "controllers/HomeController", "controllers/TestController"], function($__export) {
+System.register("DefaultApp", ["github:angular/di.js@master", "core/App", "controllers/HomeController", "controllers/PlayController", "npm:famous@0.3.5/transitions/Easing", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
   "use strict";
   var __moduleName = "DefaultApp";
   var Inject,
       annotate,
       App,
       HomeController,
-      TestController,
+      PlayController,
+      Easing,
+      AnimationController,
       DefaultApp;
   return {
     setters: [function($__m) {
@@ -20170,18 +22766,58 @@ System.register("DefaultApp", ["github:angular/di.js@master", "core/App", "contr
     }, function($__m) {
       HomeController = $__m.default;
     }, function($__m) {
-      TestController = $__m.default;
+      PlayController = $__m.default;
+    }, function($__m) {
+      Easing = $__m.default;
+    }, function($__m) {
+      AnimationController = $__m.default;
     }],
     execute: function() {
       DefaultApp = $__export("DefaultApp", (function($__super) {
-        var DefaultApp = function DefaultApp(router, homeController, testController) {
-          router.setDefault(homeController, 'Index');
+        var DefaultApp = function DefaultApp(router, homeController, playController) {
+          router.setDefault(homeController, 'Main');
+          router.setControllerSpecs({
+            HomeController: {
+              controllers: [{
+                transition: {
+                  duration: 500,
+                  curve: Easing.outBack
+                },
+                animation: AnimationController.Animation.Slide.Up,
+                activeFrom: ['PlayController']
+              }],
+              methods: {
+                next: {
+                  transition: {
+                    duration: 500,
+                    curve: Easing.outBack
+                  },
+                  animation: AnimationController.Animation.Slide.Right
+                },
+                previous: {
+                  transition: {
+                    duration: 500,
+                    curve: Easing.outBack
+                  },
+                  animation: AnimationController.Animation.Slide.Left
+                }
+              }
+            },
+            PlayController: {controllers: [{
+                transition: {
+                  duration: 500,
+                  curve: Easing.outBack
+                },
+                animation: AnimationController.Animation.Slide.Down,
+                activeFrom: ['HomeController']
+              }]}
+          });
           $traceurRuntime.superConstructor(DefaultApp).call(this, router);
         };
         return ($traceurRuntime.createClass)(DefaultApp, {}, {}, $__super);
       }(App)));
       annotate(DefaultApp, new Inject(HomeController));
-      annotate(DefaultApp, new Inject(TestController));
+      annotate(DefaultApp, new Inject(PlayController));
     }
   };
 });

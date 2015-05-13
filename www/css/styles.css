@@ -1,0 +1,24 @@
+/* 01. FONT FACE ================================================== */
+/*
+This CSS resource incorporates links to font software which is the valuable copyrighted
+property of Monotype Imaging and/or its suppliers. You may not attempt to copy, install,
+redistribute, convert, modify or reverse engineer this font software. Please contact Monotype
+Imaging with any questions regarding Web Fonts: http://webfonts.fonts.com
+*/
+@import url("http://fast.fonts.net/t/1.css?apiType=css&projectid=3a132eb1-b748-4e72-abd9-5a27bdb82d08");
+
+@font-face {
+    font-family: "avenir-w01-light";
+    src: url("Fonts/0ecef829-586e-426d-a633-4c8a8c926769.eot?#iefix");
+    src: url("Fonts/0ecef829-586e-426d-a633-4c8a8c926769.eot?#iefix") format("eot"), url("Fonts/49c5f3e1-5867-4b1d-a843-2d07fa60d85d.woff2") format("woff2"), url("Fonts/f401df6f-54eb-406c-b46a-90b9451c598d.woff") format("woff"), url("Fonts/276fe25e-e430-4376-b33c-705dd77b3dba.ttf") format("truetype"), url("Fonts/869dc33b-3685-4d74-a51c-82b435579093.svg#869dc33b-3685-4d74-a51c-82b435579093") format("svg");
+}
+
+@font-face {
+    font-family: "avenir-w01-regular";
+    src: url("Fonts/e9167238-3b3f-4813-a04a-a384394eed42.eot?#iefix");
+    src: url("Fonts/e9167238-3b3f-4813-a04a-a384394eed42.eot?#iefix") format("eot"), url("Fonts/2cd55546-ec00-4af9-aeca-4a3cd186da53.woff2") format("woff2"), url("Fonts/1e9892c0-6927-4412-9874-1b82801ba47a.woff") format("woff"), url("Fonts/46cf1067-688d-4aab-b0f7-bd942af6efd8.ttf") format("truetype"), url("Fonts/52a192b1-bea5-4b48-879f-107f009b666f.svg#52a192b1-bea5-4b48-879f-107f009b666f") format("svg");
+}
+
+* {
+    font-family: 'avenir-w01-regular', sans-serif;
+}

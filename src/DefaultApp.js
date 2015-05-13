@@ -12,7 +12,7 @@
 import {Inject, annotate}   from 'di.js'
 import {App}                from './core/App'
 import HomeController       from './controllers/HomeController'
-import TestController       from './controllers/TestController'
+import PlayController       from './controllers/PlayController'
 import Easing               from 'famous/transitions/Easing'
 import AnimationController  from 'famous-flex/src/AnimationController'
 
@@ -20,35 +20,35 @@ import AnimationController  from 'famous-flex/src/AnimationController'
 export class DefaultApp extends App {
 
 
-    constructor(router, homeController, testController) {
+    constructor(router, homeController, playController) {
         // make one of the controllers default
-        router.setDefault(homeController, 'Index');
+        router.setDefault(homeController, 'Main');
 
         router.setControllerSpecs({
             HomeController: {
                 controllers: [
                     {
-                        transition: {duration: 1000, curve: Easing.outBack},
-                        animation: AnimationController.Animation.Slide.Left,
-                        activeFrom: ['TestController']
+                        transition: {duration: 500, curve: Easing.outBack},
+                        animation: AnimationController.Animation.Slide.Up,
+                        activeFrom: ['PlayController']
                     }
                 ],
                 methods: {
                     /* Optional: define how URL changes with the same controller but different methods are animated. */
                     next: {
-                        transition: {duration: 1000, curve: Easing.outBack},
-                        animation: AnimationController.Animation.Slide.Up
+                        transition: {duration: 500, curve: Easing.outBack},
+                        animation: AnimationController.Animation.Slide.Right
                     },
                     previous: {
-                        transition: {duration: 1000, curve: Easing.outBack},
-                        animation: AnimationController.Animation.Slide.Down
+                        transition: {duration: 500, curve: Easing.outBack},
+                        animation: AnimationController.Animation.Slide.Left
                     }
                 }
             },
-            TestController: {
+            PlayController: {
                 controllers: [
                     {
-                        transition: {duration: 1000, curve: Easing.outBack},
+                        transition: {duration: 500, curve: Easing.outBack},
                         animation: AnimationController.Animation.Slide.Down,
                         activeFrom: ['HomeController']
                     }
@@ -61,4 +61,4 @@ export class DefaultApp extends App {
 }
 
 annotate(DefaultApp, new Inject(HomeController));
-annotate(DefaultApp, new Inject(TestController));
+annotate(DefaultApp, new Inject(PlayController));

@@ -57,14 +57,25 @@ export class ArvaRouter extends Router {
      * @param method
      * @param params
      */
-    go(controller, method, params) {
+    go(controller, method, params=null) {
 
-        let controllerName = Object.getPrototypeOf(controller).constructor.name;
+        let controllerName = '';
+        if (Object.getPrototypeOf(controller).constructor.name=="Function")
+            controllerName = controller.name;
+        else controllerName = Object.getPrototypeOf(controller).constructor.name;
+
         let routeRoot = controllerName
             .replace(this.defaultController, '')
             .replace('Controller', '');
 
         let hash = '#' + (routeRoot.length > 0 ? '/' + routeRoot : '') + ('/' + method);
+        if (params) {
+            for(let i=0;i< Object.keys(params).length;i++) {
+                var key = Object.keys(params)[i];
+                hash+=i==0?'?':'&';
+                hash+=(key+'='+params[key]);
+            }
+        }
 
         if (history.pushState) {
             history.pushState(null, null, hash);
@@ -201,7 +212,6 @@ export class ArvaRouter extends Router {
         }
 
         this.history.push(currentRoute);
-        console.log(this.history);
     }
 
     /**

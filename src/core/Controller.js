@@ -48,7 +48,7 @@ export class Controller {
         // handle router url changes and execute the appropiate controller method
         this.router.add(routeName, this.onRouteCalled);
 
-        console.log(this.Transferables);
+        //console.log(this.Transferables);
     }
 
     on(event, handler) {

@@ -17,21 +17,18 @@ import {FullImageView}      from '../views/FullImageView';
 import {NavBarView}         from '../views/NavBarView';
 import {ChupPlayView}       from '../views/ChupPlayView';
 import {NewChupsView}       from '../views/NewChupsView';
-import {MainFlippedView}    from '../views/MainFlippedView';
-
-import PlayController       from './PlayController';
 
 import Easing               from 'famous/transitions/Easing';
 import AnimationController  from 'famous-flex/src/AnimationController';
 
 
-export default class HomeController extends Controller {
+export default class PlayController extends Controller {
 
 
     constructor(router, context) {
         super(router, context, {
             transfer: {
-                transition: {duration: 500, curve: Easing.inOutElastic},
+                transition: {duration: 200, curve: Easing.inQuad},
                 zIndex: 1000,
                 items: {
                     'topleft': ['topleft', 'chupheader1'],
@@ -46,38 +43,14 @@ export default class HomeController extends Controller {
             }
         });
 
-
-        this.mainView = new NewChupsView();
-
-        this.mainView.on('play', (id) => {
-            this.router.go(PlayController, 'Chup', { id: id });
-        });
-
-
-
-        this.flip = new MainFlippedView();
-
-
-
         this.on('renderend', (arg)=>{
-           console.log(arg);
+            console.log(arg);
         });
     }
 
-    /**
-     * Return the main app view
-     * @returns {*}
-     * @constructor
-     */
-    Main() {
-        return this.mainView;
-        //this.flip.setAngle(0, {curve : 'easeOutBounce', duration : 500});
-        //return this.flip;//this.mainView;
-    }
 
-    Settings() {
-        this.flip.setAngle(Math.PI, {curve : 'easeOutBounce', duration : 500});
-        return this.flip;
+    Chup(id) {
+        return new ChupPlayView(id);
     }
 }
 
