@@ -24,17 +24,17 @@ export class DefaultApp extends App {
         // make one of the controllers default
         router.setDefault(homeController, 'Main');
 
+
         router.setControllerSpecs({
             HomeController: {
                 controllers: [
                     {
                         transition: {duration: 500, curve: Easing.outBack},
-                        animation: AnimationController.Animation.Slide.Up,
+                        animation: AnimationController.Animation.Fade,
                         activeFrom: ['PlayController']
                     }
                 ],
                 methods: {
-                    /* Optional: define how URL changes with the same controller but different methods are animated. */
                     next: {
                         transition: {duration: 500, curve: Easing.outBack},
                         animation: AnimationController.Animation.Slide.Right
@@ -48,8 +48,15 @@ export class DefaultApp extends App {
             PlayController: {
                 controllers: [
                     {
-                        transition: {duration: 500, curve: Easing.outBack},
-                        animation: AnimationController.Animation.Slide.Down,
+
+                        show: {
+                            transition: {duration: 500, curve: Easing.inBack},
+                            animation: AnimationController.Animation.Fade.bind({opacity: 0})
+                        },
+                        hide: {
+                            transition: {duration: 0, curve: Easing.inBack},
+                            //animation: AnimationController.Animation.Fade.bind({opacity: 0})
+                        },
                         activeFrom: ['HomeController']
                     }
                 ]

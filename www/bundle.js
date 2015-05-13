@@ -4207,6 +4207,7 @@ System.register("views/NewChupsView", ["npm:famous@0.3.5/core/Engine", "npm:famo
           ObjectHelper.hidePropertyFromObject(Object.getPrototypeOf(this), 'length');
           this._createRenderables();
           this._createLayout();
+          this._createEventHandlers();
         };
         return ($traceurRuntime.createClass)(NewChupsView, {
           _createRenderables: function() {
@@ -4236,23 +4237,6 @@ System.register("views/NewChupsView", ["npm:famous@0.3.5/core/Engine", "npm:famo
                 properties: {id: 4}
               })
             };
-            var self = this;
-            this._renderables.topleft.on('click', function() {
-              var id = this.properties.id;
-              self._eventOutput.emit('play', id);
-            });
-            this._renderables.topright.on('click', function() {
-              var id = this.properties.id;
-              self._eventOutput.emit('play', id);
-            });
-            this._renderables.bottomleft.on('click', function() {
-              var id = this.properties.id;
-              self._eventOutput.emit('play', id);
-            });
-            this._renderables.bottomright.on('click', function() {
-              var id = this.properties.id;
-              self._eventOutput.emit('play', id);
-            });
           },
           _createLayout: function() {
             this.layout = new LayoutController({
@@ -4283,6 +4267,25 @@ System.register("views/NewChupsView", ["npm:famous@0.3.5/core/Engine", "npm:famo
             });
             this.add(this.layout);
             this.layout.pipe(this._eventOutput);
+          },
+          _createEventHandlers: function() {
+            var view = this;
+            this._renderables.topleft.on('click', function() {
+              var id = this.properties.id;
+              view._eventOutput.emit('play', id);
+            });
+            this._renderables.topright.on('click', function() {
+              var id = this.properties.id;
+              view._eventOutput.emit('play', id);
+            });
+            this._renderables.bottomleft.on('click', function() {
+              var id = this.properties.id;
+              view._eventOutput.emit('play', id);
+            });
+            this._renderables.bottomright.on('click', function() {
+              var id = this.properties.id;
+              view._eventOutput.emit('play', id);
+            });
           }
         }, {}, $__super);
       }(View)));
@@ -4371,7 +4374,7 @@ System.register("npm:famous@0.3.5/views/Flipper", ["npm:famous@0.3.5/core/Transf
 
 
 
-System.register("controllers/PlayController", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "core/Controller", "views/ProfileView", "views/FullImageView", "views/NavBarView", "views/ChupPlayView", "views/NewChupsView", "npm:famous@0.3.5/transitions/Easing", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
+System.register("controllers/PlayController", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "core/Controller", "views/ProfileView", "views/FullImageView", "views/NavBarView", "views/ChupPlayView", "views/NewChupsView", "controllers/HomeController", "npm:famous@0.3.5/transitions/Easing", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
   "use strict";
   var __moduleName = "controllers/PlayController";
   var Engine,
@@ -4382,6 +4385,7 @@ System.register("controllers/PlayController", ["npm:famous@0.3.5/core/Engine", "
       NavBarView,
       ChupPlayView,
       NewChupsView,
+      HomeController,
       Easing,
       AnimationController;
   return {
@@ -4401,6 +4405,8 @@ System.register("controllers/PlayController", ["npm:famous@0.3.5/core/Engine", "
       ChupPlayView = $__m.ChupPlayView;
     }, function($__m) {
       NewChupsView = $__m.NewChupsView;
+    }, function($__m) {
+      HomeController = $__m.default;
     }, function($__m) {
       Easing = $__m.default;
     }, function($__m) {
@@ -4431,7 +4437,15 @@ System.register("controllers/PlayController", ["npm:famous@0.3.5/core/Engine", "
           }));
         };
         return ($traceurRuntime.createClass)(PlayController, {Chup: function(id) {
-            return new ChupPlayView(id);
+            var $__0 = this;
+            var newChup = new ChupPlayView(id);
+            newChup.on('play', (function(id) {
+              $__0.router.go($__0, 'Chup', {id: id});
+            }));
+            newChup.on('home', (function(id) {
+              $__0.router.go(HomeController, 'Main');
+            }));
+            return newChup;
           }}, {}, $__super);
       }(Controller)));
     }
@@ -11550,7 +11564,6 @@ System.register("routers/ArvaRouter", ["npm:lodash@3.7.0", "core/Router", "utils
                 }
               }
             }
-            throw new Error('No spec defined from ' + fromController + ' to ' + toController + '. Please check router.setControllerSpecs() in your app constructor.');
           }
         }, {}, $__super);
       }(Router)));
@@ -17287,6 +17300,7 @@ System.register("views/ChupPlayView", ["npm:famous@0.3.5/core/Engine", "npm:famo
           ObjectHelper.hidePropertyFromObject(Object.getPrototypeOf(this), 'length');
           this._createRenderables(this.id);
           this._createLayout(this.id);
+          this._createEventHandlers();
         };
         return ($traceurRuntime.createClass)(ChupPlayView, {
           _createRenderables: function(options) {
@@ -17303,8 +17317,7 @@ System.register("views/ChupPlayView", ["npm:famous@0.3.5/core/Engine", "npm:famo
               infopanel: scrollView,
               next: new BkImageSurface({
                 size: [32, 32],
-                content: 'img/next.png',
-                backgroundColor: 'yellow'
+                content: 'img/next.png'
               })
             };
             this._renderables['chupheader' + this.id] = new BkImageSurface({
@@ -17323,7 +17336,7 @@ System.register("views/ChupPlayView", ["npm:famous@0.3.5/core/Engine", "npm:famo
                 });
                 context.set('infopanel', {
                   size: [context.size[0] - this.options.margin * 2, undefined],
-                  translate: [this.options.margin, (context.size[1] * 0.2) + this.options.margin, -1]
+                  translate: [this.options.margin, (context.size[1] * 0.2) + this.options.margin, 0]
                 });
                 context.set('next', {
                   origin: [0.5, 0.5],
@@ -17335,6 +17348,15 @@ System.register("views/ChupPlayView", ["npm:famous@0.3.5/core/Engine", "npm:famo
             });
             this.add(this.layout);
             this.layout.pipe(this._eventOutput);
+          },
+          _createEventHandlers: function() {
+            var view = this;
+            this._renderables['chupheader' + this.id].on('click', function() {
+              view._eventOutput.emit('home');
+            });
+            this._renderables.next.on('click', function() {
+              view._eventOutput.emit('play', parseInt(view.id) + 1);
+            });
           }
         }, {}, $__super);
       }(View)));
@@ -22646,7 +22668,7 @@ System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "
           $traceurRuntime.superConstructor(HomeController).call(this, router, context, {transfer: {
               transition: {
                 duration: 500,
-                curve: Easing.inOutElastic
+                curve: Easing.outElastic
               },
               zIndex: 1000,
               items: {
@@ -22783,7 +22805,7 @@ System.register("DefaultApp", ["github:angular/di.js@master", "core/App", "contr
                   duration: 500,
                   curve: Easing.outBack
                 },
-                animation: AnimationController.Animation.Slide.Up,
+                animation: AnimationController.Animation.Fade,
                 activeFrom: ['PlayController']
               }],
               methods: {
@@ -22804,11 +22826,17 @@ System.register("DefaultApp", ["github:angular/di.js@master", "core/App", "contr
               }
             },
             PlayController: {controllers: [{
-                transition: {
-                  duration: 500,
-                  curve: Easing.outBack
+                show: {
+                  transition: {
+                    duration: 500,
+                    curve: Easing.inBack
+                  },
+                  animation: AnimationController.Animation.Fade.bind({opacity: 0})
                 },
-                animation: AnimationController.Animation.Slide.Down,
+                hide: {transition: {
+                    duration: 0,
+                    curve: Easing.inBack
+                  }},
                 activeFrom: ['HomeController']
               }]}
           });

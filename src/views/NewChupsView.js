@@ -33,9 +33,9 @@ export class NewChupsView extends View {
 
         this._createRenderables();
         this._createLayout();
+        this._createEventHandlers();
 
     }
-
 
 
     _createRenderables() {
@@ -84,27 +84,7 @@ export class NewChupsView extends View {
                 }
             })
         };
-        var self = this;
 
-        this._renderables.topleft.on('click', function() {
-            var id = this.properties.id;
-            self._eventOutput.emit('play', id);
-        });
-
-        this._renderables.topright.on('click', function() {
-            var id = this.properties.id;
-            self._eventOutput.emit('play', id);
-        });
-
-        this._renderables.bottomleft.on('click', function() {
-            var id = this.properties.id;
-            self._eventOutput.emit('play', id);
-        });
-
-        this._renderables.bottomright.on('click', function() {
-            var id = this.properties.id;
-            self._eventOutput.emit('play', id);
-        });
     }
 
     _createLayout() {
@@ -154,5 +134,30 @@ export class NewChupsView extends View {
         });
         this.add(this.layout);
         this.layout.pipe(this._eventOutput);
+    }
+
+
+    _createEventHandlers() {
+        var view = this;
+
+        this._renderables.topleft.on('click', function() {
+            var id = this.properties.id;
+            view._eventOutput.emit('play', id);
+        });
+
+        this._renderables.topright.on('click', function() {
+            var id = this.properties.id;
+            view._eventOutput.emit('play', id);
+        });
+
+        this._renderables.bottomleft.on('click', function() {
+            var id = this.properties.id;
+            view._eventOutput.emit('play', id);
+        });
+
+        this._renderables.bottomright.on('click', function() {
+            var id = this.properties.id;
+            view._eventOutput.emit('play', id);
+        });
     }
 }
