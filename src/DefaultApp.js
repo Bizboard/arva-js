@@ -10,17 +10,17 @@
  */
 
 import {Inject, annotate}   from 'di.js';
-import {App}                from './core/App'
-import HomeController       from './controllers/HomeController'
-import TestController       from './controllers/TestController'
-import Easing               from 'famous/transitions/Easing'
-import AnimationController  from 'famous-flex/src/AnimationController'
+import {App}                from './core/App';
+import HomeController       from './controllers/HomeController';
+import TestController       from './controllers/TestController';
+import Easing               from 'famous/transitions/Easing';
+import AnimationController  from 'famous-flex/src/AnimationController';
 
 
 export class DefaultApp extends App {
 
 
-    constructor(router, homeController, testController) {
+    constructor(router, homeController) {
         // make one of the controllers default
         router.setDefault(homeController, 'Index');
 

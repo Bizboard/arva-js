@@ -29,7 +29,7 @@ class FirebaseBench {
         let source = new FirebaseDataSource('https://es6test.firebaseio.com').child('fb-bench');
         PrioritisedObject.buildFromDataSourcePath(source, function(priorityObject){
             priorityObject.setValueChangedCallback(function(data){
-                if(data.time == 'done'){
+                if(data.time === 'done'){
                     this.endTime = Date.now();
                     console.log('Writing ' + amountOfWrites + ' times to firebase took ' + (this.endTime - this.startTime) + 'ms');
                     priorityObject.removeValueChangedCallback();

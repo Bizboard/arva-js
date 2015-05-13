@@ -60,7 +60,7 @@ export class ProfileView extends View {
     _createLayout() {
         this.layout = new LayoutController({
             autoPipeEvents: true,
-            layout: function (context, options) {
+            layout: function (context) {
                 context.set('background', {
                     size: context.size
                 });

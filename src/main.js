@@ -11,10 +11,10 @@
 
 import {DefaultApp}                             from './DefaultApp';
 import {DefaultDataSource}                      from './settings';
-import {ReCreateDefaultContext}                 from './DefaultContext';
+import {reCreateDefaultContext}                 from './DefaultContext';
 
 // Your main that creates a DI context and uses that context to load your application. We can provide the
 // router, but also the datasource provider.
 
-ReCreateDefaultContext(DefaultDataSource)
+reCreateDefaultContext(DefaultDataSource)
     .get(DefaultApp);

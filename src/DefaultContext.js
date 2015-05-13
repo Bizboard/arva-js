@@ -10,12 +10,11 @@
  */
 // hello world
 
-import {Injector, annotate, Provide}            from 'di.js'
-import {ArvaRouter}                             from './routers/ArvaRouter'
-import Engine                                   from 'famous/core/Engine'
+import {Injector, annotate, Provide}            from 'di.js';
+import {ArvaRouter}                             from './routers/ArvaRouter';
+import Engine                                   from 'famous/core/Engine';
 import {Context}                                from 'arva-context/Context';
 import AnimationController                      from 'famous-flex/src/AnimationController';
-
 
 
 function NewAnimationController() {
@@ -33,11 +32,12 @@ export function GetDefaultContext() {
     return Context.getContext('Default');
 }
 
-export function ReCreateDefaultContext(dataSource = null) {
-    if (dataSource)
+export function reCreateDefaultContext(dataSource = null) {
+    if (dataSource) {
         Context.setContext('Default', new Injector([ArvaRouter, NewAnimationController, dataSource]));
-    else
+    } else {
         Context.setContext('Default', new Injector([ArvaRouter, NewAnimationController]));
+    }
 
     return Context.getContext('Default');
 }

@@ -57,7 +57,7 @@ export class FullImageView extends View {
     _createLayout() {
         this.layout = new LayoutController({
             autoPipeEvents: true,
-            layout: function(context, options) {
+            layout: function(context) {
                 context.set('background', {
                     size: context.size
                 });
@@ -67,8 +67,7 @@ export class FullImageView extends View {
                 ];
                 if (imageSize[0] > imageSize[1]) {
                     imageSize[0] = imageSize[1];
-                }
-                else {
+                } else {
                     imageSize[1] = imageSize[0];
                 }
                 context.set('image', {

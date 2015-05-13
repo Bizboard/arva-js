@@ -1,6 +1,9 @@
 /jspm_packages/*
+/npm_modules/*
 /.idea/workspace.xml
 /.idea/vcs.xml
 /.idea/modules.xml
 /.idea/misc.xml
-
+/.idea/dictionaries/*
+/www/bundle.js
+/www/bundle.js.map

@@ -22,7 +22,7 @@ export class MessagesView extends Scrollview {
         /* Hide the priority field from enumeration, so we don't save it to the dataSource. */
         ObjectHelper.hidePropertyFromObject(Object.getPrototypeOf(this), 'length');
 
-        // have this scrollview initialize itself
+        // have this scrollView initialize itself
         this._initializeList();
 
         // make sure the data is provisioned.
@@ -35,11 +35,11 @@ export class MessagesView extends Scrollview {
         this.surfaces = [];
         this.sequenceFrom(this.surfaces);
 
-        var firstOne = new Surface({
+        let firstOne = new Surface({
             content: 'Loading content...',
             size: [undefined, 50],
             properties: {
-                backgroundColor: 'hsl(' + ((i%2==0?15:30) * 360 / 40) + ', 100%, 50%)',
+                backgroundColor: 'hsl(' + ((30) * 360 / 40) + ', 100%, 50%)',
                 lineHeight: '50px',
                 textAlign: 'center'
             }
@@ -48,12 +48,12 @@ export class MessagesView extends Scrollview {
         firstOne.pipe(this);
         this.surfaces.push(firstOne);
 
-        for (var i = 0, temp; i < 40; i++) {
+        for (let i = 0, temp; i < 40; i++) {
             temp = new Surface({
                 //content: 'Surface: ' + (i + 1),
                 size: [undefined, 0],
                 properties: {
-                    backgroundColor: 'hsl(' + ((i%2==0?15:30) * 360 / 40) + ', 100%, 50%)',
+                    backgroundColor: 'hsl(' + ((i % 2 === 0 ? 15 : 30) * 360 / 40) + ', 100%, 50%)',
                     lineHeight: '50px',
                     textAlign: 'center'
                 }
@@ -65,18 +65,18 @@ export class MessagesView extends Scrollview {
     }
 
     _populateMessages() {
-        var scrollView = this;
+        let scrollView = this;
 
         window.messages = new ChatMessages();
 
-        window.messages.setValueChangedCallback(function(list) {
+        window.messages.setValueChangedCallback(function (list) {
 
-            for (var i=0;i<scrollView.surfaces.length;i++) {
+            for (let i = 0; i < scrollView.surfaces.length; i++) {
                 scrollView.surfaces[i].size = [undefined, 0];
                 scrollView.surfaces[i].setContent('');
             }
 
-            for (var i=0;i<list.length;i++) {
+            for (let i = 0; i < list.length; i++) {
                 scrollView.surfaces[i].size = [undefined, 50];
                 scrollView.surfaces[i].setContent(list[i].Title);
             }

@@ -11,9 +11,7 @@
 
 import _                            from 'lodash';
 import {Router}                     from '../core/Router';
-import ObjectHelper                 from '../utils/objectHelper';
-import {Provide, Inject, annotate}  from 'di.js';
-import View                         from 'famous/core/View';
+import {Provide, annotate}  from 'di.js';
 import Easing                       from 'famous/transitions/Easing';
 import AnimationController          from 'famous-flex/src/AnimationController';
 
@@ -44,7 +42,7 @@ export class ArvaRouter extends Router {
         this.defaultController = Object.getPrototypeOf(controller).constructor.name
             .replace('Controller', '');
 
-        if (method != null) this.defaultMethod = method;
+        if (method != null) { this.defaultMethod = method }
     }
 
     setControllerSpecs(specs) {
@@ -85,11 +83,11 @@ export class ArvaRouter extends Router {
 
         for (let i = 0; i < pieces.length; ++i) {
             let piece = pieces[i],
-                name = piece[0] == ':' ? ':' : piece;
+                name = piece[0] === ':' ? ':' : piece;
 
             rules = rules[name] || (rules[name] = {});
 
-            if (name == ':') {
+            if (name === ':') {
                 rules['@name'] = piece.slice(1);
             }
         }
@@ -109,8 +107,8 @@ export class ArvaRouter extends Router {
 
         if (url !== '') {
             url = url.replace('/?', '?');
-            url[0] == '/' && (url = url.slice(1));
-            url.slice(-1) == '/' && (url = url.slice(0, -1));
+            url[0] === '/' && (url = url.slice(1));
+            url.slice(-1) === '/' && (url = url.slice(0, -1));
         }
 
         let rules = this.routes,
@@ -123,11 +121,11 @@ export class ArvaRouter extends Router {
         let controller = null;
 
         // if there is no controller reference, assume we have hit the default Controller
-        if (pieces.length == 1 && pieces[0].length == 0) {
+        if (pieces.length === 1 && pieces[0].length === 0) {
             pieces[0] = this.defaultController;
             pieces.push(this.defaultMethod);
         }
-        else if (pieces.length == 1 && pieces[0].length > 0) {
+        else if (pieces.length === 1 && pieces[0].length > 0) {
             pieces.unshift(this.defaultController);
         }
 

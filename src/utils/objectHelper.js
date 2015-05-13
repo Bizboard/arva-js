@@ -9,7 +9,7 @@
 
  */
 
-import _ from 'lodash'
+import _ from 'lodash';
 
 export default
 class ObjectHelper {
@@ -88,8 +88,7 @@ class ObjectHelper {
                 value: prop
             };
             Object.defineProperty(object, propName, descriptor);
-        }
-        else {
+        } else {
             ObjectHelper.addGetSetPropertyWithShadow(object, propName, prop, enumerable, writable, setCallback);
         }
     }
@@ -104,17 +103,13 @@ class ObjectHelper {
     static buildPropertyShadow(object, propName, prop) {
         let shadow = {};
 
-        if (!object || !propName) {
-            debugger;
-        }
-
         try {
-            /* If no shadow exists yet, create one. Otherwise only extend it. */
+            /* If a shadow property already exists, we should extend instead of overwriting it. */
             if ('shadow' in object) {
-                shadow = object['shadow'];
+                shadow = object.shadow;
             }
         } catch (error) {
-            debugger;
+            return;
         }
 
         shadow[propName] = prop;
@@ -133,11 +128,11 @@ class ObjectHelper {
             enumerable: enumerable,
             configurable: true,
             get: function () {
-                return object['shadow'][propName];
+                return object.shadow[propName];
             },
             set: function (value) {
                 if (writable) {
-                    object['shadow'][propName] = value;
+                    object.shadow[propName] = value;
                     if (setCallback && typeof setCallback === 'function') {
                         setCallback({
                             propertyName: propName,
@@ -165,7 +160,7 @@ class ObjectHelper {
     static getMethodNames(object, methodNames = []) {
 
         let propNames = Object.getOwnPropertyNames(object).filter(function (c) {
-            return typeof object[c] === 'function'
+            return typeof object[c] === 'function';
         });
         methodNames = methodNames.concat(propNames);
 
@@ -196,7 +191,7 @@ class ObjectHelper {
 
             /* Value must be a non-null primitive or object to be pushable to a dataSource */
             if (value !== null && value !== undefined && typeof value !== 'function') {
-                if (typeof value == 'object') {
+                if (typeof value === 'object') {
                     result[name] = ObjectHelper.getEnumerableProperties(value);
                 } else {
                     result[name] = value;
@@ -207,7 +202,7 @@ class ObjectHelper {
         /* Collect all properties with accessors (getters/setters) that are enumerable, too */
         let descriptorNames = Object.getOwnPropertyNames(prototype);
         descriptorNames = descriptorNames.filter(function (name) {
-            return propNames.indexOf(name) < 0
+            return propNames.indexOf(name) < 0;
         });
         for (let name of descriptorNames.values()) {
             let descriptor = Object.getOwnPropertyDescriptor(prototype, name);
@@ -216,7 +211,7 @@ class ObjectHelper {
 
                 /* Value must be a non-null primitive or object to be pushable to a dataSource */
                 if (value !== null && value !== undefined && typeof value !== 'function') {
-                    if (typeof value == 'object') {
+                    if (typeof value === 'object') {
                         result[name] = ObjectHelper.getEnumerableProperties(value);
                     } else {
                         result[name] = value;

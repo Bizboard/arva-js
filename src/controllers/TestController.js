@@ -30,7 +30,7 @@ export default class TestController extends Controller {
     }
 
     ReRouteExample() {
-        this.router.go(this, 'Index', ['a','b']);
+        this.router.go(this, 'Index', ['a', 'b']);
     }
 
 
