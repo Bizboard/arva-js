@@ -2,7 +2,7 @@
   "name": "arva-mvc",
   "version": "1.0.0-pre-1",
   "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
-  "main": false,
+  "main": "www/index.html",
   "homepage": "https://github.com/Bizboard/arva-mvc",
   "repository": {
     "type": "git",
@@ -12,7 +12,8 @@
     "url": "https://github.com/Bizboard/arva-mvc/issues"
   },
   "scripts": {
-    "build": "jspm bundle-sfx main www/bundle.js"
+    "build": "jspm bundle-sfx main www/bundle.js",
+    "start": "nwjs.app/Contents/MacOS/nwjs"
   },
   "jspm": {
     "directories": {
@@ -30,6 +31,20 @@
       "underscore": "npm:underscore@^1.8.2"
     }
   },
+  "window": {
+    "always-on-top": false,
+    "transparent": false,
+    "show": true,
+    "toolbar": true,
+    "show_in_taskbar": true,
+    "position": "center",
+    "width": 400,
+    "height": 736,
+    "frame": true
+  },
   "author": "Tom Clement <tom.clement@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "MyoNodeBluetooth": "git://github.com/manueloverdijk/myonodebluetooth.git"
+  }
 }

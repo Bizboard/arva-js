@@ -24,6 +24,8 @@ import PlayController       from './PlayController';
 import Easing               from 'famous/transitions/Easing';
 import AnimationController  from 'famous-flex/src/AnimationController';
 
+var MyoBluetooth  = require('MyoNodeBluetooth');
+
 
 export default class HomeController extends Controller {
 
@@ -44,6 +46,20 @@ export default class HomeController extends Controller {
                     'chupheader4': ['bottomright', 'chupheader4']
                 }
             }
+        });
+
+        this.myoAgent = new MyoBluetooth();
+        this.myoAgent.on('discovered', function(armband){
+            console.log('discovered armband: ', armband);
+            this.armband = armband;
+            this.armband.on('connect', this.onConnect);
+            this.armband.on('ready', this.onReady);
+            this.armband.connect();
+
+        }.bind(this));
+
+        this.myoAgent.on('stateChange', function(state){
+            console.log('StateChange ', state);
         });
 
 
@@ -78,6 +94,32 @@ export default class HomeController extends Controller {
     Settings() {
         this.flip.setAngle(Math.PI, {curve : 'easeOutBounce', duration : 500});
         return this.flip;
+    }
+
+
+    // Myo helper functions
+    onConnect(connected){
+        console.log('connect: ', connected);
+        if(connected == true){
+            console.log('connected');
+
+            // start notifying Emg, IMU and Classifier characteristics
+            this.armband.initStart();
+
+        } else {
+            console.log('disconnected!');
+        }
+    }
+
+    onReady(ready){
+        this.armband.on('pose', function(data){
+            console.log('received pose:', data.type);
+            if(data.type == 'waveIn'){
+                history.back();
+            } else if(data.type == 'waveOut'){
+                history.forward();
+            }
+        }.bind(this));
     }
 }
 
