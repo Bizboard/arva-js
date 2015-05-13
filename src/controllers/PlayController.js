@@ -17,7 +17,7 @@ import {FullImageView}      from '../views/FullImageView';
 import {NavBarView}         from '../views/NavBarView';
 import {ChupPlayView}       from '../views/ChupPlayView';
 import {NewChupsView}       from '../views/NewChupsView';
-
+import HomeController       from './HomeController';
 import Easing               from 'famous/transitions/Easing';
 import AnimationController  from 'famous-flex/src/AnimationController';
 
@@ -43,6 +43,8 @@ export default class PlayController extends Controller {
             }
         });
 
+
+
         this.on('renderend', (arg)=>{
             console.log(arg);
         });
@@ -50,7 +52,17 @@ export default class PlayController extends Controller {
 
 
     Chup(id) {
-        return new ChupPlayView(id);
+        var newChup = new ChupPlayView(id);
+
+        newChup.on('play', (id) => {
+            this.router.go(this, 'Chup', { id: id });
+        });
+
+        newChup.on('home', (id) => {
+            this.router.go(HomeController, 'Main');
+        });
+
+        return newChup;
     }
 }
 

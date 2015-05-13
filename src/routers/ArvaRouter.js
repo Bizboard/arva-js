@@ -292,7 +292,7 @@ export class ArvaRouter extends Router {
             }
         }
 
-        throw new Error('No spec defined from ' + fromController + ' to ' + toController + '. Please check router.setControllerSpecs() in your app constructor.')
+        //throw new Error('No spec defined from ' + fromController + ' to ' + toController + '. Please check router.setControllerSpecs() in your app constructor.')
     }
 
 }

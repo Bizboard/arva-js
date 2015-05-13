@@ -34,6 +34,7 @@ export class ChupPlayView extends View {
 
         this._createRenderables(this.id);
         this._createLayout(this.id);
+        this._createEventHandlers();
 
     }
 
@@ -59,15 +60,16 @@ export class ChupPlayView extends View {
             infopanel: scrollView,
             next: new BkImageSurface({
                 size: [32,32],
-                content: 'img/next.png',
-                backgroundColor: 'yellow'
+                content: 'img/next.png'
             })
         }
 
         this._renderables['chupheader' + this.id] = new BkImageSurface({
                 content: 'img/sf' + this.id + '.jpg',
                 sizeMode: 'cover'
-            })
+            });
+
+
 
     }
 
@@ -87,7 +89,7 @@ export class ChupPlayView extends View {
 
                 context.set('infopanel', {
                     size: [context.size[0]-this.options.margin*2, undefined],
-                    translate: [this.options.margin,(context.size[1]*0.2)+this.options.margin,-1]
+                    translate: [this.options.margin,(context.size[1]*0.2)+this.options.margin,0]
                 });
 
                 context.set('next', {
@@ -103,5 +105,19 @@ export class ChupPlayView extends View {
         });
         this.add(this.layout);
         this.layout.pipe(this._eventOutput);
+    }
+
+    _createEventHandlers() {
+        var view = this;
+
+        this._renderables['chupheader' + this.id].on('click', function() {
+            view._eventOutput.emit('home');
+        });
+
+        this._renderables.next.on('click', function() {
+            view._eventOutput.emit('play', parseInt(view.id)+1);
+        });
+
+
     }
 }

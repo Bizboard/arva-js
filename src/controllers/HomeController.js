@@ -31,7 +31,7 @@ export default class HomeController extends Controller {
     constructor(router, context) {
         super(router, context, {
             transfer: {
-                transition: {duration: 500, curve: Easing.inOutElastic},
+                transition: {duration: 500, curve: Easing.outElastic},
                 zIndex: 1000,
                 items: {
                     'topleft': ['topleft', 'chupheader1'],
