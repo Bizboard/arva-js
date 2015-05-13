@@ -11,6 +11,9 @@
   "bugs": {
     "url": "https://github.com/Bizboard/arva-mvc/issues"
   },
+  "scripts": {
+    "build": "jspm bundle-sfx main www/bundle.js"
+  },
   "jspm": {
     "directories": {
       "lib": "src"

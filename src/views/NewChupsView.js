@@ -48,7 +48,7 @@ export class NewChupsView extends View {
                 }
             }),
             infopanel: new BkImageSurface({
-                content: 'img/sf0.jpg',
+                content: 'img/MVc.png',
                 sizeMode: 'cover'
             }),
             topleft: new BkImageSurface({
