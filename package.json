@@ -27,24 +27,9 @@
       "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@^1.0.3",
       "famous-flex": "github:ijzerenhein/famous-flex@^0.3.1",
       "firebase": "github:firebase/firebase-bower@^2.2.0",
-      "lodash": "npm:lodash@^3.2.0",
-      "underscore": "npm:underscore@^1.8.2"
+      "lodash": "npm:lodash@^3.2.0"
     }
   },
-  "window": {
-    "always-on-top": false,
-    "transparent": false,
-    "show": true,
-    "toolbar": true,
-    "show_in_taskbar": true,
-    "position": "center",
-    "width": 400,
-    "height": 736,
-    "frame": true
-  },
   "author": "Tom Clement <tom.clement@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>",
-  "license": "MIT",
-  "dependencies": {
-    "MyoNodeBluetooth": "git://github.com/manueloverdijk/myonodebluetooth.git"
-  }
+  "license": "MIT"
 }

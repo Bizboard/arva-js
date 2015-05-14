@@ -4212,29 +4212,42 @@ System.register("views/NewChupsView", ["npm:famous@0.3.5/core/Engine", "npm:famo
         return ($traceurRuntime.createClass)(NewChupsView, {
           _createRenderables: function() {
             this._renderables = {
+              background: new Surface({properties: {'background-color': '#e6e6e6'}}),
               infopanel: new BkImageSurface({
-                content: 'img/sf0.jpg',
+                content: 'img/MVc.png',
                 sizeMode: 'cover'
               }),
               topleft: new BkImageSurface({
                 content: 'img/sf1.jpg',
                 sizeMode: 'cover',
-                properties: {id: 1}
+                properties: {
+                  id: 1,
+                  '-webkit-box-shadow': '0px 4px 4px 0px rgba(50, 50, 50, 0.34)'
+                }
               }),
               topright: new BkImageSurface({
                 content: 'img/sf2.jpg',
                 sizeMode: 'cover',
-                properties: {id: 2}
+                properties: {
+                  id: 2,
+                  '-webkit-box-shadow': '0px 4px 4px 0px rgba(50, 50, 50, 0.34)'
+                }
               }),
               bottomleft: new BkImageSurface({
                 content: 'img/sf3.jpg',
                 sizeMode: 'cover',
-                properties: {id: 3}
+                properties: {
+                  id: 3,
+                  '-webkit-box-shadow': '0px 4px 4px 0px rgba(50, 50, 50, 0.34)'
+                }
               }),
               bottomright: new BkImageSurface({
                 content: 'img/sf4.jpg',
                 sizeMode: 'cover',
-                properties: {id: 4}
+                properties: {
+                  id: 4,
+                  '-webkit-box-shadow': '0px 4px 4px 0px rgba(50, 50, 50, 0.34)'
+                }
               })
             };
           },
@@ -4244,23 +4257,27 @@ System.register("views/NewChupsView", ["npm:famous@0.3.5/core/Engine", "npm:famo
               layout: function(context, options) {
                 var infoPanelSize = [context.size[0], context.size[1] * 0.2];
                 var centre = context.size[0] / 2;
-                var imgSize = [centre - (this.options.margin * 2), centre - (this.options.margin * 2)];
+                var imgSize = [centre - (this.options.margin * 1.5), centre - (this.options.margin * 2)];
+                context.set('background', {
+                  size: [context.size[0], context.size[1]],
+                  translate: [0, 0, -2]
+                });
                 context.set('infopanel', {size: infoPanelSize});
                 context.set('topleft', {
                   size: imgSize,
-                  translate: [this.options.margin * 2, (context.size[1] * 0.2) + this.options.margin, 1]
+                  translate: [this.options.margin, (context.size[1] * 0.2) + this.options.margin, 1]
                 });
                 context.set('topright', {
                   size: imgSize,
-                  translate: [centre, (context.size[1] * 0.2) + this.options.margin, 1]
+                  translate: [centre + this.options.margin * 0.5, (context.size[1] * 0.2) + this.options.margin, 1]
                 });
                 context.set('bottomleft', {
                   size: imgSize,
-                  translate: [this.options.margin * 2, (context.size[1] * 0.2) + centre, 1]
+                  translate: [this.options.margin, (context.size[1] * 0.2) + centre, 1]
                 });
                 context.set('bottomright', {
                   size: imgSize,
-                  translate: [centre, (context.size[1] * 0.2) + centre, 1]
+                  translate: [centre + this.options.margin * 0.5, (context.size[1] * 0.2) + centre, 1]
                 });
               }.bind(this),
               dataSource: this._renderables
@@ -4291,85 +4308,6 @@ System.register("views/NewChupsView", ["npm:famous@0.3.5/core/Engine", "npm:famo
       }(View)));
     }
   };
-});
-
-
-
-System.register("npm:famous@0.3.5/views/Flipper", ["npm:famous@0.3.5/core/Transform", "npm:famous@0.3.5/transitions/Transitionable", "npm:famous@0.3.5/core/RenderNode", "npm:famous@0.3.5/core/OptionsManager"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var Transform = require("npm:famous@0.3.5/core/Transform");
-  var Transitionable = require("npm:famous@0.3.5/transitions/Transitionable");
-  var RenderNode = require("npm:famous@0.3.5/core/RenderNode");
-  var OptionsManager = require("npm:famous@0.3.5/core/OptionsManager");
-  function Flipper(options) {
-    this.options = Object.create(Flipper.DEFAULT_OPTIONS);
-    this._optionsManager = new OptionsManager(this.options);
-    if (options)
-      this.setOptions(options);
-    this.angle = new Transitionable(0);
-    this.frontNode = undefined;
-    this.backNode = undefined;
-    this.flipped = false;
-  }
-  Flipper.DIRECTION_X = 0;
-  Flipper.DIRECTION_Y = 1;
-  var SEPERATION_LENGTH = 1;
-  Flipper.DEFAULT_OPTIONS = {
-    transition: true,
-    direction: Flipper.DIRECTION_X
-  };
-  Flipper.prototype.flip = function flip(transition, callback) {
-    var angle = this.flipped ? 0 : Math.PI;
-    this.setAngle(angle, transition, callback);
-    this.flipped = !this.flipped;
-  };
-  Flipper.prototype.setAngle = function setAngle(angle, transition, callback) {
-    if (transition === undefined)
-      transition = this.options.transition;
-    if (this.angle.isActive())
-      this.angle.halt();
-    this.angle.set(angle, transition, callback);
-  };
-  Flipper.prototype.setOptions = function setOptions(options) {
-    return this._optionsManager.setOptions(options);
-  };
-  Flipper.prototype.setFront = function setFront(node) {
-    this.frontNode = node;
-  };
-  Flipper.prototype.setBack = function setBack(node) {
-    this.backNode = node;
-  };
-  Flipper.prototype.render = function render() {
-    var angle = this.angle.get();
-    var frontTransform;
-    var backTransform;
-    if (this.options.direction === Flipper.DIRECTION_X) {
-      frontTransform = Transform.rotateY(angle);
-      backTransform = Transform.rotateY(angle + Math.PI);
-    } else {
-      frontTransform = Transform.rotateX(angle);
-      backTransform = Transform.rotateX(angle + Math.PI);
-    }
-    var result = [];
-    if (this.frontNode) {
-      result.push({
-        transform: frontTransform,
-        target: this.frontNode.render()
-      });
-    }
-    if (this.backNode) {
-      result.push({
-        transform: Transform.moveThen([0, 0, SEPERATION_LENGTH], backTransform),
-        target: this.backNode.render()
-      });
-    }
-    return result;
-  };
-  module.exports = Flipper;
-  global.define = __define;
-  return module.exports;
 });
 
 
@@ -14717,68 +14655,6 @@ System.register("github:ijzerenhein/famous-flex@0.3.1/src/ScrollController", ["g
 
 
 })();
-System.register("views/MainFlippedView", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "npm:famous@0.3.5/core/View", "utils/objectHelper", "github:ijzerenhein/famous-flex@0.3.1/src/LayoutController", "github:ijzerenhein/famous-bkimagesurface@1.0.3/BkImageSurface", "github:ijzerenhein/famous-flex@0.3.1/src/FlexScrollView", "npm:famous@0.3.5/utilities/Utility", "npm:famous@0.3.5/views/Flipper", "views/NewChupsView"], function($__export) {
-  "use strict";
-  var __moduleName = "views/MainFlippedView";
-  var Engine,
-      Surface,
-      View,
-      ObjectHelper,
-      LayoutController,
-      BkImageSurface,
-      FlexScrollView,
-      Utility,
-      Flipper,
-      NewChupsView,
-      MainFlippedView;
-  return {
-    setters: [function($__m) {
-      Engine = $__m.default;
-    }, function($__m) {
-      Surface = $__m.default;
-    }, function($__m) {
-      View = $__m.default;
-    }, function($__m) {
-      ObjectHelper = $__m.default;
-    }, function($__m) {
-      LayoutController = $__m.default;
-    }, function($__m) {
-      BkImageSurface = $__m.default;
-    }, function($__m) {
-      FlexScrollView = $__m.default;
-    }, function($__m) {
-      Utility = $__m.default;
-    }, function($__m) {
-      Flipper = $__m.default;
-    }, function($__m) {
-      NewChupsView = $__m.NewChupsView;
-    }],
-    execute: function() {
-      MainFlippedView = $__export("MainFlippedView", (function($__super) {
-        var MainFlippedView = function MainFlippedView() {
-          $traceurRuntime.superConstructor(MainFlippedView).call(this);
-          ObjectHelper.bindAllMethods(this, this);
-          ObjectHelper.hideMethodsAndPrivatePropertiesFromObject(this);
-          ObjectHelper.hidePropertyFromObject(Object.getPrototypeOf(this), 'length');
-          this.setFront(new NewChupsView());
-          this.setBack(new Surface({
-            content: 'back',
-            properties: {
-              background: 'blue',
-              color: 'white',
-              lineHeight: '200px',
-              textAlign: 'center'
-            }
-          }));
-        };
-        return ($traceurRuntime.createClass)(MainFlippedView, {}, {}, $__super);
-      }(Flipper)));
-    }
-  };
-});
-
-
-
 System.register("github:firebase/firebase-bower@2.2.4", ["github:firebase/firebase-bower@2.2.4/firebase"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -17308,13 +17184,23 @@ System.register("views/ChupPlayView", ["npm:famous@0.3.5/core/Engine", "npm:famo
               autoPipeEvents: true,
               mouseMove: true
             });
-            scrollView.push(new Surface({content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. Suspendisse vitae accumsan risus, a congue quam. Integer eget lacinia ligula. Sed consectetur tellus consequat ex aliquet, vel commodo arcu rhoncus. Nam laoreet, ligula non pharetra vehicula, urna lorem auctor odio, ut vehicula lacus metus vel eros. Praesent vitae fermentum nibh. Morbi nec ornare dui, sit amet viverra massa. Nullam imperdiet mattis ex, non volutpat sem. Phasellus sit amet varius nunc. Aenean consectetur ac ipsum auctor lacinia. Vestibulum aliquam congue porttitor. Pellentesque at nisl auctor, eleifend enim id, blandit augue. Nunc ornare ut ex quis semper. Aliquam blandit, diam nec commodo malesuada, nulla enim maximus sapien, sit amet gravida leo massa quis magna. Cras pretium neque vel mi dignissim, non blandit leo lobortis. Integer tincidunt posuere nisi. Praesent nisi ipsum, blandit vitae maximus ut, rutrum vitae odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. Suspendisse vitae accumsan risus, a congue quam. Integer eget lacinia ligula. Sed consectetur tellus consequat ex aliquet, vel commodo arcu rhoncus. Nam laoreet, ligula non pharetra vehicula, urna lorem auctor odio, ut vehicula lacus metus vel eros. Praesent vitae fermentum nibh. Morbi nec ornare dui, sit amet viverra massa. Nullam imperdiet mattis ex, non volutpat sem. Phasellus sit amet varius nunc. Aenean consectetur ac ipsum auctor lacinia. Vestibulum aliquam congue porttitor. Pellentesque at nisl auctor, eleifend enim id, blandit augue. Nunc ornare ut ex quis semper. Aliquam blandit, diam nec commodo malesuada, nulla enim maximus sapien, sit amet gravida leo massa quis magna. Cras pretium neque vel mi dignissim, non blandit leo lobortis. Integer tincidunt posuere nisi. Praesent nisi ipsum, blandit vitae maximus ut, rutrum vitae odio.'}));
+            scrollView.push(new Surface({
+              properties: {
+                'background-color': 'white',
+                'border-radius': '4px',
+                '-webkit-box-shadow': '0px 4px 4px 0px rgba(50, 50, 50, 0.34)',
+                'padding': '10px',
+                'line-height': '1.4'
+              },
+              content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. Suspendisse vitae accumsan risus, a congue quam. Integer eget lacinia ligula. Sed consectetur tellus consequat ex aliquet, vel commodo arcu rhoncus. Nam laoreet, ligula non pharetra vehicula, urna lorem auctor odio, ut vehicula lacus metus vel eros. Praesent vitae fermentum nibh. Morbi nec ornare dui, sit amet viverra massa. Nullam imperdiet mattis ex, non volutpat sem. Phasellus sit amet varius nunc. Aenean consectetur ac ipsum auctor lacinia. Vestibulum aliquam congue porttitor. Pellentesque at nisl auctor, eleifend enim id, blandit augue. Nunc ornare ut ex quis semper. Aliquam blandit, diam nec commodo malesuada, nulla enim maximus sapien, sit amet gravida leo massa quis magna. Cras pretium neque vel mi dignissim, non blandit leo lobortis. Integer tincidunt posuere nisi. Praesent nisi ipsum, blandit vitae maximus ut, rutrum vitae odio. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. Sit amet, consectetur adipiscing elit. Donec in tellus in lectus congue feugiat. '
+            }));
             scrollView.push(new Surface({
               size: [undefined, 200],
               content: ''
             }));
             this._renderables = {
               infopanel: scrollView,
+              background: new Surface({properties: {'background-color': '#e6e6e6'}}),
               next: new BkImageSurface({
                 size: [32, 32],
                 content: 'img/next.png'
@@ -17330,6 +17216,10 @@ System.register("views/ChupPlayView", ["npm:famous@0.3.5/core/Engine", "npm:famo
               autoPipeEvents: true,
               layout: function(context, options) {
                 var infoPanelSize = [context.size[0], context.size[1] * 0.2];
+                context.set('background', {
+                  size: [context.size[0], context.size[1]],
+                  translate: [0, 0, -2]
+                });
                 context.set('chupheader' + this.id, {
                   size: infoPanelSize,
                   translate: [0, 0, 1]
@@ -22620,7 +22510,7 @@ System.register("utils/objectHelper", ["npm:lodash@3.7.0"], function($__export) 
 
 
 
-System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "core/Controller", "views/ProfileView", "views/FullImageView", "views/NavBarView", "views/ChupPlayView", "views/NewChupsView", "views/MainFlippedView", "controllers/PlayController", "npm:famous@0.3.5/transitions/Easing", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
+System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "npm:famous@0.3.5/core/Surface", "core/Controller", "views/ProfileView", "views/FullImageView", "views/NavBarView", "views/ChupPlayView", "views/NewChupsView", "controllers/PlayController", "npm:famous@0.3.5/transitions/Easing", "github:ijzerenhein/famous-flex@0.3.1/src/AnimationController"], function($__export) {
   "use strict";
   var __moduleName = "controllers/HomeController";
   var Engine,
@@ -22631,7 +22521,6 @@ System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "
       NavBarView,
       ChupPlayView,
       NewChupsView,
-      MainFlippedView,
       PlayController,
       Easing,
       AnimationController;
@@ -22652,8 +22541,6 @@ System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "
       ChupPlayView = $__m.ChupPlayView;
     }, function($__m) {
       NewChupsView = $__m.NewChupsView;
-    }, function($__m) {
-      MainFlippedView = $__m.MainFlippedView;
     }, function($__m) {
       PlayController = $__m.default;
     }, function($__m) {
@@ -22686,23 +22573,13 @@ System.register("controllers/HomeController", ["npm:famous@0.3.5/core/Engine", "
           this.mainView.on('play', (function(id) {
             $__0.router.go(PlayController, 'Chup', {id: id});
           }));
-          this.flip = new MainFlippedView();
           this.on('renderend', (function(arg) {
             console.log(arg);
           }));
         };
-        return ($traceurRuntime.createClass)(HomeController, {
-          Main: function() {
+        return ($traceurRuntime.createClass)(HomeController, {Main: function() {
             return this.mainView;
-          },
-          Settings: function() {
-            this.flip.setAngle(Math.PI, {
-              curve: 'easeOutBounce',
-              duration: 500
-            });
-            return this.flip;
-          }
-        }, {}, $__super);
+          }}, {}, $__super);
       }(Controller)));
     }
   };
