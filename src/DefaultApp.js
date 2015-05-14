@@ -54,8 +54,7 @@ export class DefaultApp extends App {
                             animation: AnimationController.Animation.Fade.bind({opacity: 0})
                         },
                         hide: {
-                            transition: {duration: 0, curve: Easing.inBack},
-                            //animation: AnimationController.Animation.Fade.bind({opacity: 0})
+                            transition: {duration: 0, curve: Easing.inBack}
                         },
                         activeFrom: ['HomeController']
                     }

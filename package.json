@@ -12,8 +12,7 @@
     "url": "https://github.com/Bizboard/arva-mvc/issues"
   },
   "scripts": {
-    "build": "jspm bundle-sfx main www/bundle.js",
-    "start": "nwjs.app/Contents/MacOS/nwjs"
+    "build": "jspm bundle-sfx main www/bundle.js"
   },
   "dependencies": {
     "eslint": "latest"
