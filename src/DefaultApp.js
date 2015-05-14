@@ -12,7 +12,7 @@
 import {Inject, annotate}   from 'di.js'
 import {App}                from './core/App'
 import HomeController       from './controllers/HomeController'
-import PlayController       from './controllers/PlayController'
+import TestController       from './controllers/TestController'
 import Easing               from 'famous/transitions/Easing'
 import AnimationController  from 'famous-flex/src/AnimationController'
 
@@ -20,7 +20,7 @@ import AnimationController  from 'famous-flex/src/AnimationController'
 export class DefaultApp extends App {
 
 
-    constructor(router, homeController, playController) {
+    constructor(router, homeController, testController) {
         // make one of the controllers default
         router.setDefault(homeController, 'Main');
 
@@ -31,7 +31,7 @@ export class DefaultApp extends App {
                     {
                         transition: {duration: 500, curve: Easing.outBack},
                         animation: AnimationController.Animation.Fade,
-                        activeFrom: ['PlayController']
+                        activeFrom: ['TestController']
                     }
                 ],
                 methods: {
@@ -45,7 +45,7 @@ export class DefaultApp extends App {
                     }
                 }
             },
-            PlayController: {
+            TestController: {
                 controllers: [
                     {
 
@@ -68,4 +68,4 @@ export class DefaultApp extends App {
 }
 
 annotate(DefaultApp, new Inject(HomeController));
-annotate(DefaultApp, new Inject(PlayController));
+annotate(DefaultApp, new Inject(TestController));
