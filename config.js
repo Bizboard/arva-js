@@ -16,7 +16,7 @@ System.config({
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
     "famous-flex": "github:ijzerenhein/famous-flex@0.3.1",
     "firebase": "github:firebase/firebase-bower@2.2.4",
-    "lodash": "npm:lodash@3.8.0",
+    "lodash": "npm:lodash@3.7.0",
     "traceur": "github:jmcriffey/bower-traceur@0.0.87",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.87",
     "underscore": "npm:underscore@1.8.3",

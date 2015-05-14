@@ -11,6 +11,10 @@
   "bugs": {
     "url": "https://github.com/Bizboard/arva-mvc/issues"
   },
+  "scripts": {
+    "build": "jspm bundle-sfx main www/bundle.js",
+    "start": "nwjs.app/Contents/MacOS/nwjs"
+  },
   "dependencies": {
     "eslint": "latest"
   },
@@ -26,8 +30,7 @@
       "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@^1.0.3",
       "famous-flex": "github:ijzerenhein/famous-flex@^0.3.1",
       "firebase": "github:firebase/firebase-bower@^2.2.0",
-      "lodash": "npm:lodash@^3.2.0",
-      "underscore": "npm:underscore@^1.8.2"
+      "lodash": "npm:lodash@^3.2.0"
     }
   },
   "author": "Tom Clement <tom.clement@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>",

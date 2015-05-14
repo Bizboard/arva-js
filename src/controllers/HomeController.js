@@ -9,11 +9,15 @@
 
  */
 
+import Engine               from 'famous/core/Engine';
+import Surface              from 'famous/core/Surface';
 import {Controller}         from '../core/Controller';
 import {ProfileView}        from '../views/ProfileView';
 import {FullImageView}      from '../views/FullImageView';
 import {NavBarView}         from '../views/NavBarView';
 import Easing               from 'famous/transitions/Easing';
+import AnimationController  from 'famous-flex/src/AnimationController';
+
 
 export default class HomeController extends Controller {
 
@@ -36,10 +40,10 @@ export default class HomeController extends Controller {
     }
 
     ReRouteExample() {
-        this.router.go(this, 'Index', ['a','b']);
+        this.router.go(this, "NavBar", { id: 1});
     }
 
-    Index() {
+    Main() {
         return new FullImageView({
             text: 'arva-mvc with famous-flex is magic!'
         });
@@ -49,7 +53,7 @@ export default class HomeController extends Controller {
         return new ProfileView();
     }
 
-    NavBar() {
+    NavBar(id) {
         return new NavBarView();
     }
 }

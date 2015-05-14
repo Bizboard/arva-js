@@ -22,34 +22,41 @@ export class DefaultApp extends App {
 
     constructor(router, homeController) {
         // make one of the controllers default
-        router.setDefault(homeController, 'Index');
+        router.setDefault(homeController, 'Main');
+
 
         router.setControllerSpecs({
             HomeController: {
                 controllers: [
                     {
-                        transition: {duration: 1000, curve: Easing.outBack},
-                        animation: AnimationController.Animation.Slide.Left,
+                        transition: {duration: 500, curve: Easing.outBack},
+                        animation: AnimationController.Animation.Fade,
                         activeFrom: ['TestController']
                     }
                 ],
                 methods: {
-                    /* Optional: define how URL changes with the same controller but different methods are animated. */
                     next: {
-                        transition: {duration: 1000, curve: Easing.outBack},
-                        animation: AnimationController.Animation.Slide.Up
+                        transition: {duration: 500, curve: Easing.outBack},
+                        animation: AnimationController.Animation.Slide.Right
                     },
                     previous: {
-                        transition: {duration: 1000, curve: Easing.outBack},
-                        animation: AnimationController.Animation.Slide.Down
+                        transition: {duration: 500, curve: Easing.outBack},
+                        animation: AnimationController.Animation.Slide.Left
                     }
                 }
             },
             TestController: {
                 controllers: [
                     {
-                        transition: {duration: 1000, curve: Easing.outBack},
-                        animation: AnimationController.Animation.Slide.Down,
+
+                        show: {
+                            transition: {duration: 500, curve: Easing.inBack},
+                            animation: AnimationController.Animation.Fade.bind({opacity: 0})
+                        },
+                        hide: {
+                            transition: {duration: 0, curve: Easing.inBack},
+                            //animation: AnimationController.Animation.Fade.bind({opacity: 0})
+                        },
                         activeFrom: ['HomeController']
                     }
                 ]
