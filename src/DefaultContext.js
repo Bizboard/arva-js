@@ -16,16 +16,24 @@ import Engine                                   from 'famous/core/Engine';
 import {Context}                                from 'arva-context/Context';
 import AnimationController                      from 'famous-flex/src/AnimationController';
 
+var famouscontext;
+
+
+function FamousContext() {
+    return famouscontext;
+}
+annotate(FamousContext, new Provide(Context));
+
 
 function NewAnimationController() {
-    var context = Engine.createContext();
+    famouscontext = Engine.createContext();
     var controller = new AnimationController();
 
-    context.add(controller);
+    famouscontext.add(controller);
     return controller;
 }
-
 annotate(NewAnimationController, new Provide(AnimationController));
+
 
 
 export function GetDefaultContext() {
@@ -34,9 +42,9 @@ export function GetDefaultContext() {
 
 export function reCreateDefaultContext(dataSource = null) {
     if (dataSource) {
-        Context.setContext('Default', new Injector([ArvaRouter, NewAnimationController, dataSource]));
+        Context.setContext('Default', new Injector([ArvaRouter, FamousContext, NewAnimationController, dataSource]));
     } else {
-        Context.setContext('Default', new Injector([ArvaRouter, NewAnimationController]));
+        Context.setContext('Default', new Injector([ArvaRouter, FamousContext, NewAnimationController]));
     }
 
     return Context.getContext('Default');
