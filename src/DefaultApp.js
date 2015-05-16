@@ -16,7 +16,6 @@ import TestController       from './controllers/TestController';
 import Easing               from 'famous/transitions/Easing';
 import AnimationController  from 'famous-flex/src/AnimationController';
 
-
 export class DefaultApp extends App {
 
 
@@ -68,3 +67,4 @@ export class DefaultApp extends App {
 
 annotate(DefaultApp, new Inject(HomeController));
 annotate(DefaultApp, new Inject(TestController));
+
