@@ -19,7 +19,7 @@ import AnimationController  from 'famous-flex/src/AnimationController';
 export class DefaultApp extends App {
 
 
-    constructor(router, context) {
+    constructor(router) {
         // make one of the controllers default
         router.setDefault(HomeController, 'Main');
 

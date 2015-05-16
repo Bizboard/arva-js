@@ -19,20 +19,24 @@ import AnimationController                      from 'famous-flex/src/AnimationC
 var famouscontext;
 
 
-function FamousContext() {
+function famousContext() {
+    if (famouscontext) {
+        return famouscontext;
+    }
+    famouscontext = Engine.createContext();
     return famouscontext;
 }
-annotate(FamousContext, new Provide(Context));
+annotate(famousContext, new Provide(Context));
 
 
-function NewAnimationController() {
-    famouscontext = Engine.createContext();
+function newAnimationController() {
+    famouscontext = famousContext();
     var controller = new AnimationController();
 
     famouscontext.add(controller);
     return controller;
 }
-annotate(NewAnimationController, new Provide(AnimationController));
+annotate(newAnimationController, new Provide(AnimationController));
 
 
 
@@ -42,9 +46,9 @@ export function GetDefaultContext() {
 
 export function reCreateDefaultContext(dataSource = null) {
     if (dataSource) {
-        Context.setContext('Default', new Injector([ArvaRouter, FamousContext, NewAnimationController, dataSource]));
+        Context.setContext('Default', new Injector([ArvaRouter, famousContext, newAnimationController, dataSource]));
     } else {
-        Context.setContext('Default', new Injector([ArvaRouter, FamousContext, NewAnimationController]));
+        Context.setContext('Default', new Injector([ArvaRouter, famousContext, newAnimationController]));
     }
 
     return Context.getContext('Default');
