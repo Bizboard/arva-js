@@ -39,10 +39,14 @@ export class ArvaRouter extends Router {
      */
     setDefault(controller, method = null) {
 
-        this.defaultController = Object.getPrototypeOf(controller).constructor.name
+        let controllerName = '';
+        if (Object.getPrototypeOf(controller).constructor.name=="Function")
+            controllerName = controller.name;
+        else controllerName = Object.getPrototypeOf(controller).constructor.name;
+        this.defaultController = controllerName
             .replace('Controller', '');
 
-        if (method != null) { this.defaultMethod = method }
+        if (method != null) { this.defaultMethod = method; }
     }
 
     setControllerSpecs(specs) {
