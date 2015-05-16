@@ -24,8 +24,10 @@ export class App {
      * Have the router check check which route is active and fire the Controller
      * @param router
      */
-    constructor(router) {
-        router.run();
+    constructor(router, context) {
+        this.router = router;
+        this.context = context;
+        this.router.run();
     }
 }
 
