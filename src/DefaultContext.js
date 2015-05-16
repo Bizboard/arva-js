@@ -13,7 +13,8 @@
 import {Injector, annotate, Provide}            from 'di.js';
 import {ArvaRouter}                             from './routers/ArvaRouter';
 import Engine                                   from 'famous/core/Engine';
-import {Context}                                from 'arva-context/Context';
+import {Context as ArvaContext}                 from 'arva-context/Context';
+import Context                                  from 'famous/core/Context';
 import AnimationController                      from 'famous-flex/src/AnimationController';
 
 var famouscontext;
@@ -41,15 +42,15 @@ annotate(newAnimationController, new Provide(AnimationController));
 
 
 export function GetDefaultContext() {
-    return Context.getContext('Default');
+    return ArvaContext.getContext('Default');
 }
 
 export function reCreateDefaultContext(dataSource = null) {
     if (dataSource) {
-        Context.setContext('Default', new Injector([ArvaRouter, famousContext, newAnimationController, dataSource]));
+        ArvaContext.setContext('Default', new Injector([ArvaRouter, famousContext, newAnimationController, dataSource]));
     } else {
-        Context.setContext('Default', new Injector([ArvaRouter, famousContext, newAnimationController]));
+        ArvaContext.setContext('Default', new Injector([ArvaRouter, famousContext, newAnimationController]));
     }
 
-    return Context.getContext('Default');
+    return ArvaContext.getContext('Default');
 }
