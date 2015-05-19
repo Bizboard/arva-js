@@ -45,12 +45,9 @@ export function GetDefaultContext() {
     return ArvaContext.getContext('Default');
 }
 
-export function reCreateDefaultContext(dataSource = null) {
-    if (dataSource) {
-        ArvaContext.setContext('Default', new Injector([ArvaRouter, famousContext, newAnimationController, dataSource]));
-    } else {
-        ArvaContext.setContext('Default', new Injector([ArvaRouter, famousContext, newAnimationController]));
-    }
-
+export function reCreateDefaultContext() {
+    // combine all injectors from context creation and the default injectors.
+    let arrayOfInjectors = [ArvaContext, famousContext, newAnimationController].concat(arguments);
+    ArvaContext.setContext('Default', new Injector(arrayOfInjectors));
     return ArvaContext.getContext('Default');
 }
