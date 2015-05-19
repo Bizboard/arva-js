@@ -47,7 +47,7 @@ export function GetDefaultContext() {
 
 export function reCreateDefaultContext() {
     // combine all injectors from context creation and the default injectors.
-    let arrayOfInjectors = [ArvaContext, famousContext, newAnimationController].concat(arguments);
+    let arrayOfInjectors = [ArvaRouter, famousContext, newAnimationController].concat(arguments);
     ArvaContext.setContext('Default', new Injector(arrayOfInjectors));
     return ArvaContext.getContext('Default');
 }
