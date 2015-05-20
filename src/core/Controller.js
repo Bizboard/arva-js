@@ -53,11 +53,26 @@ export class Controller {
     onRouteCalled(route) {
         if (typeof this[route.method] === 'function') {
             var result = this[route.method].apply(this, route.values);
+
             if (result) {
                 this._eventOutput.emit('renderstart', route.method);
+                
+                if (result instanceof Promise) { // we can assume the method called was asynchronous from nature, therefore we await the result
 
-                // assemble a callback based on the execution scope and have that called when rendering is completed
-                this.context.show(result, _.extend(route.spec, this.spec), () => { this._eventOutput.emit('renderend', route.method); });
+                    result.then((delegatedresult) => {
+                        // assemble a callback based on the execution scope and have that called when rendering is completed
+                        this.context.show(delegatedresult, _.extend(route.spec, this.spec), () => {
+                            this._eventOutput.emit('renderend', route.method);
+                        });
+                    });
+                }
+                else {
+
+                    // assemble a callback based on the execution scope and have that called when rendering is completed
+                    this.context.show(result, _.extend(route.spec, this.spec), () => {
+                        this._eventOutput.emit('renderend', route.method);
+                    });
+                }
             }
         } else {
             console.log('Route does not exist!');
