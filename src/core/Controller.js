@@ -58,6 +58,7 @@ export class Controller {
 
                 // assemble a callback based on the execution scope and have that called when rendering is completed
                 this.context.show(result, _.extend(route.spec, this.spec), function(){ this._eventOutput.emit('renderend', route.method); }.bind(this));
+                this._eventOutput.emit('rendering', route.method);
             }
         } else {
             console.log('Route does not exist!');
