@@ -191,7 +191,7 @@ class ObjectHelper {
 
             /* Value must be a non-null primitive or object to be pushable to a dataSource */
             if (value !== null && value !== undefined && typeof value !== 'function') {
-                if (typeof value === 'object') {
+                if (typeof value == 'object') {
                     result[name] = ObjectHelper.getEnumerableProperties(value);
                 } else {
                     result[name] = value;
@@ -202,7 +202,7 @@ class ObjectHelper {
         /* Collect all properties with accessors (getters/setters) that are enumerable, too */
         let descriptorNames = Object.getOwnPropertyNames(prototype);
         descriptorNames = descriptorNames.filter(function (name) {
-            return propNames.indexOf(name) < 0;
+            return propNames.indexOf(name) < 0
         });
         for (let name of descriptorNames.values()) {
             let descriptor = Object.getOwnPropertyDescriptor(prototype, name);
@@ -211,7 +211,7 @@ class ObjectHelper {
 
                 /* Value must be a non-null primitive or object to be pushable to a dataSource */
                 if (value !== null && value !== undefined && typeof value !== 'function') {
-                    if (typeof value === 'object') {
+                    if (typeof value == 'object') {
                         result[name] = ObjectHelper.getEnumerableProperties(value);
                     } else {
                         result[name] = value;
@@ -222,7 +222,8 @@ class ObjectHelper {
 
         /* Collect all enumerable properties in the prototype's prototype as well */
         let superPrototype = Object.getPrototypeOf(prototype);
-        if (superPrototype.constructor.name !== 'Object' && superPrototype.constructor.name !== 'Array') {
+        let ignorableTypes = ['Object', 'Array', 'EventEmitter'];
+        if (ignorableTypes.indexOf(superPrototype.constructor.name) === -1) {
             let prototypeEnumerables = ObjectHelper.getPrototypeEnumerableProperties(rootObject, superPrototype);
             _.merge(result, prototypeEnumerables);
         }

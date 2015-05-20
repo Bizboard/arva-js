@@ -9,16 +9,16 @@
 
  */
 
-import {Inject, annotate}   from 'di.js';
+import {Inject}   from 'di.js';
 import {App}                from './core/App';
+import Router               from './core/Router';
 import HomeController       from './controllers/HomeController';
 import TestController       from './controllers/TestController';
 import Easing               from 'famous/transitions/Easing';
 import AnimationController  from 'famous-flex/src/AnimationController';
 
-
+@Inject(Router, HomeController, TestController)
 export class DefaultApp extends App {
-
 
     constructor(router, homeController) {
         // make one of the controllers default
@@ -54,7 +54,7 @@ export class DefaultApp extends App {
                             animation: AnimationController.Animation.Fade.bind({opacity: 0})
                         },
                         hide: {
-                            transition: {duration: 0, curve: Easing.inBack},
+                            transition: {duration: 0, curve: Easing.inBack}
                             //animation: AnimationController.Animation.Fade.bind({opacity: 0})
                         },
                         activeFrom: ['HomeController']
@@ -66,6 +66,3 @@ export class DefaultApp extends App {
         super(router);
     }
 }
-
-annotate(DefaultApp, new Inject(HomeController));
-annotate(DefaultApp, new Inject(TestController));

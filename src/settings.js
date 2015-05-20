@@ -10,12 +10,11 @@
  */
 
 
-import {annotate, Provide}          from 'di.js';
+import {Provide}                    from 'di.js';
 import {DataSource}                 from 'arva-ds/core/DataSource';
 import {FirebaseDataSource}         from 'arva-ds/datasources/FirebaseDataSource';
 
+@Provide(DataSource)
 export function DefaultDataSource() {
-    return new FirebaseDataSource('https://<yourapp>.firebaseio.com');
+    return new FirebaseDataSource('https://es6test.firebaseio.com');
 }
-
-annotate(DefaultDataSource, new Provide(DataSource));

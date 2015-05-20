@@ -10,13 +10,14 @@
  */
 
 
-import {Inject, annotate} from 'di.js';
+import {Inject} from 'di.js';
 import {Router}           from './Router';
 
 /**
  * The App class exposes the Router which can be used to configure the Application's routing settings.
  * You can specify which Route should be default by calling router.setDefault(controller, method);
  */
+@Inject(Router)
 export class App {
 
     /**
@@ -27,5 +28,3 @@ export class App {
         router.run();
     }
 }
-
-annotate(App, new Inject(Router));

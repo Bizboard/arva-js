@@ -9,12 +9,12 @@
 
  */
 
- import ObjectHelper                 from '../utils/objectHelper';
+import ObjectHelper                 from '../utils/objectHelper';
 
 /**
  * Abstract Router class which can be implemented to be used in an MVP setup.
  */
-export class Router {
+export default class Router {
 
 
     constructor() {

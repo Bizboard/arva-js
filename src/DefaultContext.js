@@ -10,13 +10,13 @@
  */
 // hello world
 
-import {Injector, annotate, Provide}            from 'di.js';
-import {ArvaRouter}                             from './routers/ArvaRouter';
-import Engine                                   from 'famous/core/Engine';
-import {Context}                                from 'arva-context/Context';
-import AnimationController                      from 'famous-flex/src/AnimationController';
+import {Provide, Injector}          from 'di.js';
+import {ArvaRouter}                 from './routers/ArvaRouter';
+import Engine                       from 'famous/core/Engine';
+import {Context}                    from 'arva-context/Context';
+import AnimationController          from 'famous-flex/src/AnimationController';
 
-
+@Provide(AnimationController)
 function NewAnimationController() {
     var context = Engine.createContext();
     var controller = new AnimationController();
@@ -24,9 +24,6 @@ function NewAnimationController() {
     context.add(controller);
     return controller;
 }
-
-annotate(NewAnimationController, new Provide(AnimationController));
-
 
 export function GetDefaultContext() {
     return Context.getContext('Default');

@@ -12,9 +12,16 @@
 import {DefaultApp}                             from './DefaultApp';
 import {DefaultDataSource}                      from './settings';
 import {reCreateDefaultContext}                 from './DefaultContext';
+import BrandingEngine                           from './utils/branding/BrandingEngineSingleton';
 
 // Your main that creates a DI context and uses that context to load your application. We can provide the
 // router, but also the datasource provider.
 
-reCreateDefaultContext(DefaultDataSource)
-    .get(DefaultApp);
+let context = reCreateDefaultContext(DefaultDataSource);
+let branding = context.get(BrandingEngine);
+(async function(){
+    await BrandingEngine.getInstance().setOptionsFromDataSource();
+    context.get(DefaultApp);
+})();
+
+

@@ -10,11 +10,12 @@
  */
 
 import _                            from 'lodash';
-import {Router}                     from '../core/Router';
-import {Provide, annotate}  from 'di.js';
+import Router                       from '../core/Router';
+import {Provide}                    from 'di.js';
 import Easing                       from 'famous/transitions/Easing';
 import AnimationController          from 'famous-flex/src/AnimationController';
 
+@Provide(Router)
 export class ArvaRouter extends Router {
 
     constructor() {
@@ -294,5 +295,3 @@ export class ArvaRouter extends Router {
     }
 
 }
-
-annotate(ArvaRouter, new Provide(Router));
