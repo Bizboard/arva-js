@@ -17,21 +17,23 @@ import {Context as ArvaContext}                 from 'arva-context/Context';
 import Context                                  from 'famous/core/Context';
 import AnimationController                      from 'famous-flex/src/AnimationController';
 
+var famousContext = null;
+
 @Provide(Context)
-function famousContext() {
-    if (famouscontext) {
-        return famouscontext;
+function createFamousContext() {
+    if (famousContext) {
+        return famousContext;
     }
-    famouscontext = Engine.createContext();
-    return famouscontext;
+    famousContext = Engine.createContext();
+    return famousContext;
 }
 
 @Provide(AnimationController)
 function newAnimationController() {
-    famouscontext = famousContext();
+    famousContext = createFamousContext();
     var controller = new AnimationController();
 
-    famouscontext.add(controller);
+    famousContext.add(controller);
     return controller;
 }
 
@@ -42,7 +44,7 @@ export function GetDefaultContext() {
 
 export function reCreateDefaultContext() {
     // combine all injectors from context creation and the default injectors.
-    let arrayOfInjectors = [ArvaRouter, famousContext, newAnimationController];
+    let arrayOfInjectors = [ArvaRouter, createFamousContext, newAnimationController];
 
     for (let i = 0; i < arguments.length; i++) {
         arrayOfInjectors.push(arguments[i]);
