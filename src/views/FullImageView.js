@@ -11,14 +11,21 @@ import BkImageSurface               from 'famous-bkimagesurface/BkImageSurface';
 const DEFAULT_OPTIONS = {
     classes: ['view', 'fullImage'],
     margins: [20, 20, 20, 20],
-    textHeight: 30
+    textHeight: 30,
+    branding: {
+        textColor: 'red'
+    }
 };
+
+
 
 export class FullImageView extends View {
 
-
-
     constructor() {
+
+        //let OPTIONS = DEFAULT_OPTIONS;
+        //OPTIONS.branding = _.extend(OPTIONS.branding, BrandingEngine.getInstance().getAll());
+        //
         super(DEFAULT_OPTIONS);
 
         /* Bind all local methods to the current object instance, so we can refer to 'this'
@@ -45,7 +52,8 @@ export class FullImageView extends View {
             image: new BkImageSurface({
                 classes: this.options.classes.concat(['image']),
                 content: 'img/scarlett.jpg',
-                sizeMode: 'cover'
+                sizeMode: 'cover',
+                color: this.options.textColor
             }),
             text: new Surface({
                 classes: this.options.classes.concat(['text']),

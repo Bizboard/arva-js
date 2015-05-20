@@ -17,9 +17,7 @@ import {Context as ArvaContext}                 from 'arva-context/Context';
 import Context                                  from 'famous/core/Context';
 import AnimationController                      from 'famous-flex/src/AnimationController';
 
-var famouscontext;
-
-
+@Provide(Context)
 function famousContext() {
     if (famouscontext) {
         return famouscontext;
@@ -27,9 +25,8 @@ function famousContext() {
     famouscontext = Engine.createContext();
     return famouscontext;
 }
-annotate(famousContext, new Provide(Context));
 
-
+@Provide(AnimationController)
 function newAnimationController() {
     famouscontext = famousContext();
     var controller = new AnimationController();
@@ -37,8 +34,6 @@ function newAnimationController() {
     famouscontext.add(controller);
     return controller;
 }
-annotate(newAnimationController, new Provide(AnimationController));
-
 
 
 export function GetDefaultContext() {

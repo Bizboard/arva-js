@@ -20,16 +20,17 @@ System.config({
     "famous": "npm:famous@0.3.5",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
     "famous-flex": "github:ijzerenhein/famous-flex@0.3.2",
-    "firebase": "github:firebase/firebase-bower@2.2.4",
-    "lodash": "npm:lodash@3.8.0",
+    "firebase": "github:firebase/firebase-bower@2.2.5",
+    "lodash": "npm:lodash@3.9.1",
     "traceur": "github:jmcriffey/bower-traceur@0.0.88",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.88",
     "underscore": "npm:underscore@1.8.3",
     "github:Bizboard/arva-ds@develop": {
       "arva-context": "github:Bizboard/arva-context@master",
       "di.js": "github:Bizboard/di.js@master",
-      "firebase": "github:firebase/firebase-bower@2.2.4",
-      "lodash": "npm:lodash@3.8.0"
+      "eventemitter3": "npm:eventemitter3@1.1.0",
+      "firebase": "github:firebase/firebase-bower@2.2.5",
+      "lodash": "npm:lodash@3.9.1"
     },
     "github:jspm/nodelibs-buffer@0.1.0": {
       "buffer": "npm:buffer@3.2.2"
@@ -96,7 +97,7 @@ System.config({
     "npm:inherits@2.0.1": {
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
-    "npm:lodash@3.8.0": {
+    "npm:lodash@3.9.1": {
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
     "npm:path-browserify@0.0.0": {

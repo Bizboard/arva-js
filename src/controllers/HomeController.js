@@ -9,18 +9,14 @@
 
  */
 
-import Engine               from 'famous/core/Engine';
-import Surface              from 'famous/core/Surface';
+import {Inject}             from 'di.js';
 import {Controller}         from '../core/Controller';
 import {ProfileView}        from '../views/ProfileView';
 import {FullImageView}      from '../views/FullImageView';
 import {NavBarView}         from '../views/NavBarView';
 import Easing               from 'famous/transitions/Easing';
-import AnimationController  from 'famous-flex/src/AnimationController';
-
 
 export default class HomeController extends Controller {
-
 
     constructor(router, context) {
         super(router, context, {
@@ -40,7 +36,7 @@ export default class HomeController extends Controller {
     }
 
     ReRouteExample() {
-        this.router.go(this, "NavBar", { id: 1});
+        this.router.go(this, 'NavBar', { id: 1});
     }
 
     Main() {
@@ -53,8 +49,7 @@ export default class HomeController extends Controller {
         return new ProfileView();
     }
 
-    NavBar(id) {
+    NavBar() {
         return new NavBarView();
     }
 }
-
