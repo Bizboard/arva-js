@@ -25,7 +25,7 @@
     "dependencies": {
       "arva-context": "github:Bizboard/arva-context@master",
       "arva-ds": "github:Bizboard/arva-ds@master",
-      "di.js": "github:angular/di.js@master",
+      "di.js": "github:Bizboard/di.js@master",
       "famous": "npm:famous@^0.3.5",
       "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@^1.0.3",
       "famous-flex": "github:ijzerenhein/famous-flex@^0.3.1",
