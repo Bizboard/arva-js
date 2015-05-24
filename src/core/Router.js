@@ -10,14 +10,16 @@
  */
 
 import ObjectHelper                 from '../utils/objectHelper';
+import EventEmitter                 from 'eventemitter3';
 
 /**
  * Abstract Router class which can be implemented to be used in an MVP setup.
  */
-export default class Router {
+export default class Router extends EventEmitter {
 
 
     constructor() {
+        super();
         // make classes behave like context bound
         ObjectHelper.bindAllMethods(this, this);
 

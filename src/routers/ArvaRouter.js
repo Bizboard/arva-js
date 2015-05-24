@@ -188,6 +188,7 @@ export class ArvaRouter extends Router {
 
             // make the controller active for current scope
             rule['@'](currentRoute);
+            this.emit('routechange', currentRoute);
 
             return true;
         } else {
