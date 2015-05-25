@@ -10,7 +10,7 @@
  */
 // hello world
 
-import {Injector, Provide}            from 'di.js';
+import {Injector, Provide}                      from 'di.js';
 import {ArvaRouter}                             from './routers/ArvaRouter';
 import {Context as ArvaContext}                 from 'arva-context/Context';
 import Engine                                   from 'famous/core/Engine';
@@ -42,9 +42,9 @@ export function GetDefaultContext() {
     return ArvaContext.getContext('Default');
 }
 
-export function reCreateDefaultContext() {
+export function reCreateDefaultContext(router=ArvaRouter) {
     // combine all injectors from context creation and the default injectors.
-    let arrayOfInjectors = [ArvaRouter, createFamousContext, newAnimationController];
+    let arrayOfInjectors = [router, createFamousContext, newAnimationController];
 
     for (let i = 0; i < arguments.length; i++) {
         arrayOfInjectors.push(arguments[i]);
