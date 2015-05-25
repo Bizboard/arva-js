@@ -178,9 +178,7 @@ export class ArvaRouter extends Router {
             currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : {};
             this._setHistory(currentRoute);
 
-            // make the controller active for current scope
-            rule['@'](currentRoute);
-            this.emit('routechange', currentRoute);
+            this._executeRoute(rule, currentRoute);
 
             return true;
         } else {
@@ -188,6 +186,18 @@ export class ArvaRouter extends Router {
         }
 
         return false;
+    }
+
+    /**
+     * Execute the controller rule associated with a given route, passing the route as a parameter.
+     * @param {Object} rule
+     * @param {Object} route
+     * @private
+     */
+    _executeRoute(rule, route) {
+        /* Make the controller active for current scope */
+        rule['@'](route);
+        this.emit('routechange', route);
     }
 
     /**
