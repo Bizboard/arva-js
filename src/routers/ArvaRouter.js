@@ -40,12 +40,7 @@ export class ArvaRouter extends Router {
      */
     setDefault(controller, method = null) {
 
-        let controllerName = '';
-        if (Object.getPrototypeOf(controller).constructor.name == "Function")
-            controllerName = controller.name;
-        else controllerName = Object.getPrototypeOf(controller).constructor.name;
-        this.defaultController = controllerName
-            .replace('Controller', '');
+        this.defaultController = this._getControllerName(controller);
 
         if (method != null) { this.defaultMethod = method; }
     }
@@ -62,10 +57,7 @@ export class ArvaRouter extends Router {
      */
     go(controller, method, params = null) {
 
-        let controllerName = '';
-        if (Object.getPrototypeOf(controller).constructor.name == "Function")
-            controllerName = controller.name;
-        else controllerName = Object.getPrototypeOf(controller).constructor.name;
+        let controllerName = this._getControllerName(controller);
 
         let routeRoot = controllerName
             .replace(this.defaultController, '')
@@ -297,6 +289,23 @@ export class ArvaRouter extends Router {
         }
 
         console.log('No spec defined from ' + fromController + ' to ' + toController + '. Please check router.setControllerSpecs() in your app constructor.')
+    }
+
+    /**
+     * Extract a controller name from a given string, constructor, or controller instance.
+     * @param {Function|Object|String} controller String, constructor, or controller instance.
+     * @returns {String}
+     * @private
+     */
+    _getControllerName(controller) {
+        if(typeof controller === "string") {
+            return controller.replace('Controller', '');
+        } else if (typeof controller === "object" && Object.getPrototypeOf(controller).constructor.name == "Function"){
+            return controller.name;
+        } else{
+            return typeof controller === "object" ?
+                             Object.getPrototypeOf(controller).constructor.name : typeof controller;
+        }
     }
 
 }
