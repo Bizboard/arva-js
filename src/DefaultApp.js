@@ -9,11 +9,11 @@
 
  */
 
-import {Inject}   from 'di.js';
+import {Inject}             from 'di.js';
 import {App}                from './core/App';
-import Router               from './core/Router';
-import HomeController       from './controllers/HomeController';
-import TestController       from './controllers/TestController';
+import {Router}             from './core/Router';
+import {HomeController}     from './controllers/HomeController';
+import {TestController }    from './controllers/TestController';
 import Easing               from 'famous/transitions/Easing';
 import AnimationController  from 'famous-flex/src/AnimationController';
 

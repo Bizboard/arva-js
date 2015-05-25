@@ -11,8 +11,8 @@
 
 import _                    from 'lodash';
 import {Inject}             from 'di.js';
-import Router               from './Router';
-import ObjectHelper         from '../utils/objectHelper';
+import {Router}             from './Router';
+import {ObjectHelper}       from '../utils/objectHelper';
 import EventHandler         from 'famous/core/EventHandler';
 import AnimationController  from 'famous-flex/src/AnimationController';
 

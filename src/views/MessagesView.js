@@ -3,8 +3,9 @@
  */
 import Surface                      from 'famous/core/Surface';
 import Scrollview                   from 'famous/views/Scrollview';
-import ObjectHelper                 from '../utils/objectHelper';
+
 import {ChatMessages}               from '../models/ChatMessages';
+import {ObjectHelper}               from '../utils/objectHelper';
 
 
 export class MessagesView extends Scrollview {

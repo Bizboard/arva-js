@@ -9,13 +9,13 @@
 
  */
 
-import ObjectHelper                 from '../utils/objectHelper';
 import EventEmitter                 from 'eventemitter3';
+import {ObjectHelper}               from '../utils/objectHelper';
 
 /**
  * Abstract Router class which can be implemented to be used in an MVP setup.
  */
-export default class Router extends EventEmitter {
+export class Router extends EventEmitter {
 
 
     constructor() {

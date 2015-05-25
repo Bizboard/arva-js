@@ -4,7 +4,7 @@
 
 import {Inject}         from 'di.js';
 import {DataSource}     from 'arva-ds/core/DataSource';
-import ObjectHelper     from '../objectHelper';
+import {ObjectHelper}   from '../../utils/objectHelper';
 
 @Inject(DataSource)
 export class BrandingEngine {

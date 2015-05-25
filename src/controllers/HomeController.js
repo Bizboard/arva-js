@@ -16,7 +16,7 @@ import {FullImageView}      from '../views/FullImageView';
 import {NavBarView}         from '../views/NavBarView';
 import Easing               from 'famous/transitions/Easing';
 
-export default class HomeController extends Controller {
+export class HomeController extends Controller {
 
     constructor(router, context) {
         super(router, context, {

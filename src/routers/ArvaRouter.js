@@ -10,10 +10,10 @@
  */
 
 import _                            from 'lodash';
-import Router                       from '../core/Router';
 import {Provide}                    from 'di.js';
 import Easing                       from 'famous/transitions/Easing';
 import AnimationController          from 'famous-flex/src/AnimationController';
+import {Router}                      from '../core/Router';
 
 @Provide(Router)
 export class ArvaRouter extends Router {
@@ -41,7 +41,7 @@ export class ArvaRouter extends Router {
     setDefault(controller, method = null) {
 
         let controllerName = '';
-        if (Object.getPrototypeOf(controller).constructor.name=="Function")
+        if (Object.getPrototypeOf(controller).constructor.name == "Function")
             controllerName = controller.name;
         else controllerName = Object.getPrototypeOf(controller).constructor.name;
         this.defaultController = controllerName
@@ -60,10 +60,10 @@ export class ArvaRouter extends Router {
      * @param method
      * @param params
      */
-    go(controller, method, params=null) {
+    go(controller, method, params = null) {
 
         let controllerName = '';
-        if (Object.getPrototypeOf(controller).constructor.name=="Function")
+        if (Object.getPrototypeOf(controller).constructor.name == "Function")
             controllerName = controller.name;
         else controllerName = Object.getPrototypeOf(controller).constructor.name;
 
@@ -73,10 +73,10 @@ export class ArvaRouter extends Router {
 
         let hash = '#' + (routeRoot.length > 0 ? '/' + routeRoot : '') + ('/' + method);
         if (params) {
-            for(let i=0;i< Object.keys(params).length;i++) {
+            for (let i = 0; i < Object.keys(params).length; i++) {
                 var key = Object.keys(params)[i];
-                hash+=i==0?'?':'&';
-                hash+=(key+'='+params[key]);
+                hash += i == 0 ? '?' : '&';
+                hash += (key + '=' + params[key]);
             }
         }
 

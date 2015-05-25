@@ -2,8 +2,8 @@
  * Created by mysim1 on 25/03/15.
  */
 
-import PrioritisedArray     from 'arva-ds/core/Model/prioritisedArray';
-import Model          from 'arva-ds/core/Model';
+import {PrioritisedArray}     from 'arva-ds/core/Model/prioritisedArray';
+import {Model}                from 'arva-ds/core/Model';
 
 
 export class ChatMessage extends Model {

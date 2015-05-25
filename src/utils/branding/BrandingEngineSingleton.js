@@ -5,7 +5,7 @@
 import {BrandingEngine}         from './BrandingEngine';
 import {GetDefaultContext}      from '../../DefaultContext';
 
-export default class BrandingEngineSingleton {
+export class BrandingEngineSingleton {
     /**
      * Get a singleton global instance of the BrandingEngine.
      * @returns {BrandingEngine}

@@ -14,7 +14,7 @@ import {ProfileView}        from '../views/ProfileView';
 import {NavBarView}         from '../views/NavBarView';
 import Easing               from 'famous/transitions/Easing';
 
-export default class TestController extends Controller {
+export class TestController extends Controller {
 
     constructor(router, context) {
         super(router, context, {

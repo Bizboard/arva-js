@@ -3,10 +3,11 @@
  */
 import Surface                      from 'famous/core/Surface';
 import View                         from 'famous/core/View';
-import ObjectHelper                 from '../utils/objectHelper';
 import LayoutController             from 'famous-flex/src/LayoutController';
 import LayoutDockHelper             from 'famous-flex/src/helpers/LayoutDockHelper';
 import BkImageSurface               from 'famous-bkimagesurface/BkImageSurface';
+
+import {ObjectHelper}               from '../utils/objectHelper';
 
 const DEFAULT_OPTIONS = {
         classes: ['view', 'profile'],

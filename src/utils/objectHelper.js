@@ -11,8 +11,7 @@
 
 import _ from 'lodash';
 
-export default
-class ObjectHelper {
+export class ObjectHelper {
 
     /* Sets enumerability of methods and all properties starting with '_' on an object to false,
      * effectively hiding them from for(x in object) loops.   */
