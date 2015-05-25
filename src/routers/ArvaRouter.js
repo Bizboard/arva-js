@@ -311,10 +311,10 @@ export class ArvaRouter extends Router {
         if(typeof controller === "string") {
             return controller.replace('Controller', '');
         } else if (typeof controller === "object" && Object.getPrototypeOf(controller).constructor.name == "Function"){
-            return controller.name;
+            return controller.name.replace('Controller', '');
         } else{
             return typeof controller === "object" ?
-                             Object.getPrototypeOf(controller).constructor.name : typeof controller;
+                             Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
         }
     }
 
