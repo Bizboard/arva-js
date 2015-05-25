@@ -18,10 +18,10 @@ import {BrandingEngineSingleton as BrandingEngine}      from './utils/branding/B
 // router, but also the datasource provider.
 
 let context = reCreateDefaultContext(DefaultDataSource);
-let branding = context.get(BrandingEngine);
-(async function(){
+
+async function start(){
     await BrandingEngine.getInstance().setOptionsFromDataSource();
     context.get(DefaultApp);
-})();
+}
 
-
+start();
