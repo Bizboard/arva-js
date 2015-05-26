@@ -9,6 +9,7 @@
 
  */
 
+import {ArvaRouter}                                     from './routers/ArvaRouter';
 import {DefaultApp}                                     from './DefaultApp';
 import {DefaultDataSource}                              from './settings';
 import {reCreateDefaultContext}                         from './DefaultContext';
@@ -17,7 +18,7 @@ import {BrandingEngineSingleton as BrandingEngine}      from './utils/branding/B
 // Your main that creates a DI context and uses that context to load your application. We can provide the
 // router, but also the datasource provider.
 
-let context = reCreateDefaultContext(DefaultDataSource);
+let context = reCreateDefaultContext(ArvaRouter, DefaultDataSource);
 
 async function start(){
     await BrandingEngine.getInstance().setOptionsFromDataSource();

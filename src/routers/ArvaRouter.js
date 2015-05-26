@@ -310,7 +310,7 @@ export class ArvaRouter extends Router {
     _getControllerName(controller) {
         if(typeof controller === "string") {
             return controller.replace('Controller', '');
-        } else if (typeof controller === "object" && Object.getPrototypeOf(controller).constructor.name == "Function"){
+        } else if (typeof controller === "function" && Object.getPrototypeOf(controller).constructor.name == "Function"){
             return controller.name.replace('Controller', '');
         } else{
             return typeof controller === "object" ?
