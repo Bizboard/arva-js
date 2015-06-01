@@ -121,10 +121,12 @@ export default class DataBoundScrollView extends FlexScrollView {
 
     _removeItem(child) {
         let index = _.findIndex(this._dataSource, function (surface) {
-            return surface.dataId == child.id
+            return surface.dataId == child.id;
         });
 
-        this.remove(index);
+        if (index>-1) {
+            this.remove(index);
+        }
     }
 
 
