@@ -12,10 +12,22 @@ export class BrandingEngine {
     set options(value){ this._options = value; }
 
     constructor(dataSource = null){
-        this._dataSource = dataSource.child('Branding');
+        if (!dataSource) {
+            this._dataSource = dataSource.child('Branding');
+        }
+
+        setBrandName('Default');
 
         /* Bind all methods to this object's scoping. */
         ObjectHelper.bindAllMethods(this, this);
+    }
+
+    /**
+     * Sets the brand name to use in fetching the brand style information.
+     * @param {String} name Brand name, may contain forward slashes for multiple branch levels ('Google/ProjectX').
+     */
+    setBrandName(name) {
+        this._brandName = name;
     }
 
     /**
@@ -41,8 +53,9 @@ export class BrandingEngine {
 
             /* Use the dataSource to populate our branding options if no cache is available,
              * or save the latest options to cache so they are available on the next app launch. */
-            this._dataSource.setValueChangedCallback(function(dataSnapshot) {
-                this._dataSource.removeValueChangedCallback();
+            let dataReference = this._dataSource.child(this._brandName);
+            dataReference.setValueChangedCallback(function(dataSnapshot) {
+                dataReference.removeValueChangedCallback();
                 this.setOptions(dataSnapshot.val());
                 if(!isResolved) { resolve(); }
             }.bind(this));
@@ -77,5 +90,13 @@ export class BrandingEngine {
      */
     get(optionName) {
         return this.options[optionName];
+    }
+
+    /**
+     * Gets all branding options for the current brand.
+     * @returns {*}
+     */
+    getAll() {
+        return this.options;
     }
 }
