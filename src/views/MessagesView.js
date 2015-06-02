@@ -5,7 +5,7 @@ import Surface                      from 'famous/core/Surface';
 import Scrollview                   from 'famous/views/Scrollview';
 
 import {ChatMessages}               from '../models/ChatMessages';
-import {ObjectHelper}               from '../utils/objectHelper';
+import {ObjectHelper}               from 'arva-utils/ObjectHelper';
 
 
 export class MessagesView extends Scrollview {

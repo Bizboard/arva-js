@@ -7,7 +7,7 @@ import LayoutController             from 'famous-flex/src/LayoutController';
 import LayoutDockHelper             from 'famous-flex/src/helpers/LayoutDockHelper';
 import BkImageSurface               from 'famous-bkimagesurface/BkImageSurface';
 
-import {ObjectHelper}               from '../utils/objectHelper';
+import {ObjectHelper}               from 'arva-utils/ObjectHelper';
 
 const DEFAULT_OPTIONS = {
         classes: ['view', 'profile'],

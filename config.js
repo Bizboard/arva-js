@@ -14,8 +14,8 @@ System.config({
 
 System.config({
   "map": {
-    "arva-context": "github:Bizboard/arva-context@master",
     "arva-ds": "github:Bizboard/arva-ds@develop",
+    "arva-utils": "github:Bizboard/arva-utils@master",
     "di.js": "github:Bizboard/di.js@master",
     "eventemitter3": "npm:eventemitter3@1.1.0",
     "famous": "npm:famous@0.3.5",
@@ -27,11 +27,14 @@ System.config({
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.88",
     "underscore": "npm:underscore@1.8.3",
     "github:Bizboard/arva-ds@develop": {
-      "arva-context": "github:Bizboard/arva-context@master",
+      "arva-utils": "github:Bizboard/arva-utils@master",
       "di.js": "github:Bizboard/di.js@master",
       "eventemitter3": "npm:eventemitter3@1.1.0",
       "firebase": "github:firebase/firebase-bower@2.2.5",
       "lodash": "npm:lodash@3.9.1"
+    },
+    "github:Bizboard/arva-utils@master": {
+      "lodash": "npm:lodash@3.9.3"
     },
     "github:jspm/nodelibs-buffer@0.1.0": {
       "buffer": "npm:buffer@3.2.2"
@@ -99,6 +102,9 @@ System.config({
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
     "npm:lodash@3.9.1": {
+      "process": "github:jspm/nodelibs-process@0.1.1"
+    },
+    "npm:lodash@3.9.3": {
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
     "npm:path-browserify@0.0.0": {

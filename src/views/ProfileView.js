@@ -6,7 +6,7 @@ import View                         from 'famous/core/View';
 import LayoutController             from 'famous-flex/src/LayoutController';
 import BkImageSurface               from 'famous-bkimagesurface/BkImageSurface';
 
-import {ObjectHelper}               from '../utils/objectHelper';
+import {ObjectHelper}               from 'arva-utils/ObjectHelper';
 
 
 const DEFAULT_OPTIONS = {

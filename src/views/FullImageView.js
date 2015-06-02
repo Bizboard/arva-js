@@ -6,7 +6,7 @@ import View                         from 'famous/core/View';
 import LayoutController             from 'famous-flex/src/LayoutController';
 import BkImageSurface               from 'famous-bkimagesurface/BkImageSurface';
 
-import {ObjectHelper}               from '../utils/objectHelper';
+import {ObjectHelper}               from 'arva-utils/ObjectHelper';
 
 
 const DEFAULT_OPTIONS = {
@@ -24,9 +24,6 @@ export class FullImageView extends View {
 
     constructor() {
 
-        //let OPTIONS = DEFAULT_OPTIONS;
-        //OPTIONS.branding = _.extend(OPTIONS.branding, BrandingEngine.getInstance().getAll());
-        //
         super(DEFAULT_OPTIONS);
 
         /* Bind all local methods to the current object instance, so we can refer to 'this'
