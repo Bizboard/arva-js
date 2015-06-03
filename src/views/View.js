@@ -66,10 +66,8 @@ export class View extends FamousView {
                         }
                     }
                 }
-
             }.bind(this),
-
-            dataSource: this._renderables
+            dataSource: this.renderables
         });
         this.add(this.layout);
         this.layout.pipe(this._eventOutput);
