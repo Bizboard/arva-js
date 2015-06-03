@@ -35,7 +35,7 @@ export class NavBarView extends View {
         ObjectHelper.hidePropertyFromObject(Object.getPrototypeOf(this), 'length');
 
         this._createRenderables();
-        this._createLayout();
+        this._combineLayouts();
     }
 
 

@@ -24,15 +24,14 @@ export class View extends FamousView {
     }
 
     build() {
-        this._createRenderables();
-        this._createLayout();
+        this._combineLayouts();
     }
 
-    _createRenderables() {
-        this._renderables = this.renderables;
-    }
-
-    _createLayout() {
+    /**
+     * Combines all layouts defined in subclasses of the View into a single layout for the LayoutController.
+     * @private
+     */
+    _combineLayouts() {
         this.layout = new LayoutController({
             autoPipeEvents: true,
             layout: function (context) {
