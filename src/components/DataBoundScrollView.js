@@ -21,6 +21,7 @@ export default class DataBoundScrollView extends FlexScrollView {
             this.options.sortingDirection = 'ascending';
         }
 
+        this.isGrouped = this.options.groupBy != null;
         this.isDescending = this.options.sortingDirection === 'descending';
 
         if (this.options.dataStore) {
@@ -31,10 +32,64 @@ export default class DataBoundScrollView extends FlexScrollView {
         }
     }
 
+    _findGroup(groupId) {
+        return _.findIndex(this._dataSource, function (surface) {
+            return surface.groupId === groupId;
+        });
+    }
+
+    _findNextGroup(fromIndex) {
+        let dslength = this._dataSource.length;
+        for (let pos = fromIndex; pos < dslength; pos++) {
+            if (this._dataSource[pos].groupId) {
+                return pos;
+            }
+        }
+
+        return -1;
+    }
+
+
+    _getGroupByValue(child) {
+        let groupByValue = '';
+        if (typeof this.options.groupBy === 'function') {
+            groupByValue = this.options.groupBy(child);
+        }
+        else if (typeof this.options.groupBy === 'string') {
+            groupByValue = this.options.groupBy;
+        }
+        return groupByValue;
+    }
+
+    _addGroupItem(child) {
+
+        let groupByValue = this._getGroupByValue(child);
+        let newSurface = this.options.groupTemplate(groupByValue);
+        newSurface.groupId = groupByValue;
+
+        if (this.isDescending) {
+            this.insert(0, newSurface);
+        }
+        else {
+            this.insert(-1, newSurface);
+        }
+    }
+
+    _ensureGroupItem(child) {
+        let groupByValue = this._getGroupByValue(child);
+        let groupIndex = this._findGroup(groupByValue);
+        if (groupIndex > -1) {
+            return groupIndex;
+        }
+        else {
+            this._addGroupItem(child);
+            return this._findGroup(groupByValue);
+        }
+    }
 
     _bindDataSource() {
 
-        if (!this.options.dataStore || !this.options.template) {
+        if (!this.options.dataStore || !this.options.itemTemplate) {
             console.log('Datasource and template should both be set.');
             return;
         }
@@ -46,12 +101,11 @@ export default class DataBoundScrollView extends FlexScrollView {
 
         this.options.dataStore.on('child_added', function (child, previousSibling) {
 
-
             if (!this.options.dataFilter ||
                 (typeof this.options.dataFilter === 'function' &&
                 this.options.dataFilter(child))) {
 
-                this._addItem(child, true);
+                this._addItem(child);
             }
 
         }.bind(this));
@@ -69,7 +123,7 @@ export default class DataBoundScrollView extends FlexScrollView {
                 }
                 else {
                     if (changedItem === -1) {
-                        this._addItem(child, true);
+                        this._addItem(child);
                         this._moveItem(child.id, previousSibling);
                     }
                     else {
@@ -97,15 +151,25 @@ export default class DataBoundScrollView extends FlexScrollView {
 
     _addItem(child) {
 
-        let newSurface = this.options.template(child);
+        let insertIndex = this.isDescending ? 0 : -1;
+
+        if (this.isGrouped) {
+            insertIndex = this._ensureGroupItem(child);
+        }
+
+        let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
 
-        if (this.isDescending) {
-            this.insert(0, newSurface);
+        if (this.isGrouped) {
+            if (this.isDescending) {
+                insertIndex++;
+            }
+            else {
+                insertIndex = this._findNextGroup(insertIndex) + 1;
+            }
         }
-        else {
-            this.insert(-1, newSurface);
-        }
+
+        this.insert(insertIndex, newSurface);
     }
 
 
@@ -113,7 +177,7 @@ export default class DataBoundScrollView extends FlexScrollView {
 
         let index = this._getDataSourceIndex(child.id);
 
-        let newSurface = this.options.template(child);
+        let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
         this.replace(index, newSurface);
     }
@@ -124,7 +188,7 @@ export default class DataBoundScrollView extends FlexScrollView {
             return surface.dataId == child.id;
         });
 
-        if (index>-1) {
+        if (index > -1) {
             this.remove(index);
         }
     }
