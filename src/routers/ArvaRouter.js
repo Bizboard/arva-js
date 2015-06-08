@@ -64,7 +64,7 @@ export class ArvaRouter extends Router {
             .replace('Controller', '');
 
         let hash = '#' + (routeRoot.length > 0 ? '/' + routeRoot : '') + ('/' + method);
-        if (params) {
+        if (params !== null) {
             for (let i = 0; i < Object.keys(params).length; i++) {
                 var key = Object.keys(params)[i];
                 hash += i == 0 ? '?' : '&';
