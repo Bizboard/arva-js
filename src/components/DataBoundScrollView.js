@@ -26,8 +26,7 @@ export default class DataBoundScrollView extends FlexScrollView {
 
         if (this.options.dataStore) {
             this._bindDataSource(this.options.dataStore);
-        }
-        else {
+        } else {
             console.log('No DataSource was set.');
         }
     }
@@ -54,8 +53,7 @@ export default class DataBoundScrollView extends FlexScrollView {
         let groupByValue = '';
         if (typeof this.options.groupBy === 'function') {
             groupByValue = this.options.groupBy(child);
-        }
-        else if (typeof this.options.groupBy === 'string') {
+        } else if (typeof this.options.groupBy === 'string') {
             groupByValue = this.options.groupBy;
         }
         return groupByValue;
@@ -69,8 +67,7 @@ export default class DataBoundScrollView extends FlexScrollView {
 
         if (this.isDescending) {
             this.insert(0, newSurface);
-        }
-        else {
+        } else {
             this.insert(-1, newSurface);
         }
     }
@@ -80,8 +77,7 @@ export default class DataBoundScrollView extends FlexScrollView {
         let groupIndex = this._findGroup(groupByValue);
         if (groupIndex > -1) {
             return groupIndex;
-        }
-        else {
+        } else {
             this._addGroupItem(child);
             return this._findGroup(groupByValue);
         }
@@ -99,7 +95,7 @@ export default class DataBoundScrollView extends FlexScrollView {
             return;
         }
 
-        this.options.dataStore.on('child_added', function (child, previousSibling) {
+        this.options.dataStore.on('child_added', function (child) {
 
             if (!this.options.dataFilter ||
                 (typeof this.options.dataFilter === 'function' &&
@@ -120,13 +116,11 @@ export default class DataBoundScrollView extends FlexScrollView {
                 if (this.options.dataFilter &&
                     typeof this.options.dataFilter === 'function' && !this.options.dataFilter(child)) {
                     this._removeItem(child);
-                }
-                else {
+                } else {
                     if (changedItem === -1) {
                         this._addItem(child);
                         this._moveItem(child.id, previousSibling);
-                    }
-                    else {
+                    } else {
                         this._replaceItem(child);
                         this._moveItem(child.id, previousSibling);
                     }
@@ -163,8 +157,7 @@ export default class DataBoundScrollView extends FlexScrollView {
         if (this.isGrouped) {
             if (this.isDescending) {
                 insertIndex++;
-            }
-            else {
+            } else {
                 insertIndex = this._findNextGroup(insertIndex) + 1;
             }
         }
@@ -185,7 +178,7 @@ export default class DataBoundScrollView extends FlexScrollView {
 
     _removeItem(child) {
         let index = _.findIndex(this._dataSource, function (surface) {
-            return surface.dataId == child.id;
+            return surface.dataId === child.id;
         });
 
         if (index > -1) {
@@ -220,25 +213,24 @@ export default class DataBoundScrollView extends FlexScrollView {
                 return model.id === id;
             });
 
-            if (modelIndex === 0 || modelIndex === -1) return this.isDescending ? this._dataSource ? this._dataSource.length - 1 : 0 : 0;
-            else {
+            if (modelIndex === 0 || modelIndex === -1) {
+                return this.isDescending ? this._dataSource ? this._dataSource.length - 1 : 0 : 0;
+            } else {
                 let nextModel = this.options.dataStore[this.isDescending ? modelIndex + 1 : modelIndex - 1];
                 let nextIndex = this._getDataSourceIndex(nextModel.id);
                 if (nextIndex > -1) {
 
                     let newIndex = this.isDescending ? nextIndex === 0 ? 0 : nextIndex - 1 :
-                        this._dataSource.length === nextIndex + 1 ? nextIndex : nextIndex + 1;
+                                   this._dataSource.length === nextIndex + 1 ? nextIndex : nextIndex + 1;
 
                     return newIndex;
-                }
-                else {
+                } else {
                     return this._getNextVisibleIndex(nextModel.id);
                 }
             }
-        }
-        else {
+        } else {
             let newIndex = this.isDescending ? viewIndex === 0 ? 0 : viewIndex - 1 :
-                this._dataSource.length === viewIndex + 1 ? viewIndex : viewIndex + 1;
+                           this._dataSource.length === viewIndex + 1 ? viewIndex : viewIndex + 1;
 
             return newIndex;
         }
