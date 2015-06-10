@@ -12,7 +12,8 @@
     "url": "https://github.com/Bizboard/arva-mvc/issues"
   },
   "scripts": {
-    "build": "jspm bundle-sfx main www/bundle.js"
+    "build": "jspm bundle-sfx main www/bundle.js",
+    "docs": "docker -i . -o docs -c tango -x jspm_packages,node_modules,www,docs"
   },
   "dependencies": {
     "eslint": "latest"

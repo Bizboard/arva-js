@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>TestController.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../doc-style.css" />
+  <script src="../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../", thisFile = "Users/mysim1/Development/Projects/arva-mvc/src/controllers/TestControllerjs", defaultSidebar = true;
+  </script>
+  <script src="../../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>TestController.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>This Source Code is licensed under the MIT license. If a copy of the
+MIT-license was not distributed with this file, You can obtain one at:
+<a href='http://opensource.org/licenses/mit-license.html'>http://opensource.org/licenses/mit-license.html</a>.</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">author:</div>
+    <div class="dox_tag_detail">
+      <span>Hans van den Akker (mysim1)</span>
+    </div>
+    <div class="dox_tag_title">license</div>
+    <div class="dox_tag_detail">
+      <span>MIT</span>
+    </div>
+    <div class="dox_tag_title">copyright</div>
+    <div class="dox_tag_detail">
+      <span>Bizboard, 2015</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="p">{</span><span class="nx">Controller</span><span class="p">}</span>         <span class="nx">from</span> <span class="s1">&#39;../core/Controller&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">ProfileView</span><span class="p">}</span>        <span class="nx">from</span> <span class="s1">&#39;../views/ProfileView&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">NavBarView</span><span class="p">}</span>         <span class="nx">from</span> <span class="s1">&#39;../views/NavBarView&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">Easing</span>               <span class="nx">from</span> <span class="s1">&#39;famous/transitions/Easing&#39;</span><span class="p">;</span>
+
+<span class="kr">export</span> <span class="kr">class</span> <span class="nx">TestController</span> <span class="kr">extends</span> <span class="nx">Controller</span> <span class="p">{</span>
+
+    <span class="nx">constructor</span><span class="p">(</span><span class="nx">router</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kr">super</span><span class="p">(</span><span class="nx">router</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="p">{</span>
+            <span class="nx">transfer</span><span class="o">:</span> <span class="p">{</span>
+                <span class="nx">transition</span><span class="o">:</span> <span class="p">{</span><span class="nx">duration</span><span class="o">:</span> <span class="mi">500</span><span class="p">,</span> <span class="nx">curve</span><span class="o">:</span> <span class="nx">Easing</span><span class="p">.</span><span class="nx">inOutExpo</span><span class="p">},</span>
+                <span class="nx">zIndex</span><span class="o">:</span> <span class="mi">1000</span><span class="p">,</span>
+                <span class="nx">items</span><span class="o">:</span> <span class="p">{</span>
+                    <span class="s1">&#39;image&#39;</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="s1">&#39;navBarImage&#39;</span><span class="p">],</span>
+                    <span class="s1">&#39;navBarImage&#39;</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="s1">&#39;navBarImage&#39;</span><span class="p">]</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="nx">ReRouteExample</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">router</span><span class="p">.</span><span class="nx">go</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="s1">&#39;Index&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]);</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">Profile</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nx">ProfileView</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="nx">NavBar</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="k">return</span> <span class="k">new</span> <span class="nx">NavBarView</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

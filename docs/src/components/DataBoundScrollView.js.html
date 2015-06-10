@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DataBoundScrollView.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../doc-style.css" />
+  <script src="../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../", thisFile = "Users/mysim1/Development/Projects/arva-mvc/src/components/DataBoundScrollViewjs", defaultSidebar = true;
+  </script>
+  <script src="../../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>DataBoundScrollView.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Created by mysim1 on 16/02/15.</p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="nx">FlexScrollView</span>   <span class="nx">from</span> <span class="s1">&#39;famous-flex/src/FlexScrollView&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">_</span>                <span class="nx">from</span> <span class="s1">&#39;lodash&#39;</span><span class="p">;</span>
+
+
+<span class="kr">export</span> <span class="k">default</span> <span class="kr">class</span> <span class="nx">DataBoundScrollView</span> <span class="kr">extends</span> <span class="nx">FlexScrollView</span> <span class="p">{</span>
+
+    <span class="nx">constructor</span><span class="p">(</span><span class="nx">OPTIONS</span> <span class="o">=</span> <span class="p">{})</span> <span class="p">{</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<p>if no default for autoPipeEvents, have it set to true</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">OPTIONS</span><span class="p">.</span><span class="nx">autoPipeEvents</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">OPTIONS</span><span class="p">.</span><span class="nx">autoPipeEvents</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="kr">super</span><span class="p">(</span><span class="nx">OPTIONS</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<p>if no direction given set default to ascending order</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">sortingDirection</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">sortingDirection</span> <span class="o">=</span> <span class="s1">&#39;ascending&#39;</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">isGrouped</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">groupBy</span> <span class="o">!=</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">isDescending</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">sortingDirection</span> <span class="o">===</span> <span class="s1">&#39;descending&#39;</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataStore</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_bindDataSource</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataStore</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;No DataSource was set.&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">_findGroup</span><span class="p">(</span><span class="nx">groupId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findIndex</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">surface</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">surface</span><span class="p">.</span><span class="nx">groupId</span> <span class="o">===</span> <span class="nx">groupId</span><span class="p">;</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="nx">_findNextGroup</span><span class="p">(</span><span class="nx">fromIndex</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">dslength</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">pos</span> <span class="o">=</span> <span class="nx">fromIndex</span><span class="p">;</span> <span class="nx">pos</span> <span class="o">&lt;</span> <span class="nx">dslength</span><span class="p">;</span> <span class="nx">pos</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span><span class="p">[</span><span class="nx">pos</span><span class="p">].</span><span class="nx">groupId</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">pos</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">_getGroupByValue</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">groupByValue</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">groupBy</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">groupByValue</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">groupBy</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">groupBy</span> <span class="o">===</span> <span class="s1">&#39;string&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">groupByValue</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">groupBy</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nx">groupByValue</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">_addGroupItem</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">let</span> <span class="nx">groupByValue</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getGroupByValue</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+        <span class="kd">let</span> <span class="nx">newSurface</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">groupTemplate</span><span class="p">(</span><span class="nx">groupByValue</span><span class="p">);</span>
+        <span class="nx">newSurface</span><span class="p">.</span><span class="nx">groupId</span> <span class="o">=</span> <span class="nx">groupByValue</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">isDescending</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">newSurface</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">newSurface</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">_ensureGroupItem</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">groupByValue</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getGroupByValue</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+        <span class="kd">let</span> <span class="nx">groupIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_findGroup</span><span class="p">(</span><span class="nx">groupByValue</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">groupIndex</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">groupIndex</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_addGroupItem</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+            <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_findGroup</span><span class="p">(</span><span class="nx">groupByValue</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">_bindDataSource</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataStore</span> <span class="o">||</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">itemTemplate</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Datasource and template should both be set.&#39;</span><span class="p">);</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">template</span> <span class="k">instanceof</span> <span class="nb">Function</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Template needs to be a function.&#39;</span><span class="p">);</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataStore</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;child_added&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">child</span><span class="p">,</span> <span class="nx">previousSibling</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataFilter</span> <span class="o">||</span>
+                <span class="p">(</span><span class="k">typeof</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataFilter</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span> <span class="o">&amp;&amp;</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataFilter</span><span class="p">(</span><span class="nx">child</span><span class="p">)))</span> <span class="p">{</span>
+
+                <span class="k">this</span><span class="p">.</span><span class="nx">_addItem</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+            <span class="p">}</span>
+
+        <span class="p">}.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataStore</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;child_changed&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">child</span><span class="p">,</span> <span class="nx">previousSibling</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="kd">let</span> <span class="nx">changedItem</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getDataSourceIndex</span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span> <span class="o">&amp;&amp;</span> <span class="nx">changedItem</span> <span class="o">&lt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataFilter</span> <span class="o">&amp;&amp;</span>
+                    <span class="k">typeof</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataFilter</span> <span class="o">===</span> <span class="s1">&#39;function&#39;</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataFilter</span><span class="p">(</span><span class="nx">child</span><span class="p">))</span> <span class="p">{</span>
+                    <span class="k">this</span><span class="p">.</span><span class="nx">_removeItem</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="nx">changedItem</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">this</span><span class="p">.</span><span class="nx">_addItem</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+                        <span class="k">this</span><span class="p">.</span><span class="nx">_moveItem</span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">previousSibling</span><span class="p">);</span>
+                    <span class="p">}</span>
+                    <span class="k">else</span> <span class="p">{</span>
+                        <span class="k">this</span><span class="p">.</span><span class="nx">_replaceItem</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+                        <span class="k">this</span><span class="p">.</span><span class="nx">_moveItem</span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">previousSibling</span><span class="p">);</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataStore</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;child_moved&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">child</span><span class="p">,</span> <span class="nx">previousSibling</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nx">current</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getDataSourceIndex</span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+            <span class="kd">let</span> <span class="nx">previous</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getDataSourceIndex</span><span class="p">(</span><span class="nx">previousSibling</span><span class="p">);</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_moveItem</span><span class="p">(</span><span class="nx">current</span><span class="p">,</span> <span class="nx">previous</span><span class="p">);</span>
+        <span class="p">}.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataStore</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;child_removed&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">_removeItem</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+
+        <span class="p">}.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">_addItem</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">let</span> <span class="nx">insertIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">isDescending</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">isGrouped</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">insertIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_ensureGroupItem</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="kd">let</span> <span class="nx">newSurface</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">itemTemplate</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+        <span class="nx">newSurface</span><span class="p">.</span><span class="nx">dataId</span> <span class="o">=</span> <span class="nx">child</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">isGrouped</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">isDescending</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">insertIndex</span><span class="o">++</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">insertIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_findNextGroup</span><span class="p">(</span><span class="nx">insertIndex</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">insert</span><span class="p">(</span><span class="nx">insertIndex</span><span class="p">,</span> <span class="nx">newSurface</span><span class="p">);</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">_replaceItem</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getDataSourceIndex</span><span class="p">(</span><span class="nx">child</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+
+        <span class="kd">let</span> <span class="nx">newSurface</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">itemTemplate</span><span class="p">(</span><span class="nx">child</span><span class="p">);</span>
+        <span class="nx">newSurface</span><span class="p">.</span><span class="nx">dataId</span> <span class="o">=</span> <span class="nx">child</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">newSurface</span><span class="p">);</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">_removeItem</span><span class="p">(</span><span class="nx">child</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findIndex</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">surface</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">surface</span><span class="p">.</span><span class="nx">dataId</span> <span class="o">==</span> <span class="nx">child</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+        <span class="p">});</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="nx">index</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">_moveItem</span><span class="p">(</span><span class="nx">oldId</span><span class="p">,</span> <span class="nx">prevChildId</span> <span class="o">=</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">let</span> <span class="nx">oldIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getDataSourceIndex</span><span class="p">(</span><span class="nx">oldId</span><span class="p">);</span>
+        <span class="kd">let</span> <span class="nx">previousSiblingIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getNextVisibleIndex</span><span class="p">(</span><span class="nx">prevChildId</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">oldIndex</span> <span class="o">!==</span> <span class="nx">previousSiblingIndex</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">move</span><span class="p">(</span><span class="nx">oldIndex</span><span class="p">,</span> <span class="nx">previousSiblingIndex</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">_getDataSourceIndex</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findIndex</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">surface</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">surface</span><span class="p">.</span><span class="nx">dataId</span> <span class="o">===</span> <span class="nx">id</span><span class="p">;</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+
+
+    <span class="nx">_getNextVisibleIndex</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">let</span> <span class="nx">viewIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getDataSourceIndex</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">viewIndex</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nx">modelIndex</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">findIndex</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataStore</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nx">model</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">id</span><span class="p">;</span>
+            <span class="p">});</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nx">modelIndex</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">modelIndex</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">isDescending</span> <span class="o">?</span> <span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span> <span class="o">?</span> <span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span> <span class="o">:</span> <span class="mi">0</span><span class="p">;</span>
+            <span class="k">else</span> <span class="p">{</span>
+                <span class="kd">let</span> <span class="nx">nextModel</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">dataStore</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">isDescending</span> <span class="o">?</span> <span class="nx">modelIndex</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">:</span> <span class="nx">modelIndex</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+                <span class="kd">let</span> <span class="nx">nextIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getDataSourceIndex</span><span class="p">(</span><span class="nx">nextModel</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">nextIndex</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+
+                    <span class="kd">let</span> <span class="nx">newIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">isDescending</span> <span class="o">?</span> <span class="nx">nextIndex</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="nx">nextIndex</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">:</span>
+                        <span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="nx">nextIndex</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">?</span> <span class="nx">nextIndex</span> <span class="o">:</span> <span class="nx">nextIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+
+                    <span class="k">return</span> <span class="nx">newIndex</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="k">else</span> <span class="p">{</span>
+                    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">_getNextVisibleIndex</span><span class="p">(</span><span class="nx">nextModel</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nx">newIndex</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">isDescending</span> <span class="o">?</span> <span class="nx">viewIndex</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="nx">viewIndex</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">:</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">_dataSource</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="nx">viewIndex</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">?</span> <span class="nx">viewIndex</span> <span class="o">:</span> <span class="nx">viewIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+
+            <span class="k">return</span> <span class="nx">newIndex</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

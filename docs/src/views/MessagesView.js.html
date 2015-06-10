@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MessagesView.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../doc-style.css" />
+  <script src="../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../", thisFile = "Users/mysim1/Development/Projects/arva-mvc/src/views/MessagesViewjs", defaultSidebar = true;
+  </script>
+  <script src="../../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>MessagesView.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Created by mysim1 on 26/03/15.</p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="nx">Surface</span>                      <span class="nx">from</span> <span class="s1">&#39;famous/core/Surface&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">Scrollview</span>                   <span class="nx">from</span> <span class="s1">&#39;famous/views/Scrollview&#39;</span><span class="p">;</span>
+
+<span class="kr">import</span> <span class="p">{</span><span class="nx">ChatMessages</span><span class="p">}</span>               <span class="nx">from</span> <span class="s1">&#39;../models/ChatMessages&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="p">{</span><span class="nx">ObjectHelper</span><span class="p">}</span>               <span class="nx">from</span> <span class="s1">&#39;arva-utils/ObjectHelper&#39;</span><span class="p">;</span>
+
+
+<span class="kr">export</span> <span class="kr">class</span> <span class="nx">MessagesView</span> <span class="kr">extends</span> <span class="nx">Scrollview</span> <span class="p">{</span>
+    <span class="nx">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kr">super</span><span class="p">();</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Bind all local methods to the current object instance, so we can refer to 'this'
+in the methods as expected, even when they're called from event handlers.          </p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+        <span class="nx">ObjectHelper</span><span class="p">.</span><span class="nx">bindAllMethods</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Hide all private properties (starting with '_') and methods from enumeration,
+so when you do for( in ), only actual data properties show up.   </p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+        <span class="nx">ObjectHelper</span><span class="p">.</span><span class="nx">hideMethodsAndPrivatePropertiesFromObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+        <span class="cm">/* Hide the priority field from enumeration, so we don&#39;t save it to the dataSource. */</span>
+        <span class="nx">ObjectHelper</span><span class="p">.</span><span class="nx">hidePropertyFromObject</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">getPrototypeOf</span><span class="p">(</span><span class="k">this</span><span class="p">),</span> <span class="s1">&#39;length&#39;</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<p>have this scrollView initialize itself</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_initializeList</span><span class="p">();</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p>make sure the data is provisioned.</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_populateMessages</span><span class="p">();</span>
+
+    <span class="p">}</span>
+
+    <span class="nx">_initializeList</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">surfaces</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">sequenceFrom</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">surfaces</span><span class="p">);</span>
+
+        <span class="kd">let</span> <span class="nx">firstOne</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Surface</span><span class="p">({</span>
+            <span class="nx">content</span><span class="o">:</span> <span class="s1">&#39;Loading content...&#39;</span><span class="p">,</span>
+            <span class="nx">size</span><span class="o">:</span> <span class="p">[</span><span class="kc">undefined</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+            <span class="nx">properties</span><span class="o">:</span> <span class="p">{</span>
+                <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">&#39;hsl(&#39;</span> <span class="o">+</span> <span class="p">((</span><span class="mi">30</span><span class="p">)</span> <span class="o">*</span> <span class="mi">360</span> <span class="o">/</span> <span class="mi">40</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, 100%, 50%)&#39;</span><span class="p">,</span>
+                <span class="nx">lineHeight</span><span class="o">:</span> <span class="s1">&#39;50px&#39;</span><span class="p">,</span>
+                <span class="nx">textAlign</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+
+        <span class="nx">firstOne</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">surfaces</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">firstOne</span><span class="p">);</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">temp</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">40</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Surface</span><span class="p">({</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>content: 'Surface: ' + (i + 1),</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+                <span class="nx">size</span><span class="o">:</span> <span class="p">[</span><span class="kc">undefined</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="nx">properties</span><span class="o">:</span> <span class="p">{</span>
+                    <span class="nx">backgroundColor</span><span class="o">:</span> <span class="s1">&#39;hsl(&#39;</span> <span class="o">+</span> <span class="p">((</span><span class="nx">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span> <span class="o">?</span> <span class="mi">15</span> <span class="o">:</span> <span class="mi">30</span><span class="p">)</span> <span class="o">*</span> <span class="mi">360</span> <span class="o">/</span> <span class="mi">40</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;, 100%, 50%)&#39;</span><span class="p">,</span>
+                    <span class="nx">lineHeight</span><span class="o">:</span> <span class="s1">&#39;50px&#39;</span><span class="p">,</span>
+                    <span class="nx">textAlign</span><span class="o">:</span> <span class="s1">&#39;center&#39;</span>
+                <span class="p">}</span>
+            <span class="p">});</span>
+
+            <span class="nx">temp</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">surfaces</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">temp</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">_populateMessages</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">scrollView</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+        <span class="nb">window</span><span class="p">.</span><span class="nx">messages</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ChatMessages</span><span class="p">();</span>
+
+        <span class="nb">window</span><span class="p">.</span><span class="nx">messages</span><span class="p">.</span><span class="nx">setValueChangedCallback</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">list</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">scrollView</span><span class="p">.</span><span class="nx">surfaces</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">scrollView</span><span class="p">.</span><span class="nx">surfaces</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">size</span> <span class="o">=</span> <span class="p">[</span><span class="kc">undefined</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span>
+                <span class="nx">scrollView</span><span class="p">.</span><span class="nx">surfaces</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">setContent</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">list</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">scrollView</span><span class="p">.</span><span class="nx">surfaces</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">size</span> <span class="o">=</span> <span class="p">[</span><span class="kc">undefined</span><span class="p">,</span> <span class="mi">50</span><span class="p">];</span>
+                <span class="nx">scrollView</span><span class="p">.</span><span class="nx">surfaces</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">setContent</span><span class="p">(</span><span class="nx">list</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">Title</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

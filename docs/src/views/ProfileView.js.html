@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ProfileView.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="../../doc-style.css" />
+  <script src="../../doc-filelist.js"></script>
+  <script>
+    var relativeDir = "../../", thisFile = "Users/mysim1/Development/Projects/arva-mvc/src/views/ProfileViewjs", defaultSidebar = true;
+  </script>
+  <script src="../../doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>ProfileView.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Created by mysim1 on 26/03/15.</p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="kr">import</span> <span class="nx">Surface</span>                      <span class="nx">from</span> <span class="s1">&#39;famous/core/Surface&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">View</span>                         <span class="nx">from</span> <span class="s1">&#39;famous/core/View&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">LayoutController</span>             <span class="nx">from</span> <span class="s1">&#39;famous-flex/src/LayoutController&#39;</span><span class="p">;</span>
+<span class="kr">import</span> <span class="nx">BkImageSurface</span>               <span class="nx">from</span> <span class="s1">&#39;famous-bkimagesurface/BkImageSurface&#39;</span><span class="p">;</span>
+
+<span class="kr">import</span> <span class="p">{</span><span class="nx">ObjectHelper</span><span class="p">}</span>               <span class="nx">from</span> <span class="s1">&#39;arva-utils/ObjectHelper&#39;</span><span class="p">;</span>
+
+
+<span class="kr">const</span> <span class="nx">DEFAULT_OPTIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">classes</span><span class="o">:</span> <span class="p">[</span><span class="s1">&#39;view&#39;</span><span class="p">,</span> <span class="s1">&#39;profile&#39;</span><span class="p">],</span>
+    <span class="nx">imageSize</span><span class="o">:</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>
+    <span class="nx">imageScale</span><span class="o">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="nx">nameHeight</span><span class="o">:</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="nx">profileText</span><span class="o">:</span> <span class="s1">&#39;Scarlett Johansson was born in New York City. Her mother, Melanie Sloan, is from an Ashkenazi Jewish family, and her father, Karsten Johansson, is Danish. Scarlett showed a passion for acting at a young age and starred in many plays.&lt;br&gt;&lt;br&gt;She has a sister named Vanessa Johansson, a brother named Adrian, and a twin brother named Hunter Johansson born three minutes after her. She began her acting career starring as Laura Nelson in the comedy film North (1994).&lt;br&gt;&lt;br&gt;The acclaimed drama film The Horse Whisperer (1998) brought Johansson critical praise and worldwide recognition. Following the film\&#39;s success, she starred in many other films including the critically acclaimed cult film Ghost World (2001) and then the hit Lost in Translation (2003) with Bill Murray in which she again stunned critics. Later on, she appeared in the drama film Girl with a Pearl Earring (2003).&#39;</span>
+<span class="p">};</span>
+
+<span class="kr">export</span> <span class="kr">class</span> <span class="nx">ProfileView</span> <span class="kr">extends</span> <span class="nx">View</span> <span class="p">{</span>
+
+    <span class="nx">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kr">super</span><span class="p">(</span><span class="nx">DEFAULT_OPTIONS</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Bind all local methods to the current object instance, so we can refer to 'this'
+in the methods as expected, even when they're called from event handlers.          </p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+        <span class="nx">ObjectHelper</span><span class="p">.</span><span class="nx">bindAllMethods</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Hide all private properties (starting with '_') and methods from enumeration,
+so when you do for( in ), only actual data properties show up.   </p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+        <span class="nx">ObjectHelper</span><span class="p">.</span><span class="nx">hideMethodsAndPrivatePropertiesFromObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+        <span class="cm">/* Hide the priority field from enumeration, so we don&#39;t save it to the dataSource. */</span>
+        <span class="nx">ObjectHelper</span><span class="p">.</span><span class="nx">hidePropertyFromObject</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">getPrototypeOf</span><span class="p">(</span><span class="k">this</span><span class="p">),</span> <span class="s1">&#39;length&#39;</span><span class="p">);</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">_createRenderables</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_combineLayouts</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="nx">_createRenderables</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_renderables</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="nx">background</span><span class="o">:</span> <span class="k">new</span> <span class="nx">Surface</span><span class="p">({</span>
+                <span class="nx">classes</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">classes</span><span class="p">.</span><span class="nx">concat</span><span class="p">([</span><span class="s1">&#39;background&#39;</span><span class="p">])</span>
+            <span class="p">}),</span>
+            <span class="nx">image</span><span class="o">:</span> <span class="k">new</span> <span class="nx">BkImageSurface</span><span class="p">({</span>
+                <span class="nx">classes</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">classes</span><span class="p">.</span><span class="nx">concat</span><span class="p">([</span><span class="s1">&#39;image&#39;</span><span class="p">]),</span>
+                <span class="nx">content</span><span class="o">:</span> <span class="s1">&#39;img/scarlett.jpg&#39;</span><span class="p">,</span>
+                <span class="nx">sizeMode</span><span class="o">:</span> <span class="s1">&#39;cover&#39;</span>
+            <span class="p">}),</span>
+            <span class="nx">name</span><span class="o">:</span> <span class="k">new</span> <span class="nx">Surface</span><span class="p">({</span>
+                <span class="nx">classes</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">classes</span><span class="p">.</span><span class="nx">concat</span><span class="p">([</span><span class="s1">&#39;name&#39;</span><span class="p">]),</span>
+                <span class="nx">content</span><span class="o">:</span> <span class="s1">&#39;&lt;div&gt;Scarlett Johansson&lt;/div&gt;&#39;</span>
+            <span class="p">}),</span>
+            <span class="nx">text</span><span class="o">:</span> <span class="k">new</span> <span class="nx">Surface</span><span class="p">({</span>
+                <span class="nx">classes</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">classes</span><span class="p">.</span><span class="nx">concat</span><span class="p">([</span><span class="s1">&#39;text&#39;</span><span class="p">]),</span>
+                <span class="nx">content</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">profileText</span>
+            <span class="p">})</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+
+    <span class="nx">_createLayout</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">layout</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">LayoutController</span><span class="p">({</span>
+            <span class="nx">autoPipeEvents</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="nx">layout</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">context</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">context</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;background&#39;</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="nx">size</span><span class="o">:</span> <span class="nx">context</span><span class="p">.</span><span class="nx">size</span>
+                <span class="p">});</span>
+                <span class="kd">var</span> <span class="nx">image</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;image&#39;</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="nx">size</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">imageSize</span><span class="p">,</span>
+                    <span class="nx">translate</span><span class="o">:</span> <span class="p">[(</span><span class="nx">context</span><span class="p">.</span><span class="nx">size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">imageSize</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+                    <span class="nx">scale</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">imageScale</span>
+                <span class="p">});</span>
+                <span class="kd">var</span> <span class="nx">name</span> <span class="o">=</span> <span class="nx">context</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="nx">size</span><span class="o">:</span> <span class="p">[</span><span class="nx">context</span><span class="p">.</span><span class="nx">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="k">this</span><span class="p">.</span><span class="nx">options</span><span class="p">.</span><span class="nx">nameHeight</span><span class="p">],</span>
+                    <span class="nx">translate</span><span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nx">image</span><span class="p">.</span><span class="nx">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nx">image</span><span class="p">.</span><span class="nx">translate</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="p">});</span>
+                <span class="nx">context</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="nx">size</span><span class="o">:</span> <span class="p">[</span><span class="nx">context</span><span class="p">.</span><span class="nx">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">context</span><span class="p">.</span><span class="nx">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="nx">name</span><span class="p">.</span><span class="nx">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="nx">name</span><span class="p">.</span><span class="nx">translate</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span>
+                    <span class="nx">translate</span><span class="o">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="nx">name</span><span class="p">.</span><span class="nx">translate</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="nx">name</span><span class="p">.</span><span class="nx">size</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="p">});</span>
+            <span class="p">}.</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">),</span>
+            <span class="nx">dataSource</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">_renderables</span>
+        <span class="p">});</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">layout</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_eventOutput</span><span class="p">);</span>
+    <span class="p">}</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>getTransferable(id) {
+return {
+get: function() {
+// return current renderable that matches the given id
+return this.layout.get(id);
+},
+show: function(renderable) {
+// show given renderable
+this.layout.replace(id, renderable);
+},
+getSpec: function(callback, endState) {
+// when the view knows the size, position, etc... of the requested id,
+// it should call callback and pass along the render spec
+callback(endState);
+}
+};
+};  </p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="p">}</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

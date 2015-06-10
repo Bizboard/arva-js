@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>config.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "Users/mysim1/Development/Projects/arva-mvc/configjs", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>config.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="nx">System</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+  <span class="s2">&quot;baseURL&quot;</span><span class="o">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;transpiler&quot;</span><span class="o">:</span> <span class="s2">&quot;traceur&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;traceurOptions&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;annotations&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="s2">&quot;asyncFunctions&quot;</span><span class="o">:</span> <span class="kc">true</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;paths&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;*&quot;</span><span class="o">:</span> <span class="s2">&quot;src/*.js&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;github:*&quot;</span><span class="o">:</span> <span class="s2">&quot;jspm_packages/github/*.js&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;npm:*&quot;</span><span class="o">:</span> <span class="s2">&quot;jspm_packages/npm/*.js&quot;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="nx">System</span><span class="p">.</span><span class="nx">config</span><span class="p">({</span>
+  <span class="s2">&quot;map&quot;</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s2">&quot;arva-ds&quot;</span><span class="o">:</span> <span class="s2">&quot;github:Bizboard/arva-ds@develop&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;arva-utils&quot;</span><span class="o">:</span> <span class="s2">&quot;github:Bizboard/arva-utils@master&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;di.js&quot;</span><span class="o">:</span> <span class="s2">&quot;github:Bizboard/di.js@master&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;eventemitter3&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:eventemitter3@1.1.0&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;famous&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:famous@0.3.5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;famous-bkimagesurface&quot;</span><span class="o">:</span> <span class="s2">&quot;github:ijzerenhein/famous-bkimagesurface@1.0.3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;famous-flex&quot;</span><span class="o">:</span> <span class="s2">&quot;github:ijzerenhein/famous-flex@0.3.2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;firebase&quot;</span><span class="o">:</span> <span class="s2">&quot;github:firebase/firebase-bower@2.2.5&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lodash&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:lodash@3.9.1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;traceur&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jmcriffey/bower-traceur@0.0.88&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;traceur-runtime&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jmcriffey/bower-traceur-runtime@0.0.88&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;underscore&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:underscore@1.8.3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;github:Bizboard/arva-ds@develop&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;arva-utils&quot;</span><span class="o">:</span> <span class="s2">&quot;github:Bizboard/arva-utils@master&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;di.js&quot;</span><span class="o">:</span> <span class="s2">&quot;github:Bizboard/di.js@master&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;eventemitter3&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:eventemitter3@1.1.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;firebase&quot;</span><span class="o">:</span> <span class="s2">&quot;github:firebase/firebase-bower@2.2.5&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;lodash&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:lodash@3.9.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;github:Bizboard/arva-utils@master&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;lodash&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:lodash@3.9.3&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;github:jspm/nodelibs-buffer@0.1.0&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;buffer&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:buffer@3.2.2&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;github:jspm/nodelibs-events@0.1.0&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;events-browserify&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:events-browserify@0.0.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;github:jspm/nodelibs-path@0.1.0&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;path-browserify&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:path-browserify@0.0.0&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:process@0.10.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;github:jspm/nodelibs-stream@0.1.0&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;stream-browserify&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:stream-browserify@1.0.0&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;github:jspm/nodelibs-util@0.1.0&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;util&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:util@0.10.3&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:amdefine@0.1.0&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;fs&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-fs@0.1.2&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;module&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-module@0.1.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;path&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-path@0.1.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:buffer@3.2.2&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;base64-js&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:base64-js@0.0.8&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;ieee754&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:ieee754@1.1.5&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;is-array&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:is-array@1.0.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:core-util-is@1.0.1&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;buffer&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-buffer@0.1.0&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:cssify@0.6.0&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;through&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:through@2.3.7&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:deamdify@0.1.1&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;escodegen&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:escodegen@0.0.28&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;esprima&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:esprima@1.0.4&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;estraverse&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:estraverse@1.3.2&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;through&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:through@2.3.7&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;util&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-util@0.1.0&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:escodegen@0.0.28&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;esprima&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:esprima@1.0.4&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;estraverse&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:estraverse@1.3.2&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;fs&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-fs@0.1.2&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;path&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-path@0.1.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;source-map&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:source-map@0.4.2&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;systemjs-json&quot;</span><span class="o">:</span> <span class="s2">&quot;github:systemjs/plugin-json@0.1.0&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:esprima@1.0.4&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;fs&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-fs@0.1.2&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:events-browserify@0.0.1&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:famous@0.3.5&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;cssify&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:cssify@0.6.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;deamdify&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:deamdify@0.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:inherits@2.0.1&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;util&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-util@0.1.0&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:lodash@3.9.1&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:lodash@3.9.3&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:path-browserify@0.0.0&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:readable-stream@1.1.13&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;buffer&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-buffer@0.1.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;core-util-is&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:core-util-is@1.0.1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;events&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-events@0.1.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;inherits&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:inherits@2.0.1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;isarray&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:isarray@0.0.1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;stream&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-stream@0.1.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;stream-browserify&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:stream-browserify@1.0.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;string_decoder&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:string_decoder@0.10.31&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;util&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-util@0.1.0&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:source-map@0.4.2&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;amdefine&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:amdefine@0.1.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;fs&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-fs@0.1.2&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;path&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-path@0.1.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:stream-browserify@1.0.0&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;events&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-events@0.1.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;inherits&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:inherits@2.0.1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;readable-stream&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:readable-stream@1.1.13&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:string_decoder@0.10.31&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;buffer&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-buffer@0.1.0&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:through@2.3.7&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;stream&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-stream@0.1.0&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;npm:util@0.10.3&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;inherits&quot;</span><span class="o">:</span> <span class="s2">&quot;npm:inherits@2.0.1&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;process&quot;</span><span class="o">:</span> <span class="s2">&quot;github:jspm/nodelibs-process@0.1.1&quot;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>
