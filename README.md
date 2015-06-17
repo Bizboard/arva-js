@@ -20,7 +20,7 @@ And enjoy the benefit of 60 fps animations cross-platform, made possible by [fam
 
 Arva has become much more than just an MVC. We've organized our repositories:
 
-* [arva-mvc](//github.com/Bizboard/arva-mvc): MVC framework 100% ES6 developed MVC
+* [arva-mvc](//github.com/Bizboard/arva-mvc): 100% ES6 MVC Framework
 * [arva-ds](//github.com/Bizboard/arva-ds): DataSources for Firebase and SharePoint or build your own datasource, so you can benefit from the same model and collection interfaces*
 * [arva-components](//github.com/Bizboard/arva-components): Make development more efficient by using components like `BrandingEngine` and `Localizer`
 * [arva-gesture](//github.com/Bizboard/arva-gesture): Add support for new gestures that become available with technologies like [MYO](//myo.com)
@@ -56,3 +56,6 @@ jspm install arva-mvc
 
 ## View
 .. coming soon ..
+
+## License
+[![npm](https://img.shields.io/npm/l/express.svg?style=flat-square)](http://opensource.org/licenses/MIT)
