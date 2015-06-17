@@ -14,6 +14,9 @@ export default class DataBoundScrollView extends FlexScrollView {
         if (!OPTIONS.autoPipeEvents) {
             OPTIONS.autoPipeEvents = true;
         }
+        if (!OPTIONS.dataSource) {
+            OPTIONS.dataSource = [];
+        }
         super(OPTIONS);
 
         // if no direction given set default to ascending order
@@ -153,6 +156,9 @@ export default class DataBoundScrollView extends FlexScrollView {
 
         let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
+        newSurface.on('click', function () {
+            this._eventOutput.emit('click', {renderNode: newSurface, dataObject: child});
+        }.bind(this));
 
         if (this.isGrouped) {
             if (this.isDescending) {
