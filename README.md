@@ -1,5 +1,5 @@
 # Arva MVC
-[![Join the chat at https://gitter.im/Bizboard/arva-mvc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bizboard/arva-mvc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Dependency Status](https://david-dm.org/Bizboard/arva-mvc.svg)](https://david-dm.org/Bizboard/arva-mvc)
+[![Join the chat at https://gitter.im/Bizboard/arva-mvc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bizboard/arva-mvc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Dependency Status](https://david-dm.org/Bizboard/arva-mvc.svg)](https://david-dm.org/Bizboard/arva-mvc) [![devDependency Status](https://david-dm.org/Bizboard/arva-mvc.svg)](https://david-dm.org/Bizboard/arva-mvc#info=devDependencies)
 
 Using the latest ES6 standards we created an MVC for Mobile/Web/TV Applications that provides a remarkable development experience. You'll be able to code faster, 
 write more robust and manageable code and you'll be able to easily build views that scale on a large number of device resolutions.
