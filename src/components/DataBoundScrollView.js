@@ -157,7 +157,7 @@ export default class DataBoundScrollView extends FlexScrollView {
         let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
         newSurface.on('click', function () {
-            this._eventOutput.emit('click', {renderNode: newSurface, dataObject: child});
+            this._eventOutput.emit('child_click', {renderNode: newSurface, dataObject: child});
         }.bind(this));
 
         if (this.isGrouped) {
