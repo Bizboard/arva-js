@@ -11,10 +11,10 @@ export default class DataBoundScrollView extends FlexScrollView {
     constructor(OPTIONS = {}) {
 
         // if no default for autoPipeEvents, have it set to true
-        if (!OPTIONS.autoPipeEvents) {
+        if (OPTIONS.autoPipeEvents === undefined) {
             OPTIONS.autoPipeEvents = true;
         }
-        if (!OPTIONS.dataSource) {
+        if (OPTIONS.dataSource === undefined) {
             OPTIONS.dataSource = [];
         }
         super(OPTIONS);
