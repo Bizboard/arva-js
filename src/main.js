@@ -8,19 +8,10 @@
  @copyright Bizboard, 2015
 
  */
-
-import {ArvaRouter}                                     from './routers/ArvaRouter';
-import {DefaultApp}                                     from './DefaultApp';
-import {DefaultDataSource}                              from './settings';
-import {reCreateDefaultContext}                         from './DefaultContext';
-
-// Your main that creates a DI context and uses that context to load your application. We can provide the
-// router, but also the datasource provider.
-
-let context = reCreateDefaultContext(ArvaRouter, DefaultDataSource);
-
-async function start(){
-    context.get(DefaultApp);
-}
-
-start();
+export * from './core/App';
+export * from './core/Controller';
+export * from './core/Router';
+export * from './routers/ArvaRouter';
+export * from './views/View';
+export * from './components/DataBoundScrollView';
+export * from './DefaultContext';
