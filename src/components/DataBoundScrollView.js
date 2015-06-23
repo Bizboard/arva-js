@@ -27,6 +27,10 @@ export default class DataBoundScrollView extends FlexScrollView {
         this.isGrouped = this.options.groupBy != null;
         this.isDescending = this.options.sortingDirection === 'descending';
 
+        /* If present in options.headerTemplate or options.placeholderTemplate, we build the header and placeholder elements. */
+        this._addHeader();
+        this._addPlaceholder();
+
         if (this.options.dataStore) {
             this._bindDataSource(this.options.dataStore);
         } else {
@@ -48,7 +52,7 @@ export default class DataBoundScrollView extends FlexScrollView {
             }
         }
 
-        return -1;
+        return this._dataSource.length - 1;
     }
 
 
@@ -62,27 +66,122 @@ export default class DataBoundScrollView extends FlexScrollView {
         return groupByValue;
     }
 
-    _addGroupItem(child) {
-
-        let groupByValue = this._getGroupByValue(child);
+    _addGroupItem(groupByValue) {
         let newSurface = this.options.groupTemplate(groupByValue);
         newSurface.groupId = groupByValue;
 
         if (this.isDescending) {
-            this.insert(0, newSurface);
+            let insertIndex = this.header ? 1 : 0;
+            this.insert(insertIndex, newSurface);
+            return insertIndex;
         } else {
-            this.insert(-1, newSurface);
+            let insertIndex = this._dataSource.length - 1;
+            this.insert(insertIndex, newSurface);
+            return insertIndex;
         }
     }
 
-    _ensureGroupItem(child) {
+    _getGroupItemIndex(child) {
         let groupByValue = this._getGroupByValue(child);
         let groupIndex = this._findGroup(groupByValue);
         if (groupIndex > -1) {
             return groupIndex;
         } else {
-            this._addGroupItem(child);
-            return this._findGroup(groupByValue);
+            return this._addGroupItem(groupByValue);
+        }
+    }
+
+    _getInsertIndex(child) {
+        /* If we're using groups, find the item index of the group this item belongs to. If */
+        if (this.isGrouped) {
+            return this._getGroupItemIndex(child);
+        }
+
+        /* If we're using a header, that will be the first index, so the first index we can use is 1 instead of 0. */
+        let firstIndex = this.header ? 0 : 1;
+
+        /* Return the first or last position, depending on the sorting direction. */
+        return this.isDescending ? firstIndex : this._dataSource.length - 1;
+    }
+
+    _addItem(child) {
+        this._removePlaceholder();
+
+        let insertIndex = this._getInsertIndex(child);
+        let newSurface = this.options.itemTemplate(child);
+        newSurface.dataId = child.id;
+        newSurface.on('click', function () {
+            this._eventOutput.emit('child_click', {renderNode: newSurface, dataObject: child});
+        }.bind(this));
+
+        if (this.isGrouped) {
+            if (this.isDescending) {
+                insertIndex++;
+            } else {
+                insertIndex = this._findNextGroup(insertIndex) + 1;
+            }
+        }
+
+        this.insert(insertIndex, newSurface);
+    }
+
+
+    _replaceItem(child) {
+
+        let index = this._getDataSourceIndex(child.id);
+
+        let newSurface = this.options.itemTemplate(child);
+        newSurface.dataId = child.id;
+        this.replace(index, newSurface);
+    }
+
+
+    _removeItem(child) {
+        let index = _.findIndex(this._dataSource, function (surface) {
+            return surface.dataId === child.id;
+        });
+
+        if (index > -1) {
+            this.remove(index);
+        }
+
+        /* The amount of items in the dataSource is subtracted with a header if present, to get the total amount of actual items in the scrollView. */
+        let itemCount = this._dataSource.length - (this.header ? 1 : 0);
+        if (itemCount === 0) {
+            this._addPlaceholder();
+        }
+    }
+
+
+    _moveItem(oldId, prevChildId = null) {
+
+        let oldIndex = this._getDataSourceIndex(oldId);
+        let previousSiblingIndex = this._getNextVisibleIndex(prevChildId);
+
+        if (oldIndex !== previousSiblingIndex) {
+            this.move(oldIndex, previousSiblingIndex);
+        }
+    }
+
+    _addHeader() {
+        if (this.options.headerTemplate && !this.header) {
+            this.header = this.options.headerTemplate();
+            this.insert(0, this.header);
+        }
+    }
+
+    _addPlaceholder() {
+        if (this.options.placeholderTemplate && !this.placeholder) {
+            let insertIndex = this.header ? 1 : 0;
+            this.placeholder = this.options.placeholderTemplate();
+            this.placeholder.dataId = '_placeholder';
+            this.insert(insertIndex, this.placeholder);
+        }
+    }
+
+    _removePlaceholder() {
+        if (this.placeholder) {
+            this._removeItem(this.placeholder);
         }
     }
 
@@ -143,64 +242,6 @@ export default class DataBoundScrollView extends FlexScrollView {
             this._removeItem(child);
 
         }.bind(this));
-    }
-
-
-    _addItem(child) {
-
-        let insertIndex = this.isDescending ? 0 : -1;
-
-        if (this.isGrouped) {
-            insertIndex = this._ensureGroupItem(child);
-        }
-
-        let newSurface = this.options.itemTemplate(child);
-        newSurface.dataId = child.id;
-        newSurface.on('click', function () {
-            this._eventOutput.emit('child_click', {renderNode: newSurface, dataObject: child});
-        }.bind(this));
-
-        if (this.isGrouped) {
-            if (this.isDescending) {
-                insertIndex++;
-            } else {
-                insertIndex = this._findNextGroup(insertIndex) + 1;
-            }
-        }
-
-        this.insert(insertIndex, newSurface);
-    }
-
-
-    _replaceItem(child) {
-
-        let index = this._getDataSourceIndex(child.id);
-
-        let newSurface = this.options.itemTemplate(child);
-        newSurface.dataId = child.id;
-        this.replace(index, newSurface);
-    }
-
-
-    _removeItem(child) {
-        let index = _.findIndex(this._dataSource, function (surface) {
-            return surface.dataId === child.id;
-        });
-
-        if (index > -1) {
-            this.remove(index);
-        }
-    }
-
-
-    _moveItem(oldId, prevChildId = null) {
-
-        let oldIndex = this._getDataSourceIndex(oldId);
-        let previousSiblingIndex = this._getNextVisibleIndex(prevChildId);
-
-        if (oldIndex !== previousSiblingIndex) {
-            this.move(oldIndex, previousSiblingIndex);
-        }
     }
 
 
