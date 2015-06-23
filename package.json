@@ -1,19 +1,18 @@
 {
-  "name": "arva-mvc",
-  "version": "1.0.0-pre-2",
+  "name": "Arva",
+  "version": "1.0.0-beta-1",
   "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
   "main": false,
-  "homepage": "https://github.com/Bizboard/arva-mvc",
+  "homepage": "http://arva.bizboard.nl",
   "repository": {
     "type": "git",
-    "url": "git://github.com/Bizboard/arva-mvc.git"
+    "url": "git://github.com/Bizboard/arva.git"
   },
   "bugs": {
-    "url": "https://github.com/Bizboard/arva-mvc/issues"
+    "url": "https://github.com/Bizboard/arva/issues"
   },
   "scripts": {
-    "build": "jspm bundle-sfx main www/bundle.js",
-    "docs": "docker -i . -o docs -c tango -x jspm_packages,node_modules,www,docs"
+    "build": "jspm bundle-sfx main dist/arva.js"
   },
   "dependencies": {
     "eslint": "latest"
@@ -28,9 +27,7 @@
       "di.js": "github:Bizboard/di.js@master",
       "eventemitter3": "npm:eventemitter3@^1.1.0",
       "famous": "npm:famous@^0.3.5",
-      "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@^1.0.3",
       "famous-flex": "github:ijzerenhein/famous-flex@^0.3.1",
-      "firebase": "github:firebase/firebase-bower@^2.2.0",
       "lodash": "npm:lodash@^3.2.0"
     },
     "devDependencies": {
