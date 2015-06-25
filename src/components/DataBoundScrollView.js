@@ -204,12 +204,15 @@ export default class DataBoundScrollView extends FlexScrollView {
         this.options.dataStore.on('child_added', function (child) {
 
             if (!this.options.dataFilter ||
-                (typeof this.options.dataFilter === 'function' &&
-                this.options.dataFilter(child))) {
+                (typeof this.options.dataFilter === 'function')) {
 
-                this._addItem(child);
+                let result = this.options.dataFilter(child);
+                if (result instanceof Promise) {
+                    result.then((show) => { if (show) { this._addItem(child); } });
+                } else if (result) {
+                    this._addItem(child);
+                }
             }
-
         }.bind(this));
 
 
