@@ -67,28 +67,31 @@ export default class DataBoundScrollView extends FlexScrollView {
     }
 
     _addGroupItem(groupByValue) {
+        let insertIndex = this.header ? 1 : 0;
         let newSurface = this.options.groupTemplate(groupByValue);
         newSurface.groupId = groupByValue;
 
         if (this.isDescending) {
-            let insertIndex = this.header ? 1 : 0;
             this.insert(insertIndex, newSurface);
             return insertIndex;
         } else {
-            let insertIndex = this._dataSource.length - 1;
+            insertIndex = this._dataSource.length - 1;
             this.insert(insertIndex, newSurface);
             return insertIndex;
         }
     }
 
     _getGroupItemIndex(child) {
+        let insertIndex;
         let groupByValue = this._getGroupByValue(child);
         let groupIndex = this._findGroup(groupByValue);
         if (groupIndex > -1) {
-            return groupIndex;
+            insertIndex = groupIndex;
         } else {
-            return this._addGroupItem(groupByValue);
+            insertIndex = this._addGroupItem(groupByValue);
         }
+
+        return insertIndex;
     }
 
     _getInsertIndex(child) {
@@ -98,10 +101,10 @@ export default class DataBoundScrollView extends FlexScrollView {
         }
 
         /* If we're using a header, that will be the first index, so the first index we can use is 1 instead of 0. */
-        let firstIndex = this.header ? 0 : 1;
+        let firstIndex = this.header ? 1 : 0;
 
         /* Return the first or last position, depending on the sorting direction. */
-        return this.isDescending ? firstIndex : this._dataSource.length - 1;
+        return this.isDescending ? firstIndex : this._dataSource.length;
     }
 
     _addItem(child) {
@@ -174,7 +177,7 @@ export default class DataBoundScrollView extends FlexScrollView {
         if (this.options.placeholderTemplate && !this.placeholder) {
             let insertIndex = this.header ? 1 : 0;
             this.placeholder = this.options.placeholderTemplate();
-            this.placeholder.dataId = '_placeholder';
+            this.placeholder.dataId = this.placeholder.id = '_placeholder';
             this.insert(insertIndex, this.placeholder);
         }
     }
@@ -182,6 +185,7 @@ export default class DataBoundScrollView extends FlexScrollView {
     _removePlaceholder() {
         if (this.placeholder) {
             this._removeItem(this.placeholder);
+            this.placeholder = null;
         }
     }
 
