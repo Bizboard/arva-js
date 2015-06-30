@@ -2,30 +2,24 @@
  * Created by mysim1 on 16/02/15.
  */
 
-import FlexScrollView   from 'famous-flex/src/FlexScrollView';
 import _                from 'lodash';
+import FlexScrollView   from 'famous-flex/src/FlexScrollView';
+import {Throttler}      from 'arva-utils/Throttler';
 
 
 export default class DataBoundScrollView extends FlexScrollView {
 
     constructor(OPTIONS = {}) {
-
-        // if no default for autoPipeEvents, have it set to true
-        if (OPTIONS.autoPipeEvents === undefined) {
-            OPTIONS.autoPipeEvents = true;
-        }
-        if (OPTIONS.dataSource === undefined) {
-            OPTIONS.dataSource = [];
-        }
-        super(OPTIONS);
-
-        // if no direction given set default to ascending order
-        if (!this.options.sortingDirection) {
-            this.options.sortingDirection = 'ascending';
-        }
+        super(_.extend({
+            autoPipeEvents: true,
+            throttleDelay: 0, /* If set to 0, no delay is added in between adding items to the DataBoundScrollView. */
+            dataSource: [],
+            sortingDirection: 'ascending'
+        }, OPTIONS));
 
         this.isGrouped = this.options.groupBy != null;
         this.isDescending = this.options.sortingDirection === 'descending';
+        this.throttler = new Throttler(this.options.throttleDelay, true, this);
 
         /* If present in options.headerTemplate or options.placeholderTemplate, we build the header and placeholder elements. */
         this._addHeader();
@@ -204,12 +198,18 @@ export default class DataBoundScrollView extends FlexScrollView {
         this.options.dataStore.on('child_added', function (child) {
 
             if (!this.options.dataFilter ||
-                (typeof this.options.dataFilter === 'function' &&
-                this.options.dataFilter(child))) {
+                (typeof this.options.dataFilter === 'function')) {
 
-                this._addItem(child);
+                let result = this.options.dataFilter(child);
+
+                if (result instanceof Promise) {
+                    /* If the result is a Promise, show the item when that promise resolves. */
+                    result.then((show) => { if (show) { this.throttler.add(() => { return this._addItem(child); }); } });
+                } else if (result) {
+                    /* The result is an item, so we can add it directly. */
+                    this.throttler.add(() => { return this._addItem(child); });
+                }
             }
-
         }.bind(this));
 
 
@@ -224,11 +224,11 @@ export default class DataBoundScrollView extends FlexScrollView {
                     this._removeItem(child);
                 } else {
                     if (changedItem === -1) {
-                        this._addItem(child);
-                        this._moveItem(child.id, previousSibling);
+                        this.throttler.add(() => { return this._addItem(child); });
+                        this.throttler.add(() => { return this._moveItem(child.id, previousSibling); });
                     } else {
-                        this._replaceItem(child);
-                        this._moveItem(child.id, previousSibling);
+                        this.throttler.add(() => { return this._replaceItem(child); });
+                        this.throttler.add(() => { return this._moveItem(child.id, previousSibling); });
                     }
                 }
             }
@@ -238,13 +238,12 @@ export default class DataBoundScrollView extends FlexScrollView {
         this.options.dataStore.on('child_moved', function (child, previousSibling) {
             let current = this._getDataSourceIndex(child.id);
             let previous = this._getDataSourceIndex(previousSibling);
-            this._moveItem(current, previous);
+            this.throttler.add(() => { return this._moveItem(current, previous); });
         }.bind(this));
 
 
         this.options.dataStore.on('child_removed', function (child) {
-            this._removeItem(child);
-
+            this.throttler.add(() => { return this._removeItem(child); });
         }.bind(this));
     }
 
