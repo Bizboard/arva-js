@@ -32,6 +32,28 @@ export default class DataBoundScrollView extends FlexScrollView {
         }
     }
 
+    reloadFilter(newFilter) {
+        this.options.dataFilter = newFilter;
+
+        for(let entry of this.options.dataStore) {
+            let surface = _.find(this._dataSource, (surface) => {
+                return surface.dataId === entry.id;
+            });
+
+            if(newFilter(entry)) {
+                /* This entry should be in the view, add it if it doesn't exist yet. */
+                if(!surface) {
+                    this._addItem(entry)
+                }
+            } else {
+                /* This entry should not be in the view, remove if present. */
+                if(surface) {
+                    this._removeItem(entry);
+                }
+            }
+        }
+    }
+
     _findGroup(groupId) {
         return _.findIndex(this._dataSource, function (surface) {
             return surface.groupId === groupId;
