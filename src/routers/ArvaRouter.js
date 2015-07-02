@@ -125,6 +125,14 @@ export class ArvaRouter extends Router {
             values = [],
             keys = [],
             method = '';
+        for (let piece in pieces) {
+            if (pieces[piece].indexOf('=')>-1) {
+                let splitted = pieces[piece].split('=');
+                pieces[piece] = splitted[0];
+                querySplit.push(pieces[piece] + '=' + splitted[1]);
+            }
+        }
+
         let rule = null;
         let controller = null;
 
@@ -314,7 +322,7 @@ export class ArvaRouter extends Router {
             return controller.name.replace('Controller', '');
         } else{
             return typeof controller === "object" ?
-                             Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
+                Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
         }
     }
 
