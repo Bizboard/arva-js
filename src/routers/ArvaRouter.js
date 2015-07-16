@@ -10,11 +10,12 @@
  */
 
 import _                            from 'lodash';
-import {Router}                     from '../core/Router';
-import {Provide, annotate}  from 'di.js';
+import {Provide}                    from 'di.js';
 import Easing                       from 'famous/transitions/Easing';
 import AnimationController          from 'famous-flex/src/AnimationController';
+import {Router}                      from '../core/Router';
 
+@Provide(Router)
 export class ArvaRouter extends Router {
 
     constructor() {
@@ -39,10 +40,9 @@ export class ArvaRouter extends Router {
      */
     setDefault(controller, method = null) {
 
-        this.defaultController = Object.getPrototypeOf(controller).constructor.name
-            .replace('Controller', '');
+        this.defaultController = this._getControllerName(controller);
 
-        if (method != null) { this.defaultMethod = method }
+        if (method != null) { this.defaultMethod = method; }
     }
 
     setControllerSpecs(specs) {
@@ -55,23 +55,20 @@ export class ArvaRouter extends Router {
      * @param method
      * @param params
      */
-    go(controller, method, params=null) {
+    go(controller, method, params = null) {
 
-        let controllerName = '';
-        if (Object.getPrototypeOf(controller).constructor.name=="Function")
-            controllerName = controller.name;
-        else controllerName = Object.getPrototypeOf(controller).constructor.name;
+        let controllerName = this._getControllerName(controller);
 
         let routeRoot = controllerName
             .replace(this.defaultController, '')
             .replace('Controller', '');
 
         let hash = '#' + (routeRoot.length > 0 ? '/' + routeRoot : '') + ('/' + method);
-        if (params) {
-            for(let i=0;i< Object.keys(params).length;i++) {
+        if (params !== null) {
+            for (let i = 0; i < Object.keys(params).length; i++) {
                 var key = Object.keys(params)[i];
-                hash+=i==0?'?':'&';
-                hash+=(key+'='+params[key]);
+                hash += i == 0 ? '?' : '&';
+                hash += (key + '=' + params[key]);
             }
         }
 
@@ -128,6 +125,14 @@ export class ArvaRouter extends Router {
             values = [],
             keys = [],
             method = '';
+        for (let piece in pieces) {
+            if (pieces[piece].indexOf('=')>-1) {
+                let splitted = pieces[piece].split('=');
+                pieces[piece] = splitted[0];
+                querySplit.push(pieces[piece] + '=' + splitted[1]);
+            }
+        }
+
         let rule = null;
         let controller = null;
 
@@ -181,8 +186,7 @@ export class ArvaRouter extends Router {
             currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : {};
             this._setHistory(currentRoute);
 
-            // make the controller active for current scope
-            rule['@'](currentRoute);
+            this._executeRoute(rule, currentRoute);
 
             return true;
         } else {
@@ -190,6 +194,18 @@ export class ArvaRouter extends Router {
         }
 
         return false;
+    }
+
+    /**
+     * Execute the controller rule associated with a given route, passing the route as a parameter.
+     * @param {Object} rule
+     * @param {Object} route
+     * @private
+     */
+    _executeRoute(rule, route) {
+        /* Make the controller active for current scope */
+        rule['@'](route);
+        this.emit('routechange', route);
     }
 
     /**
@@ -293,6 +309,21 @@ export class ArvaRouter extends Router {
         console.log('No spec defined from ' + fromController + ' to ' + toController + '. Please check router.setControllerSpecs() in your app constructor.')
     }
 
-}
+    /**
+     * Extract a controller name from a given string, constructor, or controller instance.
+     * @param {Function|Object|String} controller String, constructor, or controller instance.
+     * @returns {String}
+     * @private
+     */
+    _getControllerName(controller) {
+        if(typeof controller === "string") {
+            return controller.replace('Controller', '');
+        } else if (typeof controller === "function" && Object.getPrototypeOf(controller).constructor.name == "Function"){
+            return controller.name.replace('Controller', '');
+        } else{
+            return typeof controller === "object" ?
+                Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
+        }
+    }
 
-annotate(ArvaRouter, new Provide(Router));
+}

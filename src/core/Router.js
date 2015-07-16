@@ -9,15 +9,17 @@
 
  */
 
- import ObjectHelper                 from '../utils/objectHelper';
+import EventEmitter                 from 'eventemitter3';
+import {ObjectHelper}               from 'arva-utils/ObjectHelper';
 
 /**
  * Abstract Router class which can be implemented to be used in an MVP setup.
  */
-export class Router {
+export class Router extends EventEmitter {
 
 
     constructor() {
+        super();
         // make classes behave like context bound
         ObjectHelper.bindAllMethods(this, this);
 
@@ -37,25 +39,26 @@ export class Router {
     /**
      * Check the routes and see which one should be activated.
      */
-    run() {
-    }
+    run() { }
 
 
     /**
      * Set the Default Controller endpoint on startup.
      */
-    setDefault(controller, method) {
-    }
+    setDefault(controller, method) { }
 
     /**
      * Register a route to a Controller
      */
-    add(route, handler) {
-    }
+    add(route, handler) { }
 
     /**
      * Go render a View from the Controller and passively update the HASH
      */
-    go(controller, method, params) {
-    }
+    go(controller, method, params) { }
+
+    /**
+     * Execute the controller rule associated with a given route, passing the route as a parameter.
+     */
+    _executeRoute(rule, route) { }
 }

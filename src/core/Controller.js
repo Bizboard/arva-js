@@ -10,9 +10,9 @@
  */
 
 import _                    from 'lodash';
-import {Inject, annotate}   from 'di.js';
+import {Inject}             from 'di.js';
 import {Router}             from './Router';
-import ObjectHelper         from '../utils/objectHelper';
+import {ObjectHelper}       from 'arva-utils/ObjectHelper';
 import EventHandler         from 'famous/core/EventHandler';
 import AnimationController  from 'famous-flex/src/AnimationController';
 
@@ -22,6 +22,7 @@ import AnimationController  from 'famous-flex/src/AnimationController';
  * each method will registered to receive calls from the Routing engine. With direct access to the Famo.us Context, every method can
  * control the creation of Views and Transitions.
  */
+@Inject(Router, AnimationController)
 export class Controller {
 
     constructor(router, context, spec) {
@@ -53,9 +54,27 @@ export class Controller {
     onRouteCalled(route) {
         if (typeof this[route.method] === 'function') {
             var result = this[route.method].apply(this, route.values);
+
             if (result) {
                 this._eventOutput.emit('renderstart', route.method);
 
+                if (result instanceof Promise) { // we can assume the method called was asynchronous from nature, therefore we await the result
+
+                    result.then((delegatedresult) => {
+                        // assemble a callback based on the execution scope and have that called when rendering is completed
+                        this.context.show(delegatedresult, _.extend(route.spec, this.spec), () => {
+                            this._eventOutput.emit('renderend', route.method);
+                        });
+                        this._eventOutput.emit('rendering', route.method);
+                    });
+                } else {
+
+                    // assemble a callback based on the execution scope and have that called when rendering is completed
+                    this.context.show(result, _.extend(route.spec, this.spec), () => {
+                        this._eventOutput.emit('renderend', route.method);
+                    });
+                    this._eventOutput.emit('rendering', route.method);
+                }
                 // assemble a callback based on the execution scope and have that called when rendering is completed
                 this.context.show(result, _.extend(route.spec, this.spec), function(){ this._eventOutput.emit('renderend', route.method); }.bind(this));
                 this._eventOutput.emit('rendering', route.method);
@@ -65,6 +84,3 @@ export class Controller {
         }
     }
 }
-
-annotate(Controller, new Inject(Router));
-annotate(Controller, new Inject(AnimationController));

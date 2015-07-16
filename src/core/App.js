@@ -12,20 +12,22 @@
 
 import {Inject, annotate} from 'di.js';
 import {Router}           from './Router';
+import Context             from 'famous/core/Context';
 
 /**
  * The App class exposes the Router which can be used to configure the Application's routing settings.
  * You can specify which Route should be default by calling router.setDefault(controller, method);
  */
+@Inject(Router, Context)
 export class App {
 
     /**
      * Have the router check check which route is active and fire the Controller
      * @param router
      */
-    constructor(router) {
-        router.run();
+    constructor(router, context) {
+        this.router = router;
+        this.context = context;
+        this.router.run();
     }
 }
-
-annotate(App, new Inject(Router));

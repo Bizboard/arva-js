@@ -10,34 +10,46 @@
  */
 // hello world
 
-import {Injector, annotate, Provide}            from 'di.js';
+import {Injector, Provide}                      from 'di.js';
 import {ArvaRouter}                             from './routers/ArvaRouter';
+import {Context as ArvaContext}                 from 'arva-utils/Context';
 import Engine                                   from 'famous/core/Engine';
-import {Context}                                from 'arva-context/Context';
+import Context                                  from 'famous/core/Context';
 import AnimationController                      from 'famous-flex/src/AnimationController';
 
+var famousContext = null;
 
-function NewAnimationController() {
-    var context = Engine.createContext();
+@Provide(Context)
+function createFamousContext() {
+    if (famousContext) {
+        return famousContext;
+    }
+    famousContext = Engine.createContext();
+    return famousContext;
+}
+
+@Provide(AnimationController)
+function newAnimationController() {
+    famousContext = createFamousContext();
     var controller = new AnimationController();
 
-    context.add(controller);
+    famousContext.add(controller);
     return controller;
 }
 
-annotate(NewAnimationController, new Provide(AnimationController));
-
 
 export function GetDefaultContext() {
-    return Context.getContext('Default');
+    return ArvaContext.getContext('Default');
 }
 
-export function reCreateDefaultContext(dataSource = null) {
-    if (dataSource) {
-        Context.setContext('Default', new Injector([ArvaRouter, NewAnimationController, dataSource]));
-    } else {
-        Context.setContext('Default', new Injector([ArvaRouter, NewAnimationController]));
+export function reCreateDefaultContext(router=ArvaRouter) {
+    // combine all injectors from context creation and the default injectors.
+    let arrayOfInjectors = [router, createFamousContext, newAnimationController];
+
+    for (let i = 0; i < arguments.length; i++) {
+        arrayOfInjectors.push(arguments[i]);
     }
 
-    return Context.getContext('Default');
+    ArvaContext.setContext('Default', new Injector(arrayOfInjectors));
+    return ArvaContext.getContext('Default');
 }
