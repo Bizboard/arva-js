@@ -8,10 +8,10 @@
  @copyright Bizboard, 2015
 
  */
-export * from './core/App';
-export * from './core/Controller';
-export * from './core/Router';
-export * from './routers/ArvaRouter';
-export * from './views/View';
-export * from './components/DataBoundScrollView';
-export * from './DefaultContext';
+export * from './core/App.js';
+export * from './core/View.js';
+export * from './core/Router.js';
+export * from './core/Controller.js';
+export * from './routers/ArvaRouter.js';
+export * from './components/DataBoundScrollView.js';
+export * from './DefaultContext.js';

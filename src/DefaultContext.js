@@ -8,48 +8,48 @@
  @copyright Bizboard, 2015
 
  */
-// hello world
 
-import {Injector, Provide}                      from 'di.js';
-import {ArvaRouter}                             from './routers/ArvaRouter';
-import {Context as ArvaContext}                 from 'arva-utils/Context';
-import Engine                                   from 'famous/core/Engine';
-import Context                                  from 'famous/core/Context';
-import AnimationController                      from 'famous-flex/src/AnimationController';
+import {Injector, Provide}                      from 'di';
+import {ArvaRouter}                             from './routers/ArvaRouter.js';
+import {Context as ArvaContext}                 from 'arva-utils/Context.js';
+import Engine                                   from 'famous/core/Engine.js';
+import FamousContext                            from 'famous/core/Context.js';
+import AnimationController                      from 'famous-flex/src/AnimationController.js';
 
 var famousContext = null;
 
-@Provide(Context)
-function createFamousContext() {
-    if (famousContext) {
-        return famousContext;
+@Provide(FamousContext)
+class NewFamousContext {
+    constructor() {
+        return famousContext || (famousContext = Engine.createContext());
     }
-    famousContext = Engine.createContext();
-    return famousContext;
 }
 
 @Provide(AnimationController)
-function newAnimationController() {
-    famousContext = createFamousContext();
-    var controller = new AnimationController();
+class NewAnimationController {
+    constructor() {
+        let context = new NewFamousContext();
+        var controller = new AnimationController();
 
-    famousContext.add(controller);
-    return controller;
+        context.add(controller);
+        return controller;
+    }
 }
 
+/**
+ * Creates a new dependency injection Context instance with the standard Arva components like a Router and a Famous Context.
+ * Allows you to pass in more default dependencies you want to be injectable in your app, through the function call arguments.
+ * @param {Function} router Router type to use.
+ * @returns {Object} Context object that has a get() method for getting a dependency injected object instance.
+ */
+export function createDefaultContext(router = ArvaRouter) {
+    /* Combine all dependencies from context creation and the default dependencies. */
+    let dependencies = [router, NewFamousContext, NewAnimationController];
 
-export function GetDefaultContext() {
-    return ArvaContext.getContext('Default');
-}
-
-export function reCreateDefaultContext(router=ArvaRouter) {
-    // combine all injectors from context creation and the default injectors.
-    let arrayOfInjectors = [router, createFamousContext, newAnimationController];
-
-    for (let i = 0; i < arguments.length; i++) {
-        arrayOfInjectors.push(arguments[i]);
+    for (let i = 1; i < arguments.length; i++) {
+        dependencies.push(arguments[i]);
     }
 
-    ArvaContext.setContext('Default', new Injector(arrayOfInjectors));
-    return ArvaContext.getContext('Default');
+    ArvaContext.buildContext(dependencies);
+    return ArvaContext.getContext();
 }

@@ -1,11 +1,18 @@
 /**
- * Created by mysim1 on 26/03/15.
+ This Source Code is licensed under the MIT license. If a copy of the
+ MIT-license was not distributed with this file, You can obtain one at:
+ http://opensource.org/licenses/mit-license.html.
+
+ @author: Hans van den Akker (mysim1)
+ @license MIT
+ @copyright Bizboard, 2015
+
  */
 
 import _                            from 'lodash';
-import FamousView                   from 'famous/core/View';
-import LayoutController             from 'famous-flex/src/LayoutController';
-import {ObjectHelper}               from 'arva-utils/ObjectHelper';
+import FamousView                   from 'famous/core/View.js';
+import LayoutController             from 'famous-flex/src/LayoutController.js';
+import {ObjectHelper}               from 'arva-utils/ObjectHelper.js';
 
 
 const DEFAULT_OPTIONS = {};
@@ -23,12 +30,24 @@ export class View extends FamousView {
         ObjectHelper.bindAllMethods(this, this);
     }
 
+    /**
+     * Converges all layout functions of this.layouts into a single layout function
+     * and adds this.renderables and the layout function to a new famous-flex LayoutController.
+     * Also pipes the eventOutput of the LayoutController to this View.
+     *
+     * For now this should not be called more than once, so only the lowest subclass should contain this.build() in their constructor.
+     * If you inherit a View that has this.build() in their constructor and you call that method yourself as well, a second LayoutController
+     * will be added to your view. Both LayoutControllers will contain this.renderables.
+     *
+     * @returns {void}
+     */
     build() {
         this._combineLayouts();
     }
 
     /**
      * Combines all layouts defined in subclasses of the View into a single layout for the LayoutController.
+     * @returns {void}
      * @private
      */
     _combineLayouts() {

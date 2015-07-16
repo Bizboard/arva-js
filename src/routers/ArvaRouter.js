@@ -10,10 +10,10 @@
  */
 
 import _                            from 'lodash';
-import {Provide}                    from 'di.js';
-import Easing                       from 'famous/transitions/Easing';
-import AnimationController          from 'famous-flex/src/AnimationController';
-import {Router}                      from '../core/Router';
+import {Provide}                    from 'di';
+import {Router}                     from '../core/Router.js';
+import Easing                       from 'famous/transitions/Easing.js';
+import AnimationController          from 'famous-flex/src/AnimationController.js';
 
 @Provide(Router)
 export class ArvaRouter extends Router {
@@ -34,9 +34,10 @@ export class ArvaRouter extends Router {
     }
 
     /**
-     * Set the initial controller and method to be activated whenever the controllers are activated.
-     * @param controller
-     * @param method
+     * Sets the initial controller and method to be activated whenever the controllers are activated.
+     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.
+     * @param {String} method Default method to call in given controller.
+     * @returns {void}
      */
     setDefault(controller, method = null) {
 
@@ -45,15 +46,21 @@ export class ArvaRouter extends Router {
         if (method != null) { this.defaultMethod = method; }
     }
 
+    /**
+     * Sets the animation specs object for use by the famous-flex AnimationController.
+     * @param {Object} specs Animation specs, keyed by target controller.
+     * @returns {void}
+     */
     setControllerSpecs(specs) {
         this.specs = specs;
     }
 
     /**
-     * Force navigation to one of the controllers
-     * @param controller
-     * @param method
-     * @param params
+     * Triggers navigation to one of the controllers
+     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.
+     * @param {String} method The method to call in given controller.
+     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: "yes"})
+     * @returns {void}
      */
     go(controller, method, params = null) {
 
@@ -81,9 +88,10 @@ export class ArvaRouter extends Router {
 
 
     /**
-     * Register a single controller
-     * @param {String} route
-     * @param {Function} handler
+     * Registers a single controller.
+     * @param {String} route Route to trigger handler on.
+     * @param {Function} handler Method to call on given route.
+     * @returns {void}
      */
     add(route, handler) {
         let pieces = route.split('/'),
@@ -105,8 +113,8 @@ export class ArvaRouter extends Router {
     }
 
     /**
-     * On a route change, call the corresponding controller method with the given parameter values.
-     * @returns {boolean}
+     * On a route change, calls the corresponding controller method with the given parameter values.
+     * @returns {Boolean} Whether the current route was successfully ran.
      */
     run() {
 
@@ -134,14 +142,13 @@ export class ArvaRouter extends Router {
         }
 
         let rule = null;
-        let controller = null;
+        let controller;
 
         // if there is no controller reference, assume we have hit the default Controller
         if (pieces.length === 1 && pieces[0].length === 0) {
             pieces[0] = this.defaultController;
             pieces.push(this.defaultMethod);
-        }
-        else if (pieces.length === 1 && pieces[0].length > 0) {
+        } else if (pieces.length === 1 && pieces[0].length > 0) {
             pieces.unshift(this.defaultController);
         }
 
@@ -197,9 +204,10 @@ export class ArvaRouter extends Router {
     }
 
     /**
-     * Execute the controller rule associated with a given route, passing the route as a parameter.
-     * @param {Object} rule
-     * @param {Object} route
+     * Executes the controller handler associated with a given route, passing the route as a parameter.
+     * @param {Object} rule Rule handler to execute.
+     * @param {Object} route Route object to pass as parameter.
+     * @returns {void}
      * @private
      */
     _executeRoute(rule, route) {
@@ -211,7 +219,8 @@ export class ArvaRouter extends Router {
     /**
      * Checks if the current route is already present in the history stack, and if so removes all entries after
      * and including the first occurrence. It will then append the current route to the history stack.
-     * @param currentRoute Route object containing url, controller, method, keys, and values.
+     * @param {Object} currentRoute Route object containing url, controller, method, keys, and values.
+     * @returns {void}
      * @private
      */
     _setHistory(currentRoute) {
@@ -229,9 +238,9 @@ export class ArvaRouter extends Router {
     }
 
     /**
-     * Method to check whether a route is already present in the history stack.
-     * @param currentRoute Route object containing url, controller, method, keys, and values.
-     * @returns {boolean}
+     * CheckS whether a route is already present in the history stack.
+     * @param {Object} currentRoute Route object containing url, controller, method, keys, and values.
+     * @returns {Boolean} Whether the route has been visited previously.
      * @private
      */
     _hasVisited(currentRoute) {
@@ -250,9 +259,9 @@ export class ArvaRouter extends Router {
     /**
      * Returns the Famous-Flex animation spec for two given routes. Takes its spec inputs from the specs set in
      * router.setControllerSpecs(), which is called from the app constructor.
-     * @param previousRoute Previous route object containing url, controller, method, keys, and values.
-     * @param currentRoute Current route object containing url, controller, method, keys, and values.
-     * @returns {*} A spec object if one is found, or an empty object otherwise.
+     * @param {Object} previousRoute Previous route object containing url, controller, method, keys, and values.
+     * @param {Object} currentRoute Current route object containing url, controller, method, keys, and values.
+     * @returns {Object} A spec object if one is found, or an empty object otherwise.
      * @private
      */
     _getAnimationSpec(previousRoute, currentRoute) {
@@ -306,22 +315,23 @@ export class ArvaRouter extends Router {
             }
         }
 
-        console.log('No spec defined from ' + fromController + ' to ' + toController + '. Please check router.setControllerSpecs() in your app constructor.')
+        console.log('No spec defined from ' + fromController + ' to ' + toController + '. Please check router.setControllerSpecs() in your app constructor.');
     }
 
     /**
-     * Extract a controller name from a given string, constructor, or controller instance.
+     * Extracts a controller name from a given string, constructor, or controller instance. 'Controller' part is not included in the returned name.
+     * E.g. _getControllerName(HomeController) -> 'Home'.
      * @param {Function|Object|String} controller String, constructor, or controller instance.
-     * @returns {String}
+     * @returns {String} Name of the controller
      * @private
      */
     _getControllerName(controller) {
-        if(typeof controller === "string") {
+        if(typeof controller === 'string') {
             return controller.replace('Controller', '');
-        } else if (typeof controller === "function" && Object.getPrototypeOf(controller).constructor.name == "Function"){
+        } else if (typeof controller === 'function' && Object.getPrototypeOf(controller).constructor.name == 'Function'){
             return controller.name.replace('Controller', '');
         } else{
-            return typeof controller === "object" ?
+            return typeof controller === 'object' ?
                 Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
         }
     }
