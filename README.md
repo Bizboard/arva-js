@@ -27,35 +27,7 @@ Arva has become much more than just an MVC. We've organized our repositories:
 * [arva-speech](//github.com/Bizboard/arva-speech): Add support for spoken commands using the Web Speech API. **(not released yet)**
 
 ## Documentation
-You can read the latest documentation about Arva's core components [here](https://cdn.rawgit.com/Bizboard/arva-mvc/develop/docs/README.md.html).
-
-## installation
-
-> **Important note:** We don't support npm and bower installs (yet). We know these platforms are very popular and we will consider these for the near future. No guarantees though.
-
-To get you started in three steps al you have to do is:
-
-```javascript
-npm install jspm -g  
-jspm init
-jspm install arva-mvc
-```
-
-
-## Context
-.. coming soon ..
-
-
-## App
-.. coming soon ..
-
-
-## Controller
-.. coming soon ..
-
-
-## View
-.. coming soon ..
+You can read the latest documentation about Arva's core components [here](https://arva.readme.io).
 
 ## License
 [![npm](https://img.shields.io/npm/l/express.svg?style=flat-square)](http://opensource.org/licenses/MIT)
