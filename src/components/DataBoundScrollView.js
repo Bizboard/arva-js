@@ -14,7 +14,7 @@ import FlexScrollView   from 'famous-flex/src/FlexScrollView.js';
 import {Throttler}      from 'arva-utils/Throttler.js';
 
 
-export default class DataBoundScrollView extends FlexScrollView {
+export class DataBoundScrollView extends FlexScrollView {
 
     constructor(OPTIONS = {}) {
         super(_.extend({
