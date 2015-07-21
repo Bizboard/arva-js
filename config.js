@@ -15,7 +15,7 @@ System.config({
 
 System.config({
   "map": {
-    "arva-ds": "github:Bizboard/arva-ds@develop",
+    "arva-ds": "github:Bizboard/arva-ds@1.0.0-beta-1",
     "arva-utils": "github:Bizboard/arva-utils@master",
     "di": "github:Bizboard/di.js@master",
     "eventemitter3": "npm:eventemitter3@1.1.1",
