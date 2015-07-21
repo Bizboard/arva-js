@@ -10,7 +10,7 @@
  */
 
 import EventEmitter                 from 'eventemitter3';
-import {ObjectHelper}               from 'arva-utils/ObjectHelper';
+import {ObjectHelper}               from 'arva-utils/ObjectHelper.js';
 
 /**
  * Abstract Router class which can be implemented to be used in an MVP setup.
@@ -37,28 +37,43 @@ export class Router extends EventEmitter {
     }
 
     /**
-     * Check the routes and see which one should be activated.
+     * On a route change, calls the corresponding controller method with the given parameter values.
+     * @returns {Boolean} Whether the current route was successfully ran.
      */
     run() { }
 
 
     /**
-     * Set the Default Controller endpoint on startup.
+     * Sets the initial controller and method to be activated whenever the controllers are activated.
+     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.
+     * @param {String} method Default method to call in given controller.
+     * @returns {void}
      */
     setDefault(controller, method) { }
 
     /**
-     * Register a route to a Controller
+     * Registers a single controller.
+     * @param {String} route Route to trigger handler on.
+     * @param {Function} handler Method to call on given route.
+     * @returns {void}
      */
     add(route, handler) { }
 
     /**
-     * Go render a View from the Controller and passively update the HASH
+     * Triggers navigation to one of the controllers
+     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.
+     * @param {String} method The method to call in given controller.
+     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: "yes"})
+     * @returns {void}
      */
     go(controller, method, params) { }
 
     /**
-     * Execute the controller rule associated with a given route, passing the route as a parameter.
+     * Executes the controller handler associated with a given route, passing the route as a parameter.
+     * @param {Object} rule Rule handler to execute.
+     * @param {Object} route Route object to pass as parameter.
+     * @returns {void}
+     * @private
      */
     _executeRoute(rule, route) { }
 }

@@ -3,16 +3,16 @@
  MIT-license was not distributed with this file, You can obtain one at:
  http://opensource.org/licenses/mit-license.html.
 
- @author: Hans van den Akker (mysim1)
+  @author: Hans van den Akker (mysim1)
   @license MIT
   @copyright Bizboard, 2015
 
  */
 
 
-import {Inject, annotate} from 'di.js';
-import {Router}           from './Router';
-import Context             from 'famous/core/Context';
+import {Inject, annotate} from 'di';
+import {Router}           from './Router.js';
+import Context             from 'famous/core/Context.js';
 
 /**
  * The App class exposes the Router which can be used to configure the Application's routing settings.
@@ -23,7 +23,9 @@ export class App {
 
     /**
      * Have the router check check which route is active and fire the Controller
-     * @param router
+     * @param {Router} router The router instance to use in the app.
+     * @param {Context} context The data context instance to use in the app.
+     * @returns {App} App instance
      */
     constructor(router, context) {
         this.router = router;

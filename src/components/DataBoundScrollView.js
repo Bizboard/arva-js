@@ -1,13 +1,20 @@
 /**
- * Created by mysim1 on 16/02/15.
+ This Source Code is licensed under the MIT license. If a copy of the
+ MIT-license was not distributed with this file, You can obtain one at:
+ http://opensource.org/licenses/mit-license.html.
+
+ @author: Hans van den Akker (mysim1)
+ @license MIT
+ @copyright Bizboard, 2015
+
  */
 
 import _                from 'lodash';
-import FlexScrollView   from 'famous-flex/src/FlexScrollView';
-import {Throttler}      from 'arva-utils/Throttler';
+import FlexScrollView   from 'famous-flex/src/FlexScrollView.js';
+import {Throttler}      from 'arva-utils/Throttler.js';
 
 
-export default class DataBoundScrollView extends FlexScrollView {
+export class DataBoundScrollView extends FlexScrollView {
 
     constructor(OPTIONS = {}) {
         super(_.extend({
@@ -32,6 +39,12 @@ export default class DataBoundScrollView extends FlexScrollView {
         }
     }
 
+    /**
+     * Reloads the dataFilter option of the DataBoundScrollView, and verifies whether the items in the dataStore are allowed by the new filter.
+     * It removes any currently visible items that aren't allowed anymore, and adds any non-visible ones that are allowed now.
+     * @param {Function} newFilter New filter function to verify item visibility with.
+     * @returns {void}
+     */
     reloadFilter(newFilter) {
         this.options.dataFilter = newFilter;
 
@@ -43,7 +56,7 @@ export default class DataBoundScrollView extends FlexScrollView {
             if(newFilter(entry)) {
                 /* This entry should be in the view, add it if it doesn't exist yet. */
                 if(!surface) {
-                    this._addItem(entry)
+                    this._addItem(entry);
                 }
             } else {
                 /* This entry should not be in the view, remove if present. */
@@ -292,19 +305,15 @@ export default class DataBoundScrollView extends FlexScrollView {
                 let nextIndex = this._getDataSourceIndex(nextModel.id);
                 if (nextIndex > -1) {
 
-                    let newIndex = this.isDescending ? nextIndex === 0 ? 0 : nextIndex - 1 :
+                    return this.isDescending ? nextIndex === 0 ? 0 : nextIndex - 1 :
                                    this._dataSource.length === nextIndex + 1 ? nextIndex : nextIndex + 1;
-
-                    return newIndex;
                 } else {
                     return this._getNextVisibleIndex(nextModel.id);
                 }
             }
         } else {
-            let newIndex = this.isDescending ? viewIndex === 0 ? 0 : viewIndex - 1 :
+            return this.isDescending ? viewIndex === 0 ? 0 : viewIndex - 1 :
                            this._dataSource.length === viewIndex + 1 ? viewIndex : viewIndex + 1;
-
-            return newIndex;
         }
     }
 }
