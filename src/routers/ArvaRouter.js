@@ -212,8 +212,9 @@ export class ArvaRouter extends Router {
      */
     _executeRoute(rule, route) {
         /* Make the controller active for current scope */
-        rule['@'](route);
-        this.emit('routechange', route);
+        if(rule['@'](route)) {
+            this.emit('routechange', route);
+        }
     }
 
     /**
@@ -332,7 +333,7 @@ export class ArvaRouter extends Router {
             return controller.name.replace('Controller', '');
         } else{
             return typeof controller === 'object' ?
-                Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
+                   Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
         }
     }
 
