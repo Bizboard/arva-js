@@ -102,11 +102,11 @@ export class DataBoundScrollView extends FlexScrollView {
 
         if (this.isDescending) {
             this.insert(insertIndex, newSurface);
-            return insertIndex;
+            return insertIndex + 1;
         } else {
             insertIndex = this._dataSource.length;
             this.insert(insertIndex, newSurface);
-            return insertIndex;
+            return insertIndex + 1;
         }
     }
 
@@ -117,10 +117,10 @@ export class DataBoundScrollView extends FlexScrollView {
         if (groupIndex > -1) {
             if(this.isDescending) {
                 /* Insert immediately after group item */
-                insertIndex = groupIndex;
+                insertIndex = groupIndex + 1;
             } else {
                 /* Insert right before next group */
-                insertIndex = this._findNextGroup(groupIndex);
+                insertIndex = this._findNextGroup(groupIndex + 1);
             }
         } else {
             insertIndex = this._addGroupItem(groupByValue);
@@ -151,14 +151,6 @@ export class DataBoundScrollView extends FlexScrollView {
         newSurface.on('click', function () {
             this._eventOutput.emit('child_click', {renderNode: newSurface, dataObject: child});
         }.bind(this));
-
-        if (this.isGrouped) {
-            if (this.isDescending) {
-                insertIndex++;
-            } else {
-                insertIndex = this._findNextGroup(insertIndex);
-            }
-        }
 
         this.insert(insertIndex, newSurface);
     }
