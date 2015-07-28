@@ -81,7 +81,7 @@ export class DataBoundScrollView extends FlexScrollView {
             }
         }
 
-        return this._dataSource.length - 1;
+        return this._dataSource.length;
     }
 
 
@@ -104,7 +104,7 @@ export class DataBoundScrollView extends FlexScrollView {
             this.insert(insertIndex, newSurface);
             return insertIndex;
         } else {
-            insertIndex = this._dataSource.length - 1;
+            insertIndex = this._dataSource.length;
             this.insert(insertIndex, newSurface);
             return insertIndex;
         }
@@ -115,7 +115,13 @@ export class DataBoundScrollView extends FlexScrollView {
         let groupByValue = this._getGroupByValue(child);
         let groupIndex = this._findGroup(groupByValue);
         if (groupIndex > -1) {
-            insertIndex = groupIndex;
+            if(this.isDescending) {
+                /* Insert immediately after group item */
+                insertIndex = groupIndex;
+            } else {
+                /* Insert right before next group */
+                insertIndex = this._findNextGroup(groupIndex);
+            }
         } else {
             insertIndex = this._addGroupItem(groupByValue);
         }
@@ -150,7 +156,7 @@ export class DataBoundScrollView extends FlexScrollView {
             if (this.isDescending) {
                 insertIndex++;
             } else {
-                insertIndex = this._findNextGroup(insertIndex) + 1;
+                insertIndex = this._findNextGroup(insertIndex);
             }
         }
 
@@ -306,14 +312,14 @@ export class DataBoundScrollView extends FlexScrollView {
                 if (nextIndex > -1) {
 
                     return this.isDescending ? nextIndex === 0 ? 0 : nextIndex - 1 :
-                                   this._dataSource.length === nextIndex + 1 ? nextIndex : nextIndex + 1;
+                           this._dataSource.length === nextIndex + 1 ? nextIndex : nextIndex + 1;
                 } else {
                     return this._getNextVisibleIndex(nextModel.id);
                 }
             }
         } else {
             return this.isDescending ? viewIndex === 0 ? 0 : viewIndex - 1 :
-                           this._dataSource.length === viewIndex + 1 ? viewIndex : viewIndex + 1;
+                   this._dataSource.length === viewIndex + 1 ? viewIndex : viewIndex + 1;
         }
     }
 }
