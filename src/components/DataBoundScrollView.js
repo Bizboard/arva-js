@@ -49,20 +49,28 @@ export class DataBoundScrollView extends FlexScrollView {
         this.options.dataFilter = newFilter;
 
         for(let entry of this.options.dataStore) {
-            let surface = _.find(this._dataSource, (surface) => {
-                return surface.dataId === entry.id;
-            });
+            let surface = _.find(this._dataSource, (surface) => surface.dataId === entry.id);
+            let alreadyExists = surface !== undefined;
+            let result = newFilter(entry);
 
-            if(newFilter(entry)) {
-                /* This entry should be in the view, add it if it doesn't exist yet. */
-                if(!surface) {
-                    this._addItem(entry);
-                }
+            if(result instanceof Promise) {
+                result.then(function(shouldShow){ this._handleNewFilterResult(shouldShow, alreadyExists, entry); }.bind(this))
             } else {
-                /* This entry should not be in the view, remove if present. */
-                if(surface) {
-                    this._removeItem(entry);
-                }
+                this._handleNewFilterResult(result, alreadyExists, entry);
+            }
+        }
+    }
+
+    _handleNewFilterResult(shouldShow, alreadyExists, entry) {
+        if(shouldShow) {
+            /* This entry should be in the view, add it if it doesn't exist yet. */
+            if(!alreadyExists) {
+                this._addItem(entry);
+            }
+        } else {
+            /* This entry should not be in the view, remove if present. */
+            if(alreadyExists) {
+                this._removeItem(entry);
             }
         }
     }
