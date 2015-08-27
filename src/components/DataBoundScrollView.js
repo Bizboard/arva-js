@@ -21,7 +21,17 @@ export class DataBoundScrollView extends FlexScrollView {
             autoPipeEvents: true,
             throttleDelay: 0, /* If set to 0, no delay is added in between adding items to the DataBoundScrollView. */
             dataSource: [],
-            sortingDirection: 'ascending'
+            sortingDirection: 'ascending',
+            flow: true,
+            flowOptions: {
+                spring: {               // spring-options used when transitioning between states
+                    dampingRatio: 0.8,  // spring damping ratio
+                    period: 1000        // duration of the animation
+                },
+                insertSpec: {           // render-spec used when inserting renderables
+                    opacity: 0          // start opacity is 0, causing a fade-in effect,
+                }
+            }
         }, OPTIONS));
 
         this.isGrouped = this.options.groupBy != null;
