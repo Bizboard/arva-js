@@ -38,6 +38,18 @@ export class DataBoundScrollView extends FlexScrollView {
         this.isDescending = this.options.sortingDirection === 'descending';
         this.throttler = new Throttler(this.options.throttleDelay, true, this);
 
+        /* If no orderBy method is set, or it is a string field name, we set our own ordering method. */
+        if (this.options.orderBy && typeof this.options.orderBy === 'string') {
+            let fieldName = this.options.orderBy || 'id';
+            this.options.orderBy = function (currentChild, compareChild) {
+                if (this.isDescending) {
+                    return currentChild[fieldName] < compareChild.data[fieldName];
+                } else {
+                    return currentChild[fieldName] > compareChild.data[fieldName];
+                }
+            }
+        }
+
         /* If present in options.headerTemplate or options.placeholderTemplate, we build the header and placeholder elements. */
         this._addHeader();
         this._addPlaceholder();
@@ -58,13 +70,13 @@ export class DataBoundScrollView extends FlexScrollView {
     reloadFilter(newFilter) {
         this.options.dataFilter = newFilter;
 
-        for(let entry of this.options.dataStore) {
+        for (let entry of this.options.dataStore) {
             let surface = _.find(this._dataSource, (surface) => surface.dataId === entry.id);
             let alreadyExists = surface !== undefined;
             let result = newFilter(entry);
 
-            if(result instanceof Promise) {
-                result.then(function(shouldShow){ this._handleNewFilterResult(shouldShow, alreadyExists, entry); }.bind(this))
+            if (result instanceof Promise) {
+                result.then(function (shouldShow) { this._handleNewFilterResult(shouldShow, alreadyExists, entry); }.bind(this))
             } else {
                 this._handleNewFilterResult(result, alreadyExists, entry);
             }
@@ -72,14 +84,14 @@ export class DataBoundScrollView extends FlexScrollView {
     }
 
     _handleNewFilterResult(shouldShow, alreadyExists, entry) {
-        if(shouldShow) {
+        if (shouldShow) {
             /* This entry should be in the view, add it if it doesn't exist yet. */
-            if(!alreadyExists) {
+            if (!alreadyExists) {
                 this._addItem(entry);
             }
         } else {
             /* This entry should not be in the view, remove if present. */
-            if(alreadyExists) {
+            if (alreadyExists) {
                 this._removeItem(entry);
             }
         }
@@ -113,59 +125,67 @@ export class DataBoundScrollView extends FlexScrollView {
         return groupByValue;
     }
 
-    _addGroupItem(groupByValue) {
-        let insertIndex = this.header ? 1 : 0;
+    _addGroupItem(groupByValue, insertIndex) {
         let newSurface = this.options.groupTemplate(groupByValue);
         newSurface.groupId = groupByValue;
 
-        if (this.isDescending) {
-            this.insert(insertIndex, newSurface);
-            return insertIndex + 1;
-        } else {
-            insertIndex = this._dataSource.length;
-            this.insert(insertIndex, newSurface);
-            return insertIndex + 1;
-        }
+        this.insert(insertIndex, newSurface);
     }
 
-    _getGroupItemIndex(child) {
-        let insertIndex;
-        let groupByValue = this._getGroupByValue(child);
-        let groupIndex = this._findGroup(groupByValue);
-        if (groupIndex > -1) {
-            if(this.isDescending) {
-                /* Insert immediately after group item */
-                insertIndex = groupIndex + 1;
-            } else {
-                /* Insert right before next group */
-                insertIndex = this._findNextGroup(groupIndex + 1);
+    _getInsertIndex(child, previousSiblingID = null) {
+        /* By default, add item to the beginning if descending order, or at the end otherwise. */
+        let insertIndex = this.isDescending ? (this.header ? 1 : 0) : this._dataSource.length;
+
+        /* If we have an orderBy function, find the index we should be inserting at. */
+        if (this.options.orderBy && typeof this.options.orderBy === 'function') {
+            let foundOrderedIndex = _.findIndex(this._dataSource, function (compareChild) {
+
+                /* Ignore the header, placeholder, and group items. */
+                if (!compareChild.isHeader && !compareChild.isPlaceholder && !compareChild.groupId) {
+                    return this.options.orderBy(child, compareChild);
+                }
+                return false;
+
+            }.bind(this));
+
+            if (foundOrderedIndex !== -1) {
+                insertIndex = foundOrderedIndex;
             }
-        } else {
-            insertIndex = this._addGroupItem(groupByValue);
+        } else if (previousSiblingID) {
+            /* We don't have an orderBy method, but do have a previousSiblingID we can use to find the correct insertion index. */
+            let siblingIndex = _.findIndex(this._dataSource, (sibling) => sibling.dataId === previousSiblingID);
+            if (siblingIndex !== -1) {
+                insertIndex = siblingIndex;
+            }
+        }
+
+        /* Check if there is a group item before our insert index. In that case we should move back a step further. */
+        if (this.isGrouped && insertIndex > 0 && this._dataSource[insertIndex].groupId) {
+            insertIndex--;
         }
 
         return insertIndex;
     }
 
-    _getInsertIndex(child) {
-        /* If we're using groups, find the item index of the group this item belongs to. If */
-        if (this.isGrouped) {
-            return this._getGroupItemIndex(child);
-        }
-
-        /* If we're using a header, that will be the first index, so the first index we can use is 1 instead of 0. */
-        let firstIndex = this.header ? 1 : 0;
-
-        /* Return the first or last position, depending on the sorting direction. */
-        return this.isDescending ? firstIndex : this._dataSource.length;
-    }
-
-    _addItem(child) {
+    _addItem(child, previousSiblingID) {
         this._removePlaceholder();
 
-        let insertIndex = this._getInsertIndex(child);
+        let insertIndex = this._getInsertIndex(child, previousSiblingID);
+
+        /* If we're using groups, check if we need to insert a group item before this child. */
+        if (this.isGrouped) {
+            let groupByValue = this._getGroupByValue(child);
+            let groupIndex = this._findGroup(groupByValue);
+            if (groupIndex === -1) {
+                /* No group of this value exists yet, so we'll need to create one. */
+                this._addGroupItem(groupByValue, insertIndex);
+                insertIndex++;
+            }
+        }
+
         let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
+        newSurface.data = child;
         newSurface.on('click', function () {
             this._eventOutput.emit('child_click', {renderNode: newSurface, dataObject: child});
         }.bind(this));
@@ -175,7 +195,6 @@ export class DataBoundScrollView extends FlexScrollView {
 
 
     _replaceItem(child) {
-
         let index = this._getDataSourceIndex(child.id);
 
         let newSurface = this.options.itemTemplate(child);
@@ -191,6 +210,22 @@ export class DataBoundScrollView extends FlexScrollView {
 
         if (index > -1) {
             this.remove(index);
+        }
+
+        /* If we're using groups, check if we need to remove the group that this child belonged to. */
+        if (this.isGrouped) {
+            let groupByValue = this._getGroupByValue(child);
+            let otherGroupChilds = _.findIndex(this._dataSource, function (otherChild) {
+                return this._getGroupByValue(otherChild) === groupByValue;
+            }.bind(this));
+
+            if (otherGroupChilds === -1) {
+                /* No more childs in this group, so let's remove the group. */
+                let groupIndex = this._findGroup(groupByValue);
+                if (groupIndex !== -1) {
+                    this.remove(groupIndex);
+                }
+            }
         }
 
         /* The amount of items in the dataSource is subtracted with a header if present, to get the total amount of actual items in the scrollView. */
@@ -214,6 +249,7 @@ export class DataBoundScrollView extends FlexScrollView {
     _addHeader() {
         if (this.options.headerTemplate && !this.header) {
             this.header = this.options.headerTemplate();
+            this.header.isHeader = true;
             this.insert(0, this.header);
         }
     }
@@ -223,6 +259,7 @@ export class DataBoundScrollView extends FlexScrollView {
             let insertIndex = this.header ? 1 : 0;
             this.placeholder = this.options.placeholderTemplate();
             this.placeholder.dataId = this.placeholder.id = '_placeholder';
+            this.placeholder.isPlaceholder = true;
             this.insert(insertIndex, this.placeholder);
         }
     }
@@ -246,25 +283,28 @@ export class DataBoundScrollView extends FlexScrollView {
             return;
         }
 
-        this.options.dataStore.on('child_added', function (child) {
+        this.options.dataStore.on('child_added', function (child, previousSiblingID) {
 
-            if (!this.options.dataFilter ||
+            if (this.options.dataFilter &&
                 (typeof this.options.dataFilter === 'function')) {
 
                 let result = this.options.dataFilter(child);
 
                 if (result instanceof Promise) {
                     /* If the result is a Promise, show the item when that promise resolves. */
-                    result.then((show) => { if (show) { this.throttler.add(() => { return this._addItem(child); }); } });
+                    result.then((show) => { if (show) { this.throttler.add(() => { return this._addItem(child), previousSiblingID; }); } });
                 } else if (result) {
                     /* The result is an item, so we can add it directly. */
-                    this.throttler.add(() => { return this._addItem(child); });
+                    this.throttler.add(() => { return this._addItem(child, previousSiblingID); });
                 }
+            } else {
+                /* There is no dataFilter method, so we can add this child. */
+                this.throttler.add(() => { return this._addItem(child, previousSiblingID); });
             }
         }.bind(this));
 
 
-        this.options.dataStore.on('child_changed', function (child, previousSibling) {
+        this.options.dataStore.on('child_changed', function (child, previousSiblingID) {
 
             let changedItem = this._getDataSourceIndex(child.id);
 
@@ -275,11 +315,10 @@ export class DataBoundScrollView extends FlexScrollView {
                     this._removeItem(child);
                 } else {
                     if (changedItem === -1) {
-                        this.throttler.add(() => { return this._addItem(child); });
-                        this.throttler.add(() => { return this._moveItem(child.id, previousSibling); });
+                        this.throttler.add(() => { return this._addItem(child, previousSiblingID); });
                     } else {
                         this.throttler.add(() => { return this._replaceItem(child); });
-                        this.throttler.add(() => { return this._moveItem(child.id, previousSibling); });
+                        this.throttler.add(() => { return this._moveItem(child.id, previousSiblingID); });
                     }
                 }
             }
