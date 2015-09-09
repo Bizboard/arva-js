@@ -134,7 +134,8 @@ export class DataBoundScrollView extends FlexScrollView {
 
     _getInsertIndex(child, previousSiblingID = null) {
         /* By default, add item to the beginning if descending order, or at the end otherwise. */
-        let insertIndex = this.isDescending ? (this.header ? 1 : 0) : this._dataSource.length;
+        let firstIndex = this.header ? 1 : 0;
+        let insertIndex = this.isDescending ? firstIndex : this._dataSource.length;
 
         /* If we have an orderBy function, find the index we should be inserting at. */
         if (this.options.orderBy && typeof this.options.orderBy === 'function') {
@@ -159,8 +160,15 @@ export class DataBoundScrollView extends FlexScrollView {
             }
         }
 
-        /* Check if there is a group item before our insert index. In that case we should move back a step further. */
-        if (this.isGrouped && insertIndex > 0 && this._dataSource[insertIndex].groupId) {
+        if(this.isGrouped && insertIndex === firstIndex && this._dataSource[insertIndex] && this._dataSource[insertIndex].groupId
+            && this._dataSource[insertIndex].groupId === this._getGroupByValue(child)) {
+            /* We didn't get an insert index from the ordering method or a previous sibling ID, and our insert index is already occupied by
+             * a group item that we need to insert after, so we'll move the index to after the group item. */
+            insertIndex++;
+        } else if (this.isGrouped && insertIndex > 0 && this._dataSource[insertIndex-1] && this._dataSource[insertIndex-1].groupId
+            && this._dataSource[insertIndex-1].groupId !== this._getGroupByValue(child)) {
+            /* The insert index is after a group item that this child does not belong to, so we'll have to decrement the index by one
+             * to avoid the child being added under this group. */
             insertIndex--;
         }
 
