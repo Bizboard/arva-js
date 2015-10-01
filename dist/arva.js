@@ -17735,8 +17735,9 @@ System.register("routers/ArvaRouter.js", ["npm:lodash@3.10.0.js", "github:Bizboa
             return false;
           },
           _executeRoute: function(rule, route) {
-            rule['@'](route);
-            this.emit('routechange', route);
+            if (rule['@'](route)) {
+              this.emit('routechange', route);
+            }
           },
           _setHistory: function(currentRoute) {
             for (var i = 0; i < this.history.length; i++) {
@@ -18590,9 +18591,13 @@ System.register("core/Controller.js", ["npm:lodash@3.10.0.js", "github:Bizboard/
                   this._eventOutput.emit('renderend', route.method);
                 }.bind(this));
                 this._eventOutput.emit('rendering', route.method);
+                return true;
+              } else {
+                return false;
               }
             } else {
               console.log('Route does not exist!');
+              return false;
             }
           }
         }, {});
@@ -18610,7 +18615,8 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
   var __moduleName = "components/DataBoundScrollView.js";
   var _,
       FlexScrollView,
-      Throttler;
+      Throttler,
+      DataBoundScrollView;
   return {
     setters: [function($__m) {
       _ = $__m.default;
@@ -18620,18 +18626,36 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
       Throttler = $__m.Throttler;
     }],
     execute: function() {
-      $__export('default', function($__super) {
+      DataBoundScrollView = function($__super) {
         function DataBoundScrollView() {
           var OPTIONS = arguments[0] !== (void 0) ? arguments[0] : {};
           $traceurRuntime.superConstructor(DataBoundScrollView).call(this, _.extend({
             autoPipeEvents: true,
             throttleDelay: 0,
             dataSource: [],
-            sortingDirection: 'ascending'
+            sortingDirection: 'ascending',
+            flow: true,
+            flowOptions: {
+              spring: {
+                dampingRatio: 0.8,
+                period: 1000
+              },
+              insertSpec: {opacity: 0}
+            }
           }, OPTIONS));
           this.isGrouped = this.options.groupBy != null;
           this.isDescending = this.options.sortingDirection === 'descending';
           this.throttler = new Throttler(this.options.throttleDelay, true, this);
+          if (this.options.orderBy && typeof this.options.orderBy === 'string') {
+            var fieldName = this.options.orderBy || 'id';
+            this.options.orderBy = function(currentChild, compareChild) {
+              if (this.isDescending) {
+                return currentChild[fieldName] < compareChild.data[fieldName];
+              } else {
+                return currentChild[fieldName] > compareChild.data[fieldName];
+              }
+            };
+          }
           this._addHeader();
           this._addPlaceholder();
           if (this.options.dataStore) {
@@ -18654,14 +18678,14 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
                       var surface = _.find($__9._dataSource, function(surface) {
                         return surface.dataId === entry.id;
                       });
-                      if (newFilter(entry)) {
-                        if (!surface) {
-                          $__9._addItem(entry);
-                        }
+                      var alreadyExists = surface !== undefined;
+                      var result = newFilter(entry);
+                      if (result instanceof Promise) {
+                        result.then(function(shouldShow) {
+                          this._handleNewFilterResult(shouldShow, alreadyExists, entry);
+                        }.bind($__9));
                       } else {
-                        if (surface) {
-                          $__9._removeItem(entry);
-                        }
+                        $__9._handleNewFilterResult(result, alreadyExists, entry);
                       }
                     }
                   };
@@ -18684,6 +18708,17 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
               }
             }
           },
+          _handleNewFilterResult: function(shouldShow, alreadyExists, entry) {
+            if (shouldShow) {
+              if (!alreadyExists) {
+                this._addItem(entry);
+              }
+            } else {
+              if (alreadyExists) {
+                this._removeItem(entry);
+              }
+            }
+          },
           _findGroup: function(groupId) {
             return _.findIndex(this._dataSource, function(surface) {
               return surface.groupId === groupId;
@@ -18696,7 +18731,7 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
                 return pos;
               }
             }
-            return this._dataSource.length - 1;
+            return this._dataSource.length;
           },
           _getGroupByValue: function(child) {
             var groupByValue = '';
@@ -18707,55 +18742,60 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
             }
             return groupByValue;
           },
-          _addGroupItem: function(groupByValue) {
-            var insertIndex = this.header ? 1 : 0;
+          _addGroupItem: function(groupByValue, insertIndex) {
             var newSurface = this.options.groupTemplate(groupByValue);
             newSurface.groupId = groupByValue;
-            if (this.isDescending) {
-              this.insert(insertIndex, newSurface);
-              return insertIndex;
-            } else {
-              insertIndex = this._dataSource.length - 1;
-              this.insert(insertIndex, newSurface);
-              return insertIndex;
-            }
+            this.insert(insertIndex, newSurface);
           },
-          _getGroupItemIndex: function(child) {
-            var insertIndex;
-            var groupByValue = this._getGroupByValue(child);
-            var groupIndex = this._findGroup(groupByValue);
-            if (groupIndex > -1) {
-              insertIndex = groupIndex;
-            } else {
-              insertIndex = this._addGroupItem(groupByValue);
+          _getInsertIndex: function(child) {
+            var previousSiblingID = arguments[1] !== (void 0) ? arguments[1] : null;
+            var firstIndex = this.header ? 1 : 0;
+            var insertIndex = this.isDescending ? firstIndex : this._dataSource.length;
+            if (this.options.orderBy && typeof this.options.orderBy === 'function') {
+              var foundOrderedIndex = _.findIndex(this._dataSource, function(compareChild) {
+                if (!compareChild.isHeader && !compareChild.isPlaceholder && !compareChild.groupId) {
+                  return this.options.orderBy(child, compareChild);
+                }
+                return false;
+              }.bind(this));
+              if (foundOrderedIndex !== -1) {
+                insertIndex = foundOrderedIndex;
+              }
+            } else if (previousSiblingID) {
+              var siblingIndex = _.findIndex(this._dataSource, function(sibling) {
+                return sibling.dataId === previousSiblingID;
+              });
+              if (siblingIndex !== -1) {
+                insertIndex = siblingIndex;
+              }
+            }
+            if (this.isGrouped && insertIndex === firstIndex && this._dataSource[insertIndex] && this._dataSource[insertIndex].groupId && this._dataSource[insertIndex].groupId === this._getGroupByValue(child)) {
+              insertIndex++;
+            } else if (this.isGrouped && insertIndex > 0 && this._dataSource[insertIndex - 1] && this._dataSource[insertIndex - 1].groupId && this._dataSource[insertIndex - 1].groupId !== this._getGroupByValue(child)) {
+              insertIndex--;
             }
             return insertIndex;
           },
-          _getInsertIndex: function(child) {
-            if (this.isGrouped) {
-              return this._getGroupItemIndex(child);
-            }
-            var firstIndex = this.header ? 1 : 0;
-            return this.isDescending ? firstIndex : this._dataSource.length;
-          },
-          _addItem: function(child) {
+          _addItem: function(child, previousSiblingID) {
             this._removePlaceholder();
-            var insertIndex = this._getInsertIndex(child);
+            var insertIndex = this._getInsertIndex(child, previousSiblingID);
+            if (this.isGrouped) {
+              var groupByValue = this._getGroupByValue(child);
+              var groupIndex = this._findGroup(groupByValue);
+              if (groupIndex === -1) {
+                this._addGroupItem(groupByValue, insertIndex);
+                insertIndex++;
+              }
+            }
             var newSurface = this.options.itemTemplate(child);
             newSurface.dataId = child.id;
+            newSurface.data = child;
             newSurface.on('click', function() {
               this._eventOutput.emit('child_click', {
                 renderNode: newSurface,
                 dataObject: child
               });
             }.bind(this));
-            if (this.isGrouped) {
-              if (this.isDescending) {
-                insertIndex++;
-              } else {
-                insertIndex = this._findNextGroup(insertIndex) + 1;
-              }
-            }
             this.insert(insertIndex, newSurface);
           },
           _replaceItem: function(child) {
@@ -18770,6 +18810,18 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
             });
             if (index > -1) {
               this.remove(index);
+            }
+            if (this.isGrouped) {
+              var groupByValue = this._getGroupByValue(child);
+              var otherGroupChilds = _.findIndex(this._dataSource, function(otherChild) {
+                return this._getGroupByValue(otherChild) === groupByValue;
+              }.bind(this));
+              if (otherGroupChilds === -1) {
+                var groupIndex = this._findGroup(groupByValue);
+                if (groupIndex !== -1) {
+                  this.remove(groupIndex);
+                }
+              }
             }
             var itemCount = this._dataSource.length - (this.header ? 1 : 0);
             if (itemCount === 0) {
@@ -18787,6 +18839,7 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
           _addHeader: function() {
             if (this.options.headerTemplate && !this.header) {
               this.header = this.options.headerTemplate();
+              this.header.isHeader = true;
               this.insert(0, this.header);
             }
           },
@@ -18795,6 +18848,7 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
               var insertIndex = this.header ? 1 : 0;
               this.placeholder = this.options.placeholderTemplate();
               this.placeholder.dataId = this.placeholder.id = '_placeholder';
+              this.placeholder.isPlaceholder = true;
               this.insert(insertIndex, this.placeholder);
             }
           },
@@ -18813,26 +18867,30 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
               console.log('Template needs to be a function.');
               return;
             }
-            this.options.dataStore.on('child_added', function(child) {
+            this.options.dataStore.on('child_added', function(child, previousSiblingID) {
               var $__0 = this;
-              if (!this.options.dataFilter || (typeof this.options.dataFilter === 'function')) {
+              if (this.options.dataFilter && (typeof this.options.dataFilter === 'function')) {
                 var result = this.options.dataFilter(child);
                 if (result instanceof Promise) {
                   result.then(function(show) {
                     if (show) {
                       $__0.throttler.add(function() {
-                        return $__0._addItem(child);
+                        return $__0._addItem(child), previousSiblingID;
                       });
                     }
                   });
                 } else if (result) {
                   this.throttler.add(function() {
-                    return $__0._addItem(child);
+                    return $__0._addItem(child, previousSiblingID);
                   });
                 }
+              } else {
+                this.throttler.add(function() {
+                  return $__0._addItem(child, previousSiblingID);
+                });
               }
             }.bind(this));
-            this.options.dataStore.on('child_changed', function(child, previousSibling) {
+            this.options.dataStore.on('child_changed', function(child, previousSiblingID) {
               var $__0 = this;
               var changedItem = this._getDataSourceIndex(child.id);
               if (this._dataSource && changedItem < this._dataSource.length) {
@@ -18841,17 +18899,14 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
                 } else {
                   if (changedItem === -1) {
                     this.throttler.add(function() {
-                      return $__0._addItem(child);
-                    });
-                    this.throttler.add(function() {
-                      return $__0._moveItem(child.id, previousSibling);
+                      return $__0._addItem(child, previousSiblingID);
                     });
                   } else {
                     this.throttler.add(function() {
                       return $__0._replaceItem(child);
                     });
                     this.throttler.add(function() {
-                      return $__0._moveItem(child.id, previousSibling);
+                      return $__0._moveItem(child.id, previousSiblingID);
                     });
                   }
                 }
@@ -18899,7 +18954,8 @@ System.register("components/DataBoundScrollView.js", ["npm:lodash@3.10.0.js", "g
             }
           }
         }, {}, $__super);
-      }(FlexScrollView));
+      }(FlexScrollView);
+      $__export("DataBoundScrollView", DataBoundScrollView);
     }
   };
 });

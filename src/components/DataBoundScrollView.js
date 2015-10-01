@@ -156,7 +156,7 @@ export class DataBoundScrollView extends FlexScrollView {
             /* We don't have an orderBy method, but do have a previousSiblingID we can use to find the correct insertion index. */
             let siblingIndex = _.findIndex(this._dataSource, (sibling) => sibling.dataId === previousSiblingID);
             if (siblingIndex !== -1) {
-                insertIndex = siblingIndex;
+                insertIndex = siblingIndex + 1;
             }
         }
 
