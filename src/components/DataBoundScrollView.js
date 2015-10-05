@@ -314,20 +314,27 @@ export class DataBoundScrollView extends FlexScrollView {
 
         this.options.dataStore.on('child_changed', function (child, previousSiblingID) {
 
-            let changedItem = this._getDataSourceIndex(child.id);
+            let result = this.options.dataFilter(child);
 
-            if (this._dataSource && changedItem < this._dataSource.length) {
-
-                if (this.options.dataFilter &&
-                    typeof this.options.dataFilter === 'function' && !this.options.dataFilter(child)) {
-                    this._removeItem(child);
-                } else {
-                    if (changedItem === -1) {
-                        this.throttler.add(() => { return this._addItem(child, previousSiblingID); });
-                    } else {
+            if(result instanceof Promise){
+                result.then(function(show) {
+                    if(show) {
                         this.throttler.add(() => { return this._replaceItem(child); });
-                        this.throttler.add(() => { return this._moveItem(child.id, previousSiblingID); });
+                        this.throttler.add(() => { return this._moveItem(child.id, previousSiblingID); })
+                    } else {
+                        this._removeItem(child);
                     }
+                }.bind(this));
+            }
+            else if (this.options.dataFilter &&
+                typeof this.options.dataFilter === 'function' && !result) {
+                this._removeItem(child);
+            } else {
+                if (changedItem === -1) {
+                    this.throttler.add(() => { return this._addItem(child, previousSiblingID); });
+                } else {
+                    this.throttler.add(() => { return this._replaceItem(child); });
+                    this.throttler.add(() => { return this._moveItem(child.id, previousSiblingID); });
                 }
             }
         }.bind(this));
