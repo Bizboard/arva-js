@@ -43,11 +43,11 @@ export class DataBoundScrollView extends FlexScrollView {
             let fieldName = this.options.orderBy || 'id';
             this.options.orderBy = function (currentChild, compareChild) {
                 if (this.isDescending) {
-                    return currentChild[fieldName] < compareChild.data[fieldName];
-                } else {
                     return currentChild[fieldName] > compareChild.data[fieldName];
+                } else {
+                    return currentChild[fieldName] < compareChild.data[fieldName];
                 }
-            }
+            }.bind(this);
         }
 
         /* If present in options.headerTemplate or options.placeholderTemplate, we build the header and placeholder elements. */
