@@ -11,6 +11,7 @@
 
 import _                from 'lodash';
 import FlexScrollView   from 'famous-flex/src/FlexScrollView.js';
+import {ObjectHelper}   from 'arva-utils/ObjectHelper.js';
 import {Throttler}      from 'arva-utils/Throttler.js';
 
 
@@ -33,6 +34,7 @@ export class DataBoundScrollView extends FlexScrollView {
                 }
             }
         }, OPTIONS));
+        ObjectHelper.bindAllMethods(this, this);
 
         this.isGrouped = this.options.groupBy != null;
         this.isDescending = this.options.sortingDirection === 'descending';
@@ -176,6 +178,11 @@ export class DataBoundScrollView extends FlexScrollView {
     }
 
     _addItem(child, previousSiblingID) {
+        if(_.findIndex(this._dataSource, (dataItem) => dataItem.dataId === child.id) !== -1) {
+            /* Child already exists, so we won't add it again. */
+            return;
+        }
+
         this._removePlaceholder();
 
         let insertIndex = this._getInsertIndex(child, previousSiblingID);
