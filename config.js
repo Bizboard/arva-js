@@ -17,7 +17,7 @@ System.config({
   "map": {
     "arva-ds": "github:bizboard/arva-ds@develop",
     "arva-utils": "github:bizboard/arva-utils@develop",
-    "di": "github:Bizboard/di.js@master",
+    "di": "github:bizboard/di.js@master",
     "eventemitter3": "npm:eventemitter3@1.1.1",
     "famous": "npm:famous@0.3.5",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
@@ -27,35 +27,29 @@ System.config({
     "traceur": "github:jmcriffey/bower-traceur@0.0.90",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90",
     "underscore": "npm:underscore@1.8.3",
-    "github:Bizboard/SPSoapAdapter@develop": {
-      "arva-utils": "github:Bizboard/arva-utils@master",
+    "github:bizboard/SPSoapAdapter@develop": {
+      "arva-utils": "github:bizboard/arva-utils@master",
       "eventemitter3": "npm:eventemitter3@1.1.1",
       "json-query": "npm:json-query@1.5.0",
       "lodash": "npm:lodash@3.10.1",
       "xml2js": "npm:xml2js@0.4.12"
     },
-    "github:Bizboard/arva-utils@develop": {
-      "di": "github:Bizboard/di.js@master",
-      "fs": "github:jspm/nodelibs-fs@0.1.2",
-      "lodash": "npm:lodash@3.10.1",
-      "path": "github:jspm/nodelibs-path@0.1.0"
-    },
-    "github:Bizboard/arva-utils@master": {
-      "di": "github:Bizboard/di.js@master",
-      "fs": "github:jspm/nodelibs-fs@0.1.2",
-      "lodash": "npm:lodash@3.10.1",
-      "path": "github:jspm/nodelibs-path@0.1.0"
-    },
     "github:bizboard/arva-ds@develop": {
-      "SPSoapAdapter": "github:Bizboard/SPSoapAdapter@develop",
-      "arva-utils": "github:Bizboard/arva-utils@develop",
-      "di": "github:Bizboard/di.js@master",
+      "SPSoapAdapter": "github:bizboard/SPSoapAdapter@develop",
+      "arva-utils": "github:bizboard/arva-utils@develop",
+      "di": "github:bizboard/di.js@master",
       "eventemitter3": "npm:eventemitter3@1.1.1",
       "firebase": "github:firebase/firebase-bower@2.3.1",
       "lodash": "npm:lodash@3.10.1"
     },
     "github:bizboard/arva-utils@develop": {
-      "di": "github:Bizboard/di.js@master",
+      "di": "github:bizboard/di.js@master",
+      "fs": "github:jspm/nodelibs-fs@0.1.2",
+      "lodash": "npm:lodash@3.10.1",
+      "path": "github:jspm/nodelibs-path@0.1.0"
+    },
+    "github:bizboard/arva-utils@master": {
+      "di": "github:bizboard/di.js@master",
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "lodash": "npm:lodash@3.10.1",
       "path": "github:jspm/nodelibs-path@0.1.0"
