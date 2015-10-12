@@ -28,21 +28,17 @@ export class View extends FamousView {
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
+
+        this._combineLayouts();
     }
 
     /**
-     * Converges all layout functions of this.layouts into a single layout function
-     * and adds this.renderables and the layout function to a new famous-flex LayoutController.
-     * Also pipes the eventOutput of the LayoutController to this View.
-     *
-     * For now this should not be called more than once, so only the lowest subclass should contain this.build() in their constructor.
-     * If you inherit a View that has this.build() in their constructor and you call that method yourself as well, a second LayoutController
-     * will be added to your view. Both LayoutControllers will contain this.renderables.
-     *
+     * Deprecated, it is no longer required to call build() from within your View instances.
+     * @deprecated
      * @returns {void}
      */
     build() {
-        this._combineLayouts();
+        this._warn(`Arva: calling build() from within views is no longer necessary, any existing calls can safely be removed. Called from ${this._name()}`);
     }
 
     /**
@@ -55,34 +51,33 @@ export class View extends FamousView {
             autoPipeEvents: true,
             layout: function (context) {
 
-                let isPortrait = window.matchMedia('(orientation: portrait)').matches;
+                let isPortrait = window.matchMedia ? window.matchMedia('(orientation: portrait)').matches : true;
 
-                if (this.layouts && this.layouts.length > 0) {
-                    let layouts = this.layouts.length;
-
-                    for (let l = 0; l < layouts; l++) {
-                        let spec = this.layouts[l];
-                        let specType = typeof spec;
+                for(let layout of this.layouts){
+                    try {
+                        let specType = typeof layout;
 
                         if (specType === 'object') {
                             if (isPortrait) {
-                                if (spec.portrait) {
-                                    spec.portrait.call(this, context);
+                                if (layout.portrait) {
+                                    layout.portrait.call(this, context);
                                 } else {
-                                    console.log('no portrait layout for view defined.');
+                                    this._warn(`No portrait layout defined for view '${this._name()}'.`);
                                 }
                             } else {
-                                if (spec.landscape) {
-                                    spec.landscape.call(this, context);
+                                if (layout.landscape) {
+                                    layout.landscape.call(this, context);
                                 } else {
-                                    console.log('no landscape layout for view defined.');
+                                    this._warn(`No landscape layout defined for view '${this._name()}'.`);
                                 }
                             }
                         } else if (specType === 'function') {
-                            spec.call(this, context);
+                            layout.call(this, context);
                         } else {
-                            console.log('Unrecognized layout specification.');
+                            console.log(`Unrecognized layout specification in view '${this._name()}'.`);
                         }
+                    } catch(error) {
+                        console.log(`Exception thrown in ${this._name()}:`, error);
                     }
                 }
             }.bind(this),
@@ -90,5 +85,15 @@ export class View extends FamousView {
         });
         this.add(this.layout);
         this.layout.pipe(this._eventOutput);
+    }
+
+    _warn(message) {
+        if(console.warn) {
+            console.warn(message);
+        }
+    }
+
+    _name() {
+        return Object.getPrototypeOf(this).constructor.name;
     }
 }
