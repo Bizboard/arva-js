@@ -52,6 +52,10 @@ export class View extends FamousView {
             layout: function (context) {
 
                 let isPortrait = window.matchMedia ? window.matchMedia('(orientation: portrait)').matches : true;
+                if(!this.initialised) {
+                    this._bindEvents();
+                    this.initialised = true;
+                }
 
                 for(let layout of this.layouts){
                     try {
@@ -87,13 +91,35 @@ export class View extends FamousView {
         this.layout.pipe(this._eventOutput);
     }
 
+    /**
+     * Uses either console.warn() or console.log() to log a mildly serious issue, depending on the user agent's availability.
+     * @param {String|Object} message
+     * @returns {void}
+     * @private
+     */
     _warn(message) {
         if(console.warn) {
             console.warn(message);
+        } else {
+            console.log(message);
         }
     }
 
+    /**
+     * Retrieves the class name of the subclass View instance.
+     * @returns {string}
+     * @private
+     */
     _name() {
         return Object.getPrototypeOf(this).constructor.name;
+    }
+
+    /**
+     * Pipes the output events of all items in this.renderables to the LayoutController in this.layout.
+     * @returns {void}
+     * @private
+     */
+    _bindEvents() {
+        this.layout.setDataSource(this.renderables);
     }
 }
