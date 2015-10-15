@@ -15,8 +15,8 @@ System.config({
 
 System.config({
   "map": {
-    "arva-ds": "github:bizboard/arva-ds@develop",
-    "arva-utils": "github:bizboard/arva-utils@develop",
+    "arva-ds": "github:bizboard/arva-ds@master",
+    "arva-utils": "github:bizboard/arva-utils@master",
     "di": "github:bizboard/di.js@master",
     "eventemitter3": "npm:eventemitter3@1.1.1",
     "famous": "npm:famous@0.3.5",
@@ -27,29 +27,23 @@ System.config({
     "traceur": "github:jmcriffey/bower-traceur@0.0.90",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90",
     "underscore": "npm:underscore@1.8.3",
-    "github:bizboard/SPSoapAdapter@develop": {
+    "github:bizboard/SPSoapAdapter@master": {
       "arva-utils": "github:bizboard/arva-utils@master",
       "eventemitter3": "npm:eventemitter3@1.1.1",
       "json-query": "npm:json-query@1.5.0",
       "lodash": "npm:lodash@3.10.1",
-      "xml2js": "npm:xml2js@0.4.12"
+      "xml2js": "npm:xml2js@0.4.13"
     },
-    "github:bizboard/arva-ds@develop": {
-      "SPSoapAdapter": "github:bizboard/SPSoapAdapter@develop",
-      "arva-utils": "github:bizboard/arva-utils@develop",
+    "github:bizboard/arva-ds@master": {
+      "SPSoapAdapter": "github:bizboard/SPSoapAdapter@master",
+      "arva-utils": "github:bizboard/arva-utils@master",
       "di": "github:bizboard/di.js@master",
       "eventemitter3": "npm:eventemitter3@1.1.1",
       "firebase": "github:firebase/firebase-bower@2.3.1",
       "lodash": "npm:lodash@3.10.1"
     },
-    "github:bizboard/arva-utils@develop": {
-      "di": "github:bizboard/di.js@master",
-      "fs": "github:jspm/nodelibs-fs@0.1.2",
-      "lodash": "npm:lodash@3.10.1",
-      "path": "github:jspm/nodelibs-path@0.1.0"
-    },
     "github:bizboard/arva-utils@master": {
-      "di": "github:bizboard/di.js@master",
+      "di": "github:Bizboard/di.js@master",
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "lodash": "npm:lodash@3.10.1",
       "path": "github:jspm/nodelibs-path@0.1.0"
@@ -172,7 +166,7 @@ System.config({
       "inherits": "npm:inherits@2.0.1",
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
-    "npm:xml2js@0.4.12": {
+    "npm:xml2js@0.4.13": {
       "events": "github:jspm/nodelibs-events@0.1.1",
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "process": "github:jspm/nodelibs-process@0.1.2",

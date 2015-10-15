@@ -22,8 +22,8 @@
       "lib": "src"
     },
     "dependencies": {
-      "arva-ds": "github:bizboard/arva-ds@develop",
-      "arva-utils": "github:bizboard/arva-utils@develop",
+      "arva-ds": "github:bizboard/arva-ds@master",
+      "arva-utils": "github:bizboard/arva-utils@master",
       "di": "github:bizboard/di.js@master",
       "eventemitter3": "npm:eventemitter3@^1.1.0",
       "famous": "npm:famous@^0.3.5",
