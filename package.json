@@ -1,18 +1,15 @@
 {
   "name": "arva-js",
-  "version": "1.0.0-beta-1",
+  "version": "1.0.0-beta.2",
   "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
   "main": false,
-  "homepage": "http://arva.bizboard.nl",
+  "homepage": "http://arva.io",
   "repository": {
     "type": "git",
     "url": "git://github.com/bizboard/arva-js.git"
   },
   "bugs": {
     "url": "https://github.com/bizboard/arva-js/issues"
-  },
-  "scripts": {
-    "build": "jspm bundle-sfx main.js dist/arva.js"
   },
   "dependencies": {
     "eslint": "latest"
@@ -22,8 +19,8 @@
       "lib": "src"
     },
     "dependencies": {
-      "arva-ds": "github:bizboard/arva-ds@develop",
-      "arva-utils": "github:bizboard/arva-utils@develop",
+      "arva-ds": "github:bizboard/arva-ds@master",
+      "arva-utils": "github:bizboard/arva-utils@master",
       "di": "github:bizboard/di.js@master",
       "eventemitter3": "npm:eventemitter3@^1.1.0",
       "famous": "npm:famous@^0.3.5",
