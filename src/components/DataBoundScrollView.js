@@ -62,17 +62,26 @@ export class DataBoundScrollView extends FlexScrollView {
             console.log('No DataSource was set.');
         }
     }
+    /**
+     * Set a template function
+     * @param templateFunction
+     */
+    setItemTemplate(templateFunction = {}){
+        this.options.itemTemplate = templateFunction;
+    }
 
     /**
      * Reloads the dataFilter option of the DataBoundScrollView, and verifies whether the items in the dataStore are allowed by the new filter.
      * It removes any currently visible items that aren't allowed anymore, and adds any non-visible ones that are allowed now.
      * @param {Function} newFilter New filter function to verify item visibility with.
+     * @param {Boolean} reRender Boolean to rerender all childs that pass the filter function. Usefull when setting a new itemTemplate alongside reloading the filter
      * @returns {void}
      */
-    reloadFilter(newFilter) {
+    reloadFilter(newFilter, reRender = false) {
         this.options.dataFilter = newFilter;
 
         for (let entry of this.options.dataStore) {
+            if(reRender) this._removeItem(entry);
             let surface = _.find(this._dataSource, (surface) => surface.dataId === entry.id);
             let alreadyExists = surface !== undefined;
             let result = newFilter(entry);
