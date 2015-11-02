@@ -10,7 +10,7 @@
  */
 
 import _                    from 'lodash';
-import {Inject}             from 'di';
+import {inject}             from 'di';
 import {Router}             from './Router.js';
 import {ObjectHelper}       from 'arva-utils/ObjectHelper.js';
 import EventHandler         from 'famous/core/EventHandler.js';
@@ -22,7 +22,7 @@ import AnimationController  from 'famous-flex/src/AnimationController.js';
  * each method will registered to receive calls from the Routing engine. With direct access to the Famo.us Context, every method can
  * control the creation of Views and Transitions.
  */
-@Inject(Router, AnimationController)
+@inject(Router, AnimationController)
 export class Controller {
 
     constructor(router, context, spec) {

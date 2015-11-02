@@ -10,7 +10,7 @@
  */
 
 
-import {Inject, annotate} from 'di';
+import {inject, annotate} from 'di';
 import {Router}           from './Router.js';
 import Context             from 'famous/core/Context.js';
 
@@ -18,7 +18,7 @@ import Context             from 'famous/core/Context.js';
  * The App class exposes the Router which can be used to configure the Application's routing settings.
  * You can specify which Route should be default by calling router.setDefault(controller, method);
  */
-@Inject(Router, Context)
+@inject(Router, Context)
 export class App {
 
     /**

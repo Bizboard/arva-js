@@ -9,7 +9,7 @@
 
  */
 
-import {Injector, Provide}                      from 'di';
+import {Injector, provide}                      from 'di';
 import {ArvaRouter}                             from './routers/ArvaRouter.js';
 import {Context as ArvaContext}                 from 'arva-utils/Context.js';
 import Engine                                   from 'famous/core/Engine.js';
@@ -18,14 +18,14 @@ import AnimationController                      from 'famous-flex/src/AnimationC
 
 var famousContext = null;
 
-@Provide(FamousContext)
+@provide(FamousContext)
 class NewFamousContext {
     constructor() {
         return famousContext || (famousContext = Engine.createContext());
     }
 }
 
-@Provide(AnimationController)
+@provide(AnimationController)
 class NewAnimationController {
     constructor() {
         let context = new NewFamousContext();

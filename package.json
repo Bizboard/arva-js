@@ -1,18 +1,15 @@
 {
   "name": "arva-js",
-  "version": "1.0.0-beta-1",
+  "version": "1.0.0-beta.2",
   "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
   "main": false,
-  "homepage": "http://arva.bizboard.nl",
+  "homepage": "http://arva.io",
   "repository": {
     "type": "git",
     "url": "git://github.com/bizboard/arva-js.git"
   },
   "bugs": {
     "url": "https://github.com/bizboard/arva-js/issues"
-  },
-  "scripts": {
-    "build": "jspm bundle-sfx main.js dist/arva.js"
   },
   "dependencies": {
     "eslint": "latest"
