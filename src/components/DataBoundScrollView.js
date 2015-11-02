@@ -63,11 +63,16 @@ export class DataBoundScrollView extends FlexScrollView {
         }
     }
     /**
-     * Set a template function
+     * Set a template function, optionally re-renders all the dataSource' renderables
      * @param templateFunction
      */
-    setItemTemplate(templateFunction = {}){
+    setItemTemplate(templateFunction = {},reRender = false){
         this.options.itemTemplate = templateFunction;
+
+        if(reRender){
+            this.clearDataSource();
+            this.reloadFilter(this.options.dataFilter);
+        }
     }
 
     /**
@@ -77,11 +82,10 @@ export class DataBoundScrollView extends FlexScrollView {
      * @param {Boolean} reRender Boolean to rerender all childs that pass the filter function. Usefull when setting a new itemTemplate alongside reloading the filter
      * @returns {void}
      */
-    reloadFilter(newFilter, reRender = false) {
+    reloadFilter(newFilter) {
         this.options.dataFilter = newFilter;
 
         for (let entry of this.options.dataStore) {
-            if(reRender) this._removeItem(entry);
             let surface = _.find(this._dataSource, (surface) => surface.dataId === entry.id);
             let alreadyExists = surface !== undefined;
             let result = newFilter(entry);
@@ -91,6 +95,15 @@ export class DataBoundScrollView extends FlexScrollView {
             } else {
                 this._handleNewFilterResult(result, alreadyExists, entry);
             }
+        }
+    }
+
+    /**
+     * Clears the dataSource by removing all entries
+     */
+    clearDataSource(){
+        for(let entry of this.options.dataStore){
+            this._removeItem(entry);
         }
     }
 
