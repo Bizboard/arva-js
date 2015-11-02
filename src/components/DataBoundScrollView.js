@@ -62,11 +62,24 @@ export class DataBoundScrollView extends FlexScrollView {
             console.log('No DataSource was set.');
         }
     }
+    /**
+     * Set a template function, optionally re-renders all the dataSource' renderables
+     * @param templateFunction
+     */
+    setItemTemplate(templateFunction = {},reRender = false){
+        this.options.itemTemplate = templateFunction;
+
+        if(reRender){
+            this.clearDataSource();
+            this.reloadFilter(this.options.dataFilter);
+        }
+    }
 
     /**
      * Reloads the dataFilter option of the DataBoundScrollView, and verifies whether the items in the dataStore are allowed by the new filter.
      * It removes any currently visible items that aren't allowed anymore, and adds any non-visible ones that are allowed now.
      * @param {Function} newFilter New filter function to verify item visibility with.
+     * @param {Boolean} reRender Boolean to rerender all childs that pass the filter function. Usefull when setting a new itemTemplate alongside reloading the filter
      * @returns {void}
      */
     reloadFilter(newFilter) {
@@ -82,6 +95,15 @@ export class DataBoundScrollView extends FlexScrollView {
             } else {
                 this._handleNewFilterResult(result, alreadyExists, entry);
             }
+        }
+    }
+
+    /**
+     * Clears the dataSource by removing all entries
+     */
+    clearDataSource(){
+        for(let entry of this.options.dataStore){
+            this._removeItem(entry);
         }
     }
 
