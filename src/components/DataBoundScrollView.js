@@ -329,30 +329,29 @@ export class DataBoundScrollView extends FlexScrollView {
 
                 if (result instanceof Promise) {
                     /* If the result is a Promise, show the item when that promise resolves. */
-                    result.then((show) => { if (show) { this.throttler.add(() => { return this._addItem(child), previousSiblingID; }); } });
+                    result.then((show) => { if (show) { this.throttler.add(() => { this._addItem(child, previousSiblingID) }); } });
                 } else if (result) {
                     /* The result is an item, so we can add it directly. */
-                    this.throttler.add(() => { return this._addItem(child, previousSiblingID); });
+                    this.throttler.add(() => { this._addItem(child, previousSiblingID); });
                 }
             } else {
                 /* There is no dataFilter method, so we can add this child. */
-                this.throttler.add(() => { return this._addItem(child, previousSiblingID); });
+                this.throttler.add(() => { this._addItem(child, previousSiblingID); });
             }
         }.bind(this));
 
 
         this.options.dataStore.on('child_changed', function (child, previousSiblingID) {
-            let changedItem = this._getDataSourceIndex(child.id);
+            let changedItemIndex = this._getDataSourceIndex(child.id);
 
-            if (this._dataSource && changedItem < this._dataSource.length) {
+            if (this._dataSource && changedItemIndex < this._dataSource.length) {
 
                 let result = this.options.dataFilter(child);
 
                 if(result instanceof Promise){
                     result.then(function(show) {
                         if(show) {
-                            this.throttler.add(() => { return this._replaceItem(child); });
-                            this.throttler.add(() => { return this._moveItem(child.id, previousSiblingID); })
+                            this.throttler.add(() => { this._replaceItem(child); });
                         } else {
                             this._removeItem(child);
                         }
@@ -362,26 +361,29 @@ export class DataBoundScrollView extends FlexScrollView {
                     typeof this.options.dataFilter === 'function' && !result) {
                     this._removeItem(child);
                 } else {
-                    if (changedItem === -1) {
-                        this.throttler.add(() => { return this._addItem(child, previousSiblingID); });
+                    if (changedItemIndex === -1) {
+                        this.throttler.add(() => {
+                            this._addItem(child, previousSiblingID);
+                        });
                     } else {
-                        this.throttler.add(() => { return this._replaceItem(child); });
-                        this.throttler.add(() => { return this._moveItem(child.id, previousSiblingID); });
+                        this.throttler.add(() => {
+                            this._replaceItem(child);
+                            if(previousSiblingID){ this._moveItem(changedItemIndex, previousSiblingID); }
+                        });
                     }
                 }
             }
         }.bind(this));
 
 
-        this.options.dataStore.on('child_moved', function (child, previousSibling) {
+        this.options.dataStore.on('child_moved', function (child, previousSiblingID) {
             let current = this._getDataSourceIndex(child.id);
-            let previous = this._getDataSourceIndex(previousSibling);
-            this.throttler.add(() => { return this._moveItem(current, previous); });
+            this.throttler.add(() => { this._moveItem(current, previousSiblingID); });
         }.bind(this));
 
 
         this.options.dataStore.on('child_removed', function (child) {
-            this.throttler.add(() => { return this._removeItem(child); });
+            this.throttler.add(() => { this._removeItem(child); });
         }.bind(this));
     }
 
