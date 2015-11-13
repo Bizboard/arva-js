@@ -223,9 +223,7 @@ export class DataBoundScrollView extends FlexScrollView {
         let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
         newSurface.data = child;
-        newSurface.on('click', function () {
-            this._eventOutput.emit('child_click', {renderNode: newSurface, dataObject: child});
-        }.bind(this));
+        this._subscribeToClicks(newSurface, child);
 
         this.insert(insertIndex, newSurface);
     }
@@ -236,6 +234,8 @@ export class DataBoundScrollView extends FlexScrollView {
 
         let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
+        newSurface.data = child;
+        this._subscribeToClicks(newSurface, child);
         this.replace(index, newSurface);
     }
 
@@ -418,5 +418,11 @@ export class DataBoundScrollView extends FlexScrollView {
             return this.isDescending ? viewIndex === 0 ? 0 : viewIndex - 1 :
                    this._dataSource.length === viewIndex + 1 ? viewIndex : viewIndex + 1;
         }
+    }
+
+    _subscribeToClicks(surface, model) {
+        surface.on('click', function () {
+            this._eventOutput.emit('child_click', {renderNode: surface, dataObject: model});
+        }.bind(this));
     }
 }
