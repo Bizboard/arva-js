@@ -1,6 +1,6 @@
 {
   "name": "arva-js",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta-2",
   "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
   "main": false,
   "homepage": "http://arva.io",
@@ -19,8 +19,8 @@
       "lib": "src"
     },
     "dependencies": {
-      "arva-ds": "github:bizboard/arva-ds@develop",
-      "arva-utils": "github:bizboard/arva-utils@develop",
+      "arva-ds": "github:bizboard/arva-ds@1.0.0-beta-2",
+      "arva-utils": "github:bizboard/arva-utils@1.0.0-beta-2",
       "di": "github:bizboard/di.js@master",
       "eventemitter3": "npm:eventemitter3@^1.1.0",
       "famous": "npm:famous@^0.3.5",
@@ -28,8 +28,9 @@
       "lodash": "npm:lodash@^3.2.0"
     },
     "devDependencies": {
-      "traceur": "github:jmcriffey/bower-traceur@0.0.90",
-      "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90"
+      "babel": "npm:babel-core@^5.6.4",
+      "babel-runtime": "npm:babel-runtime@^5.6.4",
+      "core-js": "npm:core-js@^0.9.17"
     }
   },
   "author": "Tom Clement <tom@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>",
