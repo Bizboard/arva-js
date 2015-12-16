@@ -171,8 +171,12 @@ export class DataBoundScrollView extends FlexScrollView {
             let groupId = this._getGroupByValue(child);
             let groupIndex = this._findGroup(groupId);
             if (groupIndex !== -1) {
-                for (insertIndex = groupIndex + 1; this._dataSource[insertIndex] &&
-                       this._dataSource[insertIndex].groupId === undefined && !this.options.orderBy(child, this._dataSource[insertIndex]); insertIndex++);
+                for (insertIndex = groupIndex + 1; insertIndex < this._dataSource.length; insertIndex++) {
+                    if(this._dataSource[insertIndex].groupId !== undefined ||
+                        (this.options.orderBy && this.options.orderBy(child, this._dataSource[insertIndex]))) {
+                        break;
+                    }
+                }
                 placedWithinGroup = true;
             }
         }
@@ -194,7 +198,7 @@ export class DataBoundScrollView extends FlexScrollView {
                     insertIndex = foundOrderedIndex;
                     if (this.isGrouped) {
 
-                        if(this._dataSource[insertIndex] && this._dataSource[insertIndex].groupId === undefined) {
+                        if (this._dataSource[insertIndex] && this._dataSource[insertIndex].groupId === undefined) {
                             for (; this._dataSource[insertIndex].groupId === undefined; insertIndex--);
                         }
 
@@ -255,7 +259,6 @@ export class DataBoundScrollView extends FlexScrollView {
         this._subscribeToClicks(newSurface, child);
         this.replace(index, newSurface);
     }
-
 
 
     /**
@@ -350,25 +353,13 @@ export class DataBoundScrollView extends FlexScrollView {
             return;
         }
 
-
         this.options.dataStore.on('child_added', this._onChildAdded.bind(this));
         this.options.dataStore.on('child_changed', this._onChildChanged.bind(this));
-
-        this.options.dataStore.on('child_moved', function (child, previousSiblingID) {
-            let current = this._getDataSourceIndex(child.id);
-            this.throttler.add(() => {
-                this._moveItem(current, previousSiblingID);
-            });
-        }.bind(this));
-
-
-        this.options.dataStore.on('child_removed', function (child) {
-            this.throttler.add(() => {
-                this._removeItem(child);
-            });
-        }.bind(this));
+        this.options.dataStore.on('child_moved', this._onChildMoved.bind(this));
+        this.options.dataStore.on('child_removed', this._onChildRemoved.bind(this));
 
     }
+
 
     _onChildAdded(child, previousSiblingID) {
         if (this.options.dataFilter &&
@@ -437,6 +428,18 @@ export class DataBoundScrollView extends FlexScrollView {
         }
     }
 
+    _onChildMoved(child, previousSiblingID) {
+        let current = this._getDataSourceIndex(child.id);
+        this.throttler.add(() => {
+            this._moveItem(current, previousSiblingID);
+        });
+    }
+
+    _onChildRemoved(child) {
+        this.throttler.add(() => {
+            this._removeItem(child);
+        });
+    };
 
     _getDataSourceIndex(id) {
         return _.findIndex(this._dataSource, function (surface) {
