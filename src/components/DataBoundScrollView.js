@@ -171,8 +171,7 @@ export class DataBoundScrollView extends FlexScrollView {
             let groupId = this._getGroupByValue(child);
             let groupIndex = this._findGroup(groupId);
             if (groupIndex !== -1) {
-                insertIndex = groupIndex + 1;
-                for (; this._dataSource[insertIndex] &&
+                for (insertIndex = groupIndex + 1; this._dataSource[insertIndex] &&
                        this._dataSource[insertIndex].groupId === undefined && !this.options.orderBy(child, this._dataSource[insertIndex]); insertIndex++);
                 placedWithinGroup = true;
             }
@@ -257,11 +256,13 @@ export class DataBoundScrollView extends FlexScrollView {
         this.replace(index, newSurface);
     }
 
+
+
     /**
      * Returns true if the child at index would be the only child in it's group
      * @private
      */
-    _isLonelyChildAtIndex(index) {
+    _isEmptyGroupAtIndex(index) {
         /*
          If there's a group element immediately before, and the element was the last
          in _dataSource
@@ -284,7 +285,7 @@ export class DataBoundScrollView extends FlexScrollView {
             let groupByValue = this._getGroupByValue(child);
 
 
-            if (this._isLonelyChildAtIndex(index)) {
+            if (this._isEmptyGroupAtIndex(index)) {
 
                 /* No more childs in this group, so let's remove the group. */
                 let groupIndex = this._findGroup(groupByValue);
@@ -350,75 +351,8 @@ export class DataBoundScrollView extends FlexScrollView {
         }
 
 
-        this.options.dataStore.on('child_added', function (child, previousSiblingID) {
-
-            if (this.options.dataFilter &&
-                (typeof this.options.dataFilter === 'function')) {
-
-                let result = this.options.dataFilter(child);
-
-                if (result instanceof Promise) {
-                    /* If the result is a Promise, show the item when that promise resolves. */
-                    result.then((show) => {
-                        if (show) {
-                            this.throttler.add(() => {
-                                this._addItem(child, previousSiblingID)
-                            });
-                        }
-                    });
-                } else if (result) {
-                    /* The result is an item, so we can add it directly. */
-                    this.throttler.add(() => {
-                        this._addItem(child, previousSiblingID);
-                    });
-                }
-            } else {
-                /* There is no dataFilter method, so we can add this child. */
-                this.throttler.add(() => {
-                    this._addItem(child, previousSiblingID);
-                });
-            }
-        }.bind(this));
-
-
-        this.options.dataStore.on('child_changed', function (child, previousSiblingID) {
-            let changedItemIndex = this._getDataSourceIndex(child.id);
-
-            if (this._dataSource && changedItemIndex < this._dataSource.length) {
-
-                let result = this.options.dataFilter(child);
-
-                if (result instanceof Promise) {
-                    result.then(function (show) {
-                        if (show) {
-                            this.throttler.add(() => {
-                                this._replaceItem(child);
-                            });
-                        } else {
-                            this._removeItem(child);
-                        }
-                    }.bind(this));
-                }
-                else if (this.options.dataFilter &&
-                    typeof this.options.dataFilter === 'function' && !result) {
-                    this._removeItem(child);
-                } else {
-                    if (changedItemIndex === -1) {
-                        this.throttler.add(() => {
-                            this._addItem(child, previousSiblingID);
-                        });
-                    } else {
-                        this.throttler.add(() => {
-                            this._replaceItem(child);
-                            if (previousSiblingID) {
-                                this._moveItem(changedItemIndex, previousSiblingID);
-                            }
-                        });
-                    }
-                }
-            }
-        }.bind(this));
-
+        this.options.dataStore.on('child_added', this._onChildAdded.bind(this));
+        this.options.dataStore.on('child_changed', this._onChildChanged.bind(this));
 
         this.options.dataStore.on('child_moved', function (child, previousSiblingID) {
             let current = this._getDataSourceIndex(child.id);
@@ -434,6 +368,73 @@ export class DataBoundScrollView extends FlexScrollView {
             });
         }.bind(this));
 
+    }
+
+    _onChildAdded(child, previousSiblingID) {
+        if (this.options.dataFilter &&
+            (typeof this.options.dataFilter === 'function')) {
+
+            let result = this.options.dataFilter(child);
+
+            if (result instanceof Promise) {
+                /* If the result is a Promise, show the item when that promise resolves. */
+                result.then((show) => {
+                    if (show) {
+                        this.throttler.add(() => {
+                            this._addItem(child, previousSiblingID)
+                        });
+                    }
+                });
+            } else if (result) {
+                /* The result is an item, so we can add it directly. */
+                this.throttler.add(() => {
+                    this._addItem(child, previousSiblingID);
+                });
+            }
+        } else {
+            /* There is no dataFilter method, so we can add this child. */
+            this.throttler.add(() => {
+                this._addItem(child, previousSiblingID);
+            });
+        }
+    }
+
+    _onChildChanged(child, previousSiblingID) {
+        let changedItemIndex = this._getDataSourceIndex(child.id);
+
+        if (this._dataSource && changedItemIndex < this._dataSource.length) {
+
+            let result = this.options.dataFilter(child);
+
+            if (result instanceof Promise) {
+                result.then(function (show) {
+                    if (show) {
+                        this.throttler.add(() => {
+                            this._replaceItem(child);
+                        });
+                    } else {
+                        this._removeItem(child);
+                    }
+                }.bind(this));
+            }
+            else if (this.options.dataFilter &&
+                typeof this.options.dataFilter === 'function' && !result) {
+                this._removeItem(child);
+            } else {
+                if (changedItemIndex === -1) {
+                    this.throttler.add(() => {
+                        this._addItem(child, previousSiblingID);
+                    });
+                } else {
+                    this.throttler.add(() => {
+                        this._replaceItem(child);
+                        if (previousSiblingID) {
+                            this._moveItem(changedItemIndex, previousSiblingID);
+                        }
+                    });
+                }
+            }
+        }
     }
 
 
