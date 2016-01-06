@@ -14,6 +14,8 @@ import {inject, annotate} from 'di';
 import {Router}           from './Router.js';
 import Context             from 'famous/core/Context.js';
 
+import 'arva-utils/hotfixes/Polyfills.js';
+
 /**
  * The App class exposes the Router which can be used to configure the Application's routing settings.
  * You can specify which Route should be default by calling router.setDefault(controller, method);
