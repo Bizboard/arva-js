@@ -12,8 +12,9 @@
 import _                            from 'lodash';
 import FamousView                   from 'famous/core/View.js';
 import LayoutController             from 'famous-flex/src/LayoutController.js';
+import FlexScrollView               from 'famous-flex/src/FlexScrollView.js';
 import {ObjectHelper}               from 'arva-utils/ObjectHelper.js';
-
+import LayoutDockHelper             from 'famous-flex/src/helpers/LayoutDockHelper.js';
 
 const DEFAULT_OPTIONS = {};
 
@@ -29,7 +30,17 @@ export class View extends FamousView {
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
 
+        /* Place Renderables which originate from decorators */
+        let lazyRenderablesLength = this.lazyRenderableList? this.lazyRenderableList.length:0;
+        for (let r=0;r<lazyRenderablesLength;r++) {
+          this.renderables[this.lazyRenderableList[r].id] = this[this.lazyRenderableList[r].id];
+        }
+
         this._combineLayouts();
+    }
+
+    get hasDecorators() {
+      return !!this.lazyRenderableList;
     }
 
     /**
@@ -41,15 +52,47 @@ export class View extends FamousView {
         this._warn(`Arva: calling build() from within views is no longer necessary, any existing calls can safely be removed. Called from ${this._name()}`);
     }
 
+    _renderDecoratedRenderables(context, options) {
+      var dock = new LayoutDockHelper(context, options);
+
+      let dockedRenderables = _.filter(this.lazyRenderableList, function(r) { return !!r.dock });
+      let filledRenderables = _.filter(this.lazyRenderableList, function(r) { return !r.dock && !r.fullscreen });
+      let fullScreenRenderables = _.filter(this.lazyRenderableList, function(r) { return !!r.fullscreen });
+
+      /* Place Renderables with dock */
+      let dockedRenderablesLength = dockedRenderables? dockedRenderables.length:0;
+      for (let r=0;r<dockedRenderablesLength;r++) {
+        let definition = dockedRenderables[r];
+        dock[definition.dock](definition.id, undefined, definition.z);
+      }
+
+      let filledRenderablesLength = filledRenderables.length;
+      for (let r=0;r<filledRenderablesLength;r++) {
+        let definition = filledRenderables[r];
+        dock.fill(definition.id);
+      }
+
+      if (fullScreenRenderables.length==1) {
+        let definition = fullScreenRenderables[0];
+        context.set(definition.id, context);
+      }
+    }
+
     /**
      * Combines all layouts defined in subclasses of the View into a single layout for the LayoutController.
      * @returns {void}
      * @private
      */
     _combineLayouts() {
+
         this.layout = new LayoutController({
             autoPipeEvents: true,
-            layout: function (context) {
+            layout: function (context, options) {
+
+                // have all decorated renderables processed. don't block backward compatible layouting.
+                if (this.hasDecorators) {
+                  this._renderDecoratedRenderables(context, options);
+                }
 
                 let isPortrait = window.matchMedia ? window.matchMedia('(orientation: portrait)').matches : true;
                 if(!this.initialised) {
@@ -84,12 +127,44 @@ export class View extends FamousView {
                         console.log(`Exception thrown in ${this._name()}:`, error);
                     }
                 }
-            }.bind(this),
-            dataSource: this.renderables
+            }.bind(this)
         });
-        this.add(this.layout);
-        this.layout.pipe(this._eventOutput);
+
+        this.layout.setDataSource(this.renderables);
+
+        if (this.isScrollable) {
+          let scrollView = new FlexScrollView({
+            autoPipeEvents: true
+          });
+
+          let viewSize = [undefined, 0];
+          this.layout.on('reflow', () => {
+            for (let r in this.layout._dataSource) {
+              let currentSize = this.layout._dataSource[r].getSize();
+              if (currentSize) {
+                if (currentSize[1]>viewSize[1]) {
+                  viewSize[1] += currentSize[1];
+                }
+              }
+            }
+          });
+
+          this.layout.getSize = function() {
+            console.log(viewSize);
+            return viewSize;
+          }
+
+          scrollView.push(this.layout);
+          this.add(scrollView);
+          scrollView.pipe(this._eventOutput);
+        }
+        else {
+          this.add(this.layout);
+          this.layout.pipe(this._eventOutput);
+        }
     }
+
+
 
     /**
      * Uses either console.warn() or console.log() to log a mildly serious issue, depending on the user agent's availability.
