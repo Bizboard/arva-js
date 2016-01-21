@@ -52,6 +52,56 @@ export class View extends FamousView {
         this._warn(`Arva: calling build() from within views is no longer necessary, any existing calls can safely be removed. Called from ${this._name()}`);
     }
 
+    _resolveSizing(definition, context, options) {
+      if (definition.sizeX && definition.sizeY) {
+        let x = 0, y = 0;
+        if (typeof(definition.sizeX) === 'function') {
+          x = definition.sizeX(context.size[0]);
+        }
+        else if (typeof(definition.sizeX === 'number')) {
+          if (definition.sizeX>1) {
+            x = definition.sizeX;
+          }
+          else if (definition.sizeX>0) {
+            x = context.size[0] * definition.sizeX;
+          }
+        }
+        else if (typeof(definition.sizeX === 'boolean')) {
+            x = definition.sizeX;
+        }
+        else {
+          console.warn('Invalid sizing type for dimension X');
+        }
+
+        if (typeof(definition.sizeY) === 'function') {
+            y = definition.sizeY(context.size[1]);
+        }
+        else if (typeof(definition.sizeY === 'number')) {
+          if (definition.sizeY>1) {
+            y = definition.sizeY;
+          }
+          else if (definition.sizeY>0) {
+            y = context.size[1] * definition.sizeY;
+          }
+        }
+        else if (typeof(definition.sizeY === 'boolean')) {
+          if (definition.sizeY) {
+            y = context.get(definition).getSize();
+          }
+        }
+        else {
+          console.warn('Invalid sizing type for dimension Y');
+        }
+
+        if (x>0&&y>0) {
+          return [x,y];
+        }
+        else {
+          return null;
+        }
+      }
+    }
+
     _renderDecoratedRenderables(context, options) {
       var dock = new LayoutDockHelper(context, options);
 
@@ -63,12 +113,22 @@ export class View extends FamousView {
       let dockedRenderablesLength = dockedRenderables? dockedRenderables.length:0;
       for (let r=0;r<dockedRenderablesLength;r++) {
         let definition = dockedRenderables[r];
-        dock[definition.dock](definition.id, undefined, definition.z);
+        let sizing = this._resolveSizing(definition, context, options);
+        let horw = undefined;
+        if (sizing) {
+          if (definition.dock=='left' || definition.dock=='right') {
+            horw = sizing[0];
+          } else {
+            horw = sizing[1];
+          }
+        }
+        dock[definition.dock](definition.id, horw, definition.z);
       }
 
       let filledRenderablesLength = filledRenderables.length;
       for (let r=0;r<filledRenderablesLength;r++) {
         let definition = filledRenderables[r];
+        //this._handleSizing(definition, context, options);
         dock.fill(definition.id);
       }
 
@@ -127,7 +187,8 @@ export class View extends FamousView {
                         console.log(`Exception thrown in ${this._name()}:`, error);
                     }
                 }
-            }.bind(this)
+            }.bind(this)//,
+            //dataSource: this.renderables
         });
 
         this.layout.setDataSource(this.renderables);
