@@ -104,6 +104,9 @@ export class View extends FamousView {
 
     _renderDecoratedRenderables(context, options) {
       var dock = new LayoutDockHelper(context, options);
+      if (this.viewMargins) {
+        dock.margins(this.viewMargins);
+      }
 
       let dockedRenderables = _.filter(this.lazyRenderableList, function(r) { return !!r.dock });
       let filledRenderables = _.filter(this.lazyRenderableList, function(r) { return !r.dock && !r.fullscreen });
