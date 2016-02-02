@@ -160,11 +160,9 @@ export class DataBoundScrollView extends FlexScrollView {
     }
 
     _getInsertIndex(child, previousSiblingID = null) {
-        /* By default, add item to the beginning if descending order, or at the end otherwise. */
+        /* By default, add item at the end if the orderBy function does not specify otherwise. */
         let firstIndex = this.header ? 1 : 0;
-
-
-        let insertIndex = this.isDescending ? firstIndex : this._dataSource.length;
+        let insertIndex = this._dataSource.length;
         let placedWithinGroup = false;
 
         if (this.isGrouped) {
