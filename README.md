@@ -1,11 +1,11 @@
 # Arva
 [![Join the chat at https://gitter.im/Bizboard/arva-js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bizboard/arva-js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Dependency Status](https://david-dm.org/Bizboard/arva-js.svg)](https://david-dm.org/Bizboard/arva-mvc) [![devDependency Status](https://david-dm.org/Bizboard/arva-js/dev-status.svg)](https://david-dm.org/Bizboard/arva-js#info=devDependencies) <span class="esdoc-coverage"></span>
 
-Using the latest ES6 standards we created an MV* for Mobile/Web/SmartTV Applications that provides a remarkable development experience. You'll be able to code faster,
+Use Arva with the latest ES2016 standards to create MV* apps for Mobile/Web/SmartTV that provide a remarkable development and user experience. You'll be able to code faster,
 write more robust and manageable code and you'll be able to easily build views that scale on a large number of device resolutions.
 
 
-What it offers:
+What Arva offers:
 
 * **Context** *Use dependency injection to configure your applications resources like Datasources*
 * **App** *Decorate your application with global components and controllers*
@@ -21,11 +21,10 @@ And enjoy the benefit of 60 fps animations cross-platform, made possible by [fam
 
 Arva has become much more than just an MV*. These are the components that make up the entire framework:
 
-* [arva-js](//github.com/Bizboard/arva-js): 100% ES6 MVC Framework
-* [arva-ds](//github.com/Bizboard/arva-ds): DataSources for Firebase and SharePoint or build your own datasource, so you can benefit from the same model and collection interfaces*
+* [arva-js](//github.com/Bizboard/arva-js): 100% ES2016 MVC Framework
+* [arva-ds](//github.com/Bizboard/arva-ds): DataSources for Firebase and SharePoint (or build your own!), so you can benefit from the same model and collection interfaces*
+* [arva-utils](//github.com/Bizboard/arva-utils): Utilities to make things like object property manipulation and execution throttling easy
 * [arva-components](//github.com/Bizboard/arva-components): Make development more efficient by using components like `BrandingEngine` and `Localizer`
-* [arva-gesture](//github.com/Bizboard/arva-gesture): Add support for new gestures that become available with technologies like [MYO](//myo.com). **(not released yet)**
-* [arva-speech](//github.com/Bizboard/arva-speech): Add support for spoken commands using the Web Speech API. **(not released yet)**
 
 
 ## Documentation
