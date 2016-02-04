@@ -12,104 +12,86 @@
 import _ from 'lodash';
 
 
-
 function _getRenderableDefinition(id) {
-  let renderablePosition = _.findIndex(this.lazyRenderableList, function(definition) {
-    return definition.id == id;
-  });
+    let renderablePosition = _.findIndex(this.lazyRenderableList, function (definition) {
+        return definition.id == id;
+    });
 
-  if (renderablePosition!=-1) {
-    return this.lazyRenderableList[renderablePosition];
-  }
-  else {
-    return null;
-  }
+    if (renderablePosition != -1) {
+        return this.lazyRenderableList[renderablePosition];
+    }
+    else {
+        return null;
+    }
+}
+
+/**
+ * Creates a reference collection for decorated renderables in the view if none already exists (for easy lookup later),
+ * and adds the renderable with renderableName to that collection as well as the normal renderables collection.
+ * @param {View} view View to place decorated renderable in
+ * @param {String} renderableName Name of the renderable to place
+ * @returns {Object} Renderable object that is defined on the view
+ */
+function prepDecoratedRenderable(view, renderableName) {
+    let renderable = view[renderableName];
+
+    /* Create renderables collections if they don't yet exist */
+    if (!view.renderables) { view.renderables = {}; }
+    if (!view.decoratedRenderables) { view.decoratedRenderables = {}; }
+
+    /* Reference the renderable in both collections */
+    if (!(renderableName in view.decoratedRenderables)) {
+        view.renderables[renderableName] = renderable;
+        view.decoratedRenderables[renderableName] = renderable;
+    }
+
+    /* Return the renderable object itself, so it can be extended by the decorater */
+    return renderable;
 }
 
 export const layout = {
 
-  fullscreen: function(target, renderable, properties) {
+    fullscreen: function (view, renderableName, properties) {
+        let renderable = prepDecoratedRenderable(view, renderableName);
+        renderable.decorations.fullscreen = true;
+    },
 
-    if (!target.lazyRenderableList) target.lazyRenderableList = [];
-    let renderableDefinition = _getRenderableDefinition.call(target, renderable);
-
-    if (!renderableDefinition) {
-      let l = target.lazyRenderableList.push({ id: renderable });
-      renderableDefinition = target.lazyRenderableList[l-1];
-    }
-
-    renderableDefinition.fullscreen = true;
-  },
-
-
-  override: function(layoutOptions) {
-
-    return function(target, renderable, properties) {
-      if (!target.lazyRenderableList) target.lazyRenderableList = [];
-      let renderableDefinition = _getRenderableDefinition.call(target, renderable);
-      if (!renderableDefinition) {
-        let l = target.lazyRenderableList.push({ id: renderable });
-        renderableDefinition = target.lazyRenderableList[l-1];
-      }
-
-      renderableDefinition.overrideLayout = layoutOptions;
-    }
-  },
-
-  dock: function(dock) {
-
-    return function(target, renderable, properties) {
-      if (dock != 'top' && dock != 'bottom' && dock != 'left' && dock != 'right') {
-        console.warn('dock instruction for renderable is not identified. Skipping rendering.');
-      }
-      else {
-        if (!target.lazyRenderableList) target.lazyRenderableList = [];
-        let renderableDefinition = _getRenderableDefinition.call(target, renderable);
-        if (!renderableDefinition) {
-          let l = target.lazyRenderableList.push({ id: renderable });
-          renderableDefinition = target.lazyRenderableList[l-1];
+    override: function (layoutOptions) {
+        return function (view, renderableName, properties) {
+            let renderable = prepDecoratedRenderable(view, renderableName);
+            renderable.decorations.overrideLayout = layoutOptions;
         }
+    },
 
-        renderableDefinition.dock = dock;
-        //renderableDefinition.order = order;
-      }
+    dock: function (dockMethod, zIndex) {
+        return function (view, renderableName, properties) {
+            let renderable = prepDecoratedRenderable(view, renderableName);
+            renderable.decorations.dock = dockMethod;
+            renderable.decorations.dockZIndex = dockMethod;
+        }
+    },
+
+    size: function (x, y) {
+        return function (view, renderableName, properties) {
+            let renderable = prepDecoratedRenderable(view, renderableName);
+            renderable.decorations.sizeX = x;
+            renderable.decorations.sizeY = y;
+        }
+    },
+
+    fill: function (view, renderableName, properties) {
+        let renderable = prepDecoratedRenderable(view, renderableName);
+        renderable.decorations.fill = true;
+    },
+
+    /* CLASS Decorators */
+    scrollable: function (target, renderable, properties) {
+        target.prototype.decorations.isScrollable = true;
+    },
+
+    margins: function (margins) {
+        return function (target, renderable, properties) {
+            target.prototype.decorations.viewMargins = margins;
+        }
     }
-  },
-
-  size: function(x, y) {
-    return function(target, renderable, properties) {
-      if (!target.lazyRenderableList) target.lazyRenderableList = [];
-      let renderableDefinition = _getRenderableDefinition.call(target, renderable);
-
-      if (!renderableDefinition) {
-        let l = target.lazyRenderableList.push({ id: renderable });
-        renderableDefinition = target.lazyRenderableList[l-1];
-      }
-
-      renderableDefinition.sizeX = x;
-      renderableDefinition.sizeY = y;
-    }
-  },
-
-  /* CLASS Decorators */
-  scrollable: function(target, renderable, properties) {
-    target.prototype.isScrollable = true;
-  },
-
-  fill: function(target, renderable, properties) {
-    if (!target.lazyRenderableList) target.lazyRenderableList = [];
-    let renderableDefinition = _getRenderableDefinition.call(target, renderable);
-
-    if (!renderableDefinition) {
-      let l = target.lazyRenderableList.push({ id: renderable });
-      renderableDefinition = target.lazyRenderableList[l-1];
-    }
-  },
-
-  margins: function(margins) {
-
-    return function(target, renderable, properties) {
-      target.prototype.viewMargins = margins;
-    }
-  }
-}
+};
