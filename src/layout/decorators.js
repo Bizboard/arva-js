@@ -67,7 +67,9 @@ export const layout = {
         return function (view, renderableName, properties) {
             let renderable = prepDecoratedRenderable(view, renderableName);
             renderable.decorations.dock = dockMethod;
-            renderable.decorations.dockZIndex = dockMethod;
+
+            if(!renderable.decorations.translate) { renderable.decorations.translate = [0, 0, 0]; }
+            renderable.decorations.translate[2] = zIndex;
         }
     },
 

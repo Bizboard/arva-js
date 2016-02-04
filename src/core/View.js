@@ -54,7 +54,7 @@ export class View extends FamousView {
      * @private
      */
     _resolveDecoratedSize(renderable, context) {
-        if(!renderable.decorations || !('sizeX' in renderable.decorations) || !('sizeY' in renderable.decorations)) {
+        if (!renderable.decorations || !('sizeX' in renderable.decorations) || !('sizeY' in renderable.decorations)) {
             return null;
         }
 
@@ -85,39 +85,8 @@ export class View extends FamousView {
     }
 
     _renderDecoratedRenderables(context, options) {
-        var dock = new LayoutDockHelper(context, options);
-        if (this.decorations.viewMargins) {
-            dock.margins(this.decorations.viewMargins);
-        }
-
-        let dockedRenderables = _.filter(this.decoratedRenderables, (renderable) => !!renderable.decorations.dock);
-        let filledRenderables = _.filter(this.decoratedRenderables, (renderable) => !renderable.decorations.dock && !renderable.decorations.fullscreen);
-        let fullScreenRenderables = _.filter(this.decoratedRenderables, (renderable) => !!r.decorations.fullscreen);
-
-        /* Place Renderables with dock */
-        for (let name in dockedRenderables) {
-            let renderable = dockedRenderables[name];
-            let sizing = this._resolveDecoratedSize(renderable, context, options);
-            let horw = undefined;
-            if (sizing) {
-                if (renderable.dock == 'left' || renderable.dock == 'right') {
-                    horw = sizing[0];
-                } else {
-                    horw = sizing[1];
-                }
-            }
-            dock[renderable.decorations.dock](renderable.id, horw, renderable.z);
-        }
-
-        for (let name in filledRenderables) {
-            let renderable = filledRenderables[name];
-            dock.fill(renderable.id);
-        }
-
-        if (fullScreenRenderables.length == 1) {
-            let definition = fullScreenRenderables[0];
-            context.set(definition.id, context);
-        }
+        this._renderDockedRenderables(context, options);
+        this._renderFullScreenRenderables(context, options);
     }
 
     _renderDockedRenderables(context, options) {
@@ -130,17 +99,39 @@ export class View extends FamousView {
             dock.margins(this.decorations.viewMargins);
         }
 
-        /* Place Renderables with non-fill dock */
+        /* Place Renderables with a non-fill dock */
         for (let name in dockedRenderables) {
             let renderable = dockedRenderables[name];
             let dockMethod = renderable.decorations.dock;
+            let zIndex = context.translate[2] + (renderable.decorations.translate ? renderable.decorations.translate[2] : 0);
             let renderableSize = this._resolveDecoratedSize(renderable, context, options);
-            let dockSize = dockMethod === 'left' || dockMethod === 'right' ? renderableSize[0] :;
+            let dockSize = (dockMethod === 'left' || dockMethod === 'right' ? renderableSize[0] :
+                            (dockMethod === 'top' || dockMethod === 'bottom' ? renderableSize[1] : null));
+
             if (dockSize !== null) {
-                dock[dockMethod](renderable.id, dockSize, renderable.decorations.dockZIndex);
+                dock[dockMethod](renderable.id, dockSize, zIndex);
             } else {
                 this._warn(`Arva: ${this._name()}.${name} contains an unknown @dock method '${dockMethod}', and was ignored.`);
             }
+        }
+
+        /* Place Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
+        for (let name in filledRenderables) {
+            let renderable = filledRenderables[name];
+            let zIndex = context.translate[2] + (renderable.decorations.translate ? renderable.decorations.translate[2] : 0);
+
+            dock.fill(renderable.id, zIndex);
+        }
+    }
+
+    _renderFullScreenRenderables(context, options) {
+        let fullScreenRenderables = _.filter(this.decoratedRenderables, (renderable) => !!renderable.decorations.fullscreen);
+
+        for(let name in fullScreenRenderables) {
+            let renderable = fullScreenRenderables[name];
+
+            /* TODO: set z-index properly */
+            context.set(definition.id, context);
         }
     }
 
