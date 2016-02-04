@@ -417,8 +417,8 @@ export class DataBoundScrollView extends FlexScrollView {
                 } else {
                     this.throttler.add(() => {
                         this._replaceItem(child);
-                        if (previousSiblingID) {
-                            this._moveItem(changedItemIndex, previousSiblingID);
+                        if (previousSiblingID && !this.useCustomOrdering) {
+                            this._moveItem(child.id, previousSiblingID);
                         }
                     });
                 }
