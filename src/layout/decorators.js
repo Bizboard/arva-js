@@ -28,7 +28,7 @@ function _getRenderableDefinition(id) {
 /**
  * Creates a reference collection for decorated renderables in the view if none already exists (for easy lookup later),
  * and adds the renderable with renderableName to that collection as well as the normal renderables collection.
- * @param {View} view View to place decorated renderable in
+ * @param {View} view Arva View to place decorated renderable in
  * @param {String} renderableName Name of the renderable to place
  * @returns {Object} Renderable object that is defined on the view
  */
@@ -51,6 +51,7 @@ function prepDecoratedRenderable(view, renderableName) {
 
 export const layout = {
 
+    /**** Renderable decorators ****/
     fullscreen: function (view, renderableName, properties) {
         let renderable = prepDecoratedRenderable(view, renderableName);
         renderable.decorations.fullscreen = true;
@@ -86,7 +87,7 @@ export const layout = {
         renderable.decorations.fill = true;
     },
 
-    /* CLASS Decorators */
+    /**** Class decorators ****/
     scrollable: function (target, renderable, properties) {
         target.prototype.decorations.isScrollable = true;
     },

@@ -24,7 +24,7 @@ export class View extends FamousView {
 
         super(_.merge(options, DEFAULT_OPTIONS));
         if (!this.renderables) { this.renderables = {}; }
-        this.layouts = [];
+        if (!this.renderables) { this.layouts = []; }
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
@@ -84,12 +84,12 @@ export class View extends FamousView {
         }
     }
 
-    _renderDecoratedRenderables(context, options) {
-        this._renderDockedRenderables(context, options);
-        this._renderFullScreenRenderables(context, options);
+    _layoutDecoratedRenderables(context, options) {
+        this._layoutDockedRenderables(context, options);
+        this._layoutFullScreenRenderables(context, options);
     }
 
-    _renderDockedRenderables(context, options) {
+    _layoutDockedRenderables(context, options) {
         let dock = new LayoutDockHelper(context, options);
 
         let dockedRenderables = _.filter(this.decoratedRenderables, (renderable) => !!renderable.decorations.dock && renderable.decorations.dock !== 'fill');
@@ -99,7 +99,7 @@ export class View extends FamousView {
             dock.margins(this.decorations.viewMargins);
         }
 
-        /* Place Renderables with a non-fill dock */
+        /* Process Renderables with a non-fill dock */
         for (let name in dockedRenderables) {
             let renderable = dockedRenderables[name];
             let dockMethod = renderable.decorations.dock;
@@ -109,29 +109,27 @@ export class View extends FamousView {
                             (dockMethod === 'top' || dockMethod === 'bottom' ? renderableSize[1] : null));
 
             if (dockSize !== null) {
-                dock[dockMethod](renderable.id, dockSize, zIndex);
+                dock[dockMethod](name, dockSize, zIndex);
             } else {
                 this._warn(`Arva: ${this._name()}.${name} contains an unknown @dock method '${dockMethod}', and was ignored.`);
             }
         }
 
-        /* Place Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
+        /* Process Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
         for (let name in filledRenderables) {
             let renderable = filledRenderables[name];
             let zIndex = context.translate[2] + (renderable.decorations.translate ? renderable.decorations.translate[2] : 0);
 
-            dock.fill(renderable.id, zIndex);
+            dock.fill(name, zIndex);
         }
     }
 
-    _renderFullScreenRenderables(context, options) {
+    _layoutFullScreenRenderables(context, options) {
         let fullScreenRenderables = _.filter(this.decoratedRenderables, (renderable) => !!renderable.decorations.fullscreen);
 
-        for(let name in fullScreenRenderables) {
+        for (let name in fullScreenRenderables) {
             let renderable = fullScreenRenderables[name];
-
-            /* TODO: set z-index properly */
-            context.set(definition.id, context);
+            context.set(name, _.merge({translate: renderable.decorations.translate}, context));
         }
     }
 
@@ -146,80 +144,95 @@ export class View extends FamousView {
             autoPipeEvents: true,
             layout: function (context, options) {
 
-                // have all decorated renderables processed. don't block backward compatible layouting.
+                /* Because views that extend this View class first call super() and then define their renderables,
+                 * we wait until the first engine render tick to add our renderables to the layout, when the view will have declared them all.
+                 * layout.setDataSource() will automatically pipe events from the renderables to this View, since autoPipeEvents = true.       */
+                if (!this._initialised) {
+                    this._addRenderables();
+                    this._initialised = true;
+                }
+
+                /* Layout all renderables that have decorators (e.g. @someDecorator) */
                 if (this.hasDecorators) {
-                    this._renderDecoratedRenderables(context, options);
+                    this._layoutDecoratedRenderables(context, options);
                 }
 
-                let isPortrait = window.matchMedia ? window.matchMedia('(orientation: portrait)').matches : true;
-                if (!this.initialised) {
-                    this._bindEvents();
-                    this.initialised = true;
-                }
-
+                /* Layout all other renderables that have explicit context.set() calls in this View's layout methods */
                 for (let layout of this.layouts) {
                     try {
-                        let specType = typeof layout;
-
-                        if (specType === 'object') {
-                            if (isPortrait) {
-                                if (layout.portrait) {
-                                    layout.portrait.call(this, context);
-                                } else {
-                                    this._warn(`No portrait layout defined for view '${this._name()}'.`);
-                                }
-                            } else {
-                                if (layout.landscape) {
-                                    layout.landscape.call(this, context);
-                                } else {
-                                    this._warn(`No landscape layout defined for view '${this._name()}'.`);
-                                }
-                            }
-                        } else if (specType === 'function') {
-                            layout.call(this, context);
-                        } else {
-                            console.log(`Unrecognized layout specification in view '${this._name()}'.`);
+                        switch (typeof layout) {
+                            case 'function':
+                                layout.call(this, context, options);
+                                break;
+                            default:
+                                this._warn(`Unrecognized layout specification in view '${this._name()}'.`);
+                                break;
                         }
                     } catch (error) {
-                        console.log(`Exception thrown in ${this._name()}:`, error);
+                        this._warn(`Exception thrown in ${this._name()}:`);
+                        console.log(error);
                     }
                 }
-            }.bind(this)//,
-            //dataSource: this.renderables
+            }.bind(this)
         });
 
-        this.layout.setDataSource(this.renderables);
+        /* Add the layoutController to this View's rendering context. */
+        this._prepareLayoutController();
+    }
 
+    /**
+     * Either adds this.layout (a LayoutController) to the current View, or a FlexScrollView containing this.layout if this view
+     * has been decorated with a @scrollable.
+     * @returns {void}
+     * @private
+     */
+    _prepareLayoutController() {
         if (this.isScrollable) {
             let scrollView = new FlexScrollView({
                 autoPipeEvents: true
             });
 
-            let viewSize = [undefined, 0];
+            let viewSize = [undefined, undefined];
             this.layout.on('reflow', () => {
-                for (let renderableName in this.layout._dataSource) {
-                    let currentSize = this.layout._dataSource[renderableName].getSize();
-                    if (currentSize) {
-                        if (currentSize[1] > viewSize[1]) {
-                            viewSize[1] += currentSize[1];
-                        }
-                    }
-                }
+                viewSize = this._getScrollableLayoutSize();
             });
 
             this.layout.getSize = function () {
-                console.log(viewSize);
                 return viewSize;
             };
 
             scrollView.push(this.layout);
-            this.add(scrollView);
             scrollView.pipe(this._eventOutput);
+            this.add(scrollView);
         }
         else {
             this.add(this.layout);
             this.layout.pipe(this._eventOutput);
         }
+    }
+
+    /**
+     * Calculates the total height of the View's layout when it's embedded inside a FlexScrollView (i.e. @scrollable is set on the View),
+     * by iterating over each renderable inside the View, and finding the minimum and maximum y values at which they are drawn.
+     *
+     * The total layout height is the difference between the lowest y coordinate drawn, and the largest one.
+     * @returns {*[]}
+     * @private
+     */
+    _getScrollableLayoutSize() {
+        let minYPosition = 0, maxYPosition = 0;
+
+        for (let renderableName in this.layout._dataSource) {
+            let renderableSpec = this.layout.getSpec(renderableName, true);
+            let top = renderableSpec.translate[1];
+            let bottom = renderableSpec.size[1] + renderableSpec.translate[1];
+
+            /* If the renderable has a lower min y position, or a higher max y position, save its values */
+            minYPosition = minYPosition < bottom ? minYPosition : bottom;
+            maxYPosition = maxYPosition > top ? maxYPosition : top;
+        }
+
+        return [undefined, maxYPosition - minYPosition || undefined];
     }
 
 
@@ -251,7 +264,7 @@ export class View extends FamousView {
      * @returns {void}
      * @private
      */
-    _bindEvents() {
+    _addRenderables() {
         this.layout.setDataSource(this.renderables);
     }
 }
