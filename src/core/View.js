@@ -85,29 +85,20 @@ export class View extends FamousView {
         }
     }
 
-    _dictionaryFilter(dictionary, iterator) {
-        let result = {};
-        for(let key in dictionary) {
-            let value = dictionary[key];
-            if(iterator(value)) { result[key] = value; }
-        }
-        return result;
-    }
-
     _groupRenderableTypes() {
-        return _.reduce(this.decoratedRenderables, function(result, renderable, renderableName) {
+        return _.reduce(this.decoratedRenderables, function (result, renderable, renderableName) {
             let groupName;
-            if(!!renderable.decorations.dock){
+            if (!!renderable.decorations.dock) {
                 /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
                 groupName = renderable.decorations.dock === 'fill' ? 'filled' : 'docked';
-            } else if(!!renderable.decorations.fullscreen) {
+            } else if (!!renderable.decorations.fullscreen) {
                 groupName = 'fullscreen';
             } else {
                 groupName = 'traditional';
             }
 
-            if(groupName) {
-                if(!(groupName in result)) { result[groupName] = {}; }
+            if (groupName) {
+                if (!(groupName in result)) { result[groupName] = {}; }
                 result[groupName][renderableName] = renderable;
             }
 
@@ -229,7 +220,7 @@ export class View extends FamousView {
      * @private
      */
     _prepareLayoutController() {
-        if (this.isScrollable) {
+        if (this.decorations.isScrollable) {
             let scrollView = new FlexScrollView({
                 autoPipeEvents: true
             });
@@ -266,6 +257,7 @@ export class View extends FamousView {
 
         for (let renderableName in this.layout._dataSource) {
             let renderableSpec = this.layout.getSpec(renderableName, true);
+            if (!renderableSpec || !renderableSpec.translate || !renderableSpec.size) { continue; }
             let top = renderableSpec.translate[1];
             let bottom = renderableSpec.size[1] + renderableSpec.translate[1];
 

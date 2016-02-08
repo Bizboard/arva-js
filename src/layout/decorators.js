@@ -36,8 +36,8 @@ function prepDecoratedRenderable(view, renderableName, descriptor) {
     return renderable;
 }
 
-function prepDecoratedClass(view) {
-    let prototype = Object.getPrototypeOf(view);
+function prepDecoratedClass(classObject) {
+    let prototype = classObject.prototype;
     if(!prototype.decorations) { prototype.decorations = {}; }
 
     /* Return the class' prototype, so it can be extended by the decorater */
