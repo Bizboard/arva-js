@@ -23,8 +23,9 @@ export class View extends FamousView {
     constructor(options = {}) {
 
         super(_.merge(options, DEFAULT_OPTIONS));
+        if (!this.decorations) { this.decorations = {}; }
         if (!this.renderables) { this.renderables = {}; }
-        if (!this.renderables) { this.layouts = []; }
+        if (!this.layouts) { this.layouts = []; }
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
@@ -54,19 +55,19 @@ export class View extends FamousView {
      * @private
      */
     _resolveDecoratedSize(renderable, context) {
-        if (!renderable.decorations || !('sizeX' in renderable.decorations) || !('sizeY' in renderable.decorations)) {
+        if (!renderable.decorations || !('size' in renderable.decorations)) {
             return null;
         }
 
-        let x = this._resolveSingleSize(renderable.decorations.sizeX, context.size[0]);
-        let y = this._resolveSingleSize(renderable.decorations.sizeY, context.size[1]);
+        let x = this._resolveSingleSize(renderable.decorations.size[0], context.size[0]);
+        let y = this._resolveSingleSize(renderable.decorations.size[1], context.size[1]);
 
         return (x !== null && y !== null) ? [x, y] : null;
     }
 
     /**
      * Resolves a single dimension (i.e. x or y) size of a renderable.
-     * @param {Number|Boolean|Object|Undefined} renderableSize Renderable's single dimension size.
+     * @param {Number|Boolean|Object|Undefined|Function} renderableSize Renderable's single dimension size.
      * @param {Number} contextSize Single dimension size value of the Famous-flex context in which the renderable is rendered.
      * @returns {Number|Boolean|Object|Undefined} Size value, which can be a numeric value, true, null, or undefined.
      * @private
@@ -79,21 +80,52 @@ export class View extends FamousView {
                 /* If 0 < renderableSize < 1, we interpret renderableSize as a fraction of the contextSize */
                 return renderableSize < 1 ? renderableSize * contextSize : renderableSize;
             default:
-                /* renderableSize can be true/false, or 'auto' for example. */
+                /* renderableSize can be true/false, undefined, or 'auto' for example. */
                 return renderableSize;
         }
     }
 
-    _layoutDecoratedRenderables(context, options) {
-        this._layoutDockedRenderables(context, options);
-        this._layoutFullScreenRenderables(context, options);
+    _dictionaryFilter(dictionary, iterator) {
+        let result = {};
+        for(let key in dictionary) {
+            let value = dictionary[key];
+            if(iterator(value)) { result[key] = value; }
+        }
+        return result;
     }
 
-    _layoutDockedRenderables(context, options) {
-        let dock = new LayoutDockHelper(context, options);
+    _groupRenderableTypes() {
+        return _.reduce(this.decoratedRenderables, function(result, renderable, renderableName) {
+            let groupName;
+            if(!!renderable.decorations.dock){
+                /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
+                groupName = renderable.decorations.dock === 'fill' ? 'filled' : 'docked';
+            } else if(!!renderable.decorations.fullscreen) {
+                groupName = 'fullscreen';
+            } else {
+                groupName = 'traditional';
+            }
 
-        let dockedRenderables = _.filter(this.decoratedRenderables, (renderable) => !!renderable.decorations.dock && renderable.decorations.dock !== 'fill');
-        let filledRenderables = _.filter(this.decoratedRenderables, (renderable) => !!renderable.decorations.dock && renderable.decorations.dock === 'fill');
+            if(groupName) {
+                if(!(groupName in result)) { result[groupName] = {}; }
+                result[groupName][renderableName] = renderable;
+            }
+
+            return result;
+        }, {});
+    }
+
+
+    _layoutDecoratedRenderables(context, options) {
+        let groupedRenderables = this._groupRenderableTypes();
+
+        this._layoutDockedRenderables(groupedRenderables['docked'], groupedRenderables['filled'], context, options);
+        this._layoutFullScreenRenderables(groupedRenderables['fullscreen'], context, options);
+        this._layoutTraditionalRenderables(groupedRenderables['traditional'], context, options);
+    }
+
+    _layoutDockedRenderables(dockedRenderables, filledRenderables, context, options) {
+        let dock = new LayoutDockHelper(context, options);
 
         if (this.decorations.viewMargins) {
             dock.margins(this.decorations.viewMargins);
@@ -103,7 +135,7 @@ export class View extends FamousView {
         for (let name in dockedRenderables) {
             let renderable = dockedRenderables[name];
             let dockMethod = renderable.decorations.dock;
-            let zIndex = context.translate[2] + (renderable.decorations.translate ? renderable.decorations.translate[2] : 0);
+            let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
             let renderableSize = this._resolveDecoratedSize(renderable, context, options);
             let dockSize = (dockMethod === 'left' || dockMethod === 'right' ? renderableSize[0] :
                             (dockMethod === 'top' || dockMethod === 'bottom' ? renderableSize[1] : null));
@@ -124,12 +156,22 @@ export class View extends FamousView {
         }
     }
 
-    _layoutFullScreenRenderables(context, options) {
-        let fullScreenRenderables = _.filter(this.decoratedRenderables, (renderable) => !!renderable.decorations.fullscreen);
-
+    _layoutFullScreenRenderables(fullScreenRenderables, context, options) {
         for (let name in fullScreenRenderables) {
             let renderable = fullScreenRenderables[name];
-            context.set(name, _.merge({translate: renderable.decorations.translate}, context));
+            context.set(name, _.merge({translate: renderable.decorations.translate || [0, 0, 0]}, context));
+        }
+    }
+
+    _layoutTraditionalRenderables(traditionalRenderables, context, options) {
+        for (let name in traditionalRenderables) {
+            let renderable = traditionalRenderables[name];
+            context.set(name, {
+                size: renderable.decorations.size || [undefined, undefined],
+                translate: renderable.decorations.translate || [0, 0, 0],
+                origin: renderable.decorations.origin || [0, 0],
+                align: renderable.decorations.align || [0, 0]
+            });
         }
     }
 
