@@ -185,7 +185,9 @@ export class View extends FamousView {
                  * layout.setDataSource() will automatically pipe events from the renderables to this View, since autoPipeEvents = true.       */
                 if (!this._initialised) {
                     this._addRenderables();
+                    this._handleDelayedAnimations();
                     this._initialised = true;
+                    this.layout.reflowLayout();
                 }
 
                 /* Layout all renderables that have decorators (e.g. @someDecorator) */
@@ -303,6 +305,18 @@ export class View extends FamousView {
      */
     _addRenderables() {
         this.layout.setDataSource(this.renderables);
+    }
+
+    _handleDelayedAnimations() {
+        if(!this.delayedAnimations) { return; }
+        for(let waitingAnimation of this.delayedAnimations) {
+            let renderableToWaitFor = this[waitingAnimation.waitFor];
+            if(renderableToWaitFor && renderableToWaitFor.on) {
+                renderableToWaitFor.on('shown', waitingAnimation.showMethod);
+            } else {
+                this._warn(`Attempted to delay showing renderable ${this._name()}.${waitingAnimation.waitFor}, which does not exist or contain an on() method.`);
+            }
+        }
     }
 
     /**

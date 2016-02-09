@@ -9,7 +9,10 @@
 
  */
 
-import _ from 'lodash';
+import _                        from 'lodash';
+import Timer                    from 'famous/utilities/Timer.js';
+import Easing                   from 'famous/transitions/Easing.js';
+import AnimationController      from 'famous-flex/src/AnimationController.js';
 
 /**
  * Creates a reference collection for decorated renderables in the view if none already exists (for easy lookup later),
@@ -25,9 +28,9 @@ function prepDecoratedRenderable(view, renderableName, descriptor) {
          * get myRenderable(){ return new Surface() } => descriptor.get();
          * myRenderable = new Surface(); => descriptor.initializer();
          */
-        if(descriptor.get) {
+        if (descriptor.get) {
             view[renderableName] = descriptor.get();
-        } else if(descriptor.initializer){
+        } else if (descriptor.initializer) {
             view[renderableName] = descriptor.initializer();
             descriptor.initializer = () => renderable;
         }
@@ -143,16 +146,31 @@ export const layout = {
         }
     },
 
-    //animate: function (options) {
-    //    return function (view, renderableName, descriptor) {
-    //        let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-    //        view.renderables[renderableName] = new AnimationController(options);
-    //
-    //        if(options.delay && options.delay > 0) {
-    //
-    //        }
-    //    }
-    //},
+    animate: function (options = {}) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            options = _.merge({animation: AnimationController.Animation.FadedZoom, transition: {duration: 300, curve: Easing.outQuad}}, options);
+
+            let animationController = view.renderables[renderableName] = new AnimationController(options);
+            renderable.decorations.animationController = animationController;
+            if (renderable.pipe) { renderable.pipe(animationController); }
+
+            let showMethod = animationController.show.bind(animationController, renderable, options, () => {
+                if (renderable.emit) { renderable.emit('shown') }
+            });
+
+            if (options.delay && options.delay > 0) {
+                Timer.setTimeout(showMethod, options.delay);
+            } else if (options.waitFor) {
+                /* These delayed animation starts get handled in arva-js/core/View.js:_handleDelayedAnimations() */
+                if (!view.delayedAnimations) { view.delayedAnimations = []; }
+                view.delayedAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
+            } else {
+                showMethod();
+            }
+
+        }
+    },
 
     /**** Class decorators ****/
     scrollable: function (target) {
