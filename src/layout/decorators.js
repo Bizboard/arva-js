@@ -19,8 +19,21 @@ import _ from 'lodash';
  * @returns {Object} Renderable object that is defined on the view
  */
 function prepDecoratedRenderable(view, renderableName, descriptor) {
-    let renderable = view[renderableName] || descriptor.get();
-    if(!renderable.decorations) { renderable.decorations = {}; }
+    let renderable;
+    if (!view[renderableName]) {
+        /* Getters have a get() method on the descriptor, class properties have an initializer method.
+         * get myRenderable(){ return new Surface() } => descriptor.get();
+         * myRenderable = new Surface(); => descriptor.initializer();
+         */
+        if(descriptor.get) {
+            view[renderableName] = descriptor.get();
+        } else if(descriptor.initializer){
+            view[renderableName] = descriptor.initializer();
+            descriptor.initializer = () => renderable;
+        }
+    }
+    renderable = view[renderableName];
+    if (!renderable.decorations) { renderable.decorations = {}; }
 
     /* Create renderables collections if they don't yet exist */
     if (!view.renderables) { view.renderables = {}; }
@@ -38,7 +51,7 @@ function prepDecoratedRenderable(view, renderableName, descriptor) {
 
 function prepDecoratedClass(classObject) {
     let prototype = classObject.prototype;
-    if(!prototype.decorations) { prototype.decorations = {}; }
+    if (!prototype.decorations) { prototype.decorations = {}; }
 
     /* Return the class' prototype, so it can be extended by the decorater */
     return prototype;
@@ -65,10 +78,10 @@ export const layout = {
             renderable.decorations.dock = dockMethod;
 
             let width = dockMethod === 'left' || dockMethod === 'right' ? size : undefined;
-            let height = dockMethod === 'top' || dockMethod === 'bottom' ? size: undefined;
+            let height = dockMethod === 'top' || dockMethod === 'bottom' ? size : undefined;
             renderable.decorations.size = [width, height];
 
-            if(!renderable.decorations.translate) { renderable.decorations.translate = [0, 0, 0]; }
+            if (!renderable.decorations.translate) { renderable.decorations.translate = [0, 0, 0]; }
             renderable.decorations.translate[2] = zIndex;
         }
     },
@@ -77,6 +90,35 @@ export const layout = {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.size = [x, y];
+        }
+    },
+
+
+    place: function (place) {
+        return function (view, renderableName, descriptor) {
+            let origin = [0, 0], align = [0, 0];
+            switch (place) {
+                case 'center':
+                    origin = align = [0.5, 0.5];
+                    break;
+                case 'bottomright':
+                    origin = align = [1, 1];
+                    break;
+                case 'bottomleft':
+                    origin = align = [0, 1];
+                    break;
+                case 'topright':
+                    origin = align = [1, 0];
+                    break;
+                default:
+                case 'topleft':
+                    origin = align = [0, 0];
+                    break;
+            }
+
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.origin = origin;
+            renderable.decorations.align = align;
         }
     },
 
@@ -93,6 +135,24 @@ export const layout = {
             renderable.decorations.align = [x, y];
         }
     },
+
+    translate: function (x, y, z) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.translate = [x, y, z];
+        }
+    },
+
+    //animate: function (options) {
+    //    return function (view, renderableName, descriptor) {
+    //        let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+    //        view.renderables[renderableName] = new AnimationController(options);
+    //
+    //        if(options.delay && options.delay > 0) {
+    //
+    //        }
+    //    }
+    //},
 
     /**** Class decorators ****/
     scrollable: function (target) {

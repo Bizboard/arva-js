@@ -23,13 +23,15 @@ export class View extends FamousView {
     constructor(options = {}) {
 
         super(_.merge(options, DEFAULT_OPTIONS));
-        if (!this.decorations) { this.decorations = {}; }
-        if (!this.renderables) { this.renderables = {}; }
-        if (!this.layouts) { this.layouts = []; }
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
+
+        this._copyPrototypeProperties();
+        if (!this.decorations) { this.decorations = {}; }
+        if (!this.renderables) { this.renderables = {}; }
+        if (!this.layouts) { this.layouts = []; }
 
         this._combineLayouts();
     }
@@ -141,7 +143,7 @@ export class View extends FamousView {
         /* Process Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
         for (let name in filledRenderables) {
             let renderable = filledRenderables[name];
-            let zIndex = context.translate[2] + (renderable.decorations.translate ? renderable.decorations.translate[2] : 0);
+            let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
 
             dock.fill(name, zIndex);
         }
@@ -157,8 +159,9 @@ export class View extends FamousView {
     _layoutTraditionalRenderables(traditionalRenderables, context, options) {
         for (let name in traditionalRenderables) {
             let renderable = traditionalRenderables[name];
+            let renderableSize = this._resolveDecoratedSize(renderable, context, options) || [undefined, undefined];
             context.set(name, {
-                size: renderable.decorations.size || [undefined, undefined],
+                size: renderableSize,
                 translate: renderable.decorations.translate || [0, 0, 0],
                 origin: renderable.decorations.origin || [0, 0],
                 align: renderable.decorations.align || [0, 0]
@@ -300,5 +303,21 @@ export class View extends FamousView {
      */
     _addRenderables() {
         this.layout.setDataSource(this.renderables);
+    }
+
+    /**
+     * Because the View has not yet been instantiated when decorators are evaluated and executed,
+     * decorators write to the prototype of this view instead of the instantiated version. Therefore,
+     * upon executing the constructor, we'll need to copy these properties over to the current instance.
+     * @returns {void}
+     * @private
+     */
+    _copyPrototypeProperties() {
+        let prototype = Object.getPrototypeOf(this);
+        let properties = _.difference(Object.getOwnPropertyNames(prototype), ['constructor']);
+        for(let name of properties) {
+            this[name] = prototype[name];
+            delete prototype[name];
+        }
     }
 }
