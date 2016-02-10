@@ -63,16 +63,21 @@ function prepDecoratedClass(classObject) {
 export const layout = {
 
     /**** Renderable decorators ****/
+
+    /**
+     * Merely marks a view property as a decorated renderable, which allows it to be rendered.
+     * Use this in combination with a @layout.custom decorator on the view in which this renderable resides.
+     * @param {View} view
+     * @param {String} renderableName
+     * @param {Object} descriptor
+     */
+    renderable: function(view, renderableName, descriptor) {
+        prepDecoratedRenderable(view, renderableName, descriptor);
+    },
+
     fullscreen: function (view, renderableName, descriptor) {
         let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
         renderable.decorations.fullscreen = true;
-    },
-
-    override: function (layoutOptions) {
-        return function (view, renderableName, descriptor) {
-            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            renderable.decorations.overrideLayout = layoutOptions;
-        }
     },
 
     dock: function (dockMethod, size, zIndex = 0) {
@@ -182,6 +187,13 @@ export const layout = {
         return function (target) {
             let prototype = prepDecoratedClass(target);
             prototype.decorations.viewMargins = margins;
+        }
+    },
+
+    custom: function(customLayoutFunction) {
+        return function (target) {
+            let prototype = prepDecoratedClass(target);
+            prototype.decorations.customLayoutFunction = customLayoutFunction;
         }
     }
 };

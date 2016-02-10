@@ -90,13 +90,17 @@ export class View extends FamousView {
     _groupRenderableTypes() {
         return _.reduce(this.decoratedRenderables, function (result, renderable, renderableName) {
             let groupName;
-            if (!!renderable.decorations.dock) {
+            let decorations = renderable.decorations;
+            if (!!decorations.dock) {
                 /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
-                groupName = renderable.decorations.dock === 'fill' ? 'filled' : 'docked';
-            } else if (!!renderable.decorations.fullscreen) {
+                groupName = decorations.dock === 'fill' ? 'filled' : 'docked';
+            } else if (!!decorations.fullscreen) {
                 groupName = 'fullscreen';
-            } else {
+            } else if(decorations.size || decorations.origin || decorations.align || decorations.translate) {
                 groupName = 'traditional';
+            } else {
+                /* This occurs e.g. when a renderable is only marked @renderable, and its parent view has a @layout.custom decorator to define its context. */
+                groupName = 'ignored';
             }
 
             if (groupName) {
@@ -193,6 +197,9 @@ export class View extends FamousView {
                 /* Layout all renderables that have decorators (e.g. @someDecorator) */
                 if (this.hasDecorators) {
                     this._layoutDecoratedRenderables(context, options);
+                    if(this.decorations && this.decorations.customLayoutFunction) {
+                        this.decorations.customLayoutFunction(context);
+                    }
                 }
 
                 /* Layout all other renderables that have explicit context.set() calls in this View's layout methods */
