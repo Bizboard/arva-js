@@ -328,8 +328,13 @@ export class View extends FamousView {
      */
     _copyPrototypeProperties() {
         let prototype = Object.getPrototypeOf(this);
-        let properties = _.difference(Object.getOwnPropertyNames(prototype), ['constructor']);
-        for(let name of properties) {
+
+        /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
+        for(let name of ['renderables', 'decoratedRenderables', 'decorations']) {
+            this[name] = prototype[name];
+            delete prototype[name];
+        }
+        for(let name in this.decoratedRenderables) {
             this[name] = prototype[name];
             delete prototype[name];
         }
