@@ -153,7 +153,7 @@ export const layout = {
 
             let animationController = view.renderables[renderableName] = new AnimationController(options);
             renderable.decorations.animationController = animationController;
-            if (renderable.pipe) { renderable.pipe(animationController); }
+            if (renderable.pipe) { renderable.pipe(animationController._eventOutput); }
 
             let showMethod = animationController.show.bind(animationController, renderable, options, () => {
                 if (renderable.emit) { renderable.emit('shown') }

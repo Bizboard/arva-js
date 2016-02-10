@@ -308,10 +308,10 @@ export class View extends FamousView {
     }
 
     _handleDelayedAnimations() {
-        if(!this.delayedAnimations) { return; }
-        for(let waitingAnimation of this.delayedAnimations) {
+        if (!this.delayedAnimations) { return; }
+        for (let waitingAnimation of this.delayedAnimations) {
             let renderableToWaitFor = this[waitingAnimation.waitFor];
-            if(renderableToWaitFor && renderableToWaitFor.on) {
+            if (renderableToWaitFor && renderableToWaitFor.on) {
                 renderableToWaitFor.on('shown', waitingAnimation.showMethod);
             } else {
                 this._warn(`Attempted to delay showing renderable ${this._name()}.${waitingAnimation.waitFor}, which does not exist or contain an on() method.`);
@@ -330,11 +330,11 @@ export class View extends FamousView {
         let prototype = Object.getPrototypeOf(this);
 
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
-        for(let name of ['renderables', 'decoratedRenderables', 'decorations']) {
+        for (let name of ['renderables', 'decoratedRenderables', 'decorations']) {
             this[name] = prototype[name];
             delete prototype[name];
         }
-        for(let name in this.decoratedRenderables) {
+        for (let name in this.decoratedRenderables) {
             this[name] = prototype[name];
             delete prototype[name];
         }
