@@ -29,6 +29,7 @@ export class View extends FamousView {
         ObjectHelper.bindAllMethods(this, this);
 
         this._copyPrototypeProperties();
+        this._constructDecoratedRenderables();
         if (!this.decorations) { this.decorations = {}; }
         if (!this.renderables) { this.renderables = {}; }
         if (!this.layouts) { this.layouts = []; }
@@ -47,6 +48,22 @@ export class View extends FamousView {
      */
     build() {
         this._warn(`Arva: calling build() from within views is no longer necessary, any existing calls can safely be removed. Called from ${this._name()}`);
+    }
+
+    _constructDecoratedRenderables() {
+        if (!this.decoratedRenderables) { this.decoratedRenderables = {}; }
+        if (!this.renderables) { this.renderables = {}; }
+        for (let name in this.renderableConstructors) {
+            let decorations = this.renderableConstructors[name].decorations;
+            /* TODO: add constructor options */
+            let constructionOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod(this.options) : [];
+            let renderable = this.renderableConstructors[name](...constructionOptions);
+            renderable.decorations = decorations;
+
+            this.decoratedRenderables[name] = renderable;
+            this.renderables[name] = renderable.animationController || renderable;
+            this[name] = renderable;
+        }
     }
 
     /**
@@ -96,7 +113,7 @@ export class View extends FamousView {
                 groupName = decorations.dock === 'fill' ? 'filled' : 'docked';
             } else if (!!decorations.fullscreen) {
                 groupName = 'fullscreen';
-            } else if(decorations.size || decorations.origin || decorations.align || decorations.translate) {
+            } else if (decorations.size || decorations.origin || decorations.align || decorations.translate) {
                 groupName = 'traditional';
             } else {
                 /* This occurs e.g. when a renderable is only marked @renderable, and its parent view has a @layout.custom decorator to define its context. */
@@ -197,7 +214,7 @@ export class View extends FamousView {
                 /* Layout all renderables that have decorators (e.g. @someDecorator) */
                 if (this.hasDecorators) {
                     this._layoutDecoratedRenderables(context, options);
-                    if(this.decorations && this.decorations.customLayoutFunction) {
+                    if (this.decorations && this.decorations.customLayoutFunction) {
                         this.decorations.customLayoutFunction(context);
                     }
                 }
@@ -326,24 +343,12 @@ export class View extends FamousView {
         }
     }
 
-    /**
-     * Because the View has not yet been instantiated when decorators are evaluated and executed,
-     * decorators write to the prototype of this view instead of the instantiated version. Therefore,
-     * upon executing the constructor, we'll need to copy these properties over to the current instance.
-     * @returns {void}
-     * @private
-     */
     _copyPrototypeProperties() {
         let prototype = Object.getPrototypeOf(this);
 
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
-        for (let name of ['renderables', 'decoratedRenderables', 'decorations']) {
+        for (let name of ['decorations', 'renderableConstructors']) {
             this[name] = prototype[name];
-            delete prototype[name];
-        }
-        for (let name in this.decoratedRenderables) {
-            this[name] = prototype[name];
-            delete prototype[name];
         }
     }
 }

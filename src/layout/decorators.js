@@ -14,49 +14,34 @@ import Timer                    from 'famous/utilities/Timer.js';
 import Easing                   from 'famous/transitions/Easing.js';
 import AnimationController      from 'famous-flex/src/AnimationController.js';
 
-/**
- * Creates a reference collection for decorated renderables in the view if none already exists (for easy lookup later),
- * and adds the renderable with renderableName to that collection as well as the normal renderables collection.
- * @param {View} view Arva View to place decorated renderable in
- * @param {String} renderableName Name of the renderable to place
- * @returns {Object} Renderable object that is defined on the view
- */
+
 function prepDecoratedRenderable(view, renderableName, descriptor) {
-    let renderable;
-    if (!view[renderableName]) {
+    let constructor;
+    if(!view.renderableConstructors) { view.renderableConstructors = {}; }
+
+    let constructors = view.renderableConstructors;
+    if (!constructors[renderableName]) {
         /* Getters have a get() method on the descriptor, class properties have an initializer method.
          * get myRenderable(){ return new Surface() } => descriptor.get();
          * myRenderable = new Surface(); => descriptor.initializer();
          */
         if (descriptor.get) {
-            view[renderableName] = descriptor.get();
+            constructors[renderableName] = descriptor.get;
         } else if (descriptor.initializer) {
-            view[renderableName] = descriptor.initializer();
-            descriptor.initializer = () => renderable;
+            constructors[renderableName] = descriptor.initializer;
         }
     }
-    renderable = view[renderableName];
-    if (!renderable.decorations) { renderable.decorations = {}; }
+    constructor = constructors[renderableName];
+    if (!constructor.decorations) { constructor.decorations = {}; }
 
-    /* Create renderables collections if they don't yet exist */
-    if (!view.renderables) { view.renderables = {}; }
-    if (!view.decoratedRenderables) { view.decoratedRenderables = {}; }
-
-    /* Reference the renderable in both collections */
-    if (!(renderableName in view.decoratedRenderables)) {
-        view.renderables[renderableName] = renderable;
-        view.decoratedRenderables[renderableName] = renderable;
-    }
-
-    /* Return the renderable object itself, so it can be extended by the decorater */
-    return renderable;
+    return constructor;
 }
 
 function prepDecoratedClass(classObject) {
     let prototype = classObject.prototype;
     if (!prototype.decorations) { prototype.decorations = {}; }
 
-    /* Return the class' prototype, so it can be extended by the decorater */
+    /* Return the class' prototype, so it can be extended by the decorator */
     return prototype;
 }
 
@@ -156,9 +141,11 @@ export const layout = {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             options = _.merge({animation: AnimationController.Animation.FadedZoom, transition: {duration: 300, curve: Easing.outQuad}}, options);
 
-            let animationController = view.renderables[renderableName] = new AnimationController(options);
+            let animationController = new AnimationController(options);
             renderable.decorations.animationController = animationController;
             if (renderable.pipe) { renderable.pipe(animationController._eventOutput); }
+
+            view.renderableConstructors[renderableName] = renderable;
 
             let showMethod = animationController.show.bind(animationController, renderable, options, () => {
                 if (renderable.emit) { renderable.emit('shown') }
@@ -175,6 +162,10 @@ export const layout = {
             }
 
         }
+    },
+
+    test: function () {
+        console.log('ok');
     },
 
     /**** Class decorators ****/
@@ -194,6 +185,15 @@ export const layout = {
         return function (target) {
             let prototype = prepDecoratedClass(target);
             prototype.decorations.customLayoutFunction = customLayoutFunction;
+        }
+    }
+};
+
+export const constructor = {
+    arguments: function (optionMethod) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.constructionOptionsMethod = optionMethod;
         }
     }
 };
