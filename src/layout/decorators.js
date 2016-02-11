@@ -148,7 +148,11 @@ export const layout = {
             view.renderableConstructors[renderableName] = renderable;
 
             let showMethod = animationController.show.bind(animationController, renderable, options, () => {
-                if (renderable.emit) { renderable.emit('shown') }
+                    if (renderable.emit) {
+                        renderable.emit('shown')
+                    } else if(renderable._eventOutput && renderable._eventOutput.emit){
+                        renderable._eventOutput.emit('shown')
+                    }
             });
 
             if (options.delay && options.delay > 0) {
