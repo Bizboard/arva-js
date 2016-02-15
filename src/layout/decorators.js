@@ -17,7 +17,7 @@ import AnimationController      from 'famous-flex/src/AnimationController.js';
 
 function prepDecoratedRenderable(view, renderableName, descriptor) {
     let constructor;
-    if(!view.renderableConstructors) { view.renderableConstructors = {}; }
+    if (!view.renderableConstructors) { view.renderableConstructors = {}; }
 
     let constructors = view.renderableConstructors;
     if (!constructors[renderableName]) {
@@ -32,7 +32,7 @@ function prepDecoratedRenderable(view, renderableName, descriptor) {
         }
     }
     constructor = constructors[renderableName];
-    if (!constructor.decorations) { constructor.decorations = {}; }
+    if (!constructor.decorations) { constructor.decorations = {descriptor: descriptor}; }
 
     return constructor;
 }
@@ -56,7 +56,7 @@ export const layout = {
      * @param {String} renderableName
      * @param {Object} descriptor
      */
-    renderable: function(view, renderableName, descriptor) {
+    renderable: function (view, renderableName, descriptor) {
         prepDecoratedRenderable(view, renderableName, descriptor);
     },
 
@@ -138,31 +138,38 @@ export const layout = {
 
     animate: function (options = {}) {
         return function (view, renderableName, descriptor) {
-            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            options = _.merge({animation: AnimationController.Animation.FadedZoom, transition: {duration: 300, curve: Easing.outQuad}}, options);
+            let renderableConstructor = prepDecoratedRenderable(view, renderableName, descriptor);
+            options = _.merge({animation: AnimationController.Animation.FadedZoom, transition: {duration: 250, curve: Easing.inQuad}}, options);
 
             let animationController = new AnimationController(options);
-            renderable.decorations.animationController = animationController;
-            if (renderable.pipe) { renderable.pipe(animationController._eventOutput); }
+            renderableConstructor.decorations.animationController = animationController;
 
-            view.renderableConstructors[renderableName] = renderable;
+            /* We let the renderable variable below be instantiated when the View.js instance constructs this renderable */
+            let renderable;
+            let constructor = view.renderableConstructors[renderableName] = (options) => {
+                renderable = renderableConstructor(options);
+                if (renderable.pipe) { renderable.pipe(animationController._eventOutput); }
+                return renderable;
+            };
+            constructor.decorations = renderableConstructor.decorations;
 
-            let showMethod = animationController.show.bind(animationController, renderable, options, () => {
-                    if (renderable.emit) {
-                        renderable.emit('shown')
-                    } else if(renderable._eventOutput && renderable._eventOutput.emit){
-                        renderable._eventOutput.emit('shown')
-                    }
-            });
+            let showMethod = () => {
+                animationController.show.call(animationController, renderable, options, () => {
+                    if (renderable.emit) { renderable.emit('shown'); }
+                });
+            };
 
+            /* These delayed animation starts get handled in arva-js/core/View.js:_handleDelayedAnimations() */
+            if (!view.delayedAnimations) { view.delayedAnimations = []; }
+            if (!view.waitingAnimations) { view.waitingAnimations = []; }
+            if (!view.immediateAnimations) { view.immediateAnimations = []; }
             if (options.delay && options.delay > 0) {
                 Timer.setTimeout(showMethod, options.delay);
+                view.delayedAnimations.push({showMethod: showMethod, delay: options.delay});
             } else if (options.waitFor) {
-                /* These delayed animation starts get handled in arva-js/core/View.js:_handleDelayedAnimations() */
-                if (!view.delayedAnimations) { view.delayedAnimations = []; }
-                view.delayedAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
+                view.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
             } else {
-                showMethod();
+                view.immediateAnimations.push({showMethod: showMethod});
             }
 
         }
@@ -185,7 +192,7 @@ export const layout = {
         }
     },
 
-    custom: function(customLayoutFunction) {
+    custom: function (customLayoutFunction) {
         return function (target) {
             let prototype = prepDecoratedClass(target);
             prototype.decorations.customLayoutFunction = customLayoutFunction;
@@ -194,7 +201,7 @@ export const layout = {
 };
 
 export const constructor = {
-    arguments: function (optionMethod) {
+    options: function (optionMethod) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.constructionOptionsMethod = optionMethod;

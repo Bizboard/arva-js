@@ -56,12 +56,17 @@ export class View extends FamousView {
         for (let name in this.renderableConstructors) {
             let decorations = this.renderableConstructors[name].decorations;
             /* TODO: add constructor options */
-            let constructionOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod(this.options) : [];
-            let renderable = this.renderableConstructors[name](...constructionOptions);
+            let constructionOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod(this.options) : undefined;
+            let renderable = this.renderableConstructors[name](constructionOptions);
             renderable.decorations = decorations;
 
+            if(decorations.descriptor.get) { decorations.descriptor.get = () => renderable; }
+            if(decorations.descriptor.initializer) { decorations.descriptor.initializer = () => renderable; }
+
             this.decoratedRenderables[name] = renderable;
-            this.renderables[name] = renderable.animationController || renderable;
+            /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
+             * this.renderables is used in the LayoutController in this.layout to render this view. */
+            this.renderables[name] = renderable.decorations.animationController || renderable;
             this[name] = renderable;
         }
     }
@@ -206,7 +211,7 @@ export class View extends FamousView {
                  * layout.setDataSource() will automatically pipe events from the renderables to this View, since autoPipeEvents = true.       */
                 if (!this._initialised) {
                     this._addRenderables();
-                    this._handleDelayedAnimations();
+                    this._initializeAnimations();
                     this._initialised = true;
                     this.layout.reflowLayout();
                 }
@@ -331,15 +336,22 @@ export class View extends FamousView {
         this.layout.setDataSource(this.renderables);
     }
 
-    _handleDelayedAnimations() {
-        if (!this.delayedAnimations) { return; }
-        for (let waitingAnimation of this.delayedAnimations) {
-            let renderableToWaitFor = this[waitingAnimation.waitFor];
+    _initializeAnimations() {
+        for (let animation of this.waitingAnimations) {
+            let renderableToWaitFor = this[animation.waitFor];
             if (renderableToWaitFor && renderableToWaitFor.on) {
-                renderableToWaitFor.on('shown', waitingAnimation.showMethod);
+                renderableToWaitFor.on('shown', animation.showMethod);
             } else {
-                this._warn(`Attempted to delay showing renderable ${this._name()}.${waitingAnimation.waitFor}, which does not exist or contain an on() method.`);
+                this._warn(`Attempted to delay showing renderable ${this._name()}.${animation.waitFor}, which does not exist or contain an on() method.`);
             }
+        }
+
+        for(let animation of this.delayedAnimations) {
+            Timer.setTimeout(() => animation.showMethod, animation.delay)
+        }
+
+        for(let animation of this.immediateAnimations) {
+            animation.showMethod()
         }
     }
 
