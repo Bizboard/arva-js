@@ -141,36 +141,35 @@ export const layout = {
             let renderableConstructor = prepDecoratedRenderable(view, renderableName, descriptor);
             options = _.merge({animation: AnimationController.Animation.FadedZoom, transition: {duration: 250, curve: Easing.inQuad}}, options);
 
-            let animationController = new AnimationController(options);
-            renderableConstructor.decorations.animationController = animationController;
-
             /* We let the renderable variable below be instantiated when the View.js instance constructs this renderable */
-            let renderable;
-            let constructor = view.renderableConstructors[renderableName] = (options) => {
-                renderable = renderableConstructor(options);
+            let constructor = view.renderableConstructors[renderableName] = (constructorOptions) => {
+                let renderable = renderableConstructor(constructorOptions);
+                let animationController = renderable.animationController = new AnimationController(options);
                 if (renderable.pipe) { renderable.pipe(animationController._eventOutput); }
+
+                let showMethod = () => {
+                    animationController.show.call(animationController, renderable, options, () => {
+                        if (renderable.emit) { renderable.emit('shown'); }
+                    });
+                };
+
+                /* These animation starts get handled in arva-js/core/View.js:_handleAnimations() */
+                if (!view.delayedAnimations) { view.delayedAnimations = []; }
+                if (!view.waitingAnimations) { view.waitingAnimations = []; }
+                if (!view.immediateAnimations) { view.immediateAnimations = []; }
+                if (options.delay && options.delay > 0) {
+                    Timer.setTimeout(showMethod, options.delay);
+                    view.delayedAnimations.push({showMethod: showMethod, delay: options.delay});
+                } else if (options.waitFor) {
+                    view.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
+                } else {
+                    view.immediateAnimations.push({showMethod: showMethod});
+                }
+
                 return renderable;
             };
+
             constructor.decorations = renderableConstructor.decorations;
-
-            let showMethod = () => {
-                animationController.show.call(animationController, renderable, options, () => {
-                    if (renderable.emit) { renderable.emit('shown'); }
-                });
-            };
-
-            /* These delayed animation starts get handled in arva-js/core/View.js:_handleDelayedAnimations() */
-            if (!view.delayedAnimations) { view.delayedAnimations = []; }
-            if (!view.waitingAnimations) { view.waitingAnimations = []; }
-            if (!view.immediateAnimations) { view.immediateAnimations = []; }
-            if (options.delay && options.delay > 0) {
-                Timer.setTimeout(showMethod, options.delay);
-                view.delayedAnimations.push({showMethod: showMethod, delay: options.delay});
-            } else if (options.waitFor) {
-                view.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
-            } else {
-                view.immediateAnimations.push({showMethod: showMethod});
-            }
 
         }
     },

@@ -55,18 +55,40 @@ export class View extends FamousView {
         if (!this.renderables) { this.renderables = {}; }
         for (let name in this.renderableConstructors) {
             let decorations = this.renderableConstructors[name].decorations;
-            /* TODO: add constructor options */
-            let constructionOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod(this.options) : undefined;
-            let renderable = this.renderableConstructors[name](constructionOptions);
+            let constructionOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod(this.options) : [];
+            if(! (constructionOptions instanceof Array)) { constructionOptions = [constructionOptions]; }
+
+            let renderable = this.renderableConstructors[name](...constructionOptions);
             renderable.decorations = decorations;
 
-            if(decorations.descriptor.get) { decorations.descriptor.get = () => renderable; }
-            if(decorations.descriptor.initializer) { decorations.descriptor.initializer = () => renderable; }
+            /* Since after constructor() of this View class is called, all decorated renderables will
+             * be attempted to be initialized by Babel / the ES7 class properties spec, we'll need to
+             * override the descriptor get/initializer to return this specific instance once.
+             *
+             * If we don't do this, the View will have its renderables overwritten by new renderable instances
+             * that don't have constructor.options applied to them correctly. If we always return this specific instance
+             * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
+             * to the renderables of this instance, which is unwanted.
+             */
+            if(decorations.descriptor.get) {
+                let originalGet = decorations.descriptor.get;
+                decorations.descriptor.get = () => {
+                    decorations.descriptor.get = originalGet;
+                    return renderable;
+                }
+            }
+            if(decorations.descriptor.initializer) {
+                let originalInitializer = decorations.descriptor.initializer;
+                decorations.descriptor.initializer = () => {
+                    decorations.descriptor.initializer = originalInitializer;
+                    return renderable;
+                }
+            }
 
             this.decoratedRenderables[name] = renderable;
             /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
              * this.renderables is used in the LayoutController in this.layout to render this view. */
-            this.renderables[name] = renderable.decorations.animationController || renderable;
+            this.renderables[name] = renderable.animationController || renderable;
             this[name] = renderable;
         }
     }
