@@ -235,7 +235,8 @@ export class View extends FamousView {
             /* If we displaying a true sized view, then we should inform this view so that it knows its context size*/
             let customSize = renderable.getSize();
             let resolveCustomSize = (i) => size[i] === true ? (customSize[i] || ~renderable.decorations.size[i]) : size[i];
-            renderable.adjustContextSize([resolveCustomSize(0), resolveCustomSize(1)]);
+            cacheResolvedSize = [resolveCustomSize(0), resolveCustomSize(1)];
+            renderable.adjustContextSize(cacheResolvedSize);
         }
 
         this._resolvedSizesCache.set(renderable, cacheResolvedSize);
@@ -411,15 +412,37 @@ export class View extends FamousView {
         for (let name in traditionalRenderables) {
             let renderable = traditionalRenderables[name];
             let renderableSize = this._resolveDecoratedSize(name, renderable, context) || [undefined, undefined];
-            // TODO Add support for origin
+            let {translate = [0,0,0], origin = [0,0,0], align = [0,0,0]} = renderable.decorations;
+            let adjustedTranslation = this._adjustOriginForTrueSize(renderable,renderableSize,origin,translate);
             context.set(name, {
                 size: renderableSize,
-                translate: renderable.decorations.translate || [0, 0, 0],
-                origin: renderable.decorations.origin || [0, 0],
-                align: renderable.decorations.align || [0, 0]
+                translate: adjustedTranslation,
+                origin,
+                align
             });
         }
     }
+
+    /**
+     * Specifying origin for true sized renderables doesn't work. Therefore we do a quick fix to adjust the
+     * translation according to the current faulty behaviour of famous
+     * @param renderable The renderable of which we should correct
+     * @param size  The size of this renderable
+     * @param origin The origin
+     * @param translate The current translation
+     * @returns {*[]} The new translation taking this the current famous implementation into account
+     * @private
+     */
+    _adjustOriginForTrueSize(renderable, size, origin, translate) {
+        let newTranslation = [translate[0], translate[1], translate[2]];
+        for(let i=0;i<2;i++){
+            if(size[i] === true && origin[i] !== 0){
+                newTranslation[i] -= this._resolvedSizesCache.get(renderable)[i]*origin[i];
+            }
+        }
+        return newTranslation;
+    }
+
 
     /**
      * Combines all layouts defined in subclasses of the View into a single layout for the LayoutController.
