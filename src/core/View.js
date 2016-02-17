@@ -85,11 +85,37 @@ export class View extends FamousView {
                 }
             }
 
+            this._setEventHandlers(renderable);
+            this._setPipes(renderable);
+
             this.decoratedRenderables[name] = renderable;
             /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
              * this.renderables is used in the LayoutController in this.layout to render this view. */
             this.renderables[name] = renderable.animationController || renderable;
             this[name] = renderable;
+        }
+    }
+
+    _setEventHandlers(renderable) {
+        if(!renderable.decorations || !renderable.decorations.eventSubscriptions) { return; }
+
+        let subscriptions = renderable.decorations.eventSubscriptions;
+        for(let subscription of subscriptions) {
+            let subscriptionType = subscription.type || 'on';
+            let eventName = subscription.eventName;
+            let callback = subscription.callback;
+            if(subscriptionType in renderable) {
+                renderable[subscriptionType](eventName, callback);
+            }
+        }
+    }
+
+    _setPipes(renderable) {
+        if(!renderable.decorations || !renderable.decorations.pipes || !(pipe in renderable)) { return; }
+
+        let pipes = renderable.decorations.pipes;
+        for(let pipeTo of pipes) {
+            renderable.pipe(pipeTo);
         }
     }
 

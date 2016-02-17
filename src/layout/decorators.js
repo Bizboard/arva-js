@@ -207,3 +207,37 @@ export const constructor = {
         }
     }
 };
+
+export const event = {
+
+    subscribe: function (subscriptionType, eventName, callback) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            if(!renderable.decorations.eventSubscriptions) {
+                renderable.decorations.eventSubscriptions = []
+            }
+            renderable.decorations.eventSubscriptions.push({
+                subscriptionType: subscriptionType,
+                eventName: eventName,
+                callback: callback
+            });
+        }
+    },
+
+    on: function (eventName, callback) {
+        return event.subscribe('on', eventName, callback)
+    },
+
+    once: function (eventName, callback) {
+        return event.subscribe('once', eventName, callback)
+    },
+
+    pipe: function (pipeTo) {
+        let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+        if(!renderable.decorations.pipes) {
+            renderable.decorations.pipes = []
+        }
+
+        renderable.decorations.pipes.push(pipeTo);
+    }
+};
