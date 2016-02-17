@@ -174,31 +174,28 @@ export class View extends FamousView {
         this._groupedRenderables = this._groupRenderableTypes();
     }
 
-
     _setEventHandlers(renderable) {
-        if (!renderable.decorations || !renderable.decorations.eventSubscriptions) {
-            return;
-        }
+        if(!renderable.decorations || !renderable.decorations.eventSubscriptions) { return; }
 
         let subscriptions = renderable.decorations.eventSubscriptions;
-        for (let subscription of subscriptions) {
+        for(let subscription of subscriptions) {
             let subscriptionType = subscription.type || 'on';
             let eventName = subscription.eventName;
             let callback = subscription.callback;
-            if (subscriptionType in renderable) {
+            if(subscriptionType in renderable) {
                 renderable[subscriptionType](eventName, callback);
             }
         }
     }
 
     _setPipes(renderable) {
-        if (!renderable.decorations || !renderable.decorations.pipes || !(pipe in renderable)) {
-            return;
-        }
+        if(!renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable)) { return; }
 
         let pipes = renderable.decorations.pipes;
-        for (let pipeTo of pipes) {
-            renderable.pipe(pipeTo);
+        for(let pipeToName of pipes) {
+            let target = pipeToName ? this[pipeToName] : this;
+            if(renderable.pipe) { renderable.pipe(target); }
+            if(renderable.pipe && target._eventOutput) { renderable.pipe(target._eventOutput); }
         }
     }
 
@@ -383,7 +380,7 @@ export class View extends FamousView {
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
             let renderableSize = this._resolveDecoratedSize(name, renderable, context, true);
             let dockSize = (dockMethod === 'left' || dockMethod === 'right' ? renderableSize[0] :
-                (dockMethod === 'top' || dockMethod === 'bottom' ? renderableSize[1] : null));
+                            (dockMethod === 'top' || dockMethod === 'bottom' ? renderableSize[1] : null));
 
             if (dockSize !== null) {
                 dock[dockMethod](name, dockSize, zIndex, space, !!this._trueSizedSurfaceInfo.get(renderable));
@@ -669,20 +666,24 @@ export class View extends FamousView {
     }
 
     _initializeAnimations() {
-        for (let animation of this.waitingAnimations || []) {
+        for (let animation of this.waitingAnimations) {
             let renderableToWaitFor = this[animation.waitFor];
             if (renderableToWaitFor && renderableToWaitFor.on) {
-                renderableToWaitFor.on('shown', animation.showMethod);
+                renderableToWaitFor.on('shown', function subscription() {
+                    animation.showMethod();
+                    if('off' in renderableToWaitFor) { renderableToWaitFor.off('shown', subscription); }
+                    if('removeListener' in renderableToWaitFor) { renderableToWaitFor.removeListener('shown', subscription); }
+                });
             } else {
                 this._warn(`Attempted to delay showing renderable ${this._name()}.${animation.waitFor}, which does not exist or contain an on() method.`);
             }
         }
 
-        for (let animation of this.delayedAnimations || []) {
+        for(let animation of this.delayedAnimations) {
             Timer.setTimeout(() => animation.showMethod, animation.delay)
         }
 
-        for (let animation of this.immediateAnimations || []) {
+        for(let animation of this.immediateAnimations) {
             animation.showMethod()
         }
     }
