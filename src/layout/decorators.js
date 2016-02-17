@@ -17,7 +17,7 @@ import AnimationController      from 'famous-flex/src/AnimationController.js';
 
 function prepDecoratedRenderable(view, renderableName, descriptor) {
     let constructor;
-    if(!view.renderableConstructors) { view.renderableConstructors = {}; }
+    if (!view.renderableConstructors) { view.renderableConstructors = {}; }
 
     let constructors = view.renderableConstructors;
     if (!constructors[renderableName]) {
@@ -32,7 +32,7 @@ function prepDecoratedRenderable(view, renderableName, descriptor) {
         }
     }
     constructor = constructors[renderableName];
-    if (!constructor.decorations) { constructor.decorations = {}; }
+    if (!constructor.decorations) { constructor.decorations = {descriptor: descriptor}; }
 
     return constructor;
 }
@@ -56,7 +56,7 @@ export const layout = {
      * @param {String} renderableName
      * @param {Object} descriptor
      */
-    renderable: function(view, renderableName, descriptor) {
+    renderable: function (view, renderableName, descriptor) {
         prepDecoratedRenderable(view, renderableName, descriptor);
     },
 
@@ -139,32 +139,38 @@ export const layout = {
 
     animate: function (options = {}) {
         return function (view, renderableName, descriptor) {
-            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            options = _.merge({animation: AnimationController.Animation.FadedZoom, transition: {duration: 300, curve: Easing.outQuad}}, options);
+            let renderableConstructor = prepDecoratedRenderable(view, renderableName, descriptor);
+            options = _.merge({animation: AnimationController.Animation.FadedZoom, transition: {duration: 250, curve: Easing.inQuad}}, options);
 
-            let animationController = new AnimationController(options);
-            renderable.decorations.animationController = animationController;
-            if (renderable.pipe) { renderable.pipe(animationController._eventOutput); }
+            /* We let the renderable variable below be instantiated when the View.js instance constructs this renderable */
+            let constructor = view.renderableConstructors[renderableName] = (constructorOptions) => {
+                let renderable = renderableConstructor(constructorOptions);
+                let animationController = renderable.animationController = new AnimationController(options);
+                if (renderable.pipe) { renderable.pipe(animationController._eventOutput); }
 
-            view.renderableConstructors[renderableName] = renderable;
+                let showMethod = () => {
+                    animationController.show.call(animationController, renderable, options, () => {
+                        if (renderable.emit) { renderable.emit('shown'); }
+                    });
+                };
 
-            let showMethod = animationController.show.bind(animationController, renderable, options, () => {
-                if (renderable.emit) {
-                    renderable.emit('shown')
-                } else if(renderable._eventOutput && renderable._eventOutput.emit){
-                    renderable._eventOutput.emit('shown')
-                }
-            });
-
-            if (options.delay && options.delay > 0) {
-                Timer.setTimeout(showMethod, options.delay);
-            } else if (options.waitFor) {
-                /* These delayed animation starts get handled in arva-js/core/View.js:_handleDelayedAnimations() */
+                /* These animation starts get handled in arva-js/core/View.js:_handleAnimations() */
                 if (!view.delayedAnimations) { view.delayedAnimations = []; }
-                view.delayedAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
-            } else {
-                showMethod();
-            }
+                if (!view.waitingAnimations) { view.waitingAnimations = []; }
+                if (!view.immediateAnimations) { view.immediateAnimations = []; }
+                if (options.delay && options.delay > 0) {
+                    Timer.setTimeout(showMethod, options.delay);
+                    view.delayedAnimations.push({showMethod: showMethod, delay: options.delay});
+                } else if (options.waitFor) {
+                    view.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
+                } else {
+                    view.immediateAnimations.push({showMethod: showMethod});
+                }
+
+                return renderable;
+            };
+
+            constructor.decorations = renderableConstructor.decorations;
 
         }
     },
@@ -186,7 +192,7 @@ export const layout = {
         }
     },
 
-    custom: function(customLayoutFunction) {
+    custom: function (customLayoutFunction) {
         return function (target) {
             let prototype = prepDecoratedClass(target);
             prototype.decorations.customLayoutFunction = customLayoutFunction;
@@ -195,10 +201,44 @@ export const layout = {
 };
 
 export const constructor = {
-    arguments: function (optionMethod) {
+    options: function (optionMethod) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.constructionOptionsMethod = optionMethod;
         }
+    }
+};
+
+export const event = {
+
+    subscribe: function (subscriptionType, eventName, callback) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            if(!renderable.decorations.eventSubscriptions) {
+                renderable.decorations.eventSubscriptions = []
+            }
+            renderable.decorations.eventSubscriptions.push({
+                subscriptionType: subscriptionType,
+                eventName: eventName,
+                callback: callback
+            });
+        }
+    },
+
+    on: function (eventName, callback) {
+        return event.subscribe('on', eventName, callback)
+    },
+
+    once: function (eventName, callback) {
+        return event.subscribe('once', eventName, callback)
+    },
+
+    pipe: function (pipeTo) {
+        let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+        if(!renderable.decorations.pipes) {
+            renderable.decorations.pipes = []
+        }
+
+        renderable.decorations.pipes.push(pipeTo);
     }
 };
