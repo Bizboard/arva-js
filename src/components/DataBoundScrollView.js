@@ -76,6 +76,23 @@ export class DataBoundScrollView extends FlexScrollView {
         }
     }
 
+    setGroupTemplate(templateFunction = {},reRender = false){
+        this.options.groupTemplate = templateFunction;
+
+        if(reRender){
+            this.clearDataSource();
+            this.reloadFilter(this.options.dataFilter);
+        }
+    }
+
+    setDataStore(dataStore) {
+      if (this.options.dataStore) {
+        this.clearDataSource();
+      }
+      this.options.dataStore = dataStore;
+      this._bindDataSource(this.options.dataStore);
+    }
+
     /**
      * Reloads the dataFilter option of the DataBoundScrollView, and verifies whether the items in the dataStore are allowed by the new filter.
      * It removes any currently visible items that aren't allowed anymore, and adds any non-visible ones that are allowed now.
