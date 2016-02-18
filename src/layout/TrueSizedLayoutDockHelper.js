@@ -156,7 +156,7 @@ TrueSizedLayoutDockHelper.prototype.bottom = function (node, height, z,space = 0
         var size = this._context.resolveSize(node, [this._data.right - this._data.left, this._data.bottom - this._data.top]);
         height = size[1];
     }
-    this._data.bottom += space;
+    this._data.bottom -= space;
     this._context.set(node, {
         size: [this._data.right - this._data.left, useTrueSize || height],
         origin: [0, 1],
@@ -186,6 +186,7 @@ TrueSizedLayoutDockHelper.prototype.right = function (node, width, z, space = 0,
             var size = this._context.resolveSize(node, [this._data.right - this._data.left, this._data.bottom - this._data.top]);
             width = size[0];
         }
+        this._data.right -= space;
         this._context.set(node, {
             size: [useTrueSize || width, this._data.bottom - this._data.top],
             origin: [1, 0],
@@ -194,7 +195,7 @@ TrueSizedLayoutDockHelper.prototype.right = function (node, width, z, space = 0,
         });
     }
     if (width) {
-        this._data.right -= width + space;
+        this._data.right -= width ;
     }
     return this;
 };
