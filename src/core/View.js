@@ -369,7 +369,7 @@ export class View extends FamousView {
     _layoutDockedRenderables(dockedRenderables, filledRenderables, context, options) {
         let dock = new TrueSizedLayoutDockHelper(context, options);
 
-        if (this.decorations.viewMargins) {
+        if (this.decorations && this.decorations.viewMargins) {
             dock.margins(this.decorations.viewMargins);
         }
 
@@ -512,7 +512,7 @@ export class View extends FamousView {
      * @private
      */
     _prepareLayoutController() {
-        if (this.decorations.isScrollable) {
+        if (this.decorations && this.decorations.isScrollable) {
             let scrollView = new FlexScrollView({
                 autoPipeEvents: true
             });
@@ -673,7 +673,7 @@ export class View extends FamousView {
     }
 
     _initializeAnimations() {
-        for (let animation of this.waitingAnimations) {
+        for (let animation of (this.waitingAnimations || [])) {
             let renderableToWaitFor = this[animation.waitFor];
             if (renderableToWaitFor && renderableToWaitFor.on) {
                 renderableToWaitFor.on('shown', function subscription() {
@@ -686,11 +686,11 @@ export class View extends FamousView {
             }
         }
 
-        for(let animation of this.delayedAnimations) {
+        for(let animation of (this.delayedAnimations || [])) {
             Timer.setTimeout(() => animation.showMethod, animation.delay)
         }
 
-        for(let animation of this.immediateAnimations) {
+        for(let animation of (this.immediateAnimations || [])) {
             animation.showMethod()
         }
     }
