@@ -175,27 +175,35 @@ export class View extends FamousView {
     }
 
     _setEventHandlers(renderable) {
-        if(!renderable.decorations || !renderable.decorations.eventSubscriptions) { return; }
+        if (!renderable.decorations || !renderable.decorations.eventSubscriptions) {
+            return;
+        }
 
         let subscriptions = renderable.decorations.eventSubscriptions;
-        for(let subscription of subscriptions) {
+        for (let subscription of subscriptions) {
             let subscriptionType = subscription.type || 'on';
             let eventName = subscription.eventName;
             let callback = subscription.callback;
-            if(subscriptionType in renderable) {
+            if (subscriptionType in renderable) {
                 renderable[subscriptionType](eventName, callback);
             }
         }
     }
 
     _setPipes(renderable) {
-        if(!renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable)) { return; }
+        if (!renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable)) {
+            return;
+        }
 
         let pipes = renderable.decorations.pipes;
-        for(let pipeToName of pipes) {
+        for (let pipeToName of pipes) {
             let target = pipeToName ? this[pipeToName] : this;
-            if(renderable.pipe) { renderable.pipe(target); }
-            if(renderable.pipe && target._eventOutput) { renderable.pipe(target._eventOutput); }
+            if (renderable.pipe) {
+                renderable.pipe(target);
+            }
+            if (renderable.pipe && target._eventOutput) {
+                renderable.pipe(target._eventOutput);
+            }
         }
     }
 
@@ -218,7 +226,7 @@ export class View extends FamousView {
         let unResolvedTrueSize = false;
         for (let dim = 0; dim < 2; dim++) {
             size[dim] = this._resolveSingleSize(renderable.decorations.size[dim], context.size[dim]);
-            if (size[dim] < 0) {
+            if (size[dim] < 0 || size[dim] === true) {
                 if (resolveTrueSize) {
                     this._processSingleTrueSizedRenderable(renderable, name, size, dim);
                 } else {
@@ -260,7 +268,14 @@ export class View extends FamousView {
          * applying this operator again (e.g. ~~100) gives us the value 100 back
          * */
         if (renderable instanceof View) {
-            size[dim] = !renderable.constainsUncalculatedSurfaces() && renderable._initialised ? renderable.getSize()[dim] : ~size[dim];
+            if(size[dim] === true){
+                size[dim] = renderable.getSize()[dim];
+                if(size[dim] === undefined && renderable._initialised){
+                    this._warn(`True sized renderable '${name}' is taking up the entire context size. Called from ${this._name()}`);
+                }
+            } else {
+                size[dim] = !renderable.constainsUncalculatedSurfaces() && renderable._initialised ? renderable.getSize()[dim] || ~size[dim] : ~size[dim];
+            }
             this._ensureTrueSizedViewSubscriptions(renderable);
         } else if (renderable instanceof Surface) {
             let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable) || {};
@@ -271,6 +286,11 @@ export class View extends FamousView {
             if (isUncalculated === false) {
                 size[dim] = trueSizedSurfaceInfo.size[dim];
             } else {
+                if (size[dim] === true) {
+                    let defaultSize = 5;
+                    this._warn(`No initial size set for surface, will default to ${defaultSize}px`);
+                    size[dim] = ~5;
+                }
                 size[dim] = ~size[dim];
                 if (isUncalculated !== true) {
                     /* Seems like the surface isn't properly configured, let's get that going */
@@ -280,6 +300,7 @@ export class View extends FamousView {
             }
         }
     }
+
 
     /**
      * Resolves a single dimension (i.e. x or y) size of a renderable.
@@ -380,7 +401,7 @@ export class View extends FamousView {
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
             let renderableSize = this._resolveDecoratedSize(name, renderable, context, true);
             let dockSize = (dockMethod === 'left' || dockMethod === 'right' ? renderableSize[0] :
-                            (dockMethod === 'top' || dockMethod === 'bottom' ? renderableSize[1] : null));
+                (dockMethod === 'top' || dockMethod === 'bottom' ? renderableSize[1] : null));
 
             if (dockSize !== null) {
                 dock[dockMethod](name, dockSize, zIndex, space, !!this._trueSizedSurfaceInfo.get(renderable));
@@ -409,8 +430,8 @@ export class View extends FamousView {
         for (let name in traditionalRenderables) {
             let renderable = traditionalRenderables[name];
             let renderableSize = this._resolveDecoratedSize(name, renderable, context) || [undefined, undefined];
-            let {translate = [0,0,0], origin = [0,0,0], align = [0,0,0]} = renderable.decorations;
-            let adjustedTranslation = this._adjustOriginForTrueSize(renderable,renderableSize,origin,translate);
+            let {translate = [0, 0, 0], origin = [0, 0, 0], align = [0, 0, 0]} = renderable.decorations;
+            let adjustedTranslation = this._adjustOriginForTrueSize(renderable, renderableSize, origin, translate);
             context.set(name, {
                 size: renderableSize,
                 translate: adjustedTranslation,
@@ -432,9 +453,9 @@ export class View extends FamousView {
      */
     _adjustOriginForTrueSize(renderable, size, origin, translate) {
         let newTranslation = [translate[0], translate[1], translate[2]];
-        for(let i=0;i<2;i++){
-            if(size[i] === true && origin[i] !== 0){
-                newTranslation[i] -= this._resolvedSizesCache.get(renderable)[i]*origin[i];
+        for (let i = 0; i < 2; i++) {
+            if (size[i] === true && origin[i] !== 0) {
+                newTranslation[i] -= this._resolvedSizesCache.get(renderable)[i] * origin[i];
             }
         }
         return newTranslation;
@@ -678,19 +699,23 @@ export class View extends FamousView {
             if (renderableToWaitFor && renderableToWaitFor.on) {
                 renderableToWaitFor.on('shown', function subscription() {
                     animation.showMethod();
-                    if('off' in renderableToWaitFor) { renderableToWaitFor.off('shown', subscription); }
-                    if('removeListener' in renderableToWaitFor) { renderableToWaitFor.removeListener('shown', subscription); }
+                    if ('off' in renderableToWaitFor) {
+                        renderableToWaitFor.off('shown', subscription);
+                    }
+                    if ('removeListener' in renderableToWaitFor) {
+                        renderableToWaitFor.removeListener('shown', subscription);
+                    }
                 });
             } else {
                 this._warn(`Attempted to delay showing renderable ${this._name()}.${animation.waitFor}, which does not exist or contain an on() method.`);
             }
         }
 
-        for(let animation of (this.delayedAnimations || [])) {
+        for (let animation of (this.delayedAnimations || [])) {
             Timer.setTimeout(() => animation.showMethod, animation.delay)
         }
 
-        for(let animation of (this.immediateAnimations || [])) {
+        for (let animation of (this.immediateAnimations || [])) {
             animation.showMethod()
         }
     }
@@ -728,12 +753,16 @@ export class View extends FamousView {
 
 
     _initTrueSizedBookkeeping() {
+
         this._trueSizedSurfaceInfo = new Map();
 
         this._trueSizedViewSizeSubscriptions = new WeakMap();
 
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
         this._nodes = {_trueSizedRequested: false};
+        /* This needs to be set in order for the LayoutNodeManager to be happy */
+        this.options = this.options || {};
+        this.options.size = this.options.size || [true, true];
     }
 
     _tryCalculateTrueSizedSurface(renderable) {
