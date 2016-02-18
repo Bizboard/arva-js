@@ -460,6 +460,13 @@ export class View extends FamousView {
                     this._initializeAnimations();
                     this._initialised = true;
                     this.layout.reflowLayout();
+                    /*
+                     * When the data source is set, it will not be reflected in the context yet because the layout is already
+                     * prepared for the previous (empty) renderable data source. Therefore, it's a waste of resources
+                     * and mysterious bugs to continue. We will wait for the next rendering cycle. However, if views
+                     * are only having decorated renderables, then we don't have to do this whatsoever
+                     */
+                    return;
                 }
 
                 /* Layout all renderables that have decorators (e.g. @someDecorator) */
