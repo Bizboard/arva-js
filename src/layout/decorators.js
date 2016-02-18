@@ -233,12 +233,14 @@ export const event = {
         return event.subscribe('once', eventName, callback)
     },
 
-    pipe: function (pipeTo) {
-        let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-        if(!renderable.decorations.pipes) {
-            renderable.decorations.pipes = []
-        }
+    pipe: function (pipeToName) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            if (!renderable.decorations.pipes) {
+                renderable.decorations.pipes = []
+            }
 
-        renderable.decorations.pipes.push(pipeTo);
+            renderable.decorations.pipes.push(pipeToName);
+        }
     }
 };
