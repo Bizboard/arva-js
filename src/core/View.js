@@ -117,6 +117,7 @@ export class View extends FamousView {
      */
     _requestLayoutControllerReflow() {
         this._nodes = {_trueSizeRequested: true};
+        this._eventOutput.emit('layoutControllerReflow');
     }
 
     _constructDecoratedRenderables() {
@@ -469,6 +470,7 @@ export class View extends FamousView {
      */
     _combineLayouts() {
 
+
         this.layout = new LayoutController({
             autoPipeEvents: true,
             layout: function (context, options) {
@@ -481,6 +483,7 @@ export class View extends FamousView {
                     this._initializeAnimations();
                     this._initialised = true;
                     this.layout.reflowLayout();
+
                     /*
                      * When the data source is set, it will not be reflected in the context yet because the layout is already
                      * prepared for the previous (empty) renderable data source. Therefore, it's a waste of resources
@@ -638,7 +641,8 @@ export class View extends FamousView {
                 if (decorations.dock.dockMethod !== dockMethod) {
                     return NaN;
                 } else {
-                    let resolvedSize = this._resolvedSizesCache.get(dockedRenderable);
+                    let resolvedSize = this._resolvedSizesCache.get(dockedRenderable) ||
+                        this._resolveDecoratedSize(name, dockedRenderable, {size: NaN}, true);
                     if (!resolvedSize) {
                         return NaN;
                     }
@@ -730,6 +734,9 @@ export class View extends FamousView {
     }
 
     _ensureTrueSizedViewSubscriptions(renderable) {
+        /*  TODO: It might be good to do this as this._eventInput.on('recursiveReflow', ... ) instead but for some reason it
+         Doesn't work (why not?)
+         */
         if (!this._trueSizedViewSizeSubscriptions.get(renderable)) {
             renderable.on('recursiveReflow', () => {
                 this.reflowRecursively();
@@ -763,6 +770,9 @@ export class View extends FamousView {
         /* This needs to be set in order for the LayoutNodeManager to be happy */
         this.options = this.options || {};
         this.options.size = this.options.size || [true, true];
+
+
+
     }
 
     _tryCalculateTrueSizedSurface(renderable) {

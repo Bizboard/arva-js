@@ -61,6 +61,8 @@ export class DataBoundScrollView extends FlexScrollView {
         } else {
             console.log('No DataSource was set.');
         }
+
+
     }
 
     /**
@@ -86,11 +88,11 @@ export class DataBoundScrollView extends FlexScrollView {
     }
 
     setDataStore(dataStore) {
-      if (this.options.dataStore) {
-        this.clearDataSource();
-      }
-      this.options.dataStore = dataStore;
-      this._bindDataSource(this.options.dataStore);
+        if (this.options.dataStore) {
+            this.clearDataSource();
+        }
+        this.options.dataStore = dataStore;
+        this._bindDataSource(this.options.dataStore);
     }
 
     /**
@@ -372,6 +374,14 @@ export class DataBoundScrollView extends FlexScrollView {
         this.options.dataStore.on('child_changed', this._onChildChanged.bind(this));
         this.options.dataStore.on('child_moved', this._onChildMoved.bind(this));
         this.options.dataStore.on('child_removed', this._onChildRemoved.bind(this));
+
+        /*
+         * TODO: This works but is not as efficient as it reflows more than nessecary. Ideally, the view would listen
+         * for event of its childs and then set
+         */
+        this._eventInput.on('recursiveReflow', () => {
+            this.reflowLayout();
+        });
 
     }
 
