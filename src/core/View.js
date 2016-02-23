@@ -224,25 +224,36 @@ export class View extends FamousView {
 
         let size = [];
         let cacheResolvedSize = [];
-        let unResolvedTrueSize = false;
+        let dimensionIsTrueSized = [false, false];
         for (let dim = 0; dim < 2; dim++) {
             size[dim] = this._resolveSingleSize(renderable.decorations.size[dim], context.size[dim]);
             if (size[dim] < 0 || size[dim] === true) {
-                if (resolveTrueSize) {
+                dimensionIsTrueSized[dim] = true;
+                if (!(renderable instanceof View) || resolveTrueSize) {
                     this._processSingleTrueSizedRenderable(renderable, name, size, dim);
                 } else {
                     size[dim] = true;
-                    unResolvedTrueSize = true;
                 }
             }
             cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
         }
-        if (unResolvedTrueSize && renderable instanceof View) {
-            /* If we displaying a true sized view, then we should inform this view so that it knows its context size*/
-            let customSize = renderable.getSize();
-            let resolveCustomSize = (i) => size[i] === true ? (customSize[i] || ~renderable.decorations.size[i]) : size[i];
-            cacheResolvedSize = [resolveCustomSize(0), resolveCustomSize(1)];
-            renderable.adjustContextSize(cacheResolvedSize);
+
+        if(!resolveTrueSize){
+            if(renderable instanceof View){
+                /* If we displaying a true sized view, then we should inform this view so that it knows its context size*/
+                let customSize = renderable.getSize();
+                let resolveCustomSize = (i) => dimensionIsTrueSized[i] === true ? (customSize[i] || ~renderable.decorations.size[i]) : size[i];
+                /* Also set the cache size so that both are positive integers */
+                cacheResolvedSize = [resolveCustomSize(0), resolveCustomSize(1)];
+                renderable.adjustContextSize(cacheResolvedSize);
+            } else {
+                /* If the renderable is a surface or something else which size
+                 *  we already determined, set the cache size to that and also adjust the size to have
+                 *  the true instead of the computed value
+                 */
+                cacheResolvedSize = size;
+                size = [dimensionIsTrueSized[0] || size[0],dimensionIsTrueSized[1] || size[1] ];
+            }
         }
 
         this._resolvedSizesCache.set(renderable, cacheResolvedSize);
@@ -269,9 +280,9 @@ export class View extends FamousView {
          * applying this operator again (e.g. ~~100) gives us the value 100 back
          * */
         if (renderable instanceof View) {
-            if(size[dim] === true){
+            if (size[dim] === true) {
                 size[dim] = renderable.getSize()[dim];
-                if(size[dim] === undefined && renderable._initialised){
+                if (size[dim] === undefined && renderable._initialised) {
                     this._warn(`True sized renderable '${name}' is taking up the entire context size. Called from ${this._name()}`);
                 }
             } else {
@@ -770,7 +781,6 @@ export class View extends FamousView {
         /* This needs to be set in order for the LayoutNodeManager to be happy */
         this.options = this.options || {};
         this.options.size = this.options.size || [true, true];
-
 
 
     }
