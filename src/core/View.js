@@ -391,8 +391,12 @@ export class View extends FamousView {
 
 
     _layoutDecoratedRenderables(context, options) {
+
         if (this._adjustedContextSize) {
-            context.size = this._adjustedContextSize;
+            /* If adjusted context size is set to undefined, then it needs to be the full context size. We therefire
+             *  keep the current context size in that case.
+             */
+            context.size = [this._adjustedContextSize[0] || context.size[0], this._adjustedContextSize[1] || context.size[1]];
         }
         this._layoutDockedRenderables(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, options);
         this._layoutFullScreenRenderables(this._groupedRenderables['fullscreen'], context, options);
@@ -411,12 +415,16 @@ export class View extends FamousView {
             let renderable = dockedRenderables[name];
             let {dockMethod, space} = renderable.decorations.dock;
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
-            let renderableSize = this._resolveDecoratedSize(name, renderable, context, true);
-            let dockSize = (dockMethod === 'left' || dockMethod === 'right' ? renderableSize[0] :
-                (dockMethod === 'top' || dockMethod === 'bottom' ? renderableSize[1] : null));
-
-            if (dockSize !== null) {
-                dock[dockMethod](name, dockSize, zIndex, space, !!this._trueSizedSurfaceInfo.get(renderable));
+            let renderableSize = this._resolveDecoratedSize(name, renderable, context, false);
+            let inUseSize = this._resolvedSizesCache.get(renderable);
+            for(let i=0;i<2;i++){
+                if(renderableSize[i] == true){
+                    /* If a true size is used, do a tild on it in order for the dockhelper to recognize it */
+                    renderableSize[i] = ~inUseSize[i];
+                }
+            }
+            if (dock[dockMethod]) {
+                dock[dockMethod](name, renderableSize, zIndex, space, !!this._trueSizedSurfaceInfo.get(renderable));
             } else {
                 this._warn(`Arva: ${this._name()}.${name} contains an unknown @dock method '${dockMethod}', and was ignored.`);
             }
@@ -432,6 +440,7 @@ export class View extends FamousView {
     }
 
     _layoutFullScreenRenderables(fullScreenRenderables, context, options) {
+
         for (let name in fullScreenRenderables) {
             let renderable = fullScreenRenderables[name];
             context.set(name, _.merge({translate: renderable.decorations.translate || [0, 0, 0]}, context));
@@ -443,7 +452,7 @@ export class View extends FamousView {
             let renderable = traditionalRenderables[name];
             let renderableSize = this._resolveDecoratedSize(name, renderable, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0, 0], align = [0, 0, 0]} = renderable.decorations;
-            let adjustedTranslation = this._adjustOriginForTrueSize(renderable, renderableSize, origin, translate);
+            let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin,align, translate);
             context.set(name, {
                 size: renderableSize,
                 translate: adjustedTranslation,
@@ -455,7 +464,8 @@ export class View extends FamousView {
 
     /**
      * Specifying origin for true sized renderables doesn't work. Therefore we do a quick fix to adjust the
-     * translation according to the current faulty behaviour of famous
+     * translation according to the current faulty behaviour of famous. The problem also applies to alignment
+     * if the context.size has been changed.
      * @param renderable The renderable of which we should correct
      * @param size  The size of this renderable
      * @param origin The origin
@@ -463,9 +473,13 @@ export class View extends FamousView {
      * @returns {*[]} The new translation taking this the current famous implementation into account
      * @private
      */
-    _adjustOriginForTrueSize(renderable, size, origin, translate) {
+    _adjustPlacementForTrueSize(renderable, size, origin, align, translate) {
         let newTranslation = [translate[0], translate[1], translate[2]];
         for (let i = 0; i < 2; i++) {
+            let adjustedContextSize = this._adjustedContextSize;
+            if (adjustedContextSize[i] && align[i] !== 0) {
+                newTranslation[i] += adjustedContextSize[i] * align[i];
+            }
             if (size[i] === true && origin[i] !== 0) {
                 newTranslation[i] -= this._resolvedSizesCache.get(renderable)[i] * origin[i];
             }

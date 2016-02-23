@@ -81,84 +81,66 @@ TrueSizedLayoutDockHelper.prototype.parse = function (data) {
 };
 
 /**
- * Dock the node to the top.
+ * Dock the node to the top. Sizes can also be specified as ~size, which makes them truesizes
  *
  * @param {LayoutNode|String} [node] layout-node to dock, when omitted the `height` argument argument is used for padding
- * @param {Number} [height] height of the layout-node, when omitted the height of the node is used
+ * @param {Array}  size of the node. If number, draws only one dimension and leaves the other one undefined
  * @param {Number} [z] z-index to use for the node
  * @param {Number} space the space inserted before this item, defaults to 0
- * @param {Boolean} use true size, defaults to false
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.top = function (node, height, z, space =0 , useTrueSize = false) {
-    if (height instanceof Array) {
-        height = height[1];
-    }
-    if (height === undefined) {
-        var size = this._context.resolveSize(node, [this._data.right - this._data.left, this._data.bottom - this._data.top]);
-        height = size[1];
-    }
+TrueSizedLayoutDockHelper.prototype.top = function (node, size, z, space =0 ) {
+    let [width, height] = this._setupAccordingToDimension(size, 1);
     this._data.top += space;
     this._context.set(node, {
-        size: [this._data.right - this._data.left, useTrueSize || height],
+        size: [width || (this._data.right - this._data.left), this._ensureTrueSize(height)],
         origin: [0, 0],
         align: [0, 0],
         translate: [this._data.left, this._data.top, (z === undefined) ? this._data.z : z]
     });
-    this._data.top += height;
+    /* If height was negative, then it is true sized and it needs to be tild'd to return to original */
+    this._data.top += this._resolveSingleSize(height);
     return this;
 };
 
 /**
- * Dock the node to the left
+ * Dock the node to the left. Sizes can also be specified as ~size, which makes them truesizes
  *
  * @param {LayoutNode|String} [node] layout-node to dock, when omitted the `width` argument argument is used for padding
- * @param {Number} [width] width of the layout-node, when omitted the width of the node is used
+ * @param {Array}  size of the node. If number, draws only one dimension and leaves the other one undefined
  * @param {Number} [z] z-index to use for the node
  * @param {Number} space the space inserted before this item, defaults to 0
- * @param {Boolean} use true size, defaults to false
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.left = function (node, width, z, space = 0, useTrueSize = false) {
-    if (width instanceof Array) {
-        width = width[0];
-    }
-    if (width === undefined) {
-        var size = this._context.resolveSize(node, [this._data.right - this._data.left, this._data.bottom - this._data.top]);
-        width = size[0];
-    }
+TrueSizedLayoutDockHelper.prototype.left = function (node, size, z, space = 0) {
+    let [width, height] = this._setupAccordingToDimension(size, 0);
+
     this._data.left += space;
     this._context.set(node, {
-        size: [useTrueSize || width, this._data.bottom - this._data.top],
+        size: [this._ensureTrueSize(width), height || (this._data.bottom - this._data.top)],
         origin: [0, 0],
         align: [0, 0],
         translate: [this._data.left, this._data.top, (z === undefined) ? this._data.z : z]
     });
-    this._data.left += width;
+    this._data.left += this._resolveSingleSize(width);
     return this;
 };
 
 /**
- * Dock the node to the bottom
+ * Dock the node to the bottom. Sizes can also be specified as ~size, which makes them truesizes
  *
  * @param {LayoutNode|String} [node] layout-node to dock, when omitted the `height` argument argument is used for padding
- * @param {Number} [height] height of the layout-node, when omitted the height of the node is used
+ * @param {Array}  size of the node. If number, draws only one dimension and leaves the other one undefined
  * @param {Number} [z] z-index to use for the node
  * @param {Number} space the space inserted before this item, defaults to 0
- * @param {Boolean} use true size, defaults to false
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.bottom = function (node, height, z,space = 0, useTrueSize = false) {
-    if (height instanceof Array) {
-        height = height[1];
-    }
-    if (height === undefined) {
-        var size = this._context.resolveSize(node, [this._data.right - this._data.left, this._data.bottom - this._data.top]);
-        height = size[1];
-    }
+TrueSizedLayoutDockHelper.prototype.bottom = function (node, size, z,space = 0) {
+    let [width, height] = this._setupAccordingToDimension(size, 0);
+
     this._data.bottom -= space;
     this._context.set(node, {
-        size: [this._data.right - this._data.left, useTrueSize || height],
+        size: [width || (this._data.right - this._data.left), this._ensureTrueSize(height)],
         origin: [0, 1],
         align: [0, 1],
         translate: [this._data.left, -(this._size[1] - this._data.bottom), (z === undefined) ? this._data.z : z]
@@ -168,32 +150,26 @@ TrueSizedLayoutDockHelper.prototype.bottom = function (node, height, z,space = 0
 };
 
 /**
- * Dock the node to the right.
+ * Dock the node to the right. Sizes can also be specified as ~size, which makes them truesizes
  *
  * @param {LayoutNode|String} [node] layout-node to dock, when omitted the `width` argument argument is used for padding
- * @param {Number} [width] width of the layout-node, when omitted the width of the node is used
+ * @param {Array}  size of the node. If number, draws only one dimension and leaves the other one undefined
  * @param {Number} [z] z-index to use for the node
  * @param {Number} space the space inserted before this item, defaults to 0
  * @param {Boolean} use true size, defaults to false
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.right = function (node, width, z, space = 0, useTrueSize = false) {
-    if (width instanceof Array) {
-        width = width[0];
-    }
-    if (node) {
-        if (width === undefined) {
-            var size = this._context.resolveSize(node, [this._data.right - this._data.left, this._data.bottom - this._data.top]);
-            width = size[0];
-        }
-        this._data.right -= space;
-        this._context.set(node, {
-            size: [useTrueSize || width, this._data.bottom - this._data.top],
-            origin: [1, 0],
-            align: [1, 0],
-            translate: [-(this._size[0] - this._data.right), this._data.top, (z === undefined) ? this._data.z : z]
-        });
-    }
+TrueSizedLayoutDockHelper.prototype.right = function (node, size, z, space = 0) {
+    let [width, height] = this._setupAccordingToDimension(size, 0);
+
+    this._data.right -= space;
+    this._context.set(node, {
+        size: [this._ensureTrueSize(width), height || (this._data.bottom - this._data.top)],
+        origin: [1, 0],
+        align: [1, 0],
+        translate: [-(this._size[0] - this._data.right), this._data.top, (z === undefined) ? this._data.z : z]
+    });
+
     if (width) {
         this._data.right -= width ;
     }
@@ -228,6 +204,30 @@ TrueSizedLayoutDockHelper.prototype.margins = function (margins) {
     this._data.right -= margins[1];
     this._data.bottom -= margins[2];
     return this;
+};
+
+TrueSizedLayoutDockHelper.prototype._resolveSingleSize = function (size) {
+    return size < 0 ? ~size : size;
+};
+TrueSizedLayoutDockHelper.prototype._ensureTrueSize = function (size) {
+    return size < 0 ? true : size;
+};
+
+TrueSizedLayoutDockHelper.prototype._setupAccordingToDimension = function (size, dim) {
+    let height;
+    let width;
+    if (size instanceof Array) {
+        let orthogonalDimension = dim ? 0 : 1;
+        if(size[orthogonalDimension] < 0){
+            /* If a true size was specified as an orhtogonal dimension, we just set it to true, as we don't need to save the value anywhere here */
+            size[orthogonalDimension] = true;
+        }
+        width = size[0];
+        height = size[1];
+    } else {
+        width = size;
+    }
+    return [width, height];
 };
 
 /**

@@ -71,9 +71,14 @@ export const layout = {
             // Todo refactor also the z index to the dock
             renderable.decorations.dock = {dockMethod,space};
 
-            let width = dockMethod === 'left' || dockMethod === 'right' ? size : undefined;
-            let height = dockMethod === 'top' || dockMethod === 'bottom' ? size : undefined;
-            renderable.decorations.size = [width, height];
+            if(!renderable.decorations.size){
+                let width = dockMethod === 'left' || dockMethod === 'right' ? size : undefined;
+                let height = dockMethod === 'top' || dockMethod === 'bottom' ? size : undefined;
+                renderable.decorations.size = [width, height];
+            } else if (size){
+                throw Error("A size was specified both in the dock function and explicitly, which creates a conflict. " +
+                    "Please use one of the two");
+            }
 
             if (!renderable.decorations.translate) { renderable.decorations.translate = [0, 0, 0]; }
             renderable.decorations.translate[2] = zIndex;
