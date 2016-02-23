@@ -238,8 +238,8 @@ export class View extends FamousView {
             cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
         }
 
-        if(!resolveTrueSize){
-            if(renderable instanceof View){
+        if (!resolveTrueSize) {
+            if (renderable instanceof View) {
                 /* If we displaying a true sized view, then we should inform this view so that it knows its context size*/
                 let customSize = renderable.getSize();
                 let resolveCustomSize = (i) => dimensionIsTrueSized[i] === true ? (customSize[i] || ~renderable.decorations.size[i]) : size[i];
@@ -252,7 +252,7 @@ export class View extends FamousView {
                  *  the true instead of the computed value
                  */
                 cacheResolvedSize = size;
-                size = [dimensionIsTrueSized[0] || size[0],dimensionIsTrueSized[1] || size[1] ];
+                size = [dimensionIsTrueSized[0] || size[0], dimensionIsTrueSized[1] || size[1]];
             }
         }
 
@@ -417,8 +417,8 @@ export class View extends FamousView {
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
             let renderableSize = this._resolveDecoratedSize(name, renderable, context, false);
             let inUseSize = this._resolvedSizesCache.get(renderable);
-            for(let i=0;i<2;i++){
-                if(renderableSize[i] == true){
+            for (let i = 0; i < 2; i++) {
+                if (renderableSize[i] == true) {
                     /* If a true size is used, do a tild on it in order for the dockhelper to recognize it */
                     renderableSize[i] = ~inUseSize[i];
                 }
@@ -452,7 +452,7 @@ export class View extends FamousView {
             let renderable = traditionalRenderables[name];
             let renderableSize = this._resolveDecoratedSize(name, renderable, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0, 0], align = [0, 0, 0]} = renderable.decorations;
-            let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin,align, translate);
+            let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, align, translate);
             context.set(name, {
                 size: renderableSize,
                 translate: adjustedTranslation,
@@ -477,7 +477,7 @@ export class View extends FamousView {
         let newTranslation = [translate[0], translate[1], translate[2]];
         for (let i = 0; i < 2; i++) {
             let adjustedContextSize = this._adjustedContextSize;
-            if (adjustedContextSize[i] && align[i] !== 0) {
+            if (adjustedContextSize && adjustedContextSize[i] && align[i] !== 0) {
                 newTranslation[i] += adjustedContextSize[i] * align[i];
             }
             if (size[i] === true && origin[i] !== 0) {
