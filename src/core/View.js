@@ -15,11 +15,15 @@ import LayoutController             from 'famous-flex/src/LayoutController.js';
 import FlexScrollView               from 'famous-flex/src/FlexScrollView.js';
 import Surface                      from 'famous/core/Surface.js';
 
+import {combineOptions}             from 'arva-utils/CombineOptions.js';
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
 import {ObjectHelper}               from 'arva-utils/ObjectHelper.js';
 import LayoutDockHelper             from 'famous-flex/src/helpers/LayoutDockHelper.js';
 
 const DEFAULT_OPTIONS = {};
+
+
+
 
 export class View extends FamousView {
 
@@ -31,20 +35,16 @@ export class View extends FamousView {
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
 
-
-        if (!this.decorations) {
-            this.decorations = {};
-        }
         if (!this.renderables) {
             this.renderables = {};
         }
         if (!this.layouts) {
             this.layouts = [];
         }
-
         this._copyPrototypeProperties();
-        this._initTrueSizedBookkeeping();
+        this._initOptions(options);
         this._constructDecoratedRenderables();
+        this._initTrueSizedBookkeeping();
 
         this._combineLayouts();
     }
@@ -409,7 +409,7 @@ export class View extends FamousView {
     _layoutDockedRenderables(dockedRenderables, filledRenderables, context, options) {
         let dock = new TrueSizedLayoutDockHelper(context, options);
 
-        if (this.decorations && this.decorations.viewMargins) {
+        if (this.decorations.viewMargins) {
             dock.margins(this.decorations.viewMargins);
         }
 
@@ -524,7 +524,7 @@ export class View extends FamousView {
                 /* Layout all renderables that have decorators (e.g. @someDecorator) */
                 if (this.hasDecorators) {
                     this._layoutDecoratedRenderables(context, options);
-                    if (this.decorations && this.decorations.customLayoutFunction) {
+                    if (this.decorations.customLayoutFunction) {
                         this.decorations.customLayoutFunction(context);
                     }
                 }
@@ -564,7 +564,7 @@ export class View extends FamousView {
      * @private
      */
     _prepareLayoutController() {
-        if (this.decorations && this.decorations.isScrollable) {
+        if (this.decorations.isScrollable) {
             let scrollView = new FlexScrollView({
                 autoPipeEvents: true
             });
@@ -731,7 +731,7 @@ export class View extends FamousView {
             if (Number.isNaN(dockSize[i])) {
                 dockSize[i] = undefined;
             }
-            if (dockSize[i] && this.decorations && this.decorations.viewMargins) {
+            if (dockSize[i] && this.decorations.viewMargins) {
                 let {viewMargins} = this.decorations;
                 /* if i==0 we want margin left and right, if i==1 we want margin top and bottom */
                 dockSize[i] += viewMargins[(i + 1) % 4] + viewMargins[(i + 3) % 4];
@@ -804,7 +804,7 @@ export class View extends FamousView {
 
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
         for (let name of ['decorations', 'renderableConstructors']) {
-            this[name] = prototype[name];
+            this[name] = prototype[name] || {};
         }
     }
 
@@ -843,9 +843,13 @@ export class View extends FamousView {
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
         this._nodes = {_trueSizedRequested: false};
         /* This needs to be set in order for the LayoutNodeManager to be happy */
-        this.options = this.options || {};
         this.options.size = this.options.size || [true, true];
 
+    }
+
+    _initOptions(options) {
+        let {defaultOptions} = this.decorations;
+        this.options = defaultOptions ? combineOptions(defaultOptions, options) : options;
     }
 
     _tryCalculateTrueSizedSurface(renderable) {
