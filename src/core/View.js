@@ -696,7 +696,7 @@ export class View extends FamousView {
             if (getDockType(otherDockMethod) !== dockType) {
                 return [NaN, NaN];
             } else {
-                let resolvedSize = this._resolveDecoratedSize(name, dockedRenderable, {size: NaN}, true);
+                let resolvedSize = this._resolveDecoratedSize(name, dockedRenderable, {size: [NaN, NaN]}, true);
                 if (!resolvedSize) {
                     return [NaN, NaN];
                 }
