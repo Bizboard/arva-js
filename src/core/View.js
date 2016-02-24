@@ -139,6 +139,7 @@ export class View extends FamousView {
             renderable.decorations = renderable.decorations || {};
             renderable.decorations = _.extend(decorations, renderable.decorations);
 
+
             /* Since after constructor() of this View class is called, all decorated renderables will
              * be attempted to be initialized by Babel / the ES7 class properties spec, we'll need to
              * override the descriptor get/initializer to return this specific instance once.
@@ -241,6 +242,7 @@ export class View extends FamousView {
 
         if (!resolveTrueSize) {
             if (renderable instanceof View) {
+                this._ensureTrueSizedViewSubscriptions(renderable);
                 /* If we displaying a true sized view, then we should inform this view so that it knows its context size*/
                 let customSize = renderable.getSize();
                 let resolveCustomSize = (i) => dimensionIsTrueSized[i] === true ? (customSize[i] || ~renderable.decorations.size[i]) : size[i];
@@ -651,42 +653,23 @@ export class View extends FamousView {
 
         let {docked: dockedRenderables, filled: filledRenderables} = this._groupedRenderables;
         if (filledRenderables) {
-            return [undefined, undefined]
+            return null;
         }
         if (dockedRenderables) {
 
-            let {dockMethod} = dockedRenderables[Object.keys(dockedRenderables)[0]].decorations.dock;
+            let dockSize = this._calculateDockedRenderablesBoundingBox(dockedRenderables);
 
-            if (dockMethod === 'right' || dockMethod === 'bottom') {
-                return [undefined, undefined]
+            /* If the docking directions are all over the place, then take up entire context size */
+            if (!dockSize[0] && !dockSize[1]) {
+                return dockSize;
             }
 
-            /* Add up the different sizes to if they are docked all in the same direction */
-            let dockSize = _.reduce(dockedRenderables, (result, dockedRenderable, name) => {
-                let {decorations} = dockedRenderable;
-                if (decorations.dock.dockMethod !== dockMethod) {
-                    return NaN;
-                } else {
-                    let resolvedSize = this._resolvedSizesCache.get(dockedRenderable) ||
-                        this._resolveDecoratedSize(name, dockedRenderable, {size: NaN}, true);
-                    if (!resolvedSize) {
-                        return NaN;
-                    }
-                    return resolvedSize[+(dockMethod === 'top')] + decorations.dock.space + result
-                }
-            }, 0);
-
-            /* If the docking directions are missing, then take up entire context size */
-            if (!dockSize) {
-                return [undefined, undefined]
-            }
-
-            /* If you mixed in these types of renderables, then it gets hard to determine the size (it has to be done the slow way) */
+            /* If these types of renderables are mixed in, then it gets hard to determine the size (it has to be done the slow way) */
             if (this._groupedRenderables['traditional'] || this._groupedRenderables['ignored']) {
                 return null;
             }
 
-            return dockMethod === 'left' ? [dockSize, undefined] : [undefined, dockSize];
+            return dockSize;
         }
         return null;
     }
@@ -703,6 +686,63 @@ export class View extends FamousView {
         } else {
             console.log(message);
         }
+    }
+
+    _calculateDockedRenderablesBoundingBox(dockedRenderables) {
+        let {dockMethod} = dockedRenderables[Object.keys(dockedRenderables)[0]].decorations.dock;
+        let dockTypes = [['right', 'left'], ['top', 'bottom']];
+        let getDockType = (dockMethodToGet) => _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
+        let dockType = getDockType(dockMethod);
+        let dockingDirection = dockType;
+        let orthogonalDirection = !dockType + 0;
+
+        /* Add up the different sizes to if they are docked all in the same direction */
+        let dockSize = _.reduce(dockedRenderables, (result, dockedRenderable, name) => {
+            let {decorations} = dockedRenderable;
+            let {dockMethod: otherDockMethod} = decorations.dock;
+            /* If docking is done orthogonally */
+            if (getDockType(otherDockMethod) !== dockType) {
+                return [NaN, NaN];
+            } else {
+                let resolvedSize = this._resolvedSizesCache.get(dockedRenderable) ||
+                    this._resolveDecoratedSize(name, dockedRenderable, {size: NaN}, true);
+                if (!resolvedSize) {
+                    return [NaN, NaN];
+                }
+                let newResult = Array(2);
+                /* If docking is done from opposite directions */
+                if (dockMethod !== otherDockMethod) {
+                    newResult[dockingDirection] = NaN;
+                } else {
+                    newResult[dockingDirection] = resolvedSize[dockingDirection] + decorations.dock.space + result[dockingDirection];
+                }
+                /* If a size in the orthogonalDirection has been set... */
+                if (resolvedSize[orthogonalDirection]) {
+                    /* If there is no result in the orthogonal direction specified yet... */
+                    if (result[orthogonalDirection] === undefined) {
+                        newResult[orthogonalDirection] = resolvedSize[orthogonalDirection];
+                    } else {
+                        /* get the max bounding box for the specified orthogonal direction */
+                        newResult[orthogonalDirection] = Math.max(result[orthogonalDirection], resolvedSize[orthogonalDirection]);
+                    }
+                } else {
+                    newResult[orthogonalDirection] = result[orthogonalDirection];
+                }
+                return newResult;
+            }
+        }, dockingDirection ? [undefined, 0] : [0, undefined]);
+
+        for (let i = 0; i < 2; i++) {
+            if (Number.isNaN(dockSize[i])) {
+                dockSize[i] = undefined;
+            }
+            if (dockSize[i] && this.decorations && this.decorations.viewMargins) {
+                let {viewMargins} = this.decorations;
+                /* if i==0 we want margin left and right, if i==1 we want margin top and bottom */
+                dockSize[i] += viewMargins[(i + 1) % 4] + viewMargins[(i + 3) % 4];
+            }
+        }
+        return dockSize;
     }
 
     /**
@@ -796,7 +836,6 @@ export class View extends FamousView {
         /* This needs to be set in order for the LayoutNodeManager to be happy */
         this.options = this.options || {};
         this.options.size = this.options.size || [true, true];
-
 
     }
 
