@@ -140,6 +140,9 @@ export const layout = {
 
     translate: function (x, y, z) {
         return function (view, renderableName, descriptor) {
+            if(Array.isArray(x)){
+                throw Error("Please specify translate as three arguments, and not as an array");
+            }
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.translate = [x, y, z];
         }
