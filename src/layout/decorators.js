@@ -190,10 +190,21 @@ export const layout = {
         prototype.decorations.isScrollable = true;
     },
 
+    /**
+     * Sets the margins for the docked content. This can be applied both to a child and a class. When in conflict,
+     * the parent will override the child's setting
+     * @param margins
+     * @returns {Function}
+     */
     margins: function (margins) {
         return function (target) {
-            let prototype = prepDecoratedClass(target);
-            prototype.decorations.viewMargins = margins;
+            let prototypeOrRenderable;
+            if(typeof target == 'function'){
+                prototypeOrRenderable = prepDecoratedClass(target);
+            } else {
+                prototypeOrRenderable = prepDecoratedRenderable(...arguments);
+            }
+            prototypeOrRenderable.decorations.viewMargins = margins;
         }
     },
 
