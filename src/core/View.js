@@ -234,14 +234,14 @@ export class View extends FamousView {
                 dimensionIsTrueSized[dim] = true;
                 if (!(renderable instanceof View) || resolveTrueSize) {
                     this._processSingleTrueSizedRenderable(renderable, name, size, dim);
-                } else {
-                    size[dim] = true;
+                    cacheResolvedSize[dim] = size[dim];
                 }
+            } else {
+                cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
             }
-            cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
         }
 
-        if (!resolveTrueSize) {
+        if (!resolveTrueSize && (dimensionIsTrueSized[0] || dimensionIsTrueSized[1])) {
             if (renderable instanceof View) {
                 this._ensureTrueSizedViewSubscriptions(renderable);
                 /* If we displaying a true sized view, then we should inform this view so that it knows its context size*/
@@ -255,7 +255,6 @@ export class View extends FamousView {
                  *  we already determined, set the cache size to that and also adjust the size to have
                  *  the true instead of the computed value
                  */
-                cacheResolvedSize = size;
                 size = [dimensionIsTrueSized[0] || size[0], dimensionIsTrueSized[1] || size[1]];
             }
         }
