@@ -110,6 +110,7 @@ export class View extends FamousView {
 
     adjustContextSize(size) {
         this._adjustedContextSize = size;
+        this.layout.reflowLayout();
     }
 
     /** Requests for a parent layoutcontroller trying to resolve the size of this view
@@ -704,8 +705,7 @@ export class View extends FamousView {
             if (getDockType(otherDockMethod) !== dockType) {
                 return [NaN, NaN];
             } else {
-                let resolvedSize = this._resolvedSizesCache.get(dockedRenderable) ||
-                    this._resolveDecoratedSize(name, dockedRenderable, {size: NaN}, true);
+                let resolvedSize = this._resolveDecoratedSize(name, dockedRenderable, {size: NaN}, true);
                 if (!resolvedSize) {
                     return [NaN, NaN];
                 }
@@ -866,7 +866,7 @@ export class View extends FamousView {
             }
 
             if (sizeChange) {
-                this.reflowDelayedRecursively();
+                this.reflowRecursively();
                 trueSizedInfo.size = newSize;
                 trueSizedInfo.isUncalculated = false;
             }
@@ -876,5 +876,4 @@ export class View extends FamousView {
             this._requestLayoutControllerReflow();
         }
     }
-
 }
