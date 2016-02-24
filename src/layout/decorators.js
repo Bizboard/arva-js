@@ -13,7 +13,7 @@ import _                        from 'lodash';
 import Timer                    from 'famous/utilities/Timer.js';
 import Easing                   from 'famous/transitions/Easing.js';
 import AnimationController      from 'famous-flex/src/AnimationController.js';
-
+import LayoutUtility            from 'famous-flex/src/LayoutUtility.js'
 
 function prepDecoratedRenderable(view, renderableName, descriptor) {
     let constructor;
@@ -87,6 +87,9 @@ export const layout = {
 
     size: function (x, y) {
         return function (view, renderableName, descriptor) {
+            if(Array.isArray(x)){
+                throw Error("Please specify size as two arguments, and not as an array");
+            }
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.size = [x, y];
         }
@@ -204,7 +207,7 @@ export const layout = {
             } else {
                 prototypeOrRenderable = prepDecoratedRenderable(...arguments);
             }
-            prototypeOrRenderable.decorations.viewMargins = margins;
+            prototypeOrRenderable.decorations.viewMargins = LayoutUtility.normalizeMargins(margins);
         }
     },
 
