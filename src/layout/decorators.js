@@ -17,7 +17,9 @@ import LayoutUtility            from 'famous-flex/src/LayoutUtility.js'
 
 function prepDecoratedRenderable(view, renderableName, descriptor) {
     let constructor;
-    if (!view.renderableConstructors) { view.renderableConstructors = {}; }
+    if (!view.renderableConstructors) {
+        view.renderableConstructors = {};
+    }
 
     let constructors = view.renderableConstructors;
     if (!constructors[renderableName]) {
@@ -32,14 +34,18 @@ function prepDecoratedRenderable(view, renderableName, descriptor) {
         }
     }
     constructor = constructors[renderableName];
-    if (!constructor.decorations) { constructor.decorations = {descriptor: descriptor}; }
+    if (!constructor.decorations) {
+        constructor.decorations = {descriptor: descriptor};
+    }
 
     return constructor;
 }
 
 function prepDecoratedClass(classObject) {
     let prototype = classObject.prototype;
-    if (!prototype.decorations) { prototype.decorations = {}; }
+    if (!prototype.decorations) {
+        prototype.decorations = {};
+    }
 
     /* Return the class' prototype, so it can be extended by the decorator */
     return prototype;
@@ -69,25 +75,27 @@ export const layout = {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             // Todo refactor also the z index to the dock
-            renderable.decorations.dock = {dockMethod,space};
+            renderable.decorations.dock = {dockMethod, space};
 
-            if(!renderable.decorations.size){
+            if (!renderable.decorations.size) {
                 let width = dockMethod === 'left' || dockMethod === 'right' ? size : undefined;
                 let height = dockMethod === 'top' || dockMethod === 'bottom' ? size : undefined;
                 renderable.decorations.size = [width, height];
-            } else if (size){
+            } else if (size) {
                 throw Error("A size was specified both in the dock function and explicitly, which creates a conflict. " +
                     "Please use one of the two");
             }
 
-            if (!renderable.decorations.translate) { renderable.decorations.translate = [0, 0, 0]; }
+            if (!renderable.decorations.translate) {
+                renderable.decorations.translate = [0, 0, 0];
+            }
             renderable.decorations.translate[2] = zIndex;
         }
     },
 
     size: function (x, y) {
         return function (view, renderableName, descriptor) {
-            if(Array.isArray(x)){
+            if (Array.isArray(x)) {
                 throw Error("Please specify size as two arguments, and not as an array");
             }
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
@@ -140,7 +148,7 @@ export const layout = {
 
     translate: function (x, y, z) {
         return function (view, renderableName, descriptor) {
-            if(Array.isArray(x)){
+            if (Array.isArray(x)) {
                 throw Error("Please specify translate as three arguments, and not as an array");
             }
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
@@ -151,24 +159,37 @@ export const layout = {
     animate: function (options = {}) {
         return function (view, renderableName, descriptor) {
             let renderableConstructor = prepDecoratedRenderable(view, renderableName, descriptor);
-            options = _.merge({animation: AnimationController.Animation.FadedZoom, transition: {duration: 250, curve: Easing.inQuad}}, options);
+            options = _.merge({
+                animation: AnimationController.Animation.FadedZoom,
+                transition: {duration: 250, curve: Easing.inQuad}
+            }, options);
 
             /* We let the renderable variable below be instantiated when the View.js instance constructs this renderable */
             let constructor = view.renderableConstructors[renderableName] = (constructorOptions) => {
                 let renderable = renderableConstructor(constructorOptions);
                 let animationController = renderable.animationController = new AnimationController(options);
-                if (renderable.pipe) { renderable.pipe(animationController._eventOutput); }
+                if (renderable.pipe) {
+                    renderable.pipe(animationController._eventOutput);
+                }
 
                 let showMethod = () => {
                     animationController.show.call(animationController, renderable, options, () => {
-                        if (renderable.emit) { renderable.emit('shown'); }
+                        if (renderable.emit) {
+                            renderable.emit('shown');
+                        }
                     });
                 };
 
                 /* These animation starts get handled in arva-js/core/View.js:_handleAnimations() */
-                if (!view.delayedAnimations) { view.delayedAnimations = []; }
-                if (!view.waitingAnimations) { view.waitingAnimations = []; }
-                if (!view.immediateAnimations) { view.immediateAnimations = []; }
+                if (!view.delayedAnimations) {
+                    view.delayedAnimations = [];
+                }
+                if (!view.waitingAnimations) {
+                    view.waitingAnimations = [];
+                }
+                if (!view.immediateAnimations) {
+                    view.immediateAnimations = [];
+                }
                 if (options.delay && options.delay > 0) {
                     Timer.setTimeout(showMethod, options.delay);
                     view.delayedAnimations.push({showMethod: showMethod, delay: options.delay});
@@ -205,7 +226,7 @@ export const layout = {
     margins: function (margins) {
         return function (target) {
             let prototypeOrRenderable;
-            if(typeof target == 'function'){
+            if (typeof target == 'function') {
                 prototypeOrRenderable = prepDecoratedClass(target);
             } else {
                 prototypeOrRenderable = prepDecoratedRenderable(...arguments);
@@ -236,7 +257,7 @@ export const event = {
     subscribe: function (subscriptionType, eventName, callback) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            if(!renderable.decorations.eventSubscriptions) {
+            if (!renderable.decorations.eventSubscriptions) {
                 renderable.decorations.eventSubscriptions = []
             }
             renderable.decorations.eventSubscriptions.push({
