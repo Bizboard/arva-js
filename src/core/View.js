@@ -608,88 +608,80 @@ export class View extends FamousView {
      * @private
      */
     _getLayoutSize() {
-        let minPosition = [0, 0], maxPosition = [0, 0];
 
-        let fastSizeCalculation = this._calculateLayoutSizeOptimized();
-        if (fastSizeCalculation) {
-            return fastSizeCalculation;
+
+        let {docked: dockedRenderables, filled: filledRenderables,
+            traditional: traditionalRenderables, ignored: ignoredRenderables,
+            fullscreen: fullScreenRenderables} = this._groupedRenderables;
+        if (!traditionalRenderables && !ignoredRenderables && !dockedRenderables) {
+            return [undefined, undefined];
         }
-
-        for (let renderableName in this.layout._dataSource) {
-            let renderable = this.renderables[renderableName];
-            let size = this.getResolvedSize(renderable);
-            /*
-             * If there is no cached size, then we're having a fill or background or something, and we shouldn't take it into account when summing up these
-             */
-            if (!size) {
-                continue;
-            }
-            let renderableSpec = this.layout.getSpec(renderableName, true);
-            if (!renderableSpec || !renderableSpec.transform || !renderableSpec.size) {
-                continue;
-            }
-
-
-            let translate = renderableSpec.transform.slice(-4, -1);
-            let [left,top] = translate;
-            let right = left + size[0];
-            let bottom = top + size[1];
-
-            /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
-            minPosition = [Math.min(minPosition[0], left), Math.min(minPosition[1], top)];
-            maxPosition = [Math.max(maxPosition[0], right), Math.max(maxPosition[1], bottom)];
-        }
-
-        return [maxPosition[0] - minPosition[0] || undefined, maxPosition[1] - maxPosition[1] || undefined];
-    }
-
-
-    /**
-     * Calculates the size in a fast way based on the dock helper
-     * @returns {*}
-     * @private
-     */
-    _calculateLayoutSizeOptimized() {
-
-
-        let {docked: dockedRenderables, filled: filledRenderables} = this._groupedRenderables;
-        if (filledRenderables) {
-            return null;
-        }
+        let totalSize = [0, 0];
         if (dockedRenderables) {
+            totalSize = this._calculateDockedRenderablesBoundingBox();
 
-            let dockSize = this._calculateDockedRenderablesBoundingBox(dockedRenderables);
+            if ((!totalSize[0] && !totalSize[1])) {
+                /* [undefined, undefined] */
+                return [undefined, undefined];
+            }
+        }
 
-            /* If the docking directions are all over the place, then take up entire context size */
-            if (!dockSize[0] && !dockSize[1]) {
-                return dockSize;
+        if (traditionalRenderables || ignoredRenderables) {
+            let minPosition = [0, 0], maxPosition = totalSize;
+            for (let renderableName in _.extend(traditionalRenderables, ignoredRenderables)) {
+                let renderable = this.renderables[renderableName];
+                let size = this.getResolvedSize(renderable);
+                if (!size) {
+                    continue;
+                }
+                let renderableSpec;
+                /* If the renderable is included in the ignored renderables */
+                if (renderableName in (ignoredRenderables || {})) {
+                    /* We rather not want to do this, because this function makes a loop that means quadratic complexity */
+                    renderableSpec = this.layout.getSpec(renderableName);
+                    renderableSpec.translate = renderableSpec.transform.slice(-4, -1);
+                } else {
+                    renderableSpec = renderable.decorations;
+                    if (renderableSpec.translate) {
+                        this._adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0],
+                            renderableSpec.align || [0, 0], renderableSpec.translate);
+                    } else {
+                        renderableSpec.translate = [0, 0, 0];
+                    }
+                }
+
+                /* If there has been an align specified, then nothing can be calculated */
+                if (!renderableSpec || !renderableSpec.size || renderableSpec.align[0] || renderableSpec.align[1]) {
+                    continue;
+                }
+
+                let {translate} = renderableSpec;
+
+                /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
+                for (let i = 0; i < 2; i++) {
+                    /* Undefined is the same as context size */
+                    if (size[i] == undefined) {
+                        maxPosition[i] = undefined;
+                    }
+                    /* If the upper boundary is infinity, we can't know the lower boundary */
+                    if (maxPosition[i] !== undefined) {
+                        minPosition[i] = Math.min(minPosition[i], adjustedTranslate[0] + size[i]);
+                        maxPosition[i] = Math.max(maxPosition[i], adjustedTranslate[1] + size[i]);
+                    }
+
+                }
             }
 
-            /* If these types of renderables are mixed in, then it gets hard to determine the size (it has to be done the slow way) */
-            if (this._groupedRenderables['traditional'] || this._groupedRenderables['ignored']) {
-                return null;
-            }
-
-            return dockSize;
+            totalSize = [maxPosition[0] - minPosition[0] || undefined, maxPosition[1] - minPosition[1] || undefined];
         }
-        return null;
+        return totalSize;
+
     }
 
-    /**
-     * Uses either console.warn() or console.log() to log a mildly serious issue, depending on the user agent's availability.
-     * @param {String|Object} message
-     * @returns {void}
-     * @private
-     */
-    _warn(message) {
-        if (console.warn) {
-            console.warn(message);
-        } else {
-            console.log(message);
-        }
-    }
+    _calculateDockedRenderablesBoundingBox() {
+        let {docked: dockedRenderables, filled: filledRenderables,
+            fullscreen: fullScreenRenderables} = this._groupedRenderables;
 
-    _calculateDockedRenderablesBoundingBox(dockedRenderables) {
         let {dockMethod} = dockedRenderables[Object.keys(dockedRenderables)[0]].decorations.dock;
         let dockTypes = [['right', 'left'], ['top', 'bottom']];
         let getDockType = (dockMethodToGet) => _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
@@ -732,6 +724,10 @@ export class View extends FamousView {
             }
         }, dockingDirection ? [undefined, 0] : [0, undefined]);
 
+        if (filledRenderables || fullScreenRenderables) {
+            dockSize[dockingDirection] = undefined;
+        }
+
         for (let i = 0; i < 2; i++) {
             if (Number.isNaN(dockSize[i])) {
                 dockSize[i] = undefined;
@@ -743,6 +739,20 @@ export class View extends FamousView {
             }
         }
         return dockSize;
+    }
+
+    /**
+     * Uses either console.warn() or console.log() to log a mildly serious issue, depending on the user agent's availability.
+     * @param {String|Object} message
+     * @returns {void}
+     * @private
+     */
+    _warn(message) {
+        if (console.warn) {
+            console.warn(message);
+        } else {
+            console.log(message);
+        }
     }
 
     /**
