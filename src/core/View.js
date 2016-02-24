@@ -135,8 +135,9 @@ export class View extends FamousView {
             }
 
             let renderable = this.renderableConstructors[name](...constructionOptions);
-            renderable.decorations = decorations;
 
+            renderable.decorations = renderable.decorations || {};
+            renderable.decorations = _.extend(decorations, renderable.decorations);
 
             /* Since after constructor() of this View class is called, all decorated renderables will
              * be attempted to be initialized by Babel / the ES7 class properties spec, we'll need to
