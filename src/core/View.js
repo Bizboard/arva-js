@@ -725,7 +725,7 @@ export class View extends FamousView {
             }
         }, dockingDirection ? [undefined, 0] : [0, undefined]);
 
-        if (filledRenderables || fullScreenRenderables) {
+        if (filledRenderables) {
             dockSize[dockingDirection] = undefined;
         }
 
