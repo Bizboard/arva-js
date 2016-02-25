@@ -237,7 +237,7 @@ export class View extends FamousView {
         }
 
 
-        this._resolvedSizesCache.set(renderable, cacheResolvedSize);
+        this._resolvedSizesCache.set(renderable, [cacheResolvedSize[0], cacheResolvedSize[1]]);
 
         return (size[0] !== null && size[1] !== null) ? size : null;
     }
@@ -884,6 +884,9 @@ export class View extends FamousView {
                 trueSizedInfo.size = newSize;
                 trueSizedInfo.isUncalculated = false;
             }
+            /* Sanity check */
+        } else if(renderableHtmlElement && renderableHtmlElement.childElementCount) {
+            this._warn(`Cannot calculate truesized surface in class ${this._name()} as the content one or more html elements. Behaviour is undeterministic`);
         } else {
             trueSizedInfo.calculateOnNext = true;
             this.layout.reflowLayout();
