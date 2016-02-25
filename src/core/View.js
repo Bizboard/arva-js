@@ -130,7 +130,7 @@ export class View extends FamousView {
         }
         for (let name in this.renderableConstructors) {
             let decorations = this.renderableConstructors[name].decorations;
-            let constructionOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod(this.options) : [];
+            let constructionOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : [];
             if (!(constructionOptions instanceof Array)) {
                 constructionOptions = [constructionOptions];
             }
@@ -313,6 +313,11 @@ export class View extends FamousView {
                 }
                 trueSizedSurfaceInfo.trueSizedDimensions[dim] = true;
             }
+        } else {
+            this._warn(`Cannot determine size of ${renderable.constructor.name}, falling back to default size`);
+            if(size[dim] < 0){
+                size[dim] = ~size[dim];
+            }
         }
     }
 
@@ -327,7 +332,7 @@ export class View extends FamousView {
     _resolveSingleSize(renderableSize, contextSize) {
         switch (typeof renderableSize) {
             case 'function':
-                return this._resolveSingleSize(renderableSize(contextSize), contextSize);
+                return this._resolveSingleSize(renderableSize.call(this,contextSize), contextSize);
             case 'number':
                 /* If 0 < renderableSize < 1, we interpret renderableSize as a fraction of the contextSize */
                 return renderableSize < 1 && renderableSize > 0 ? renderableSize * contextSize : renderableSize;
@@ -832,7 +837,6 @@ export class View extends FamousView {
             this._delayedRecursiveReflowEvent = false;
         }
     }
-
 
     _initTrueSizedBookkeeping() {
 
