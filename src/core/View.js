@@ -14,6 +14,7 @@ import FamousView                   from 'famous/core/View.js';
 import LayoutController             from 'famous-flex/src/LayoutController.js';
 import FlexScrollView               from 'famous-flex/src/FlexScrollView.js';
 import Surface                      from 'famous/core/Surface.js';
+import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 
 import {combineOptions}             from 'arva-utils/CombineOptions.js';
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
@@ -21,8 +22,6 @@ import {ObjectHelper}               from 'arva-utils/ObjectHelper.js';
 import LayoutDockHelper             from 'famous-flex/src/helpers/LayoutDockHelper.js';
 
 const DEFAULT_OPTIONS = {};
-
-
 
 
 export class View extends FamousView {
@@ -108,8 +107,11 @@ export class View extends FamousView {
         return false;
     }
 
-    adjustContextSize(size) {
-        this._adjustedContextSize = size;
+    adjustContextSingleSize(size, dim) {
+        if (!this._adjustedContextSize) {
+            this._adjustedContextSize = [undefined, undefined];
+        }
+        this._adjustedContextSize[dim] = size;
         this.layout.reflowLayout();
     }
 
@@ -232,32 +234,37 @@ export class View extends FamousView {
             size[dim] = this._resolveSingleSize(renderable.decorations.size[dim], context.size[dim]);
             if (size[dim] < 0 || size[dim] === true) {
                 dimensionIsTrueSized[dim] = true;
-                if (!(renderable instanceof View) || resolveTrueSize) {
-                    this._processSingleTrueSizedRenderable(renderable, name, size, dim);
-                    cacheResolvedSize[dim] = size[dim];
-                }
-            } else {
-                cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
+                //if (!(this._renderableIsComposite(renderable)) || resolveTrueSize) {
+                this._processSingleTrueSizedRenderable(renderable, name, size, dim);
+                //cacheResolvedSize[dim] = size[dim];
+                //}
+            } //else {
+            cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
+            if (!resolveTrueSize) {
+                size[dim] = dimensionIsTrueSized[dim] || size[dim];
             }
+            //}
         }
 
-        if (!resolveTrueSize && (dimensionIsTrueSized[0] || dimensionIsTrueSized[1])) {
-            if (renderable instanceof View) {
-                this._ensureTrueSizedViewSubscriptions(renderable);
-                /* If we displaying a true sized view, then we should inform this view so that it knows its context size*/
-                let customSize = renderable.getSize();
-                let resolveCustomSize = (i) => dimensionIsTrueSized[i] === true ? (customSize[i] || ~renderable.decorations.size[i]) : size[i];
-                /* Also set the cache size so that both are positive integers */
-                cacheResolvedSize = [resolveCustomSize(0), resolveCustomSize(1)];
-                renderable.adjustContextSize(cacheResolvedSize);
-            } else {
-                /* If the renderable is a surface or something else which size
-                 *  we already determined, set the cache size to that and also adjust the size to have
-                 *  the true instead of the computed value
-                 */
-                size = [dimensionIsTrueSized[0] || size[0], dimensionIsTrueSized[1] || size[1]];
-            }
-        }
+
+        /*if (!resolveTrueSize && (dimensionIsTrueSized[0] || dimensionIsTrueSized[1])) {
+         //if (this._renderableIsComposite(renderable)) {
+         if (false) {
+         this._ensureTrueSizedViewSubscriptions(renderable);
+         /!* If we displaying a true sized view, then we should inform this view so that it knows its context size*!/
+         let customSize = renderable.getSize();
+         let resolveCustomSize = (i) => dimensionIsTrueSized[i] === true ? (customSize[i] || ~renderable.decorations.size[i]) : size[i];
+         /!* Also set the cache size so that both are positive integers *!/
+         cacheResolvedSize = [resolveCustomSize(0), resolveCustomSize(1)];
+         renderable.adjustContextSize(cacheResolvedSize);
+         } else if (this._renderableIsSurface(renderable)) {
+         /!* If the renderable is a surface or something else which size
+         *  we already determined, set the cache size to that and also adjust the size to have
+         *  the true instead of the computed value
+         *!/
+         size = [dimensionIsTrueSized[0] || size[0], dimensionIsTrueSized[1] || size[1]];
+         }
+         }*/
 
         this._resolvedSizesCache.set(renderable, cacheResolvedSize);
 
@@ -282,17 +289,31 @@ export class View extends FamousView {
         /* True sized element. This has been specified as ~100 where 100 is the initial size
          * applying this operator again (e.g. ~~100) gives us the value 100 back
          * */
-        if (renderable instanceof View) {
-            if (size[dim] === true) {
-                size[dim] = renderable.getSize()[dim];
-                if (size[dim] === undefined && renderable._initialised) {
-                    this._warn(`True sized renderable '${name}' is taking up the entire context size. Called from ${this._name()}`);
-                }
+        if (this._renderableIsComposite(renderable)) {
+            let twoDimensionalSize = renderable.getSize();
+            if (!twoDimensionalSize) {
+                size[dim] = this._specifyUndeterminedSingleHeight(renderable, size, dim);
             } else {
-                size[dim] = !renderable.constainsUncalculatedSurfaces() && renderable._initialised ? renderable.getSize()[dim] || ~size[dim] : ~size[dim];
+                let renderableIsView = renderable instanceof View;
+                if (twoDimensionalSize[dim] === undefined && !(renderableIsView && renderable._initialised)) {
+                    this._warn(`True sized renderable '${name}' is taking up the entire context size. Called from ${this._name()}`);
+                    size[dim] = twoDimensionalSize[dim];
+                } else {
+                    if (size[dim] === true) {
+                        size[dim] = ~twoDimensionalSize[dim];
+                    }
+                    let resultingSize = twoDimensionalSize[dim] || ~size[dim];
+                    if (renderableIsView) {
+                        size[dim] = !renderable.constainsUncalculatedSurfaces() && renderable._initialised ? resultingSize[dim] : ~size[dim];
+                        renderable.adjustContextSingleSize(size, dim);
+                        this._ensureTrueSizedViewSubscriptions(renderable);
+                    }
+                    else {
+                        size[dim] = resultingSize;
+                    }
+                }
             }
-            this._ensureTrueSizedViewSubscriptions(renderable);
-        } else if (renderable instanceof Surface) {
+        } else if (this._renderableIsSurface(renderable)) {
             let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable) || {};
             if (trueSizedSurfaceInfo.calculateOnNext) {
                 this._tryCalculateTrueSizedSurface(renderable);
@@ -314,10 +335,7 @@ export class View extends FamousView {
                 trueSizedSurfaceInfo.trueSizedDimensions[dim] = true;
             }
         } else {
-            this._warn(`Cannot determine size of ${renderable.constructor.name}, falling back to default size`);
-            if(size[dim] < 0){
-                size[dim] = ~size[dim];
-            }
+            size[dim] = this._specifyUndeterminedSingleHeight(renderable, size, dim);
         }
     }
 
@@ -332,7 +350,7 @@ export class View extends FamousView {
     _resolveSingleSize(renderableSize, contextSize) {
         switch (typeof renderableSize) {
             case 'function':
-                return this._resolveSingleSize(renderableSize.call(this,contextSize), contextSize);
+                return this._resolveSingleSize(renderableSize.call(this, contextSize), contextSize);
             case 'number':
                 /* If 0 < renderableSize < 1, we interpret renderableSize as a fraction of the contextSize */
                 return renderableSize < 1 && renderableSize > 0 ? renderableSize * contextSize : renderableSize;
@@ -340,6 +358,27 @@ export class View extends FamousView {
                 /* renderableSize can be true/false, undefined, or 'auto' for example. */
                 return renderableSize;
         }
+    }
+
+    _specifyUndeterminedSingleHeight(renderable, size, dim) {
+        let resultingSize = size[dim] < 0 ? ~size[dim] : 5;
+        this._warn(`Cannot determine size of ${renderable.constructor.name}, falling back to default size or ${resultingSize}px. Called from ${this._name()}`);
+        return resultingSize;
+    }
+
+    /**
+     * Returns true if the renderable is complex and its size can be determined. Returns false if it is a surface
+     * or something else that doesn't have a getSize function specified
+     * @param renderable
+     * @private
+     */
+    _renderableIsComposite(renderable) {
+        return renderable.getSize && !(this._renderableIsSurface(renderable));
+    }
+
+    _renderableIsSurface(renderable) {
+        /* Todo: Still have to check if this works for ImageSurfaces, but it should */
+        return renderable instanceof Surface || renderable instanceof ImageSurface;
     }
 
     /**
