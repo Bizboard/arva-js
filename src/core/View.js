@@ -459,7 +459,7 @@ export class View extends FamousView {
         for (let name in traditionalRenderables) {
             let renderable = traditionalRenderables[name];
             let renderableSize = this._resolveDecoratedSize(name, renderable, context) || [undefined, undefined];
-            let {translate = [0, 0, 0], origin = [0, 0, 0], align = [0, 0, 0]} = renderable.decorations;
+            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0]} = renderable.decorations;
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, align, translate);
             context.set(name, {
                 size: renderableSize,
@@ -489,7 +489,10 @@ export class View extends FamousView {
                 newTranslation[i] += adjustedContextSize[i] * align[i];
             }
             if (size[i] === true && origin[i] !== 0) {
-                newTranslation[i] -= this._resolvedSizesCache.get(renderable)[i] * origin[i];
+                /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
+                 *  to make up for this.
+                 */
+                newTranslation[i] -= (this._resolvedSizesCache.get(renderable)[i] * origin[i] - 1);
             }
         }
         return newTranslation;
