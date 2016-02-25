@@ -107,13 +107,6 @@ export class View extends FamousView {
         return false;
     }
 
-    adjustContextSingleSize(size, dim) {
-        if (!this._adjustedContextSize) {
-            this._adjustedContextSize = [undefined, undefined];
-        }
-        this._adjustedContextSize[dim] = size;
-        this.layout.reflowLayout();
-    }
 
     /** Requests for a parent layoutcontroller trying to resolve the size of this view
      * @private
@@ -222,49 +215,27 @@ export class View extends FamousView {
      * @returns {Array|Object} Array of [x, y] sizes, or null if resolving is not possible.
      * @private
      */
-    _resolveDecoratedSize(name, renderable, context, resolveTrueSize = false) {
+    _resolveDecoratedSize(name, renderable, context) {
         if (!renderable.decorations || !('size' in renderable.decorations)) {
             return null;
         }
 
         let size = [];
         let cacheResolvedSize = [];
-        let dimensionIsTrueSized = [false, false];
         for (let dim = 0; dim < 2; dim++) {
             size[dim] = this._resolveSingleSize(renderable.decorations.size[dim], context.size[dim]);
             if (size[dim] < 0 || size[dim] === true) {
-                dimensionIsTrueSized[dim] = true;
-                //if (!(this._renderableIsComposite(renderable)) || resolveTrueSize) {
-                this._processSingleTrueSizedRenderable(renderable, name, size, dim);
-                //cacheResolvedSize[dim] = size[dim];
-                //}
-            } //else {
-            cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
-            if (!resolveTrueSize) {
-                size[dim] = dimensionIsTrueSized[dim] || size[dim];
+                cacheResolvedSize[dim] = this._resolveSingleTrueSizedRenderable(renderable, name, size, dim);
+                if (this._renderableIsSurface(renderable)) {
+                    size[dim] = true;
+                } else {
+                    size[dim] = cacheResolvedSize[dim];
+                }
+            } else {
+                cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
             }
-            //}
         }
 
-
-        /*if (!resolveTrueSize && (dimensionIsTrueSized[0] || dimensionIsTrueSized[1])) {
-         //if (this._renderableIsComposite(renderable)) {
-         if (false) {
-         this._ensureTrueSizedViewSubscriptions(renderable);
-         /!* If we displaying a true sized view, then we should inform this view so that it knows its context size*!/
-         let customSize = renderable.getSize();
-         let resolveCustomSize = (i) => dimensionIsTrueSized[i] === true ? (customSize[i] || ~renderable.decorations.size[i]) : size[i];
-         /!* Also set the cache size so that both are positive integers *!/
-         cacheResolvedSize = [resolveCustomSize(0), resolveCustomSize(1)];
-         renderable.adjustContextSize(cacheResolvedSize);
-         } else if (this._renderableIsSurface(renderable)) {
-         /!* If the renderable is a surface or something else which size
-         *  we already determined, set the cache size to that and also adjust the size to have
-         *  the true instead of the computed value
-         *!/
-         size = [dimensionIsTrueSized[0] || size[0], dimensionIsTrueSized[1] || size[1]];
-         }
-         }*/
 
         this._resolvedSizesCache.set(renderable, cacheResolvedSize);
 
@@ -272,15 +243,15 @@ export class View extends FamousView {
     }
 
     /**
-     * Processes a dimension of a truesized renderable. size[dim] must be negative. size[dim] Will be modified by the function.
+     * Processes a dimension of a truesized renderable. size[dim] must be negative.
      * @param renderable the renderable
      * @param name the index so that this.renderables[name] = renderable
      * @param size the size array. The function will modify size[dim]
      * @param dim the dimensions e.g. 0,1 that should be processed
-     * @returns
+     * @returns {Number} size[dim] will be returned with a non-truesized value
      * @private
      */
-    _processSingleTrueSizedRenderable(renderable, name, size, dim) {
+    _resolveSingleTrueSizedRenderable(renderable, name, size, dim) {
         if (size[dim] === -1) {
             this._warn('-1 detected as set size. If you want a true sized element to take ' +
                 'up a proportion of your view, please define a function doing so by ' +
@@ -292,25 +263,20 @@ export class View extends FamousView {
         if (this._renderableIsComposite(renderable)) {
             let twoDimensionalSize = renderable.getSize();
             if (!twoDimensionalSize) {
-                size[dim] = this._specifyUndeterminedSingleHeight(renderable, size, dim);
+                return this._specifyUndeterminedSingleHeight(renderable, size, dim);
             } else {
                 let renderableIsView = renderable instanceof View;
                 if (twoDimensionalSize[dim] === undefined && !(renderableIsView && renderable._initialised)) {
-                    this._warn(`True sized renderable '${name}' is taking up the entire context size. Called from ${this._name()}`);
-                    size[dim] = twoDimensionalSize[dim];
+                    this._warn(`True sized renderable '${name}' is taking up the entire context size. Caused in ${this._name()}`);
+                    return twoDimensionalSize[dim];
                 } else {
-                    if (size[dim] === true) {
-                        size[dim] = ~twoDimensionalSize[dim];
-                    }
-                    let resultingSize = twoDimensionalSize[dim] || ~size[dim];
+                    let approximatedSize = size[dim] === true ? ~twoDimensionalSize[dim] : ~size[dim];
+                    let resultingSize = twoDimensionalSize[dim] || approximatedSize[dim];
                     if (renderableIsView) {
-                        size[dim] = !renderable.constainsUncalculatedSurfaces() && renderable._initialised ? resultingSize[dim] : ~size[dim];
-                        renderable.adjustContextSingleSize(size, dim);
+                        resultingSize = (!renderable.constainsUncalculatedSurfaces() && renderable._initialised) ? resultingSize : approximatedSize;
                         this._ensureTrueSizedViewSubscriptions(renderable);
                     }
-                    else {
-                        size[dim] = resultingSize;
-                    }
+                    return resultingSize;
                 }
             }
         } else if (this._renderableIsSurface(renderable)) {
@@ -320,22 +286,22 @@ export class View extends FamousView {
             }
             let {isUncalculated} = trueSizedSurfaceInfo;
             if (isUncalculated === false) {
-                size[dim] = trueSizedSurfaceInfo.size[dim];
+                return trueSizedSurfaceInfo.size[dim];
             } else {
                 if (size[dim] === true) {
                     let defaultSize = 5;
                     this._warn(`No initial size set for surface, will default to ${defaultSize}px`);
                     size[dim] = ~5;
                 }
-                size[dim] = ~size[dim];
                 if (isUncalculated !== true) {
                     /* Seems like the surface isn't properly configured, let's get that going */
                     trueSizedSurfaceInfo = this._configureTrueSizedSurface(renderable, name);
                 }
                 trueSizedSurfaceInfo.trueSizedDimensions[dim] = true;
+                return ~size[dim];
             }
         } else {
-            size[dim] = this._specifyUndeterminedSingleHeight(renderable, size, dim);
+            return this._specifyUndeterminedSingleHeight(renderable, size, dim);
         }
     }
 
@@ -438,13 +404,6 @@ export class View extends FamousView {
 
 
     _layoutDecoratedRenderables(context, options) {
-
-        if (this._adjustedContextSize) {
-            /* If adjusted context size is set to undefined, then it needs to be the full context size. We therefire
-             *  keep the current context size in that case.
-             */
-            context.size = [this._adjustedContextSize[0] || context.size[0], this._adjustedContextSize[1] || context.size[1]];
-        }
         this._layoutDockedRenderables(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, options);
         this._layoutFullScreenRenderables(this._groupedRenderables['fullscreen'], context, options);
         this._layoutTraditionalRenderables(this._groupedRenderables['traditional'], context, options);
@@ -466,7 +425,7 @@ export class View extends FamousView {
             let inUseSize = this._resolvedSizesCache.get(renderable);
             for (let i = 0; i < 2; i++) {
                 if (renderableSize[i] == true) {
-                    /* If a true size is used, do a tild on it in order for the dockhelper to recognize it */
+                    /* If a true size is used, do a tilde on it in order for the dockhelper to recognize it */
                     renderableSize[i] = ~inUseSize[i];
                 }
             }
@@ -499,7 +458,7 @@ export class View extends FamousView {
             let renderable = traditionalRenderables[name];
             let renderableSize = this._resolveDecoratedSize(name, renderable, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0]} = renderable.decorations;
-            let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, align, translate);
+            let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             context.set(name, {
                 size: renderableSize,
                 translate: adjustedTranslation,
@@ -511,8 +470,7 @@ export class View extends FamousView {
 
     /**
      * Specifying origin for true sized renderables doesn't work. Therefore we do a quick fix to adjust the
-     * translation according to the current faulty behaviour of famous. The problem also applies to alignment
-     * if the context.size has been changed.
+     * translation according to the current faulty behaviour of famous.
      * @param renderable The renderable of which we should correct
      * @param size  The size of this renderable
      * @param origin The origin
@@ -520,13 +478,9 @@ export class View extends FamousView {
      * @returns {*[]} The new translation taking this the current famous implementation into account
      * @private
      */
-    _adjustPlacementForTrueSize(renderable, size, origin, align, translate) {
+    _adjustPlacementForTrueSize(renderable, size, origin, translate) {
         let newTranslation = [translate[0], translate[1], translate[2]];
         for (let i = 0; i < 2; i++) {
-            let adjustedContextSize = this._adjustedContextSize;
-            if (adjustedContextSize && adjustedContextSize[i] && align[i] !== 0) {
-                newTranslation[i] += adjustedContextSize[i] * align[i];
-            }
             if (size[i] === true && origin[i] !== 0) {
                 /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
                  *  to make up for this.
@@ -689,30 +643,30 @@ export class View extends FamousView {
                 } else {
                     renderableSpec = renderable.decorations;
                     if (renderableSpec.translate) {
-                        this._adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0],
-                            renderableSpec.align || [0, 0], renderableSpec.translate);
+                        renderableSpec.translate = this._adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0]
+                            , renderableSpec.translate);
                     } else {
                         renderableSpec.translate = [0, 0, 0];
                     }
                 }
 
                 /* If there has been an align specified, then nothing can be calculated */
-                if (!renderableSpec || !renderableSpec.size || renderableSpec.align[0] || renderableSpec.align[1]) {
+                if (!renderableSpec || !renderableSpec.size || (renderableSpec.align[0] && renderableSpec.align[1])) {
                     continue;
                 }
 
-                let {translate} = renderableSpec;
+                let {translate, align} = renderableSpec;
 
                 /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
                 for (let i = 0; i < 2; i++) {
                     /* Undefined is the same as context size */
-                    if (size[i] == undefined) {
+                    if (size[i] == undefined || (align && align[i])) {
                         maxPosition[i] = undefined;
                     }
                     /* If the upper boundary is infinity, we can't know the lower boundary */
                     if (maxPosition[i] !== undefined) {
-                        minPosition[i] = Math.min(minPosition[i], adjustedTranslate[0] + size[i]);
-                        maxPosition[i] = Math.max(maxPosition[i], adjustedTranslate[1] + size[i]);
+                        minPosition[i] = Math.min(minPosition[i], translate[0] + size[i]);
+                        maxPosition[i] = Math.max(maxPosition[i], translate[1] + size[i]);
                     }
 
                 }
@@ -743,7 +697,8 @@ export class View extends FamousView {
             if (getDockType(otherDockMethod) !== dockType) {
                 return [NaN, NaN];
             } else {
-                let resolvedSize = this._resolveDecoratedSize(name, dockedRenderable, {size: [NaN, NaN]}, true);
+                this._resolveDecoratedSize(name, dockedRenderable, {size: [NaN, NaN]});
+                let resolvedSize = this._resolvedSizesCache.get(dockedRenderable);
                 if (!resolvedSize) {
                     return [NaN, NaN];
                 }
