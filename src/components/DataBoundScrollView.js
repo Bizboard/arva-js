@@ -105,7 +105,7 @@ export class DataBoundScrollView extends FlexScrollView {
     reloadFilter(newFilter) {
         this.options.dataFilter = newFilter;
 
-        for (let entry of this.options.dataStore) {
+        for (let entry of this.options.dataStore || []) {
             let surface = _.find(this._dataSource, (surface) => surface.dataId === entry.id);
             let alreadyExists = surface !== undefined;
             let result = newFilter(entry);
@@ -124,7 +124,7 @@ export class DataBoundScrollView extends FlexScrollView {
      * Clears the dataSource by removing all entries
      */
     clearDataSource() {
-        for (let entry of this.options.dataStore) {
+        for (let entry of this.options.dataStore || []) {
             this._removeItem(entry);
         }
     }
@@ -262,7 +262,7 @@ export class DataBoundScrollView extends FlexScrollView {
         newSurface.data = child;
         this._subscribeToClicks(newSurface, child);
 
-        
+
         /* Dirty fix due to bug in famous-flex 0.3.5. https://github.com/Bizboard/arva-js/issues/8 */
         if(insertIndex === 0 && this._dataSource.length > 0){
             this.insert(1, newSurface);
