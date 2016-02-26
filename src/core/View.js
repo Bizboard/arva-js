@@ -125,12 +125,10 @@ export class View extends FamousView {
         }
         for (let name in this.renderableConstructors) {
             let decorations = this.renderableConstructors[name].decorations;
-            let constructionOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : [];
-            if (!(constructionOptions instanceof Array)) {
-                constructionOptions = [constructionOptions];
-            }
+            let explicitConstructionOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
+            let implicitConstructionOptions = this.options[name] || {};
 
-            let renderable = this.renderableConstructors[name](...constructionOptions);
+            let renderable = this.renderableConstructors[name](combineOptions(implicitConstructionOptions, explicitConstructionOptions));
 
             renderable.decorations = renderable.decorations || {};
             renderable.decorations = _.extend(decorations, renderable.decorations);
