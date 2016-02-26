@@ -343,7 +343,6 @@ export class View extends FamousView {
     }
 
     _renderableIsSurface(renderable) {
-        /* Todo: Still have to check if this works for ImageSurfaces, but it should */
         return renderable instanceof Surface || renderable instanceof ImageSurface;
     }
 
@@ -856,15 +855,12 @@ export class View extends FamousView {
     _tryCalculateTrueSizedSurface(renderable) {
         let renderableHtmlElement = renderable._element;
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
-        if (renderableHtmlElement && renderableHtmlElement.innerHTML === renderable.getContent()) {
-            let renderableTarget = renderable._element;
+
+        if (renderableHtmlElement && renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight && renderableHtmlElement.innerHTML === renderable.getContent()) {
             let newSize;
 
-            if (renderableTarget) {
-                newSize = [renderableTarget.offsetWidth, renderableTarget.offsetHeight];
-            } else {
-                newSize = renderable.size
-            }
+
+            newSize = [renderableHtmlElement.offsetWidth, renderableHtmlElement.offsetHeight];
 
             let oldSize = trueSizedInfo.size;
             let sizeChange = false;
