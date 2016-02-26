@@ -272,9 +272,9 @@ export class View extends FamousView {
                 } else {
                     let approximatedSize = size[dim] === true ? ~twoDimensionalSize[dim] : ~size[dim];
                     let resultingSize = twoDimensionalSize[dim] || approximatedSize[dim];
+                    this._ensureTrueSizedViewSubscriptions(renderable);
                     if (renderableIsView) {
                         resultingSize = (!renderable.constainsUncalculatedSurfaces() && renderable._initialised) ? resultingSize : approximatedSize;
-                        this._ensureTrueSizedViewSubscriptions(renderable);
                     }
                     return resultingSize;
                 }
@@ -282,6 +282,7 @@ export class View extends FamousView {
         } else if (this._renderableIsSurface(renderable)) {
             let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable) || {};
             if (trueSizedSurfaceInfo.calculateOnNext) {
+                trueSizedSurfaceInfo.calculateOnNext = false;
                 this._tryCalculateTrueSizedSurface(renderable);
             }
             let {isUncalculated} = trueSizedSurfaceInfo;
@@ -343,6 +344,7 @@ export class View extends FamousView {
     }
 
     _renderableIsSurface(renderable) {
+        /* Todo: Still have to check if this works for ImageSurfaces, but it should */
         return renderable instanceof Surface || renderable instanceof ImageSurface;
     }
 
@@ -876,9 +878,9 @@ export class View extends FamousView {
             }
 
             if (sizeChange) {
-                this.reflowRecursively();
                 trueSizedInfo.size = newSize;
                 trueSizedInfo.isUncalculated = false;
+                this.reflowRecursively();
             }
             /* Sanity check */
         } else if(renderableHtmlElement && renderableHtmlElement.childElementCount) {
