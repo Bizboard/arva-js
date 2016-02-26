@@ -365,7 +365,6 @@ export class View extends FamousView {
         });
         renderable.on('deploy', () => {
             if (!this._trueSizedSurfaceInfo.get(renderable).isUncalculated) {
-                console.log('deploy');
                 this._tryCalculateTrueSizedSurface(renderable);
             }
         });
