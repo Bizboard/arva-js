@@ -116,19 +116,14 @@ export class View extends FamousView {
         /* If no renderables are constructed, it makes no sense to call this function (this is done automatically by the
          base class in construction time
          */
-        if(!this.renderables){
+        if (!this.renderables) {
             return;
         }
         this._initOptions(combineOptions(this._customOptions, options));
-        for(let optionName in this.options){
+        for (let optionName in this.options) {
             let renderable = this.renderables[optionName];
-            if(renderable && renderable.setOptions){
-                let renderableOptions = this._getRenderableOptions(optionName);
-                if(typeof renderableOptions !== 'object' || renderableOptions.constructor.name !== 'Object'){
-                    this._warn(`Invalid option '${renderableOptions}' given to item ${optionName}`);
-                }{
-                    renderable.setOptions(renderableOptions);
-                }
+            if (renderable && renderable.setOptions) {
+                renderable.setOptions(this._getRenderableOptions(optionName));
             }
         }
     }
@@ -141,11 +136,15 @@ export class View extends FamousView {
         this._eventOutput.emit('layoutControllerReflow');
     }
 
-    _getRenderableOptions(renderableName){
+    _getRenderableOptions(renderableName) {
         let {decorations} = this.renderableConstructors[renderableName];
         let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
         let namedOptions = this.options[renderableName] || {};
-        return combineOptions(decoratorOptions, namedOptions)
+        let renderableOptions = combineOptions(decoratorOptions, namedOptions);
+        if (typeof renderableOptions !== 'object' || renderableOptions.constructor.name !== 'Object') {
+            this._warn(`Invalid option '${renderableOptions}' given to item ${renderableName}`);
+        }
+        return renderableOptions;
     }
 
     _constructDecoratedRenderables() {
@@ -159,7 +158,7 @@ export class View extends FamousView {
             let decorations = this.renderableConstructors[name].decorations;
 
 
-            let renderable = this.renderableConstructors[name](this._getRenderableOptions(name));
+            let renderable = this.renderableConstructors[name].call(this,this._getRenderableOptions(name));
 
             renderable.decorations = _.extend(decorations, renderable.decorations || {});
 
@@ -298,8 +297,8 @@ export class View extends FamousView {
                     this._warn(`True sized renderable '${name}' is taking up the entire context size. Caused in ${this._name()}`);
                     return twoDimensionalSize[dim];
                 } else {
-                    let approximatedSize = size[dim] === true ? ~twoDimensionalSize[dim] : ~size[dim];
-                    let resultingSize = twoDimensionalSize[dim] || approximatedSize[dim];
+                    let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
+                    let resultingSize = twoDimensionalSize[dim] !== undefined ? twoDimensionalSize[dim] : approximatedSize[dim];
                     this._ensureTrueSizedViewSubscriptions(renderable);
                     if (renderableIsView) {
                         resultingSize = (!renderable.constainsUncalculatedSurfaces() && renderable._initialised) ? resultingSize : approximatedSize;
@@ -699,8 +698,8 @@ export class View extends FamousView {
 
                 }
             }
-
-            totalSize = [maxPosition[0] - minPosition[0] || undefined, maxPosition[1] - minPosition[1] || undefined];
+            let width = maxPosition[0] - minPosition[0], height = maxPosition[1] - minPosition[1];
+            totalSize = [(width || width == 0) ? width : undefined, (height || height == 0) ? height : undefined];
         }
         return totalSize;
 
@@ -835,7 +834,7 @@ export class View extends FamousView {
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
         for (let name of ['decorations', 'renderableConstructors']) {
             /* If the default options where named, then skip */
-            if(name !== 'options'){
+            if (name !== 'options') {
 
                 this[name] = prototype[name] || {};
             }
@@ -880,7 +879,6 @@ export class View extends FamousView {
     }
 
 
-
     _initOptions(options) {
         let {defaultOptions} = this.decorations;
         this._customOptions = this.options = options;
@@ -916,7 +914,7 @@ export class View extends FamousView {
                 this.reflowRecursively();
             }
             /* Sanity check */
-        } else if(renderableHtmlElement && renderableHtmlElement.childElementCount) {
+        } else if (renderableHtmlElement && renderableHtmlElement.childElementCount) {
             this._warn(`Cannot calculate truesized surface in class ${this._name()} as the content one or more html elements. Behaviour is undeterministic`);
         } else {
             trueSizedInfo.calculateOnNext = true;
