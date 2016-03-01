@@ -262,15 +262,20 @@ export class DataBoundScrollView extends FlexScrollView {
         newSurface.data = child;
         this._subscribeToClicks(newSurface, child);
 
+        this.insert(insertIndex, newSurface);
 
+    }
+
+    insert(insertIndex, newSurface){
         /* Dirty fix due to bug in famous-flex 0.3.5. https://github.com/Bizboard/arva-js/issues/8 */
         if(insertIndex === 0 && this._dataSource.length > 0){
-            this.insert(1, newSurface);
+            super.insert(1, newSurface);
             this.swap(0, 1);
         } else {
-            this.insert(insertIndex, newSurface);
+            super.insert(insertIndex, newSurface);
         }
     }
+
 
 
     _replaceItem(child) {
@@ -381,10 +386,13 @@ export class DataBoundScrollView extends FlexScrollView {
         this.options.dataStore.on('child_moved', this._onChildMoved.bind(this));
         this.options.dataStore.on('child_removed', this._onChildRemoved.bind(this));
 
-        this._eventInput.on('recursiveReflow', () => {
-            this.reflowLayout();
-        });
+        this._eventInput.on('recursiveReflow', this._reflowOnce);
 
+    }
+
+    _reflowOnce() {
+        this.reflowLayout();
+        this._eventInput.removeListener('recursiveReflow', this._reflowOnce);
     }
 
 
