@@ -242,7 +242,10 @@ export const options = {
     },
     default: function (view, optionName, descriptor) {
         let prototype = prepDecoratedPrototype(view);
-        prototype.decorations.defaultOptions = descriptor.get ? descriptor.get() : descriptor.initializer();
+        if(optionName === 'options'){
+            throw new Error("Default options are not allowed to have the name 'options'");
+        }
+        prototype.decorations.defaultOptions = descriptor.get ? descriptor.get : descriptor.initializer;
     }
 };
 
