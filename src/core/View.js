@@ -30,6 +30,7 @@ export class View extends FamousView {
 
         super(_.merge(options, DEFAULT_OPTIONS));
 
+
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
@@ -41,7 +42,9 @@ export class View extends FamousView {
             this.layouts = [];
         }
         this._copyPrototypeProperties();
+
         this._initOptions(options);
+
         this._constructDecoratedRenderables();
         this._initTrueSizedBookkeeping();
 
@@ -108,12 +111,41 @@ export class View extends FamousView {
     }
 
 
+    setOptions(options) {
+        super.setOptions(options);
+        /* If no renderables are constructed, it makes no sense to call this function (this is done automatically by the
+         base class in construction time
+         */
+        if(!this.renderables){
+            return;
+        }
+        this._initOptions(combineOptions(this._customOptions, options));
+        for(let optionName in this.options){
+            let renderable = this.renderables[optionName];
+            if(renderable && renderable.setOptions){
+                let renderableOptions = this._getRenderableOptions(optionName);
+                if(typeof renderableOptions !== 'object' || renderableOptions.constructor.name !== 'Object'){
+                    this._warn(`Invalid option '${renderableOptions}' given to item ${optionName}`);
+                }{
+                    renderable.setOptions(renderableOptions);
+                }
+            }
+        }
+    }
+
     /** Requests for a parent layoutcontroller trying to resolve the size of this view
      * @private
      */
     _requestLayoutControllerReflow() {
         this._nodes = {_trueSizeRequested: true};
         this._eventOutput.emit('layoutControllerReflow');
+    }
+
+    _getRenderableOptions(renderableName){
+        let {decorations} = this.renderableConstructors[renderableName];
+        let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
+        let namedOptions = this.options[renderableName] || {};
+        return combineOptions(decoratorOptions, namedOptions)
     }
 
     _constructDecoratedRenderables() {
@@ -125,13 +157,11 @@ export class View extends FamousView {
         }
         for (let name in this.renderableConstructors) {
             let decorations = this.renderableConstructors[name].decorations;
-            let explicitConstructionOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
-            let implicitConstructionOptions = this.options[name] || {};
 
-            let renderable = this.renderableConstructors[name](combineOptions(implicitConstructionOptions, explicitConstructionOptions));
 
-            renderable.decorations = renderable.decorations || {};
-            renderable.decorations = _.extend(decorations, renderable.decorations);
+            let renderable = this.renderableConstructors[name](this._getRenderableOptions(name));
+
+            renderable.decorations = _.extend(decorations, renderable.decorations || {});
 
 
             /* Since after constructor() of this View class is called, all decorated renderables will
@@ -804,7 +834,11 @@ export class View extends FamousView {
 
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
         for (let name of ['decorations', 'renderableConstructors']) {
-            this[name] = prototype[name] || {};
+            /* If the default options where named, then skip */
+            if(name !== 'options'){
+
+                this[name] = prototype[name] || {};
+            }
         }
     }
 
@@ -843,12 +877,14 @@ export class View extends FamousView {
         this._nodes = {_trueSizedRequested: false};
         /* This needs to be set in order for the LayoutNodeManager to be happy */
         this.options.size = this.options.size || [true, true];
-
     }
+
+
 
     _initOptions(options) {
         let {defaultOptions} = this.decorations;
-        this.options = defaultOptions ? combineOptions(defaultOptions, options) : options;
+        this._customOptions = this.options = options;
+        this.options = defaultOptions ? combineOptions(defaultOptions.call(this), options) : options;
     }
 
     _tryCalculateTrueSizedSurface(renderable) {
