@@ -13,13 +13,14 @@ import _                            from 'lodash';
 import FamousView                   from 'famous/core/View.js';
 import LayoutController             from 'famous-flex/src/LayoutController.js';
 import FlexScrollView               from 'famous-flex/src/FlexScrollView.js';
-import Surface                      from 'famous/core/Surface.js';
+import FamousSurface                from 'famous/core/Surface.js';
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 
 import {combineOptions}             from 'arva-utils/CombineOptions.js';
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
 import {ObjectHelper}               from 'arva-utils/ObjectHelper.js';
 import LayoutDockHelper             from 'famous-flex/src/helpers/LayoutDockHelper.js';
+import {Surface}                    from './Surface.js';
 
 const DEFAULT_OPTIONS = {};
 
@@ -136,12 +137,16 @@ export class View extends FamousView {
         this._eventOutput.emit('layoutControllerReflow');
     }
 
+    _isPlainObject(object){
+        return typeof object == 'object' && object.constructor.name == 'Object';
+    }
+
     _getRenderableOptions(renderableName) {
         let {decorations} = this.renderableConstructors[renderableName];
         let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
         let namedOptions = this.options[renderableName] || {};
         let renderableOptions = combineOptions(decoratorOptions, namedOptions);
-        if (typeof renderableOptions !== 'object' || renderableOptions.constructor.name !== 'Object') {
+        if (!this._isPlainObject(renderableOptions) || !this._isPlainObject(namedOptions) || !this._isPlainObject(decoratorOptions)) {
             this._warn(`Invalid option '${renderableOptions}' given to item ${renderableName}`);
         }
         return renderableOptions;
@@ -154,13 +159,16 @@ export class View extends FamousView {
         if (!this.renderables) {
             this.renderables = {};
         }
-        for (let name in this.renderableConstructors) {
-            let decorations = this.renderableConstructors[name].decorations;
+        for (let renderableName in this.renderableConstructors) {
+            let decorations = this.renderableConstructors[renderableName].decorations;
 
 
-            let renderable = this.renderableConstructors[name].call(this,this._getRenderableOptions(name));
+            let renderable = this.renderableConstructors[renderableName].call(this,this._getRenderableOptions(renderableName));
 
-            renderable.decorations = _.extend(decorations, renderable.decorations || {});
+            /* Clone the decorator properties, because otherwise every vie of the same type willl share them between
+             * the same corresponding renderable
+             */
+            renderable.decorations = _.cloneDeep(_.extend(decorations, renderable.decorations || {}));
 
 
             /* Since after constructor() of this View class is called, all decorated renderables will
@@ -190,11 +198,11 @@ export class View extends FamousView {
             this._setEventHandlers(renderable);
             this._setPipes(renderable);
 
-            this.decoratedRenderables[name] = renderable;
+            this.decoratedRenderables[renderableName] = renderable;
             /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
              * this.renderables is used in the LayoutController in this.layout to render this view. */
-            this.renderables[name] = renderable.animationController || renderable;
-            this[name] = renderable;
+            this.renderables[renderableName] = renderable.animationController || renderable;
+            this[renderableName] = renderable;
         }
         this._resolvedSizesCache = new Map();
         this._groupedRenderables = this._groupRenderableTypes();
@@ -372,7 +380,7 @@ export class View extends FamousView {
 
     _renderableIsSurface(renderable) {
         /* Todo: Still have to check if this works for ImageSurfaces, but it should */
-        return renderable instanceof Surface || renderable instanceof ImageSurface;
+        return renderable instanceof Surface || renderable instanceof FamousSurface || renderable instanceof ImageSurface;
     }
 
     /**
@@ -481,12 +489,12 @@ export class View extends FamousView {
     }
 
     _layoutTraditionalRenderables(traditionalRenderables, context, options) {
-        for (let name in traditionalRenderables) {
-            let renderable = traditionalRenderables[name];
-            let renderableSize = this._resolveDecoratedSize(name, renderable, context) || [undefined, undefined];
+        for (let renderableName in traditionalRenderables) {
+            let renderable = traditionalRenderables[renderableName];
+            let renderableSize = this._resolveDecoratedSize(renderableName, renderable, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0]} = renderable.decorations;
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
-            context.set(name, {
+            context.set(renderableName, {
                 size: renderableSize,
                 translate: adjustedTranslation,
                 origin,
@@ -880,16 +888,22 @@ export class View extends FamousView {
 
 
     _initOptions(options) {
-        let {defaultOptions} = this.decorations;
+        let {defaultOptions: defaultOptionsFunction} = this.decorations;
         this._customOptions = this.options = options;
-        this.options = defaultOptions ? combineOptions(defaultOptions.call(this), options) : options;
+        let defaultOptions = defaultOptionsFunction ? defaultOptionsFunction.call(this) : {};
+        this.options = !_.isEmpty(defaultOptions) ? combineOptions(defaultOptions, options) : options;
+        if (!this._isPlainObject(options) || !this._isPlainObject(defaultOptions)) {
+            this._warn(`View ${this._name()} initialized with invalid non-object arguments`);
+        }
     }
 
     _tryCalculateTrueSizedSurface(renderable) {
         let renderableHtmlElement = renderable._element;
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
+        let {trueSizedDimensions} = trueSizedInfo;
 
-        if (renderableHtmlElement && renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight && renderableHtmlElement.innerHTML === renderable.getContent()) {
+        if (renderableHtmlElement && renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight && renderableHtmlElement.innerHTML === renderable.getContent() &&
+            (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
             let newSize;
 
 

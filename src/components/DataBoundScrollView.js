@@ -13,12 +13,13 @@ import _                from 'lodash';
 import FlexScrollView   from 'famous-flex/src/FlexScrollView.js';
 import {ObjectHelper}   from 'arva-utils/ObjectHelper.js';
 import {Throttler}      from 'arva-utils/Throttler.js';
+import {combineOptions} from 'arva-utils/CombineOptions.js';
 
 
 export class DataBoundScrollView extends FlexScrollView {
 
     constructor(OPTIONS = {}) {
-        super(_.extend({
+        super(combineOptions({
             autoPipeEvents: true,
             throttleDelay: 0, /* If set to 0, no delay is added in between adding items to the DataBoundScrollView. */
             dataSource: [],
@@ -386,13 +387,14 @@ export class DataBoundScrollView extends FlexScrollView {
         this.options.dataStore.on('child_moved', this._onChildMoved.bind(this));
         this.options.dataStore.on('child_removed', this._onChildRemoved.bind(this));
 
-        this._eventInput.on('recursiveReflow', this._reflowOnce);
+        this._eventInput.on('recursiveReflow', this._reflowWhenPossible);
 
     }
 
-    _reflowOnce() {
-        this.reflowLayout();
-        this._eventInput.removeListener('recursiveReflow', this._reflowOnce);
+    _reflowWhenPossible() {
+        if(!this.isScrolling() && !this._nodes._reevalTrueSize) {
+            this.reflowLayout();
+        }
     }
 
 

@@ -218,12 +218,13 @@ TrueSizedLayoutDockHelper.prototype._setupAccordingToDimension = function (size,
     let width;
     if (size instanceof Array) {
         let orthogonalDimension = dim ? 0 : 1;
+        let adjustedSize = [size[0], size[1]];
         if(size[orthogonalDimension] < 0){
             /* If a true size was specified as an orhtogonal dimension, we just set it to true, as we don't need to save the value anywhere here */
-            size[orthogonalDimension] = true;
+            adjustedSize[orthogonalDimension] = true;
         }
-        width = size[0];
-        height = size[1];
+        width = adjustedSize[0];
+        height = adjustedSize[1];
     } else {
         width = size;
     }
