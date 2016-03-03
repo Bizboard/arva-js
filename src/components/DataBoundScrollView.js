@@ -57,6 +57,7 @@ export class DataBoundScrollView extends FlexScrollView {
         this._addHeader();
         this._addPlaceholder();
 
+
         if (this.options.dataStore) {
             this._bindDataSource(this.options.dataStore);
         } else {
@@ -79,10 +80,10 @@ export class DataBoundScrollView extends FlexScrollView {
         }
     }
 
-    setGroupTemplate(templateFunction = {},reRender = false){
+    setGroupTemplate(templateFunction = {}, reRender = false) {
         this.options.groupTemplate = templateFunction;
 
-        if(reRender){
+        if (reRender) {
             this.clearDataSource();
             this.reloadFilter(this.options.dataFilter);
         }
@@ -190,7 +191,7 @@ export class DataBoundScrollView extends FlexScrollView {
             let groupIndex = this._findGroup(groupId);
             if (groupIndex !== -1) {
                 for (insertIndex = groupIndex + 1; insertIndex < this._dataSource.length; insertIndex++) {
-                    if(this._dataSource[insertIndex].groupId !== undefined ||
+                    if (this._dataSource[insertIndex].groupId !== undefined ||
                         (this.options.orderBy && this.options.orderBy(child, this._dataSource[insertIndex]))) {
                         break;
                     }
@@ -267,16 +268,15 @@ export class DataBoundScrollView extends FlexScrollView {
 
     }
 
-    insert(insertIndex, newSurface){
+    insert(insertIndex, newSurface) {
         /* Dirty fix due to bug in famous-flex 0.3.5. https://github.com/Bizboard/arva-js/issues/8 */
-        if(insertIndex === 0 && this._dataSource.length > 0){
+        if (insertIndex === 0 && this._dataSource.length > 0) {
             super.insert(1, newSurface);
             this.swap(0, 1);
         } else {
             super.insert(insertIndex, newSurface);
         }
     }
-
 
 
     _replaceItem(child) {
@@ -289,6 +289,21 @@ export class DataBoundScrollView extends FlexScrollView {
         this.replace(index, newSurface);
     }
 
+
+    /**
+     * Patch because Hein forgot to auto pipe events when replacing
+     * @param indexOrId
+     * @param renderable
+     * @param noAnimation
+     */
+    replace(indexOrId, renderable, noAnimation) {
+        super.replace(indexOrId, renderable, noAnimation);
+        // Auto pipe events
+        if (this.options.autoPipeEvents && renderable && renderable.pipe) {
+            renderable.pipe(this);
+            renderable.pipe(this._eventOutput);
+        }
+    }
 
     /**
      * Returns true if the child at index would be the only child in it's group
@@ -392,7 +407,7 @@ export class DataBoundScrollView extends FlexScrollView {
     }
 
     _reflowWhenPossible() {
-        if(!this.isScrolling() && !this._nodes._reevalTrueSize) {
+        if (!this.isScrolling() && !this._nodes._reevalTrueSize) {
             this.reflowLayout();
         }
     }
