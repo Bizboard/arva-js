@@ -377,7 +377,6 @@ export class DataBoundScrollView extends FlexScrollView {
         if (this.options.placeholderTemplate && !this.placeholder) {
             let insertIndex = this.header ? 1 : 0;
             this.placeholder = this.options.placeholderTemplate();
-            this.placeholder.dataId = this.placeholder.id = '_placeholder';
             this.placeholder.isPlaceholder = true;
             this.insert(insertIndex, this.placeholder);
         }
@@ -385,7 +384,10 @@ export class DataBoundScrollView extends FlexScrollView {
 
     _removePlaceholder() {
         if (this.placeholder) {
-            this._removeItem(this.placeholder);
+            if(this.placeholder)
+                if(this.header) this.remove(1)
+                else
+                    this.remove(0)
             this.placeholder = null;
         }
     }
