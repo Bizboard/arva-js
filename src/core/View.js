@@ -306,7 +306,7 @@ export class View extends FamousView {
                     return twoDimensionalSize[dim];
                 } else {
                     let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
-                    let resultingSize = twoDimensionalSize[dim] !== undefined ? twoDimensionalSize[dim] : approximatedSize[dim];
+                    let resultingSize = twoDimensionalSize[dim] !== undefined ? twoDimensionalSize[dim] : approximatedSize;
                     this._ensureTrueSizedViewSubscriptions(renderable);
                     if (renderableIsView) {
                         resultingSize = (!renderable.constainsUncalculatedSurfaces() && renderable._initialised) ? resultingSize : approximatedSize;
