@@ -655,8 +655,8 @@ export class View extends FamousView {
         if (dockedRenderables) {
             totalSize = this._calculateDockedRenderablesBoundingBox();
 
-            if ((!totalSize[0] && !totalSize[1])) {
-                /* [undefined, undefined] */
+            if (totalSize[0] === undefined && totalSize[1] === undefined) {
+                /* We can return here because it isn't necessary to check further */
                 return [undefined, undefined];
             }
         }
@@ -745,7 +745,7 @@ export class View extends FamousView {
                     newResult[dockingDirection] = resolvedSize[dockingDirection] + decorations.dock.space + result[dockingDirection];
                 }
                 /* If a size in the orthogonalDirection has been set... */
-                if (resolvedSize[orthogonalDirection]) {
+                if (resolvedSize[orthogonalDirection] !== undefined) {
                     /* If there is no result in the orthogonal direction specified yet... */
                     if (result[orthogonalDirection] === undefined) {
                         newResult[orthogonalDirection] = resolvedSize[orthogonalDirection];
@@ -768,7 +768,7 @@ export class View extends FamousView {
             if (Number.isNaN(dockSize[i])) {
                 dockSize[i] = undefined;
             }
-            if (dockSize[i] && this.decorations.viewMargins) {
+            if (dockSize[i] !== undefined && this.decorations.viewMargins) {
                 let {viewMargins} = this.decorations;
                 /* if i==0 we want margin left and right, if i==1 we want margin top and bottom */
                 dockSize[i] += viewMargins[(i + 1) % 4] + viewMargins[(i + 3) % 4];
@@ -902,7 +902,7 @@ export class View extends FamousView {
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
         let {trueSizedDimensions} = trueSizedInfo;
 
-        if (renderableHtmlElement && renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight && renderableHtmlElement.innerHTML === renderable.getContent() &&
+        if (renderableHtmlElement && (renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight)  || (!renderable.getContent() && !(renderable instanceof ImageSurface)) && renderableHtmlElement.innerHTML === renderable.getContent() &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
             let newSize;
 
