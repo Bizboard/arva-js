@@ -16,6 +16,7 @@ import {Throttler}      from 'arva-utils/Throttler.js';
 import {combineOptions} from 'arva-utils/CombineOptions.js';
 
 
+
 export class DataBoundScrollView extends FlexScrollView {
 
     constructor(OPTIONS = {}) {
@@ -42,16 +43,20 @@ export class DataBoundScrollView extends FlexScrollView {
         this.throttler = new Throttler(this.options.throttleDelay, true, this);
 
         /* If no orderBy method is set, or it is a string field name, we set our own ordering method. */
-        if (this.options.orderBy && typeof this.options.orderBy === 'string') {
-            let fieldName = this.options.orderBy || 'id';
-            this.options.orderBy = function (currentChild, compareChild) {
-                if (this.isDescending) {
-                    return currentChild[fieldName] > compareChild.data[fieldName];
-                } else {
-                    return currentChild[fieldName] < compareChild.data[fieldName];
-                }
-            }.bind(this);
+        if(this.options.orderBy){
+            if (typeof this.options.orderBy === 'string') {
+                let fieldName = this.options.orderBy || 'id';
+                this.options.orderBy = function (currentChild, compareChild) {
+                    if (this.isDescending) {
+                        return currentChild[fieldName] > compareChild.data[fieldName];
+                    } else {
+                        return currentChild[fieldName] < compareChild.data[fieldName];
+                    }
+                }.bind(this);
+            }
+            this.useCustomOrdering = true;
         }
+
 
         /* If present in options.headerTemplate or options.placeholderTemplate, we build the header and placeholder elements. */
         this._addHeader();
@@ -372,6 +377,7 @@ export class DataBoundScrollView extends FlexScrollView {
         if (this.options.placeholderTemplate && !this.placeholder) {
             let insertIndex = this.header ? 1 : 0;
             this.placeholder = this.options.placeholderTemplate();
+            this.placeholder.dataId = this.placeholder.id = '_placeholder';
             this.placeholder.isPlaceholder = true;
             this.insert(insertIndex, this.placeholder);
         }
@@ -470,7 +476,7 @@ export class DataBoundScrollView extends FlexScrollView {
                 } else {
                     this.throttler.add(() => {
                         this._replaceItem(child);
-                        if (previousSiblingID && !this.useCustomOrdering) {
+                        if (previousSiblingID && !this.isGrouped && !this.useCustomOrdering) {
                             this._moveItem(child.id, previousSiblingID);
                         }
                     });
