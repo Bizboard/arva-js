@@ -745,7 +745,7 @@ export class View extends FamousView {
                     newResult[dockingDirection] = resolvedSize[dockingDirection] + decorations.dock.space + result[dockingDirection];
                 }
                 /* If a size in the orthogonalDirection has been set... */
-                if (resolvedSize[orthogonalDirection] !== undefined) {
+                if (resolvedSize[orthogonalDirection] !== undefined && !Number.isNaN(resolvedSize[orthogonalDirection])) {
                     /* If there is no result in the orthogonal direction specified yet... */
                     if (result[orthogonalDirection] === undefined) {
                         newResult[orthogonalDirection] = resolvedSize[orthogonalDirection];
@@ -844,7 +844,7 @@ export class View extends FamousView {
             /* If the default options where named, then skip */
             if (name !== 'options') {
 
-                this[name] = prototype[name] || {};
+                this[name] = _.cloneDeep(prototype[name]) || {};
             }
         }
     }
