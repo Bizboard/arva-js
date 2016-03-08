@@ -73,17 +73,10 @@ export class View extends FamousView {
         this._eventOutput.emit('recursiveReflow');
     }
 
-    /**
-     * Reflows the layout when the current reflow of the layout is complete
-     */
-    reflowDelayedRecursively() {
-        this.layout.reflowLayout();
-        this._delayedRecursiveReflowEvent = true;
-    }
 
     /**
      * Gets the size used when displaying a renderable on the screen the last tick
-     * @param {Renderable/Name} The renderable or the name of the renderableof which you need the size
+     * @param {Renderable/Name} renderableOrName The renderable or the name of the renderable of which you need the size
      */
     getResolvedSize(renderableOrName) {
         let renderable = renderableOrName;
@@ -458,7 +451,7 @@ export class View extends FamousView {
             let renderable = dockedRenderables[name];
             let {dockMethod, space} = renderable.decorations.dock;
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
-            let renderableSize = this._resolveDecoratedSize(name, renderable, context, false);
+            let renderableSize = this._resolveDecoratedSize(name, renderable, context);
             let inUseSize = this._resolvedSizesCache.get(renderable);
             for (let i = 0; i < 2; i++) {
                 if (renderableSize[i] == true) {
