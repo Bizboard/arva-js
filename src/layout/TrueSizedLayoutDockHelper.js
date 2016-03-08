@@ -183,9 +183,9 @@ TrueSizedLayoutDockHelper.prototype.right = function (node, size, z, space = 0) 
  * @param {Number} [z] z-index to use for the node
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.fill = function (node, z) {
+TrueSizedLayoutDockHelper.prototype.fill = function (node, size, z) {
     this._context.set(node, {
-        size: [this._data.right - this._data.left, this._data.bottom - this._data.top],
+        size: [size[0] || this._data.right - this._data.left, size[1] || this._data.bottom - this._data.top],
         translate: [this._data.left, this._data.top, (z === undefined) ? this._data.z : z]
     });
     return this;
