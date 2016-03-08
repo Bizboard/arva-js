@@ -267,7 +267,8 @@ export class View extends FamousView {
                     size[dim] = cacheResolvedSize[dim];
                 }
             } else {
-                cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
+                //cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
+                cacheResolvedSize[dim] = size[dim];
             }
         }
 
@@ -301,7 +302,8 @@ export class View extends FamousView {
                 return this._specifyUndeterminedSingleHeight(renderable, size, dim);
             } else {
                 let renderableIsView = renderable instanceof View;
-                if (twoDimensionalSize[dim] === undefined && !(renderableIsView && renderable._initialised)) {
+                if (twoDimensionalSize[dim] === undefined &&
+                    ((renderableIsView && (renderable._initialised && !renderable.constainsUncalculatedSurfaces())) || !renderableIsView)) {
                     this._warn(`True sized renderable '${name}' is taking up the entire context size. Caused in ${this._name()}`);
                     return twoDimensionalSize[dim];
                 } else {
@@ -472,11 +474,10 @@ export class View extends FamousView {
         }
 
         /* Process Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
-        for (let name in filledRenderables) {
-            let renderable = filledRenderables[name];
+        for (let renderableName in filledRenderables) {
+            let renderable = filledRenderables[renderableName];
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
-
-            dock.fill(name, zIndex);
+            dock.fill(renderableName,this._resolveDecoratedSize(renderableName, renderable, context) , zIndex);
         }
     }
 
