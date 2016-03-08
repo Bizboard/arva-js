@@ -130,7 +130,7 @@ export class View extends FamousView {
         this._eventOutput.emit('layoutControllerReflow');
     }
 
-    _isPlainObject(object){
+    _isPlainObject(object) {
         return typeof object == 'object' && object.constructor.name == 'Object';
     }
 
@@ -156,7 +156,7 @@ export class View extends FamousView {
             let decorations = this.renderableConstructors[renderableName].decorations;
 
 
-            let renderable = this.renderableConstructors[renderableName].call(this,this._getRenderableOptions(renderableName));
+            let renderable = this.renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName));
 
             /* Clone the decorator properties, because otherwise every vie of the same type willl share them between
              * the same corresponding renderable
@@ -470,7 +470,7 @@ export class View extends FamousView {
         for (let renderableName in filledRenderables) {
             let renderable = filledRenderables[renderableName];
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
-            dock.fill(renderableName,this._resolveDecoratedSize(renderableName, renderable, context) , zIndex);
+            dock.fill(renderableName, this._resolveDecoratedSize(renderableName, renderable, context), zIndex);
         }
     }
 
@@ -639,9 +639,8 @@ export class View extends FamousView {
     _getLayoutSize() {
 
 
-        let {docked: dockedRenderables, filled: filledRenderables,
-            traditional: traditionalRenderables, ignored: ignoredRenderables,
-            fullscreen: fullScreenRenderables} = this._groupedRenderables;
+        let {docked: dockedRenderables,
+            traditional: traditionalRenderables, ignored: ignoredRenderables} = this._groupedRenderables;
         if (!traditionalRenderables && !ignoredRenderables && !dockedRenderables) {
             return [undefined, undefined];
         }
@@ -708,8 +707,7 @@ export class View extends FamousView {
     }
 
     _calculateDockedRenderablesBoundingBox() {
-        let {docked: dockedRenderables, filled: filledRenderables,
-            fullscreen: fullScreenRenderables} = this._groupedRenderables;
+        let {docked: dockedRenderables, filled: filledRenderables} = this._groupedRenderables;
 
         let {dockMethod} = dockedRenderables[Object.keys(dockedRenderables)[0]].decorations.dock;
         let dockTypes = [['right', 'left'], ['top', 'bottom']];
@@ -731,7 +729,7 @@ export class View extends FamousView {
                 if (!resolvedSize) {
                     return [NaN, NaN];
                 }
-                let newResult = Array(2);
+                let newResult = new Array(2);
                 /* If docking is done from opposite directions */
                 if (dockMethod !== otherDockMethod) {
                     newResult[dockingDirection] = NaN;
@@ -896,7 +894,7 @@ export class View extends FamousView {
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
         let {trueSizedDimensions} = trueSizedInfo;
 
-        if (renderableHtmlElement && (renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight)  || (!renderable.getContent() && !(renderable instanceof ImageSurface)) && renderableHtmlElement.innerHTML === renderable.getContent() &&
+        if (renderableHtmlElement && (renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!renderable.getContent() && !(renderable instanceof ImageSurface)) && renderableHtmlElement.innerHTML === renderable.getContent() &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
             let newSize;
 
@@ -906,7 +904,6 @@ export class View extends FamousView {
             let oldSize = trueSizedInfo.size;
             let sizeChange = false;
             if (oldSize) {
-                let {trueSizedDimensions} = trueSizedInfo;
                 for (let i = 0; i < 2; i++) {
                     if (trueSizedDimensions[i] && oldSize[i] !== newSize[i]) {
                         sizeChange = true;
