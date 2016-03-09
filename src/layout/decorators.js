@@ -16,22 +16,29 @@ import AnimationController      from 'famous-flex/src/AnimationController.js';
 import LayoutUtility            from 'famous-flex/src/LayoutUtility.js'
 
 function prepDecoratedRenderable(view, renderableName, descriptor) {
-    let constructor;
-    if (!view.renderableConstructors) { view.renderableConstructors = {}; }
+
+    if (!view.renderableConstructors) { view.renderableConstructors = new Map(); }
 
     let constructors = view.renderableConstructors;
-    if (!constructors[renderableName]) {
+
+    /* Because the inherited views share the same prototype, we'll have to split it up depending on which subclass we're talking about */
+    let specificRenderableConstructors = constructors.get(view.constructor);
+    if(!specificRenderableConstructors){
+        specificRenderableConstructors = constructors.set(view.constructor, {}).get(view.constructor);
+    }
+
+    if (!specificRenderableConstructors[renderableName]) {
         /* Getters have a get() method on the descriptor, class properties have an initializer method.
          * get myRenderable(){ return new Surface() } => descriptor.get();
          * myRenderable = new Surface(); => descriptor.initializer();
          */
         if (descriptor.get) {
-            constructors[renderableName] = descriptor.get;
+            specificRenderableConstructors[renderableName] = descriptor.get;
         } else if (descriptor.initializer) {
-            constructors[renderableName] = descriptor.initializer;
+            specificRenderableConstructors[renderableName] = descriptor.initializer;
         }
     }
-    constructor = constructors[renderableName];
+    let constructor = specificRenderableConstructors[renderableName];
     if (!constructor.decorations) { constructor.decorations = {descriptor: descriptor}; }
 
     return constructor;
