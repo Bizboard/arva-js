@@ -130,12 +130,11 @@ export class View extends FamousView {
         this._eventOutput.emit('layoutControllerReflow');
     }
 
-    _isPlainObject(object) {
+    _isPlainObject(object){
         return typeof object == 'object' && object.constructor.name == 'Object';
     }
 
-    _getRenderableOptions(renderableName) {
-        let {decorations} = this.renderableConstructors[renderableName];
+    _getRenderableOptions(renderableName, decorations = this.renderables[renderableName]) {
         let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
         let namedOptions = this.options[renderableName] || {};
         let renderableOptions = combineOptions(decoratorOptions, namedOptions);
@@ -152,50 +151,56 @@ export class View extends FamousView {
         if (!this.renderables) {
             this.renderables = {};
         }
-        for (let renderableName in this.renderableConstructors) {
-            let decorations = this.renderableConstructors[renderableName].decorations;
+        if(!this.renderableConstructors || _.isEmpty(this.renderableConstructors)){
+            this.renderableConstructors = new Map();
+        }
+
+        for(let currentClass = Object.getPrototypeOf(this), renderableConstructors; renderableConstructors = this.renderableConstructors.get(currentClass.constructor); currentClass = Object.getPrototypeOf(currentClass)){
+            for (let renderableName in renderableConstructors) {
+                let decorations = renderableConstructors[renderableName].decorations;
 
 
-            let renderable = this.renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName));
+                let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
 
-            /* Clone the decorator properties, because otherwise every vie of the same type willl share them between
-             * the same corresponding renderable
-             */
-            renderable.decorations = _.cloneDeep(_.extend(decorations, renderable.decorations || {}));
+                /* Clone the decorator properties, because otherwise every view of the same type willl share them between
+                 * the same corresponding renderable
+                 */
+                renderable.decorations = _.cloneDeep(_.extend(decorations, renderable.decorations || {}));
 
 
-            /* Since after constructor() of this View class is called, all decorated renderables will
-             * be attempted to be initialized by Babel / the ES7 class properties spec, we'll need to
-             * override the descriptor get/initializer to return this specific instance once.
-             *
-             * If we don't do this, the View will have its renderables overwritten by new renderable instances
-             * that don't have constructor.options applied to them correctly. If we always return this specific instance
-             * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
-             * to the renderables of this instance, which is unwanted.
-             */
-            if (decorations.descriptor.get) {
-                let originalGet = decorations.descriptor.get;
-                decorations.descriptor.get = () => {
-                    decorations.descriptor.get = originalGet;
-                    return renderable;
+                /* Since after constructor() of this View class is called, all decorated renderables will
+                 * be attempted to be initialized by Babel / the ES7 class properties spec, we'll need to
+                 * override the descriptor get/initializer to return this specific instance once.
+                 *
+                 * If we don't do this, the View will have its renderables overwritten by new renderable instances
+                 * that don't have constructor.options applied to them correctly. If we always return this specific instance
+                 * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
+                 * to the renderables of this instance, which is unwanted.
+                 */
+                if (decorations.descriptor.get) {
+                    let originalGet = decorations.descriptor.get;
+                    decorations.descriptor.get = () => {
+                        decorations.descriptor.get = originalGet;
+                        return renderable;
+                    }
                 }
-            }
-            if (decorations.descriptor.initializer) {
-                let originalInitializer = decorations.descriptor.initializer;
-                decorations.descriptor.initializer = () => {
-                    decorations.descriptor.initializer = originalInitializer;
-                    return renderable;
+                if (decorations.descriptor.initializer) {
+                    let originalInitializer = decorations.descriptor.initializer;
+                    decorations.descriptor.initializer = () => {
+                        decorations.descriptor.initializer = originalInitializer;
+                        return renderable;
+                    }
                 }
+
+                this._setEventHandlers(renderable);
+                this._setPipes(renderable);
+
+                this.decoratedRenderables[renderableName] = renderable;
+                /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
+                 * this.renderables is used in the LayoutController in this.layout to render this view. */
+                this.renderables[renderableName] = renderable.animationController || renderable;
+                this[renderableName] = renderable;
             }
-
-            this._setEventHandlers(renderable);
-            this._setPipes(renderable);
-
-            this.decoratedRenderables[renderableName] = renderable;
-            /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
-             * this.renderables is used in the LayoutController in this.layout to render this view. */
-            this.renderables[renderableName] = renderable.animationController || renderable;
-            this[renderableName] = renderable;
         }
         this._resolvedSizesCache = new Map();
         this._groupedRenderables = this._groupRenderableTypes();
