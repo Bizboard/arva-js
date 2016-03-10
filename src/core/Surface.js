@@ -1,8 +1,8 @@
 /**
  * Created by lundfall on 12/16/15.
  */
-import FamousSurface                             from 'famous/core/Surface.js';
-import ElementOutput                             from 'famous/core/ElementOutput';
+import FamousSurface                        from 'famous/core/Surface.js';
+import ElementOutput                        from 'famous/core/ElementOutput.js';
 
 
 /**

@@ -10,7 +10,7 @@
  */
 
 import EventEmitter                 from 'eventemitter3';
-import {ObjectHelper}               from 'arva-utils/ObjectHelper.js';
+import {ObjectHelper}               from '../utils/ObjectHelper.js';
 
 /**
  * Abstract Router class which can be implemented to be used in an MVP setup.

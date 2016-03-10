@@ -9,12 +9,12 @@
 
  */
 
-import _                    from 'lodash';
-import {inject}             from 'di';
-import {Router}             from './Router.js';
-import {ObjectHelper}       from 'arva-utils/ObjectHelper.js';
-import EventHandler         from 'famous/core/EventHandler.js';
-import AnimationController  from 'famous-flex/src/AnimationController.js';
+import _                        from 'lodash';
+import {inject}                 from 'di';
+import {Router}                 from './Router.js';
+import {ObjectHelper}           from '../utils/ObjectHelper.js';
+import EventHandler             from 'famous/core/EventHandler.js';
+import AnimationController      from 'famous-flex/src/AnimationController.js';
 
 
 /**

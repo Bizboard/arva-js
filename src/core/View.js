@@ -11,15 +11,15 @@
 
 import _                            from 'lodash';
 import FamousView                   from 'famous/core/View.js';
+import LayoutDockHelper             from 'famous-flex/src/helpers/LayoutDockHelper.js';
 import LayoutController             from 'famous-flex/src/LayoutController.js';
 import FlexScrollView               from 'famous-flex/src/FlexScrollView.js';
 import FamousSurface                from 'famous/core/Surface.js';
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 
-import {combineOptions}             from 'arva-utils/CombineOptions.js';
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
-import {ObjectHelper}               from 'arva-utils/ObjectHelper.js';
-import LayoutDockHelper             from 'famous-flex/src/helpers/LayoutDockHelper.js';
+import {combineOptions}             from '../utils/CombineOptions.js';
+import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {Surface}                    from './Surface.js';
 
 const DEFAULT_OPTIONS = {};

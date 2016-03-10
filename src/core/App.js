@@ -10,9 +10,9 @@
  */
 
 
-import {inject, annotate} from 'di';
-import {Router}           from './Router.js';
-import Context             from 'famous/core/Context.js';
+import {inject, annotate}       from 'di';
+import {Router}                 from './Router.js';
+import Context                  from 'famous/core/Context.js';
 
 import 'arva-utils/hotfixes/Polyfills.js';
 

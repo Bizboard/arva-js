@@ -3,7 +3,7 @@
  *
  * Adapted version of the LayoutDockHelper made by Hein Rutjes in famous-flex
  */
-// import dependencies
+
 import LayoutUtility from 'famous-flex/src/LayoutUtility';
 
 /**

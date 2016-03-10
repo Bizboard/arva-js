@@ -11,7 +11,7 @@
 
 import {Injector, provide}                      from 'di';
 import {ArvaRouter}                             from './routers/ArvaRouter.js';
-import {Context as ArvaContext}                 from 'arva-utils/Context.js';
+import {Context as ArvaContext}                 from './utils/Context.js';
 import Engine                                   from 'famous/core/Engine.js';
 import FamousContext                            from 'famous/core/Context.js';
 import AnimationController                      from 'famous-flex/src/AnimationController.js';
