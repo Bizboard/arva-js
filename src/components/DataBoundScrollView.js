@@ -59,7 +59,7 @@ export class DataBoundScrollView extends FlexScrollView {
 
 
         /* If present in options.headerTemplate or options.placeholderTemplate, we build the header and placeholder elements. */
-        this._addHeader();
+        this.addHeader();
         this._addPlaceholder();
 
 
@@ -365,11 +365,18 @@ export class DataBoundScrollView extends FlexScrollView {
         }
     }
 
-    _addHeader() {
-        if (this.options.headerTemplate && !this.header) {
+    addHeader() {
+        if (this.options.headerTemplate) {
             this.header = this.options.headerTemplate();
             this.header.isHeader = true;
             this.insert(0, this.header);
+        }
+    }
+
+    removeHeader() {
+        if(this.header){
+            this.remove(0);
+            this.header = null;
         }
     }
 
