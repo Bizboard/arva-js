@@ -454,7 +454,7 @@ export class DataBoundScrollView extends FlexScrollView {
 
         if (this._dataSource && changedItemIndex < this._dataSource.length) {
 
-            let result = this.options.dataFilter(child);
+            let result = this.options.dataFilter ? this.options.dataFilter(child) : true;
 
             if (result instanceof Promise) {
                 result.then(function (show) {
