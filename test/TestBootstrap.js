@@ -1,7 +1,7 @@
 /**
  * Created by tom on 23/10/15.
  */
-import 'babel-polyfill';
+
 import System                   from '../node_modules/systemjs/index.js';
 
 export function loadDependencies(dependencies) {

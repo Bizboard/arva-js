@@ -1,8 +1,8 @@
 System.config({
-  "baseURL": "/",
-  "defaultJSExtensions": true,
-  "transpiler": "babel",
-  "babelOptions": {
+  baseURL: "/",
+  defaultJSExtensions: true,
+  transpiler: "babel",
+  babelOptions: {
     "stage": 0,
     "optional": [
       "runtime",
@@ -11,21 +11,18 @@ System.config({
       "optimisation.modules.system"
     ]
   },
-  "paths": {
-    "*": "src/*",
-    "github:*": "jspm_packages/github/*",
-    "npm:*": "jspm_packages/npm/*"
-  }
-});
+  paths: {
+    "github:*": "./jspm_packages/github/*",
+    "npm:*": "./jspm_packages/npm/*"
+  },
 
-System.config({
-  "map": {
+  map: {
     "SPSoapAdapter": "github:bizboard/SPSoapAdapter@develop",
     "babel": "npm:babel-core@5.8.35",
     "babel-runtime": "npm:babel-runtime@5.8.35",
     "bowser": "npm:bowser@1.0.0",
     "camelcase": "npm:camelcase@2.1.0",
-    "core-js": "npm:core-js@0.9.18",
+    "core-js": "npm:core-js@1.2.6",
     "di": "github:bizboard/di.js@master",
     "eventemitter3": "npm:eventemitter3@1.1.1",
     "famous": "npm:famous@0.3.5",
@@ -33,6 +30,8 @@ System.config({
     "famous-flex": "github:ijzerenhein/famous-flex@0.3.5",
     "firebase": "github:firebase/firebase-bower@2.2.7",
     "lodash": "npm:lodash@4.6.1",
+    "traceur": "github:jmcriffey/bower-traceur@0.0.92",
+    "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90",
     "github:bizboard/SPSoapAdapter@develop": {
       "arva-utils": "github:bizboard/arva-utils@develop",
       "eventemitter3": "npm:eventemitter3@1.1.1",
@@ -75,6 +74,12 @@ System.config({
     "github:jspm/nodelibs-util@0.1.0": {
       "util": "npm:util@0.10.3"
     },
+    "npm:amdefine@1.0.0": {
+      "fs": "github:jspm/nodelibs-fs@0.1.2",
+      "module": "github:jspm/nodelibs-module@0.1.0",
+      "path": "github:jspm/nodelibs-path@0.1.0",
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
     "npm:assert@1.3.0": {
       "util": "npm:util@0.10.3"
     },
@@ -89,8 +94,9 @@ System.config({
       "isarray": "npm:isarray@1.0.0",
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
-    "npm:core-js@0.9.18": {
+    "npm:core-js@1.2.6": {
       "fs": "github:jspm/nodelibs-fs@0.1.2",
+      "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2",
       "systemjs-json": "github:systemjs/plugin-json@0.1.0"
     },
@@ -113,7 +119,7 @@ System.config({
       "fs": "github:jspm/nodelibs-fs@0.1.2",
       "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2",
-      "source-map": "npm:source-map@0.5.3",
+      "source-map": "npm:source-map@0.1.32",
       "systemjs-json": "github:systemjs/plugin-json@0.1.0"
     },
     "npm:esprima@1.0.4": {
@@ -156,7 +162,10 @@ System.config({
       "stream": "github:jspm/nodelibs-stream@0.1.0",
       "string_decoder": "github:jspm/nodelibs-string_decoder@0.1.0"
     },
-    "npm:source-map@0.5.3": {
+    "npm:source-map@0.1.32": {
+      "amdefine": "npm:amdefine@1.0.0",
+      "fs": "github:jspm/nodelibs-fs@0.1.2",
+      "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:stream-browserify@1.0.0": {
@@ -191,4 +200,3 @@ System.config({
     }
   }
 });
-
