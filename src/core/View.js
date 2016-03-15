@@ -693,11 +693,7 @@ export class View extends FamousView {
                 /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
                 for (let i = 0; i < 2; i++) {
                     /* Undefined is the same as context size */
-                    if (size[i] == undefined || (align && align[i])) {
-                        maxPosition[i] = undefined;
-                    }
-                    /* If the upper boundary is infinity, we can't know the lower boundary */
-                    if (maxPosition[i] !== undefined) {
+                    if (size[i] !== undefined && !(align && align[i]) && maxPosition[i] !== undefined) {
                         minPosition[i] = Math.min(minPosition[i], translate[0] + size[i]);
                         maxPosition[i] = Math.max(maxPosition[i], translate[1] + size[i]);
                     }
