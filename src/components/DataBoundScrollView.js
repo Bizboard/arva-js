@@ -11,9 +11,9 @@
 
 import _                from 'lodash';
 import FlexScrollView   from 'famous-flex/src/FlexScrollView.js';
-import {ObjectHelper}   from 'arva-utils/ObjectHelper.js';
-import {Throttler}      from 'arva-utils/Throttler.js';
-import {combineOptions} from 'arva-utils/CombineOptions.js';
+import {ObjectHelper}   from '../utils/ObjectHelper.js';
+import {Throttler}      from '../utils/Throttler.js';
+import {combineOptions} from '../utils/CombineOptions.js';
 
 
 

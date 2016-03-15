@@ -9,8 +9,8 @@
 
  */
 
-import {BrandingEngine}         from './BrandingEngine';
-import {Context}                from 'arva-utils/Context';
+import {BrandingEngine}         from './BrandingEngine.js';
+import {Context}                from '../../../utils/Context.js';
 
 export class BrandingEngineSingleton {
     /**

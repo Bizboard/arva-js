@@ -2,7 +2,8 @@
  * Created by lundfall on 2/24/16.
  */
 
-import camelCase from 'camelcase';
+import _            from 'lodash';
+import camelCase    from 'camelcase';
 
 /**
  * Changes all keys with a dash to camel case, in order to be merge for example 'text-align' with tetxAlign

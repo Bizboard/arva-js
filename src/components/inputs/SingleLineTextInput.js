@@ -3,8 +3,8 @@
  */
 
 import _                            from 'lodash';
-import InputSurface                 from 'famous/surfaces/InputSurface';
-import {ObjectHelper}               from 'arva-utils/ObjectHelper';
+import InputSurface                 from 'famous/surfaces/InputSurface.js';
+import {ObjectHelper}               from '../../utils/ObjectHelper.js';
 
 export class SingleLineTextInput extends InputSurface {
     constructor(options = {}) {
