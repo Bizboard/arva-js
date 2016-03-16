@@ -291,7 +291,7 @@ export class DataBoundScrollView extends FlexScrollView {
         newSurface.dataId = child.id;
         newSurface.data = child;
         this._subscribeToClicks(newSurface, child);
-        this.replace(index, newSurface);
+        this.replace(index, newSurface, true);
     }
 
 
