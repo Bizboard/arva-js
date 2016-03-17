@@ -354,7 +354,7 @@ export class View extends FamousView {
                 return this._resolveSingleSize(renderableSize.call(this, contextSize), contextSize);
             case 'number':
                 /* If 0 < renderableSize < 1, we interpret renderableSize as a fraction of the contextSize */
-                return renderableSize < 1 && renderableSize > 0 ? renderableSize * contextSize : renderableSize;
+                return renderableSize < 1 && renderableSize > 0 ? renderableSize * Math.max(contextSize,0) : renderableSize;
             default:
                 /* renderableSize can be true/false, undefined, or 'auto' for example. */
                 return renderableSize;
@@ -757,6 +757,16 @@ export class View extends FamousView {
 
         if (filledRenderables) {
             dockSize[dockingDirection] = undefined;
+            dockSize[orthogonalDirection] = Math.max(dockSize[orthogonalDirection], ..._.reduce(filledRenderables, (result, filledRenderable) => {
+                this._resolveDecoratedSize(name, filledRenderable, {size: [NaN, NaN]});
+                let resolvedSize = this._resolvedSizesCache.get(filledRenderable);
+                if(resolvedSize){
+                    let orthogonalSize = resolvedSize[orthogonalDirection];
+                    if(orthogonalSize || orthogonalSize == 0){
+                        return result.concat(orthogonalSize);
+                    }
+                }
+            }, []));
         }
 
         for (let i = 0; i < 2; i++) {
