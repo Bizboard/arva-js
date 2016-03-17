@@ -757,7 +757,8 @@ export class View extends FamousView {
 
         if (filledRenderables) {
             dockSize[dockingDirection] = undefined;
-            dockSize[orthogonalDirection] = Math.max(dockSize[orthogonalDirection], ..._.reduce(filledRenderables, (result, filledRenderable) => {
+            /* We currently support multiple fills, but that might change in the future */
+            let orthogonalFillSizes = _.reduce(filledRenderables, (result, filledRenderable) => {
                 this._resolveDecoratedSize(name, filledRenderable, {size: [NaN, NaN]});
                 let resolvedSize = this._resolvedSizesCache.get(filledRenderable);
                 if(resolvedSize){
@@ -766,7 +767,10 @@ export class View extends FamousView {
                         return result.concat(orthogonalSize);
                     }
                 }
-            }, []));
+            }, []);
+            if(orthogonalFillSizes){
+                dockSize[orthogonalDirection] = Math.max(dockSize[orthogonalDirection], ...orthogonalFillSizes);
+            }
         }
 
         for (let i = 0; i < 2; i++) {
