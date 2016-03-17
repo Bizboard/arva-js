@@ -307,7 +307,6 @@ export class View extends FamousView {
                 } else {
                     let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
                     let resultingSize = twoDimensionalSize[dim] !== undefined ? twoDimensionalSize[dim] : approximatedSize;
-                    this._ensureTrueSizedViewSubscriptions(renderable);
                     if (renderableIsView) {
                         resultingSize = (!renderable.constainsUncalculatedSurfaces() && renderable._initialised) ? resultingSize : approximatedSize;
                     }
@@ -587,6 +586,9 @@ export class View extends FamousView {
             }.bind(this)
         });
 
+        this.layout._eventInput.on('recursiveReflow', () => {
+            this.reflowRecursively();
+        });
 
         /* Add the layoutController to this View's rendering context. */
         this._prepareLayoutController();
@@ -842,18 +844,6 @@ export class View extends FamousView {
         }
     }
 
-    _ensureTrueSizedViewSubscriptions(renderable) {
-        /*  TODO: It might be good to do this as this._eventInput.on('recursiveReflow', ... ) instead but for some reason it
-         Doesn't work (why not?)
-         */
-        if (!this._trueSizedViewSizeSubscriptions.get(renderable)) {
-            renderable.on('recursiveReflow', () => {
-                this.reflowRecursively();
-            });
-            this._trueSizedViewSizeSubscriptions.set(renderable, true);
-        }
-    }
-
     _hasTrueSizedSurfaces() {
         return !![...this._trueSizedSurfaceInfo.keys()].length;
     }
@@ -871,7 +861,6 @@ export class View extends FamousView {
 
         this._trueSizedSurfaceInfo = new Map();
 
-        this._trueSizedViewSizeSubscriptions = new WeakMap();
 
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
         this._nodes = {_trueSizedRequested: false};
