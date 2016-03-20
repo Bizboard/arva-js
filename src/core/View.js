@@ -307,7 +307,6 @@ export class View extends FamousView {
                 } else {
                     let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
                     let resultingSize = twoDimensionalSize[dim] !== undefined ? twoDimensionalSize[dim] : approximatedSize;
-                    this._ensureTrueSizedViewSubscriptions(renderable);
                     if (renderableIsView) {
                         resultingSize = (!renderable.constainsUncalculatedSurfaces() && renderable._initialised) ? resultingSize : approximatedSize;
                     }
@@ -355,7 +354,7 @@ export class View extends FamousView {
                 return this._resolveSingleSize(renderableSize.call(this, contextSize), contextSize);
             case 'number':
                 /* If 0 < renderableSize < 1, we interpret renderableSize as a fraction of the contextSize */
-                return renderableSize < 1 && renderableSize > 0 ? renderableSize * contextSize : renderableSize;
+                return renderableSize < 1 && renderableSize > 0 ? renderableSize * Math.max(contextSize,0) : renderableSize;
             default:
                 /* renderableSize can be true/false, undefined, or 'auto' for example. */
                 return renderableSize;
@@ -587,6 +586,9 @@ export class View extends FamousView {
             }.bind(this)
         });
 
+        this.layout._eventInput.on('recursiveReflow', () => {
+            this.reflowRecursively();
+        });
 
         /* Add the layoutController to this View's rendering context. */
         this._prepareLayoutController();
@@ -693,11 +695,7 @@ export class View extends FamousView {
                 /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
                 for (let i = 0; i < 2; i++) {
                     /* Undefined is the same as context size */
-                    if (size[i] == undefined || (align && align[i])) {
-                        maxPosition[i] = undefined;
-                    }
-                    /* If the upper boundary is infinity, we can't know the lower boundary */
-                    if (maxPosition[i] !== undefined) {
+                    if (size[i] !== undefined && !(align && align[i]) && maxPosition[i] !== undefined) {
                         minPosition[i] = Math.min(minPosition[i], translate[0] + size[i]);
                         maxPosition[i] = Math.max(maxPosition[i], translate[1] + size[i]);
                     }
@@ -759,6 +757,20 @@ export class View extends FamousView {
 
         if (filledRenderables) {
             dockSize[dockingDirection] = undefined;
+            /* We currently support multiple fills, but that might change in the future */
+            let orthogonalFillSizes = _.reduce(filledRenderables, (result, filledRenderable) => {
+                this._resolveDecoratedSize(name, filledRenderable, {size: [NaN, NaN]});
+                let resolvedSize = this._resolvedSizesCache.get(filledRenderable);
+                if(resolvedSize){
+                    let orthogonalSize = resolvedSize[orthogonalDirection];
+                    if(orthogonalSize || orthogonalSize == 0){
+                        return result.concat(orthogonalSize);
+                    }
+                }
+            }, []);
+            if(orthogonalFillSizes){
+                dockSize[orthogonalDirection] = Math.max(dockSize[orthogonalDirection], ...orthogonalFillSizes);
+            }
         }
 
         for (let i = 0; i < 2; i++) {
@@ -846,18 +858,6 @@ export class View extends FamousView {
         }
     }
 
-    _ensureTrueSizedViewSubscriptions(renderable) {
-        /*  TODO: It might be good to do this as this._eventInput.on('recursiveReflow', ... ) instead but for some reason it
-         Doesn't work (why not?)
-         */
-        if (!this._trueSizedViewSizeSubscriptions.get(renderable)) {
-            renderable.on('recursiveReflow', () => {
-                this.reflowRecursively();
-            });
-            this._trueSizedViewSizeSubscriptions.set(renderable, true);
-        }
-    }
-
     _hasTrueSizedSurfaces() {
         return !![...this._trueSizedSurfaceInfo.keys()].length;
     }
@@ -875,7 +875,6 @@ export class View extends FamousView {
 
         this._trueSizedSurfaceInfo = new Map();
 
-        this._trueSizedViewSizeSubscriptions = new WeakMap();
 
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
         this._nodes = {_trueSizedRequested: false};
