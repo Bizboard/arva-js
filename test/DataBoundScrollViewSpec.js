@@ -3,6 +3,7 @@
  */
 
 import chai                         from 'chai';
+import sinon                        from 'sinon';
 import {loadDependencies}           from './TestBootstrap.js';
 
 let should = chai.should();
@@ -11,10 +12,15 @@ describe('DataBoundScrollView', () => {
     let imports = {};
 
     before(() => {
-        /* Mock window and document objects needed by ElementOutput.js */
-        global.window = {requestAnimationFrame: () => {}, addEventListener: () => {}};
-        global.document = {documentElement: {style: {}}, createDocumentFragment: () => { return {clientWidth: 1, clientHeight: 1} }};
+        /* Mock famous-flex's FlexScrollView so no attempt to insert anything into the DOM is made. */
+        System.delete(System.normalizeSync('famous-flex/src/FlexScrollView.js'));
+        System.set(System.normalizeSync('famous-flex/src/FlexScrollView.js'), System.newModule({default: function () { this.options = {}; }}));
+
         return loadDependencies({DataBoundScrollView: './src/components/DataBoundScrollView.js'}).then((importedObjects) => { imports = importedObjects; });
+    });
+
+    after(() => {
+        System.delete(System.normalizeSync('famous-flex/src/FlexScrollView.js'));
     });
 
     describe('#constructor', () => {
