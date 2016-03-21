@@ -10,6 +10,7 @@
  */
 
 import _                            from 'lodash';
+import Surface                      from 'famous/core/Surface.js';
 import FamousView                   from 'famous/core/View.js';
 import LayoutDockHelper             from 'famous-flex/src/helpers/LayoutDockHelper.js';
 import LayoutController             from 'famous-flex/src/LayoutController.js';
@@ -20,7 +21,6 @@ import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
-import {Surface}                    from './Surface.js';
 
 const DEFAULT_OPTIONS = {};
 
