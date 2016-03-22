@@ -36,15 +36,12 @@ export class View extends FamousView {
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
 
-        if (!this.renderables) {
-            this.renderables = {};
-        }
-        if (!this.layouts) {
-            this.layouts = [];
-        }
+
         this._copyPrototypeProperties();
 
         this._initOptions(options);
+
+        this._initDataStructures();
 
         this._constructDecoratedRenderables();
         this._initTrueSizedBookkeeping();
@@ -56,6 +53,7 @@ export class View extends FamousView {
         return !!this.decoratedRenderables;
     }
 
+    //noinspection JSUnusedGlobalSymbols
     /**
      * Deprecated, it is no longer required to call build() from within your View instances.
      * @deprecated
@@ -122,6 +120,24 @@ export class View extends FamousView {
         }
     }
 
+    /**
+     * Adds a renderable to the layout.
+     * @param {Renderable} renderable The renderable to be added
+     * @param {String} renderableName The name (key) of the renderable
+     * @param {Decorator} Decorator Any decorator(s) to apply to the renderable
+     * @returns {Renderable} The renderable that was assigned
+     */
+    addRenderable() {
+        let [renderable, renderableName, ...decorators] = arguments;
+        for (let decorator of decorators) {
+            /* The decorator(s) provided in the last argument needed to decorate the renderable */
+            decorator(renderable);
+        }
+
+        this._assignRenderable(renderable, renderableName);
+        return renderable;
+    }
+
     /** Requests for a parent layoutcontroller trying to resolve the size of this view
      * @private
      */
@@ -130,7 +146,7 @@ export class View extends FamousView {
         this._eventOutput.emit('layoutControllerReflow');
     }
 
-    _isPlainObject(object){
+    _isPlainObject(object) {
         return typeof object == 'object' && object.constructor.name == 'Object';
     }
 
@@ -144,18 +160,11 @@ export class View extends FamousView {
         return renderableOptions;
     }
 
-    _constructDecoratedRenderables() {
-        if (!this.decoratedRenderables) {
-            this.decoratedRenderables = {};
-        }
-        if (!this.renderables) {
-            this.renderables = {};
-        }
-        if(!this.renderableConstructors || _.isEmpty(this.renderableConstructors)){
-            this.renderableConstructors = new Map();
-        }
 
-        for(let currentClass = Object.getPrototypeOf(this), renderableConstructors; renderableConstructors = this.renderableConstructors.get(currentClass.constructor); currentClass = Object.getPrototypeOf(currentClass)){
+    _constructDecoratedRenderables() {
+
+
+        for (let currentClass = Object.getPrototypeOf(this), renderableConstructors; renderableConstructors = this.renderableConstructors.get(currentClass.constructor); currentClass = Object.getPrototypeOf(currentClass)) {
             for (let renderableName in renderableConstructors) {
                 let decorations = renderableConstructors[renderableName].decorations;
 
@@ -177,33 +186,52 @@ export class View extends FamousView {
                  * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
                  * to the renderables of this instance, which is unwanted.
                  */
-                if (decorations.descriptor.get) {
-                    let originalGet = decorations.descriptor.get;
-                    decorations.descriptor.get = () => {
-                        decorations.descriptor.get = originalGet;
-                        return renderable;
+
+                let {descriptor} = decorations;
+                if (descriptor) {
+                    if (descriptor.get) {
+                        let originalGet = decorations.descriptor.get;
+                        descriptor.get = () => {
+                            descriptor.get = originalGet;
+                            return renderable;
+                        }
                     }
-                }
-                if (decorations.descriptor.initializer) {
-                    let originalInitializer = decorations.descriptor.initializer;
-                    decorations.descriptor.initializer = () => {
-                        decorations.descriptor.initializer = originalInitializer;
-                        return renderable;
+                    if (descriptor.initializer) {
+                        let originalInitializer = decorations.descriptor.initializer;
+                        descriptor.initializer = () => {
+                            descriptor.initializer = originalInitializer;
+                            return renderable;
+                        }
                     }
                 }
 
-                this._setEventHandlers(renderable);
-                this._setPipes(renderable);
-
-                this.decoratedRenderables[renderableName] = renderable;
-                /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
-                 * this.renderables is used in the LayoutController in this.layout to render this view. */
-                this.renderables[renderableName] = renderable.animationController || renderable;
-                this[renderableName] = renderable;
+                this._assignRenderable(renderable, renderableName);
             }
         }
-        this._resolvedSizesCache = new Map();
-        this._groupedRenderables = this._groupRenderableTypes();
+    }
+
+
+
+    _assignRenderable(renderable, renderableName) {
+        /* Auto pipe events from the renderable to the view */
+        if(renderable.pipe){
+            renderable.pipe(this);
+            renderable.pipe(this._eventOutput);
+        }
+
+        if (renderable.decorations) {
+            this._addDecoratedRenderable(renderable, renderableName)
+        }
+
+
+        this._setEventHandlers(renderable);
+        this._setPipes(renderable);
+
+
+        /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
+         * this.renderables is used in the LayoutController in this.layout to render this view. */
+        this.renderables[renderableName] = renderable.animationController || renderable;
+        this[renderableName] = renderable;
     }
 
     _setEventHandlers(renderable) {
@@ -244,11 +272,10 @@ export class View extends FamousView {
      * @name {String} name The name of the renderable such that this.renderables[name] = renderable
      * @param {Object} renderable Decorated renderable to query size of.
      * @param {Object} context Famous-flex context in which the renderable is rendered.
-     * @param {Boolean} resolveTrueSize if true, translates a true size instruction (negative value) to an estimation of the size. Otherwise, tranlsates it to true
      * @returns {Array|Object} Array of [x, y] sizes, or null if resolving is not possible.
      * @private
      */
-    _resolveDecoratedSize(name, renderable, context) {
+    _resolveDecoratedSize(renderableName, renderable, context) {
         if (!renderable.decorations || !('size' in renderable.decorations)) {
             return null;
         }
@@ -258,14 +285,13 @@ export class View extends FamousView {
         for (let dim = 0; dim < 2; dim++) {
             size[dim] = this._resolveSingleSize(renderable.decorations.size[dim], context.size[dim]);
             if (size[dim] < 0 || size[dim] === true) {
-                cacheResolvedSize[dim] = this._resolveSingleTrueSizedRenderable(renderable, name, size, dim);
+                cacheResolvedSize[dim] = this._resolveSingleTrueSizedRenderable(renderable, renderableName, size, dim);
                 if (this._renderableIsSurface(renderable)) {
                     size[dim] = true;
                 } else {
                     size[dim] = cacheResolvedSize[dim];
                 }
             } else {
-                //cacheResolvedSize[dim] = size[dim] === undefined ? context.size[dim] : size[dim];
                 cacheResolvedSize[dim] = size[dim];
             }
         }
@@ -354,7 +380,7 @@ export class View extends FamousView {
                 return this._resolveSingleSize(renderableSize.call(this, contextSize), contextSize);
             case 'number':
                 /* If 0 < renderableSize < 1, we interpret renderableSize as a fraction of the contextSize */
-                return renderableSize < 1 && renderableSize > 0 ? renderableSize * Math.max(contextSize,0) : renderableSize;
+                return renderableSize < 1 && renderableSize > 0 ? renderableSize * Math.max(contextSize, 0) : renderableSize;
             default:
                 /* renderableSize can be true/false, undefined, or 'auto' for example. */
                 return renderableSize;
@@ -409,33 +435,6 @@ export class View extends FamousView {
     }
 
 
-    _groupRenderableTypes() {
-        return _.reduce(this.decoratedRenderables, function (result, renderable, renderableName) {
-            let groupName;
-            let decorations = renderable.decorations;
-            if (!!decorations.dock) {
-                /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
-                groupName = decorations.dock.dockMethod === 'fill' ? 'filled' : 'docked';
-            } else if (!!decorations.fullscreen) {
-                groupName = 'fullscreen';
-            } else if (decorations.size || decorations.origin || decorations.align || decorations.translate) {
-                groupName = 'traditional';
-            } else {
-                /* This occurs e.g. when a renderable is only marked @renderable, and its parent view has a @layout.custom decorator to define its context. */
-                groupName = 'ignored';
-            }
-
-            if (groupName) {
-                if (!(groupName in result)) {
-                    result[groupName] = {};
-                }
-                result[groupName][renderableName] = renderable;
-            }
-
-            return result;
-        }, {});
-    }
-
 
     _layoutDecoratedRenderables(context, options) {
         this._layoutDockedRenderables(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, options);
@@ -478,7 +477,7 @@ export class View extends FamousView {
         }
     }
 
-    _layoutFullScreenRenderables(fullScreenRenderables, context, options) {
+    _layoutFullScreenRenderables(fullScreenRenderables, context) {
 
         for (let name in fullScreenRenderables) {
             let renderable = fullScreenRenderables[name];
@@ -486,7 +485,7 @@ export class View extends FamousView {
         }
     }
 
-    _layoutTraditionalRenderables(traditionalRenderables, context, options) {
+    _layoutTraditionalRenderables(traditionalRenderables, context) {
         for (let renderableName in traditionalRenderables) {
             let renderable = traditionalRenderables[renderableName];
             let renderableSize = this._resolveDecoratedSize(renderableName, renderable, context) || [undefined, undefined];
@@ -534,7 +533,6 @@ export class View extends FamousView {
 
 
         this.layout = new LayoutController({
-            autoPipeEvents: true,
             layout: function (context, options) {
 
                 /* Because views that extend this View class first call super() and then define their renderables,
@@ -586,7 +584,7 @@ export class View extends FamousView {
             }.bind(this)
         });
 
-        this.layout._eventInput.on('recursiveReflow', () => {
+        this._eventInput.on('recursiveReflow', () => {
             this.reflowRecursively();
         });
 
@@ -761,14 +759,14 @@ export class View extends FamousView {
             let orthogonalFillSizes = _.reduce(filledRenderables, (result, filledRenderable) => {
                 this._resolveDecoratedSize(name, filledRenderable, {size: [NaN, NaN]});
                 let resolvedSize = this._resolvedSizesCache.get(filledRenderable);
-                if(resolvedSize){
+                if (resolvedSize) {
                     let orthogonalSize = resolvedSize[orthogonalDirection];
-                    if(orthogonalSize || orthogonalSize == 0){
+                    if (orthogonalSize || orthogonalSize == 0) {
                         return result.concat(orthogonalSize);
                     }
                 }
             }, []);
-            if(orthogonalFillSizes){
+            if (orthogonalFillSizes) {
                 dockSize[orthogonalDirection] = Math.max(dockSize[orthogonalDirection], ...orthogonalFillSizes);
             }
         }
@@ -850,11 +848,7 @@ export class View extends FamousView {
 
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
         for (let name of ['decorations', 'renderableConstructors']) {
-            /* If the default options where named, then skip */
-            if (name !== 'options') {
-
-                this[name] = _.cloneDeep(prototype[name]) || {};
-            }
+            this[name] = _.cloneDeep(prototype[name]) || {};
         }
     }
 
@@ -872,10 +866,8 @@ export class View extends FamousView {
     }
 
     _initTrueSizedBookkeeping() {
-
+        this._resolvedSizesCache = new Map();
         this._trueSizedSurfaceInfo = new Map();
-
-
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
         this._nodes = {_trueSizedRequested: false};
         /* This needs to be set in order for the LayoutNodeManager to be happy */
@@ -924,11 +916,53 @@ export class View extends FamousView {
             }
             /* Sanity check */
         } else if (renderableHtmlElement && renderableHtmlElement.childElementCount) {
-            this._warn(`Cannot calculate truesized surface in class ${this._name()} as the content one or more html elements. Behaviour is undeterministic`);
+            this._warn(`Cannot calculate truesized surface in class ${this._name()} as the content contains one or more html elements. Behaviour is undeterministic`);
         } else {
             trueSizedInfo.calculateOnNext = true;
             this.layout.reflowLayout();
             this._requestLayoutControllerReflow();
+        }
+    }
+
+    _initDataStructures() {
+        if (!this.renderables) {
+            this.renderables = {};
+        }
+        if (!this.layouts) {
+            this.layouts = [];
+        }
+        if (!this.decoratedRenderables) {
+            this.decoratedRenderables = {};
+        }
+        if (!this.renderableConstructors || _.isEmpty(this.renderableConstructors)) {
+            this.renderableConstructors = new Map();
+        }
+        this._groupedRenderables = {};
+    }
+
+    _addDecoratedRenderable(renderable, renderableName) {
+        let {decorations} = renderable;
+        this.decoratedRenderables[renderableName] = renderable;
+
+        /* Group the renderable */
+        let groupName;
+        if (!!decorations.dock) {
+            /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
+            groupName = decorations.dock.dockMethod === 'fill' ? 'filled' : 'docked';
+        } else if (!!decorations.fullscreen) {
+            groupName = 'fullscreen';
+        } else if (decorations.size || decorations.origin || decorations.align || decorations.translate) {
+            groupName = 'traditional';
+        } else {
+            /* This occurs e.g. when a renderable is only marked @renderable, and its parent view has a @layout.custom decorator to define its context. */
+            groupName = 'ignored';
+        }
+
+        if (groupName) {
+            if (!(groupName in this._groupedRenderables)) {
+                this._groupedRenderables[groupName] = {};
+            }
+            this._groupedRenderables[groupName][renderableName] = renderable;
         }
     }
 }
