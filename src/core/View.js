@@ -36,12 +36,9 @@ export class View extends FamousView {
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
 
-        if (!this.renderables) {
-            this.renderables = {};
-        }
-        if (!this.layouts) {
-            this.layouts = [];
-        }
+
+        this._initDataStructures();
+
         this._copyPrototypeProperties();
 
         this._initOptions(options);
@@ -146,15 +143,7 @@ export class View extends FamousView {
     }
 
     _constructDecoratedRenderables() {
-        if (!this.decoratedRenderables) {
-            this.decoratedRenderables = {};
-        }
-        if (!this.renderables) {
-            this.renderables = {};
-        }
-        if(!this.renderableConstructors || _.isEmpty(this.renderableConstructors)){
-            this.renderableConstructors = new Map();
-        }
+
 
         for(let currentClass = Object.getPrototypeOf(this), renderableConstructors; renderableConstructors = this.renderableConstructors.get(currentClass.constructor); currentClass = Object.getPrototypeOf(currentClass)){
             for (let renderableName in renderableConstructors) {
@@ -868,10 +857,7 @@ export class View extends FamousView {
     }
 
     _initTrueSizedBookkeeping() {
-
         this._trueSizedSurfaceInfo = new Map();
-
-
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
         this._nodes = {_trueSizedRequested: false};
         /* This needs to be set in order for the LayoutNodeManager to be happy */
@@ -920,11 +906,26 @@ export class View extends FamousView {
             }
             /* Sanity check */
         } else if (renderableHtmlElement && renderableHtmlElement.childElementCount) {
-            this._warn(`Cannot calculate truesized surface in class ${this._name()} as the content one or more html elements. Behaviour is undeterministic`);
+            this._warn(`Cannot calculate truesized surface in class ${this._name()} as the content contains one or more html elements. Behaviour is undeterministic`);
         } else {
             trueSizedInfo.calculateOnNext = true;
             this.layout.reflowLayout();
             this._requestLayoutControllerReflow();
+        }
+    }
+
+    _initDataStructures() {
+        if (!this.renderables) {
+            this.renderables = {};
+        }
+        if (!this.layouts) {
+            this.layouts = [];
+        }
+        if (!this.decoratedRenderables) {
+            this.decoratedRenderables = {};
+        }
+        if(!this.renderableConstructors || _.isEmpty(this.renderableConstructors)){
+            this.renderableConstructors = new Map();
         }
     }
 }
