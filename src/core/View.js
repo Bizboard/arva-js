@@ -56,6 +56,7 @@ export class View extends FamousView {
         return !!this.decoratedRenderables;
     }
 
+    //noinspection JSUnusedGlobalSymbols
     /**
      * Deprecated, it is no longer required to call build() from within your View instances.
      * @deprecated
@@ -244,11 +245,10 @@ export class View extends FamousView {
      * @name {String} name The name of the renderable such that this.renderables[name] = renderable
      * @param {Object} renderable Decorated renderable to query size of.
      * @param {Object} context Famous-flex context in which the renderable is rendered.
-     * @param {Boolean} resolveTrueSize if true, translates a true size instruction (negative value) to an estimation of the size. Otherwise, tranlsates it to true
      * @returns {Array|Object} Array of [x, y] sizes, or null if resolving is not possible.
      * @private
      */
-    _resolveDecoratedSize(name, renderable, context) {
+    _resolveDecoratedSize(renderableName, renderable, context) {
         if (!renderable.decorations || !('size' in renderable.decorations)) {
             return null;
         }
@@ -258,7 +258,7 @@ export class View extends FamousView {
         for (let dim = 0; dim < 2; dim++) {
             size[dim] = this._resolveSingleSize(renderable.decorations.size[dim], context.size[dim]);
             if (size[dim] < 0 || size[dim] === true) {
-                cacheResolvedSize[dim] = this._resolveSingleTrueSizedRenderable(renderable, name, size, dim);
+                cacheResolvedSize[dim] = this._resolveSingleTrueSizedRenderable(renderable, renderableName, size, dim);
                 if (this._renderableIsSurface(renderable)) {
                     size[dim] = true;
                 } else {
@@ -478,7 +478,7 @@ export class View extends FamousView {
         }
     }
 
-    _layoutFullScreenRenderables(fullScreenRenderables, context, options) {
+    _layoutFullScreenRenderables(fullScreenRenderables, context) {
 
         for (let name in fullScreenRenderables) {
             let renderable = fullScreenRenderables[name];
@@ -486,7 +486,7 @@ export class View extends FamousView {
         }
     }
 
-    _layoutTraditionalRenderables(traditionalRenderables, context, options) {
+    _layoutTraditionalRenderables(traditionalRenderables, context) {
         for (let renderableName in traditionalRenderables) {
             let renderable = traditionalRenderables[renderableName];
             let renderableSize = this._resolveDecoratedSize(renderableName, renderable, context) || [undefined, undefined];
@@ -850,11 +850,7 @@ export class View extends FamousView {
 
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
         for (let name of ['decorations', 'renderableConstructors']) {
-            /* If the default options where named, then skip */
-            if (name !== 'options') {
-
-                this[name] = _.cloneDeep(prototype[name]) || {};
-            }
+            this[name] = _.cloneDeep(prototype[name]) || {};
         }
     }
 
