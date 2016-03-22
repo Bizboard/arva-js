@@ -13,14 +13,14 @@ describe('DataBoundScrollView', () => {
 
     before(() => {
         /* Mock famous-flex's FlexScrollView so no attempt to insert anything into the DOM is made. */
-        System.delete(System.normalizeSync('famous-flex/src/FlexScrollView.js'));
-        System.set(System.normalizeSync('famous-flex/src/FlexScrollView.js'), System.newModule({default: function () { this.options = {}; }}));
+        System.delete(System.normalizeSync('famous-flex/FlexScrollView.js'));
+        System.set(System.normalizeSync('famous-flex/FlexScrollView.js'), System.newModule({default: function () { this.options = {}; }}));
 
         return loadDependencies({DataBoundScrollView: './src/components/DataBoundScrollView.js'}).then((importedObjects) => { imports = importedObjects; });
     });
 
     after(() => {
-        System.delete(System.normalizeSync('famous-flex/src/FlexScrollView.js'));
+        System.delete(System.normalizeSync('famous-flex/FlexScrollView.js'));
     });
 
     describe('#constructor', () => {

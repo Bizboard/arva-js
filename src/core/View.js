@@ -11,8 +11,8 @@
 
 import _                            from 'lodash';
 import FamousView                   from 'famous/core/View.js';
-import LayoutController             from 'famous-flex/src/LayoutController.js';
-import FlexScrollView               from 'famous-flex/src/FlexScrollView.js';
+import LayoutController             from 'famous-flex/LayoutController.js';
+import FlexScrollView               from 'famous-flex/FlexScrollView.js';
 import Surface                      from 'famous/core/Surface.js';
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 

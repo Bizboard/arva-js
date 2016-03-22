@@ -33,14 +33,14 @@ describe('View', () => {
             this.add = sinon.stub();
         } }));
 
-        System.delete(System.normalizeSync('famous-flex/src/LayoutController.js'));
-        System.set(System.normalizeSync('famous-flex/src/LayoutController.js'), System.newModule({ default: function(){
+        System.delete(System.normalizeSync('famous-flex/LayoutController.js'));
+        System.set(System.normalizeSync('famous-flex/LayoutController.js'), System.newModule({ default: function(){
             this.add = sinon.stub();
             this.pipe = sinon.stub();
         } }));
 
-        System.delete(System.normalizeSync('famous-flex/src/FlexScrollView.js'));
-        System.set(System.normalizeSync('famous-flex/src/FlexScrollView.js'), System.newModule({default: function () { this.options = {}; }}));
+        System.delete(System.normalizeSync('famous-flex/FlexScrollView.js'));
+        System.set(System.normalizeSync('famous-flex/FlexScrollView.js'), System.newModule({default: function () { this.options = {}; }}));
 
         return loadDependencies({
             View: System.normalizeSync('./src/core/View.js')
