@@ -29,6 +29,7 @@ describe('View', () => {
         System.delete(System.normalizeSync('famous/core/View.js'));
         System.set(System.normalizeSync('famous/core/View.js'), System.newModule({ default: function(){
             this.options = {};
+            this._eventInput = { on: sinon.stub() };
             this.add = sinon.stub();
         } }));
 
