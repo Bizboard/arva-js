@@ -156,9 +156,11 @@ export class PrioritisedArray extends Array {
 
                 if (prevSiblingId) {
                     let newPosition = this._findIndexById(prevSiblingId) + 1;
+                    this._ids[model._id] = newPosition;
                     this.insertAt(model, newPosition);
                 } else {
                     this.push(model);
+                    this._ids[model._id] = this.length - 1;
                 }
 
                 /* If we've already received an on('value') result, this child addition is
@@ -196,6 +198,7 @@ export class PrioritisedArray extends Array {
     insertAt(model, position) {
         if (model instanceof this._dataType) {
             this.splice(position, 0, model);
+            this._ids[model._id] = position;
         } else {
             /* TODO: change to throw exception */
             console.log('Tried to append an object that is not the same type as the PrioritisedArray was created with.');
@@ -213,8 +216,11 @@ export class PrioritisedArray extends Array {
      */
     move(fromPosition, toPosition) {
         let model = this[fromPosition];
+        this._ids[model._id] = toPosition;
+        this._ids[fromPosition] = null;
         this.splice(fromPosition, 1);
         this.splice(toPosition, 0, model);
+
     }
 
     /**
@@ -355,14 +361,6 @@ export class PrioritisedArray extends Array {
             return;
         }
 
-        /*let oldModel = this[previousPosition];
-        let oldProperties = ObjectHelper.getEnumerableProperties(oldModel);
-        let newProperties = ObjectHelper.getEnumerableProperties(changedModel);
-        if (_.isEqual(oldProperties, newProperties)) {
-             The model wasn't changed, so we won't emit a changed event in the PrioritisedArray.
-            return;
-        }*/
-
         this.remove(previousPosition);
 
         let newPosition = this._findIndexById(prevSiblingId) + 1;
@@ -386,11 +384,11 @@ export class PrioritisedArray extends Array {
             let id = snapshot.key();
             let previousPosition = this._findIndexById(id);
             let tempModel = this[previousPosition];
+            this._ids[id] = null;
             this.remove(previousPosition);
 
             let newPosition = this._findIndexById(prevSiblingId) + 1;
             this.insertAt(tempModel, newPosition);
-
 
             let model = this[newPosition];
 
@@ -412,6 +410,7 @@ export class PrioritisedArray extends Array {
         let model = this[position];
 
         if (position !== -1) {
+            this._ids[id] = null;
             this.remove(position);
 
             this._eventEmitter.emit('child_removed', model);
@@ -420,18 +419,14 @@ export class PrioritisedArray extends Array {
     }
 
     /**
-     * Searches for the index in the PrioritisedArray of a model that has an id equal to the given id.
+     * Return the position of model's id, saved in an associative array
      * @param {Number} id Id field of the model we're looking for
      * @returns {Number} Zero-based index if found, -1 otherwise
      * @private
      */
     _findIndexById(id) {
-        for (let i = 0; i < this.length; i++) {
-            if (this[i].id === id) {
-                return (i);
-            }
-        }
-        return -1;
+        let position = this._ids[id];
+        return (position == undefined || position == null) ? -1 : position;
     }
 
 }
