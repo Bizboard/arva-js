@@ -26,6 +26,9 @@ describe('View', () => {
         System.delete(System.normalizeSync('famous/core/Engine.js'));
         System.set(System.normalizeSync('famous/core/Engine.js'), System.newModule({ default: sinon.stub().returns({}) }));
 
+        System.delete(System.normalizeSync('famous-flex/LayoutUtility'));
+        System.set(System.normalizeSync('famous-flex/LayoutUtility.js'), System.newModule({ default: sinon.stub().returns({}) }));
+
         System.delete(System.normalizeSync('famous/core/View.js'));
         System.set(System.normalizeSync('famous/core/View.js'), System.newModule({ default: function(){
             this.options = {};
