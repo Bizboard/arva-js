@@ -5,6 +5,15 @@
 import System                   from 'systemjs';
 import '../../config.js';
 
+export function mockDependency(dependency, replacement){
+    System.delete(System.normalizeSync(dependency));
+    if(typeof replacement === 'function'){
+        let originalReplacement = replacement;
+        replacement = {default: replacement};
+    }
+    System.set(System.normalizeSync(dependency), System.newModule(replacement));
+}
+
 export function loadDependencies(dependencies) {
     let imports = {};
     let promises = [];
