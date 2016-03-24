@@ -4,7 +4,7 @@
 
 import chai                         from 'chai';
 import sinon                        from 'sinon';
-import System                       from '../node_modules/systemjs/index.js';
+import System                       from '../../node_modules/systemjs/index.js';
 import {loadDependencies}           from './TestBootstrap.js';
 
 let ContextMock = sinon.stub();

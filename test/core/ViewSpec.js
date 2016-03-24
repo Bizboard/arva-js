@@ -1,6 +1,6 @@
 import chai                         from 'chai';
 import sinon                        from 'sinon';
-import {loadDependencies}           from './TestBootstrap.js';
+import {loadDependencies}           from '../meta/TestBootstrap.js';
 
 let should = chai.should();
 

@@ -3,7 +3,7 @@
  */
 
 import System                   from 'systemjs';
-import '../config.js';
+import '../../config.js';
 
 export function loadDependencies(dependencies) {
     let imports = {};

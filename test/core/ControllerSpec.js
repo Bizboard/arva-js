@@ -1,5 +1,5 @@
 import chai                         from 'chai';
-import {loadDependencies}           from './TestBootstrap.js';
+import {loadDependencies}           from '../meta/TestBootstrap.js';
 
 let should = chai.should();
 

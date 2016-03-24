@@ -1,14 +1,14 @@
 import chai                         from 'chai';
-import {loadDependencies}           from './TestBootstrap.js';
+import {loadDependencies}           from '../meta/TestBootstrap.js';
 
 let should = chai.should();
 
-describe('DataModelGenerator', () => {
+describe('Router', () => {
     let imports = {};
 
     before(() => {
         return loadDependencies({
-            DataModelGenerator: System.normalizeSync('./src/data/datasources/SharePoint/DataModelGenerator.js')
+            Router: System.normalizeSync('./src/core/Router.js')
         }).then((importedObjects) => {
             imports = importedObjects;
         });
@@ -16,7 +16,7 @@ describe('DataModelGenerator', () => {
 
     describe('#constructor', () => {
         it('constructs without exceptions', () => {
-            let instance = new imports.DataModelGenerator('', {});
+            let instance = new imports.Router();
             should.exist(instance);
         });
     });
