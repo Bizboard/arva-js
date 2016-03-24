@@ -71,6 +71,8 @@ export class PrioritisedArray extends Array {
             // retrieve dataSource from the DI context
             dataSource = Context.getContext().get(DataSource);
 
+            console.log(`dataSource: ${dataSource}`);
+
             if (options) {
                 dataSource = dataSource.child(options.path || path, options);
             } else {
