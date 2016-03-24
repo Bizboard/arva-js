@@ -9,7 +9,7 @@
     "url": "git://github.com/bizboard/arva-js.git"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha --compilers js:babel/register --timeout 15000"
+    "test": "mocha --compilers js:babel/register --recursive --timeout 15000"
   },
   "bugs": {
     "url": "https://github.com/bizboard/arva-js/issues"
