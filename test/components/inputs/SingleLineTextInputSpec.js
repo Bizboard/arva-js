@@ -22,9 +22,6 @@ describe('SingleLineTextInput', () => {
         return loadDependencies({SingleLineTextInput: './src/components/inputs/SingleLineTextInput.js'}).then((importedObjects) => { imports = importedObjects; });
     });
 
-    after(() => {
-        System.delete(System.normalizeSync('famous/surfaces/InputSurface.js'));
-    });
 
     describe('#constructor', () => {
         it('constructs without exceptions', () => {
