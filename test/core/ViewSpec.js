@@ -16,6 +16,7 @@ describe('View', () => {
         global['document'] = {documentElement: {style: {}}};
         global['window'] = {};
         let ElementOutput = await System.import('famous/core/ElementOutput');
+        //Mock for the Famous Surface
         mockDependency('./ElementOutput.js', ElementOutput);
         delete global['document'];
         delete global['window'];
@@ -79,9 +80,9 @@ describe('View', () => {
         it('has children which pipes to the view', () => {
             let instance = addRenderablesTest();
             let eventCallback = sinon.spy();
+            instance.on('customEvent', eventCallback);
             instance.renderables.surface1._eventOutput.emit('customEvent');
             instance.renderables.surface2._eventOutput.emit('customEvent');
-            console.log(`eventCallback.callCount: ${eventCallback.callCount}`);
             expect(eventCallback.calledTwice).to.be.true;
         });
     });
