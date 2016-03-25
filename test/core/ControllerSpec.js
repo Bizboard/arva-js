@@ -1,5 +1,5 @@
 import chai                         from 'chai';
-import {loadDependencies}           from './TestBootstrap.js';
+import {loadDependencies}           from '../meta/TestBootstrap.js';
 
 let should = chai.should();
 
@@ -8,8 +8,8 @@ describe('Controller', () => {
 
     before(() => {
         /* Mock famous-flex's FlexScrollView so no attempt to insert anything into the DOM is made. */
-        System.delete(System.normalizeSync('famous-flex/src/AnimationController.js'));
-        System.set(System.normalizeSync('famous-flex/src/AnimationController.js'), System.newModule({default: function () { this.options = {}; }}));
+        System.delete(System.normalizeSync('famous-flex/AnimationController.js'));
+        System.set(System.normalizeSync('famous-flex/AnimationController.js'), System.newModule({default: function () { this.options = {}; }}));
 
         return loadDependencies({
             Controller: System.normalizeSync('./src/core/Controller.js')
@@ -19,7 +19,7 @@ describe('Controller', () => {
     });
 
     after(() => {
-        System.delete(System.normalizeSync('famous-flex/src/AnimationController.js'));
+        System.delete(System.normalizeSync('famous-flex/AnimationController.js'));
     });
 
     describe('#constructor', () => {

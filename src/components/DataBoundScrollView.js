@@ -10,7 +10,7 @@
  */
 
 import _                from 'lodash';
-import FlexScrollView   from 'famous-flex/src/FlexScrollView.js';
+import FlexScrollView   from 'famous-flex/FlexScrollView.js';
 import {ObjectHelper}   from '../utils/ObjectHelper.js';
 import {Throttler}      from '../utils/Throttler.js';
 import {combineOptions} from '../utils/CombineOptions.js';

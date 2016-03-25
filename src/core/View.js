@@ -11,8 +11,8 @@
 
 import _                            from 'lodash';
 import FamousView                   from 'famous/core/View.js';
-import LayoutController             from 'famous-flex/src/LayoutController.js';
-import FlexScrollView               from 'famous-flex/src/FlexScrollView.js';
+import LayoutController             from 'famous-flex/LayoutController.js';
+import FlexScrollView               from 'famous-flex/FlexScrollView.js';
 import Surface                      from 'famous/core/Surface.js';
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 
@@ -20,14 +20,11 @@ import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 
-const DEFAULT_OPTIONS = {};
-
-
 export class View extends FamousView {
 
     constructor(options = {}) {
 
-        super(_.merge(options, DEFAULT_OPTIONS));
+        super(options);
 
 
         /* Bind all local methods to the current object instance, so we can refer to "this"

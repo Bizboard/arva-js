@@ -12,8 +12,8 @@
 import _                        from 'lodash';
 import Timer                    from 'famous/utilities/Timer.js';
 import Easing                   from 'famous/transitions/Easing.js';
-import AnimationController      from 'famous-flex/src/AnimationController.js';
-import LayoutUtility            from 'famous-flex/src/LayoutUtility.js'
+import AnimationController      from 'famous-flex/AnimationController.js';
+import LayoutUtility            from 'famous-flex/LayoutUtility.js'
 
 function prepDecoratedRenderable(view, renderableName, descriptor) {
 

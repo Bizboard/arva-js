@@ -13,7 +13,7 @@ import _                            from 'lodash';
 import {provide}                    from 'di';
 import {Router}                     from '../core/Router.js';
 import Easing                       from 'famous/transitions/Easing.js';
-import AnimationController          from 'famous-flex/src/AnimationController.js';
+import AnimationController          from 'famous-flex/AnimationController.js';
 
 @provide(Router)
 export class ArvaRouter extends Router {

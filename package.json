@@ -9,7 +9,7 @@
     "url": "git://github.com/bizboard/arva-js.git"
   },
   "scripts": {
-    "test": "node_modules/.bin/mocha --compilers js:babel/register --timeout 15000"
+    "test": "mocha --compilers js:babel/register --recursive --timeout 15000"
   },
   "bugs": {
     "url": "https://github.com/bizboard/arva-js/issues"
@@ -29,6 +29,7 @@
       "eventemitter3": "npm:eventemitter3@^1.1.0",
       "famous": "github:bizboard/famous@develop",
       "famous-flex": "github:bizboard/famous-flex@^0.3.5",
+      "firebase": "github:firebase/firebase-bower@^2.4.1",
       "lodash": "npm:lodash@^4.2.0"
     },
     "devDependencies": {
