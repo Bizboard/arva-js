@@ -20,14 +20,11 @@ import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 
-const DEFAULT_OPTIONS = {};
-
-
 export class View extends FamousView {
 
     constructor(options = {}) {
 
-        super(_.merge(options, DEFAULT_OPTIONS));
+        super(options);
 
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
