@@ -44,6 +44,7 @@ export class PrioritisedArray extends Array {
         super();
         /**** Callbacks ****/
         this._valueChangedCallback = null;
+        this._ids = {};
 
         /**** Private properties ****/
         this._dataType = dataType;
@@ -66,12 +67,9 @@ export class PrioritisedArray extends Array {
 
         /* If no dataSource is given, create own one with guessed path */
         if (!dataSource) {
-            let path
-                = Object.getPrototypeOf(this).constructor.name;
+            let path = Object.getPrototypeOf(this).constructor.name;
             // retrieve dataSource from the DI context
             dataSource = Context.getContext().get(DataSource);
-
-
 
             if (options) {
                 dataSource = dataSource.child(options.path || path, options);
