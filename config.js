@@ -27,7 +27,7 @@ System.config({
     "eventemitter3": "npm:eventemitter3@1.1.1",
     "famous": "github:bizboard/famous@develop",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
-    "famous-flex": "github:bizboard/famous-flex@0.3.5",
+    "famous-flex": "github:bizboard/famous-flex@master",
     "firebase": "github:firebase/firebase-bower@2.2.7",
     "lodash": "npm:lodash@4.6.1",
     "traceur": "github:jmcriffey/bower-traceur@0.0.92",
