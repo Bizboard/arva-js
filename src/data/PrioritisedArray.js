@@ -66,12 +66,12 @@ export class PrioritisedArray extends Array {
 
         /* If no dataSource is given, create own one with guessed path */
         if (!dataSource) {
-            let path = Object.getPrototypeOf(this).constructor.name;
-
+            let path
+                = Object.getPrototypeOf(this).constructor.name;
             // retrieve dataSource from the DI context
             dataSource = Context.getContext().get(DataSource);
 
-            console.log(`dataSource: ${dataSource}`);
+
 
             if (options) {
                 dataSource = dataSource.child(options.path || path, options);

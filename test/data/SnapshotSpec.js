@@ -1,5 +1,5 @@
 /**
- * Created by lundfall on 3/24/16.
+ * Created by lundfall on 3/25/16.
  */
 
 import sinon                        from 'sinon';
@@ -9,17 +9,21 @@ import {loadDependencies,
 
 let should = chai.should();
 
-describe('DataSource', () => {
+describe('Snapshot', () => {
     let imports = {};
 
-    before(() =>  loadDependencies({
-            DataSource: System.normalizeSync('./src/data/DataSource.js')}
-        )
-    );
+    before(() => {
+
+        return loadDependencies({
+            Snapshot: System.normalizeSync('./src/data/Snapshot.js')
+        }).then((importedObjects) => {
+            imports = importedObjects;
+        });
+    });
 
     describe('#constructor', () => {
         it('constructs without exceptions', () => {
-            let instance = new imports.DataSource('', {});
+            let instance = new imports.Snapshot();
             should.exist(instance);
         });
     });
