@@ -152,10 +152,10 @@ export class PrioritisedArray extends Array {
      */
     add(model, prevSiblingId = null) {
         if (model instanceof this._dataType) {
-            if (this._findIndexById(model.id) < 0) {
+            if (this.findIndexById(model.id) < 0) {
 
                 if (prevSiblingId) {
-                    let newPosition = this._findIndexById(prevSiblingId) + 1;
+                    let newPosition = this.findIndexById(prevSiblingId) + 1;
                     this._ids[model._id] = newPosition;
                     this.insertAt(model, newPosition);
                 } else {
@@ -325,7 +325,7 @@ export class PrioritisedArray extends Array {
             dataSource: this._dataSource.child(id)
         });
 
-        let previousPosition = this._findIndexById(id);
+        let previousPosition = this.findIndexById(id);
         if(previousPosition >= 0) {
             let oldModel = this[previousPosition];
             let oldProperties = ObjectHelper.getEnumerableProperties(oldModel);
@@ -355,7 +355,7 @@ export class PrioritisedArray extends Array {
         let id = snapshot.key();
         let changedModel = new this._dataType(id, null, {dataSnapshot: snapshot, dataSource: snapshot.ref()});
 
-        let previousPosition = this._findIndexById(id);
+        let previousPosition = this.findIndexById(id);
         if (previousPosition < 0) {
             /* The model doesn't exist, so we won't emit a changed event. */
             return;
@@ -363,7 +363,7 @@ export class PrioritisedArray extends Array {
 
         this.remove(previousPosition);
 
-        let newPosition = this._findIndexById(prevSiblingId) + 1;
+        let newPosition = this.findIndexById(prevSiblingId) + 1;
         this.insertAt(changedModel, newPosition);
 
         this._eventEmitter.emit('child_changed', changedModel, prevSiblingId);
@@ -382,12 +382,12 @@ export class PrioritisedArray extends Array {
         if (!this._isBeingReordered) {
 
             let id = snapshot.key();
-            let previousPosition = this._findIndexById(id);
+            let previousPosition = this.findIndexById(id);
             let tempModel = this[previousPosition];
             this._ids[id] = null;
             this.remove(previousPosition);
 
-            let newPosition = this._findIndexById(prevSiblingId) + 1;
+            let newPosition = this.findIndexById(prevSiblingId) + 1;
             this.insertAt(tempModel, newPosition);
 
             let model = this[newPosition];
@@ -406,7 +406,7 @@ export class PrioritisedArray extends Array {
     _onChildRemoved(oldSnapshot) {
         /* TODO: figure out if we can use the snapshot's priority as our array index reliably, to avoid big loops. */
         let id = oldSnapshot.key();
-        let position = this._findIndexById(id);
+        let position = this.findIndexById(id);
         let model = this[position];
 
         if (position !== -1) {
@@ -424,7 +424,7 @@ export class PrioritisedArray extends Array {
      * @returns {Number} Zero-based index if found, -1 otherwise
      * @private
      */
-    _findIndexById(id) {
+    findIndexById(id) {
         let position = this._ids[id];
         return (position == undefined || position == null) ? -1 : position;
     }
