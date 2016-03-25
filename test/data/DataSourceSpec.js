@@ -14,7 +14,9 @@ describe('DataSource', () => {
 
     before(() =>  loadDependencies({
             DataSource: System.normalizeSync('./src/data/DataSource.js')}
-        )
+        ).then((importedObjects) => {
+        imports = importedObjects;
+    })
     );
 
     describe('#constructor', () => {
