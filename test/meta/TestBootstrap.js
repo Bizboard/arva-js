@@ -9,7 +9,7 @@ import '../../config.js';
 export function mockDependency(dependency, replacement){
     System.delete(System.normalizeSync(dependency));
     if(!replacement){
-        replacement = sinon.stub;
+        replacement = sinon.stub();
     }
     if(typeof replacement === 'function'){
         let originalReplacement = replacement;
@@ -26,7 +26,6 @@ export function loadDependencies(dependencies) {
         let dependencyLocation = dependencies[key];
         promises.push(System.import(dependencyLocation).then((importedObject) => {
             imports[key] = importedObject[key] || importedObject.default || importedObject;
-            global[key] = imports[key];
         }));
     }
 
