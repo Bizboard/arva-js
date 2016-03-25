@@ -249,7 +249,6 @@ export class View extends FamousView {
         if (!renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable)) {
             return;
         }
-
         let pipes = renderable.decorations.pipes;
         for (let pipeToName of pipes) {
             let target = pipeToName ? this[pipeToName] : this;
@@ -526,8 +525,8 @@ export class View extends FamousView {
      */
     _combineLayouts() {
 
-
         this.layout = new LayoutController({
+            autoPipeEvents: true,
             layout: function (context, options) {
 
                 /* Because views that extend this View class first call super() and then define their renderables,
