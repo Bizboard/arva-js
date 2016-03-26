@@ -29,7 +29,9 @@ System.config({
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
     "famous-flex": "github:bizboard/famous-flex@master",
     "firebase": "github:firebase/firebase-bower@2.2.7",
+    "fs": "github:jspm/nodelibs-fs@0.1.2",
     "lodash": "npm:lodash@4.6.1",
+    "path": "github:jspm/nodelibs-path@0.1.0",
     "traceur": "github:jmcriffey/bower-traceur@0.0.92",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90",
     "github:bizboard/SPSoapAdapter@develop": {
