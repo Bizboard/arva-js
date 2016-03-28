@@ -246,7 +246,7 @@ export class View extends FamousView {
     }
 
     _setPipes(renderable) {
-        if (!renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable)) {
+        if (!this._initialised || !renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable)) {
             return;
         }
         let pipes = renderable.decorations.pipes;
