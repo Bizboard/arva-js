@@ -18,8 +18,6 @@ describe('SharePointDataSource', () => {
         /* Mock web workers for the SharePoint client if we're running tests from nodejs */
         if (typeof Worker === 'undefined') { global.Worker = class Worker { postMessage() {} }; }
 
-        //mockDependency('SPSoapAdapter/SharePoint.js', {default: function(){borked();}});
-
         return loadDependencies({
             SharePoint: 'SPSoapAdapter/SharePoint.js'
         }).then((importedObjects) => {
