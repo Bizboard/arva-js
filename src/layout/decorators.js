@@ -8,14 +8,23 @@
  @copyright Bizboard, 2016
 
  */
-
 import _                        from 'lodash';
 import Timer                    from 'famous/utilities/Timer.js';
 import Easing                   from 'famous/transitions/Easing.js';
 import AnimationController      from 'famous-flex/src/AnimationController.js';
 import LayoutUtility            from 'famous-flex/src/LayoutUtility.js'
 
-function prepDecoratedRenderable(view, renderableName, descriptor) {
+
+import {View}                   from '../core/View.js'
+
+function prepDecoratedRenderable(viewOrRenderable, renderableName, descriptor) {
+    /* This function can also be called as prepDecoratedRenderable(renderable) */
+    if(!renderableName && !descriptor){
+        let renderable = viewOrRenderable;
+        renderable.decorations = renderable.decorations || {};
+        return renderable;
+    }
+    let view = viewOrRenderable;
 
     if (!view.renderableConstructors) { view.renderableConstructors = new Map(); }
 
