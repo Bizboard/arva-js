@@ -52,17 +52,20 @@ function famousMerge(defaultParam, specifiedParam) {
 
             if (typeof param === 'object') {
 
-                if(_.isEmpty(param)){
-                    return param === specifiedParam ? defaultParam : specifiedParam;
-                }
-
                 /*
                  * Make sure that we don't merge instances of classes. You _could_ trick this system by specifying an object
                  * with the parameter constructor {name: 'Object'} or specifying a class named Object (don't)
                  */
+
                 if(param.constructor.name !== 'Object'){
                     return specifiedParam;
                 }
+
+
+                if(_.isEmpty(param)){
+                    return param === specifiedParam ? defaultParam : specifiedParam;
+                }
+
                 /*
                  * Style parameters can be specified with dash-case or camelCase, which we correct here
                  */
