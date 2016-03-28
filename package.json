@@ -30,7 +30,9 @@
       "famous": "github:bizboard/famous@develop",
       "famous-flex": "github:bizboard/famous-flex@master",
       "firebase": "github:firebase/firebase-bower@^2.4.1",
-      "lodash": "npm:lodash@^4.2.0"
+      "fs": "github:jspm/nodelibs-fs@^0.1.2",
+      "lodash": "npm:lodash@^4.2.0",
+      "path": "github:jspm/nodelibs-path@^0.1.0"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",
