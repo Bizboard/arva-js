@@ -68,7 +68,7 @@ export class PrioritisedArray extends Array {
         /* If no dataSource is given, create own one with guessed path */
         if (!dataSource) {
             let path = Object.getPrototypeOf(this).constructor.name;
-            // retrieve dataSource from the DI context
+            /* Retrieve dataSource from the DI context */
             dataSource = Context.getContext().get(DataSource);
 
             if (options) {
@@ -305,10 +305,10 @@ export class PrioritisedArray extends Array {
      * @private
      */
     _registerCallbacks(dataSource) {
-        dataSource.setChildAddedCallback(this._onChildAdded);
-        dataSource.setChildMovedCallback(this._onChildMoved);
-        dataSource.setChildChangedCallback(this._onChildChanged);
-        dataSource.setChildRemovedCallback(this._onChildRemoved);
+        dataSource.on('child_added', this._onChildAdded);
+        dataSource.on('child_moved', this._onChildMoved);
+        dataSource.on('child_changed', this._onChildChanged);
+        dataSource.on('child_removed', this._onChildRemoved);
     }
 
     /**

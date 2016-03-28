@@ -13,29 +13,17 @@ describe('View', () => {
         mockDependency('famous/surfaces/ImageSurface.js');
         mockDependency('famous/core/ContainerSurface.js');
 
-        global['document'] = {documentElement: {style: {}}};
-        global['window'] = {};
+        if(global) {
+            global['document'] = {documentElement: {style: {}}};
+            global['window'] = {};
+        }
         let ElementOutput = await System.import('famous/core/ElementOutput');
         //Mock for the Famous Surface
         mockDependency('./ElementOutput.js', ElementOutput);
-        delete global['document'];
-        delete global['window'];
 
         mockDependency('famous/core/Group.js');
         mockDependency('famous/core/Engine.js');
         mockDependency('famous-flex/LayoutUtility.js', {registerHelper: new Function()});
-
-        /*mockDependency('famous/core/View.js', function() {
-            this.options = {};
-            this._eventInput = { on: sinon.stub() };
-            this._eventOutput = { on: sinon.stub() };
-            this.add = sinon.stub();
-        });*/
-        /*let FamousView = await System.import('famous/core/View.js');
-        mockDependency('famous-fle')*/
-        //let LayoutController  = await System.import('famous-flex/src/LayoutController.js');
-//        mockDependency('famous-flex/LayoutController.js', LayoutController);
-
         mockDependency('famous-flex/FlexScrollView.js', function() {
             this.options = {};
         });
@@ -48,7 +36,12 @@ describe('View', () => {
         });
     });
 
-
+    after(() => {
+        if(global && (global['window'] || global['document'])) {
+            delete global['document'];
+            delete global['window'];
+        }
+    });
 
     describe('#constructor', () => {
         it('constructs without exceptions', () => {

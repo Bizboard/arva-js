@@ -1,7 +1,6 @@
 import chai                         from 'chai';
 import {loadDependencies,
-    mockDependency}
-                                    from '../meta/TestBootstrap.js';
+    mockDependency}                 from '../meta/TestBootstrap.js';
 
 let should = chai.should();
 

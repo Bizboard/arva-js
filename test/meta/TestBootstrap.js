@@ -12,7 +12,6 @@ export function mockDependency(dependency, replacement){
         replacement = sinon.stub();
     }
     if(typeof replacement === 'function'){
-        let originalReplacement = replacement;
         replacement = {default: replacement};
     }
     System.set(System.normalizeSync(dependency), System.newModule(replacement));

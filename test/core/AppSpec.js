@@ -4,7 +4,8 @@
 
 import chai                         from 'chai';
 import sinon                        from 'sinon';
-import {loadDependencies}           from '../meta/TestBootstrap.js';
+import {loadDependencies,
+    mockDependency}                 from '../meta/TestBootstrap.js';
 
 let should = chai.should();
 
@@ -13,11 +14,8 @@ describe('App', () => {
 
     before(() => {
 
-        System.delete(System.normalizeSync('famous/core/Context.js'));
-        System.set(System.normalizeSync('famous/core/Context.js'), System.newModule({ default: sinon.stub().returns({}) }));
-
-        System.delete(System.normalizeSync('./src/utils/hotfixes/Polyfills.js'));
-        System.set(System.normalizeSync('./src/utils/hotfixes/Polyfills.js'), System.newModule({ default: sinon.stub().returns({}) }));
+        mockDependency('famous/core/Context.js', System.newModule({ default: sinon.stub().returns({}) }));
+        mockDependency('./src/utils/hotfixes/Polyfills.js', System.newModule({ default: sinon.stub().returns({}) }));
 
         return loadDependencies({
             App: System.normalizeSync('./src/core/App.js')
