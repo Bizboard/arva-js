@@ -16,8 +16,11 @@ import {Throttler}      from '../utils/Throttler.js';
 import {combineOptions} from '../utils/CombineOptions.js';
 
 
-
 export class DataBoundScrollView extends FlexScrollView {
+
+    get internalDataSource() {
+        return this._internalDataSource;
+    }
 
     constructor(OPTIONS = {}) {
         super(combineOptions({
@@ -34,23 +37,26 @@ export class DataBoundScrollView extends FlexScrollView {
                 insertSpec: {           // render-spec used when inserting renderables
                     opacity: 0          // start opacity is 0, causing a fade-in effect,
                 }
-            }
+            },
+            dataFilter: ()=> true
         }, OPTIONS));
         ObjectHelper.bindAllMethods(this, this);
 
+        this._internalDataSource = {};
+        this._internalGroups = {};
         this.isGrouped = this.options.groupBy != null;
         this.isDescending = this.options.sortingDirection === 'descending';
         this.throttler = new Throttler(this.options.throttleDelay, true, this);
 
         /* If no orderBy method is set, or it is a string field name, we set our own ordering method. */
-        if(this.options.orderBy){
+        if (this.options.orderBy) {
             if (typeof this.options.orderBy === 'string') {
                 let fieldName = this.options.orderBy || 'id';
-                this.options.orderBy = function (currentChild, compareChild) {
+                this.options.orderBy = function (currentChild, {model}) {
                     if (this.isDescending) {
-                        return currentChild[fieldName] > compareChild.data[fieldName];
+                        return currentChild[fieldName] > model[fieldName];
                     } else {
-                        return currentChild[fieldName] < compareChild.data[fieldName];
+                        return currentChild[fieldName] < model[fieldName];
                     }
                 }.bind(this);
             }
@@ -67,6 +73,10 @@ export class DataBoundScrollView extends FlexScrollView {
             this._bindDataSource(this.options.dataStore);
         } else {
             console.log('No DataSource was set.');
+        }
+
+        if (!this.options.dataFilter) {
+            console.log('No dataFilter was set.');
         }
 
 
@@ -151,22 +161,8 @@ export class DataBoundScrollView extends FlexScrollView {
     }
 
     _findGroup(groupId) {
-        return _.findIndex(this._dataSource, function (surface) {
-            return surface.groupId === groupId;
-        });
+        return this._internalGroups[groupId] || -1;
     }
-
-    _findNextGroup(fromIndex) {
-        let dslength = this._dataSource.length;
-        for (let pos = fromIndex; pos < dslength; pos++) {
-            if (this._dataSource[pos].groupId) {
-                return pos;
-            }
-        }
-
-        return this._dataSource.length;
-    }
-
 
     _getGroupByValue(child) {
         let groupByValue = '';
@@ -181,23 +177,32 @@ export class DataBoundScrollView extends FlexScrollView {
     _addGroupItem(groupByValue, insertIndex) {
         let newSurface = this.options.groupTemplate(groupByValue);
         newSurface.groupId = groupByValue;
-
+        this._internalGroups[groupByValue] = {position: insertIndex, itemsCount: 0};
         this.insert(insertIndex, newSurface);
+
+        return newSurface;
     }
 
-    _getInsertIndex(child, previousSiblingID = null) {
+    _getInsertIndex(child, previousSiblingID = undefined) {
         /* By default, add item at the end if the orderBy function does not specify otherwise. */
         let firstIndex = this.header ? 1 : 0;
-        let insertIndex = this._dataSource.length;
+        let insertIndex = this._dataSource.getLength();
         let placedWithinGroup = false;
 
         if (this.isGrouped) {
+            let groupIndex;
             let groupId = this._getGroupByValue(child);
-            let groupIndex = this._findGroup(groupId);
-            if (groupIndex !== -1) {
-                for (insertIndex = groupIndex + 1; insertIndex < this._dataSource.length; insertIndex++) {
-                    if (this._dataSource[insertIndex].groupId !== undefined ||
-                        (this.options.orderBy && this.options.orderBy(child, this._dataSource[insertIndex]))) {
+            let groupData = this._findGroup(groupId);
+            if (groupData) groupIndex = groupData.position;
+            if (groupIndex != undefined && groupIndex !== -1) {
+                for (insertIndex = groupIndex + 1; insertIndex <= (groupIndex + groupData.itemsCount); insertIndex++) {
+                    if (this.options.orderBy) {
+                        let dataId = this._viewSequence.findByIndex(insertIndex)._value.dataId;
+                        if (dataId && this.options.orderBy(child, this._internalDataSource[dataId])) {
+                            break;
+                        }
+                    } else {
+                        insertIndex += this._internalGroups[groupId].itemsCount;
                         break;
                     }
                 }
@@ -205,25 +210,18 @@ export class DataBoundScrollView extends FlexScrollView {
             }
         }
 
-
         if (!placedWithinGroup) {
             /* If we have an orderBy function, find the index we should be inserting at. */
             if (this.options.orderBy && typeof this.options.orderBy === 'function') {
-                let foundOrderedIndex = _.findIndex(this._dataSource, function (compareChild) {
-
-                    /* Ignore the header and placeholder items and group headers*/
-                    if (!compareChild.isHeader && !compareChild.isPlaceholder && compareChild.groupId === undefined) {
-                        return this.options.orderBy(child, compareChild);
-                    }
-                    return false;
-                }.bind(this));
-
+                let foundOrderedIndex = this.orderBy(child, this.options.orderBy);
                 if (foundOrderedIndex !== -1) {
                     insertIndex = foundOrderedIndex;
                     if (this.isGrouped) {
-
-                        if (this._dataSource[insertIndex] && this._dataSource[insertIndex].groupId === undefined) {
-                            for (; this._dataSource[insertIndex].groupId === undefined; insertIndex--);
+                        let groupIndex;
+                        let groupData = this._findGroup(groupId);
+                        if (groupData) groupIndex = groupData.position;
+                        if (this._viewSequence.findByIndex(insertIndex) && groupIndex === undefined) {
+                            insertIndex = this._internalGroups[groupIndex].position - 1;
                         }
 
                     }
@@ -233,7 +231,7 @@ export class DataBoundScrollView extends FlexScrollView {
                  */
             } else if (previousSiblingID !== undefined) {
                 /* We don't have an orderBy method, but do have a previousSiblingID we can use to find the correct insertion index. */
-                let siblingIndex = _.findIndex(this._dataSource, (sibling) => sibling.dataId === previousSiblingID);
+                let siblingIndex = this._findData(previousSiblingID).position;
                 if (siblingIndex !== -1) {
                     insertIndex = siblingIndex + 1;
                 }
@@ -244,8 +242,9 @@ export class DataBoundScrollView extends FlexScrollView {
     }
 
     _addItem(child, previousSiblingID) {
-        if (_.findIndex(this._dataSource, (dataItem) => dataItem.dataId === child.id) !== -1) {
-            /* Child already exists, so we won't add it again. */
+
+        if (this._findData(child.id)) {
+            console.log('Child already exists ', child.id);
             return;
         }
 
@@ -257,40 +256,39 @@ export class DataBoundScrollView extends FlexScrollView {
         if (this.isGrouped) {
             let groupByValue = this._getGroupByValue(child);
             let groupIndex = this._findGroup(groupByValue);
-            if (groupIndex === -1) {
-                /* No group of this value exists yet, so we'll need to create one. */
-                this._addGroupItem(groupByValue, insertIndex);
-                insertIndex++;
+            if (groupByValue) {
+                if (groupIndex === -1) {
+                    /* No group of this value exists yet, so we'll need to create one. */
+                    let newSurface = this._addGroupItem(groupByValue, insertIndex);
+                    this._insertId(`group_${groupByValue}`, insertIndex, newSurface, null, {groupId: groupByValue});
+                    insertIndex++;
+                }
+                this._internalGroups[groupByValue].itemsCount++;
+                for (let element of Object.keys(this._internalGroups)) {
+                    if (this._internalGroups[element].position >= insertIndex) {
+                        this._internalGroups[element].position++;
+                    }
+                }
+
             }
+
         }
 
         let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
-        newSurface.data = child;
         this._subscribeToClicks(newSurface, child);
-
         this.insert(insertIndex, newSurface);
-
+        this._updatePosition(insertIndex);
+        this._insertId(child.id, insertIndex, newSurface, child);
     }
-
-    insert(insertIndex, newSurface) {
-        /* Dirty fix due to bug in famous-flex 0.3.5. https://github.com/Bizboard/arva-js/issues/8 */
-        if (insertIndex === 0 && this._dataSource.length > 0) {
-            super.insert(1, newSurface);
-            this.swap(0, 1);
-        } else {
-            super.insert(insertIndex, newSurface);
-        }
-    }
-
 
     _replaceItem(child) {
-        let index = this._getDataSourceIndex(child.id);
+        let index = this._findData(child.id).position;
 
         let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
-        newSurface.data = child;
         this._subscribeToClicks(newSurface, child);
+        this._insertId(child.id, index, newSurface, child);
         this.replace(index, newSurface, true);
     }
 
@@ -310,45 +308,37 @@ export class DataBoundScrollView extends FlexScrollView {
         }
     }
 
-    /**
-     * Returns true if the child at index would be the only child in it's group
-     * @private
-     */
-    _isEmptyGroupAtIndex(index) {
-        /*
-         If there's a group element immediately before, and the element was the last
-         in _dataSource
-         */
-        return (this._dataSource[index - 1] && this._dataSource[index - 1].groupId !== undefined) &&
-            (!this._dataSource[index] || this._dataSource[index].groupId !== undefined);
-    }
 
     _removeItem(child) {
-        let index = _.findIndex(this._dataSource, function (surface) {
-            return surface.dataId === child.id;
-        });
-
+        let index = this.internalDataSource[child.id].position;
         if (index > -1) {
             this.remove(index);
+            delete this.internalDataSource[child.id];
+            this._updatePosition(index, -1);
         }
 
         /* If we're using groups, check if we need to remove the group that this child belonged to. */
         if (this.isGrouped) {
             let groupByValue = this._getGroupByValue(child);
+            this._internalGroups[groupByValue].itemsCount--;
 
+            for (let element of Object.keys(this._internalGroups)) {
+                if (this._internalGroups[element].position >= index) {
+                    this._internalGroups[element].position--;
 
-            if (this._isEmptyGroupAtIndex(index)) {
-
-                /* No more childs in this group, so let's remove the group. */
-                let groupIndex = this._findGroup(groupByValue);
-                if (groupIndex !== -1) {
-                    this.remove(groupIndex);
                 }
+            }
+
+            /* Check if the group corresponding to the child is now empty */
+            if (this._internalGroups[groupByValue].itemsCount === 0) {
+                this.remove(this._internalGroups[groupByValue].position);
+                this._updatePosition(this._internalGroups[groupByValue].position, -1);
+                delete this._internalGroups[groupByValue];
             }
         }
 
         /* The amount of items in the dataSource is subtracted with a header if present, to get the total amount of actual items in the scrollView. */
-        let itemCount = this._dataSource.length - (this.header ? 1 : 0);
+        let itemCount = this._dataSource.getLength() - (this.header ? 1 : 0);
         if (itemCount === 0) {
             this._addPlaceholder();
         }
@@ -357,11 +347,14 @@ export class DataBoundScrollView extends FlexScrollView {
 
     _moveItem(oldId, prevChildId = null) {
 
-        let oldIndex = this._getDataSourceIndex(oldId);
-        let previousSiblingIndex = this._getNextVisibleIndex(prevChildId);
+        let oldData = this._findData(oldId);
+        let oldIndex = oldData.position;
 
+        let previousSiblingIndex = this._getNextVisibleIndex(prevChildId);
         if (oldIndex !== previousSiblingIndex) {
             this.move(oldIndex, previousSiblingIndex);
+            this._internalDataSource[previousSiblingIndex] = oldData;
+            this._internalDataSource[previousSiblingIndex].position = oldIndex;
         }
     }
 
@@ -369,13 +362,15 @@ export class DataBoundScrollView extends FlexScrollView {
         if (this.options.headerTemplate) {
             this.header = this.options.headerTemplate();
             this.header.isHeader = true;
+            this._insertId(0, 0, this.header, null, {isHeader: true});
             this.insert(0, this.header);
         }
     }
 
     removeHeader() {
-        if(this.header){
+        if (this.header) {
             this.remove(0);
+            delete this.internalDataSource[0];
             this.header = null;
         }
     }
@@ -391,10 +386,10 @@ export class DataBoundScrollView extends FlexScrollView {
 
     _removePlaceholder() {
         if (this.placeholder) {
-            if(this.placeholder)
-                if(this.header) this.remove(1)
+            if (this.placeholder)
+                if (this.header) this.remove(1);
                 else
-                    this.remove(0)
+                    this.remove(0);
             this.placeholder = null;
         }
     }
@@ -459,7 +454,7 @@ export class DataBoundScrollView extends FlexScrollView {
     _onChildChanged(child, previousSiblingID) {
         let changedItemIndex = this._getDataSourceIndex(child.id);
 
-        if (this._dataSource && changedItemIndex < this._dataSource.length) {
+        if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
 
             let result = this.options.dataFilter ? this.options.dataFilter(child) : true;
 
@@ -508,36 +503,77 @@ export class DataBoundScrollView extends FlexScrollView {
     };
 
     _getDataSourceIndex(id) {
-        return _.findIndex(this._dataSource, function (surface) {
-            return surface.dataId === id;
-        });
+        return this._findData(id).position;
     }
 
-
     _getNextVisibleIndex(id) {
+        let viewIndex = -1;
+        let viewData = this._findData(id);
 
-        let viewIndex = this._getDataSourceIndex(id);
+        if (viewData) {
+            viewIndex = viewData.position
+        }
+
         if (viewIndex === -1) {
+
             let modelIndex = _.findIndex(this.options.dataStore, function (model) {
                 return model.id === id;
             });
 
             if (modelIndex === 0 || modelIndex === -1) {
-                return this.isDescending ? this._dataSource ? this._dataSource.length - 1 : 0 : 0;
+                return this.isDescending ? this._dataSource ? this._dataSource.getLength() - 1 : 0 : 0;
             } else {
                 let nextModel = this.options.dataStore[this.isDescending ? modelIndex + 1 : modelIndex - 1];
-                let nextIndex = this._getDataSourceIndex(nextModel.id);
+                let nextIndex = this._findData(nextModel.id).position;
                 if (nextIndex > -1) {
-
                     return this.isDescending ? nextIndex === 0 ? 0 : nextIndex - 1 :
-                        this._dataSource.length === nextIndex + 1 ? nextIndex : nextIndex + 1;
+                        this._dataSource.getLength() === nextIndex + 1 ? nextIndex : nextIndex + 1;
                 } else {
                     return this._getNextVisibleIndex(nextModel.id);
                 }
             }
         } else {
             return this.isDescending ? viewIndex === 0 ? 0 : viewIndex - 1 :
-                this._dataSource.length === viewIndex + 1 ? viewIndex : viewIndex + 1;
+                this._dataSource.getLength() === viewIndex + 1 ? viewIndex : viewIndex + 1;
+        }
+    }
+
+    orderBy(child, orderByFunction) {
+        let item = this._dataSource._.head;
+        let index = 0;
+
+        while (item) {
+            if (item._value.dataId && this.internalDataSource[item._value.dataId] && orderByFunction(child, this.internalDataSource[item._value.dataId])) {
+                return index;
+            }
+
+            index++;
+            item = item._next;
+        }
+        return -1;
+    }
+
+    _updatePosition(position, change = 1) {
+        if (position === undefined || position === this._dataSource.getLength() - 1) return;
+        for (let element of Object.keys(this.internalDataSource)) {
+            let dataObject = this.internalDataSource[element];
+            if (dataObject.position >= position) {
+                dataObject.position += change
+            }
+        }
+    }
+
+    _findData(id) {
+        let data = this.internalDataSource[id] || undefined;
+        return data;
+    }
+
+    _insertId(id = null, position, renderable = {}, model = {}, options = {}) {
+        if (id === undefined || id === null) return;
+
+        this._internalDataSource[id] = {position: position, renderable: renderable, model: model};
+        for (let element of Object.keys(options)) {
+            this._internalDataSource[id][element] = options[element];
         }
     }
 
