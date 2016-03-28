@@ -20,9 +20,6 @@ function camelCaseKeys(param){
 }
 
 function famousMerge(defaultParam, specifiedParam) {
-    /*console.log(`defaultParam: ${defaultParam}`);
-    console.log(`specifiedParam: ${specifiedParam}`)*/;
-    debugger;
     if (Array.isArray(defaultParam) && Array.isArray(specifiedParam)) {
         let i, results = [];
         for (i = 0; i < specifiedParam.length; i++) {
