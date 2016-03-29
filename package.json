@@ -32,7 +32,8 @@
       "firebase": "github:firebase/firebase-bower@^2.4.1",
       "fs": "github:jspm/nodelibs-fs@^0.1.2",
       "lodash": "npm:lodash@^4.2.0",
-      "path": "github:jspm/nodelibs-path@^0.1.0"
+      "path": "github:jspm/nodelibs-path@^0.1.0",
+      "request-animation-frame-mock": "github:erykpiast/request-animation-frame-mock@^0.1.8"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",
@@ -45,10 +46,12 @@
   "author": "Tom Clement <tom@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>",
   "license": "MIT",
   "devDependencies": {
-    "babel": "5.8.23",
+    "babel": "^5.8.23",
+    "babel-runtime": "^6.6.1",
     "chai": "^3.4.0",
     "isparta": "^3.1.0",
     "mocha": "^2.3.3",
+    "request-animation-frame-mock": "git+https://github.com/erykpiast/request-animation-frame-mock.git",
     "sinon": "^1.17.3",
     "systemjs": "^0.19.5"
   }
