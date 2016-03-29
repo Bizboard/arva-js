@@ -161,8 +161,16 @@ export class View extends FamousView {
 
     _constructDecoratedRenderables() {
 
+        let classList = [];
 
-        for (let currentClass = Object.getPrototypeOf(this), renderableConstructors; renderableConstructors = this.renderableConstructors.get(currentClass.constructor); currentClass = Object.getPrototypeOf(currentClass)) {
+        for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
+            classList.push(currentClass);
+        }
+        classList.reverse();
+
+
+        for (let currentClass of classList) {
+            let renderableConstructors = this.renderableConstructors.get(currentClass.__proto__.constructor);
             for (let renderableName in renderableConstructors) {
                 let decorations = renderableConstructors[renderableName].decorations;
 
