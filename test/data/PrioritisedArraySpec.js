@@ -5,7 +5,8 @@
 import sinon                        from 'sinon';
 import chai                         from 'chai';
 import {loadDependencies,
-    mockDependency}             from '../meta/TestBootstrap.js';
+    mockDependency,
+    restoreDependency}              from '../meta/TestBootstrap.js';
 
 let should = chai.should();
 
@@ -14,7 +15,6 @@ describe('PrioritisedArray', () => {
     let on, once, off;
 
     before(() => {
-
         mockDependency('./src/utils/Context.js', {
             Context: {
                 getContext: () => ({
@@ -27,7 +27,6 @@ describe('PrioritisedArray', () => {
             PrioritisedArray: System.normalizeSync('./src/data/PrioritisedArray.js')
         }).then((importedObjects) => {
             imports = importedObjects;
-
         });
     });
 
@@ -35,6 +34,10 @@ describe('PrioritisedArray', () => {
         on = sinon.stub();
         once = sinon.stub();
         off = sinon.stub();
+    });
+
+    after(() => {
+        restoreDependency('./src/utils/Context.js');
     });
 
     describe('#constructor', () => {
