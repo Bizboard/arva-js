@@ -39,7 +39,8 @@ export class DataBoundScrollView extends FlexScrollView {
                 }
             },
             dataFilter: ()=> true,
-            ensureVisible: null
+            ensureVisible: null,
+            scrollToNewChild: false
         }, OPTIONS));
         ObjectHelper.bindAllMethods(this, this);
 
@@ -270,9 +271,7 @@ export class DataBoundScrollView extends FlexScrollView {
                         this._internalGroups[element].position++;
                     }
                 }
-
             }
-
         }
 
         let newSurface = this.options.itemTemplate(child);
@@ -282,8 +281,12 @@ export class DataBoundScrollView extends FlexScrollView {
         this._updatePosition(insertIndex);
         this._insertId(child.id, insertIndex, newSurface, child);
 
-        if (this.options.ensureVisible != null && this.options.ensureVisible(child)) {
-            this.ensureVisible(child, newSurface, insertIndex);
+        if (this.options.ensureVisible != null) {
+            if (this.options.scrollToNewChild) {
+                if (child === this._lastChild && this.options.ensureVisible(child, newSurface, insertIndex)) this.ensureVisible(newSurface);
+            } else if (this.options.ensureVisible(child, newSurface, insertIndex)) {
+                this.ensureVisible(newSurface);
+            }
         }
     }
 
@@ -409,6 +412,12 @@ export class DataBoundScrollView extends FlexScrollView {
         if (!this.options.template instanceof Function) {
             console.log('Template needs to be a function.');
             return;
+        }
+
+        if (this.options.scrollToNewChild) {
+            this.options.dataStore.on('new_child', (child)=> {
+                this._lastChild = child;
+            });
         }
 
         this.options.dataStore.on('child_added', this._onChildAdded.bind(this));
