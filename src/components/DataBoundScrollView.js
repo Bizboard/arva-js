@@ -73,15 +73,7 @@ export class DataBoundScrollView extends FlexScrollView {
 
         if (this.options.dataStore) {
             this._bindDataSource(this.options.dataStore);
-        } else {
-            console.log('No DataSource was set.');
         }
-
-        if (!this.options.dataFilter) {
-            console.log('No dataFilter was set.');
-        }
-
-
     }
 
     /**
