@@ -38,7 +38,8 @@ export class DataBoundScrollView extends FlexScrollView {
                     opacity: 0          // start opacity is 0, causing a fade-in effect,
                 }
             },
-            dataFilter: ()=> true
+            dataFilter: ()=> true,
+            ensureVisible: null
         }, OPTIONS));
         ObjectHelper.bindAllMethods(this, this);
 
@@ -280,6 +281,10 @@ export class DataBoundScrollView extends FlexScrollView {
         this.insert(insertIndex, newSurface);
         this._updatePosition(insertIndex);
         this._insertId(child.id, insertIndex, newSurface, child);
+
+        if (this.options.ensureVisible != null && this.options.ensureVisible(child)) {
+            this.ensureVisible(child, newSurface, insertIndex);
+        }
     }
 
     _replaceItem(child) {
