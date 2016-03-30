@@ -38,7 +38,9 @@ export class DataBoundScrollView extends FlexScrollView {
                     opacity: 0          // start opacity is 0, causing a fade-in effect,
                 }
             },
-            dataFilter: ()=> true
+            dataFilter: ()=> true,
+            ensureVisible: null,
+            scrollToNewChild: false
         }, OPTIONS));
         ObjectHelper.bindAllMethods(this, this);
 
@@ -71,15 +73,7 @@ export class DataBoundScrollView extends FlexScrollView {
 
         if (this.options.dataStore) {
             this._bindDataSource(this.options.dataStore);
-        } else {
-            console.log('No DataSource was set.');
         }
-
-        if (!this.options.dataFilter) {
-            console.log('No dataFilter was set.');
-        }
-
-
     }
 
     /**
@@ -269,9 +263,7 @@ export class DataBoundScrollView extends FlexScrollView {
                         this._internalGroups[element].position++;
                     }
                 }
-
             }
-
         }
 
         let newSurface = this.options.itemTemplate(child);
@@ -280,6 +272,14 @@ export class DataBoundScrollView extends FlexScrollView {
         this.insert(insertIndex, newSurface);
         this._updatePosition(insertIndex);
         this._insertId(child.id, insertIndex, newSurface, child);
+
+        if (this.options.ensureVisible != null) {
+            if (this.options.scrollToNewChild) {
+                if (child === this._lastChild && this.options.ensureVisible(child, newSurface, insertIndex)) this.ensureVisible(newSurface);
+            } else if (this.options.ensureVisible(child, newSurface, insertIndex)) {
+                this.ensureVisible(newSurface);
+            }
+        }
     }
 
     _replaceItem(child) {
@@ -404,6 +404,12 @@ export class DataBoundScrollView extends FlexScrollView {
         if (!this.options.template instanceof Function) {
             console.log('Template needs to be a function.');
             return;
+        }
+
+        if (this.options.scrollToNewChild) {
+            this.options.dataStore.on('new_child', (child)=> {
+                this._lastChild = child;
+            });
         }
 
         this.options.dataStore.on('child_added', this._onChildAdded.bind(this));
