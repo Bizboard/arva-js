@@ -117,10 +117,11 @@ export class ArvaRouter extends Router {
      * @returns {Boolean} Whether the current route was successfully ran.
      */
     run() {
-
+        
         //if (!url || typeof(url) == 'object')
         let url = window.location.hash.replace('#', ''); // || '#';
 
+        
         if (url !== '') {
             url = url.replace('/?', '?');
             url[0] === '/' && (url = url.slice(1));
@@ -178,7 +179,7 @@ export class ArvaRouter extends Router {
                 }
             }
         }).call(this, querySplit.length > 1 ? querySplit[1] : '');
-
+            
         if (rule && rule['@']) {
 
             /* Push current route to the history stack for later use */

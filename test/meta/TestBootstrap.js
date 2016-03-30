@@ -5,6 +5,7 @@
 import System                   from 'systemjs';
 import sinon                    from 'sinon';
 import '../../config.js';
+import requestAnimationFrame        from 'request-animation-frame-mock';
 
 export function mockDependency(dependency, replacement) {
 
@@ -21,6 +22,42 @@ export function mockDependency(dependency, replacement) {
 
 export function restoreDependency(dependency) {
     System.delete(System.normalizeSync(dependency));
+}
+
+export function mockDOMGlobals() {
+    if (global) {
+        global['history'] = [];
+        history.pushState = function(){
+            let newHash = Array.from(arguments).splice(-1)[0];
+            window.location.hash  = newHash;
+        };
+        global['document'] = {
+            documentElement: {style: {}},
+            createElement: sinon.stub().returns({
+                style: {},
+                addEventListener: new Function(),
+                classList: {add: sinon.stub()}
+            })
+        };
+        global['window'] = {
+            requestAnimationFrame: requestAnimationFrame.mock.requestAnimationFrame,
+            addEventListener: new Function(),
+            location: {hash: ''}
+        };
+        global['Node'] = sinon.stub();
+    }
+    else {
+        window['Node'] = sinon.stub();
+    }
+}
+
+
+export function restoreDOMGlobals() {
+    if (global && (global['window'] || global['document'])) {
+        delete global['document'];
+        delete global['window'];
+    }
+
 }
 
 

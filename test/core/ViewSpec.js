@@ -1,7 +1,7 @@
 import _                            from 'lodash';
 import chai                         from 'chai';
 import sinon                        from 'sinon';
-import {loadDependencies,
+import {mockDOMGlobals, loadDependencies, restoreDOMGlobals,
     mockDependency}                 from '../meta/TestBootstrap.js';
 import requestAnimationFrame        from 'request-animation-frame-mock';
 
@@ -15,23 +15,7 @@ describe('View', () => {
         mockDependency('famous/surfaces/ImageSurface.js');
         mockDependency('famous/core/ContainerSurface.js');
 
-        if (global) {
-            global['document'] = {
-                documentElement: {style: {}},
-                createElement: sinon.stub().returns({
-                    style: {},
-                    addEventListener: new Function(),
-                    classList: {add: sinon.stub()}
-                })
-            };
-            global['window'] = {
-                requestAnimationFrame: requestAnimationFrame.mock.requestAnimationFrame,
-                addEventListener: new Function()
-            };
-            global['Node'] = sinon.stub();
-        } else {
-            window['Node'] = sinon.stub();
-        }
+        mockDOMGlobals();
         let ElementOutput = await System.import('famous/core/ElementOutput');
         //Mock for the Famous Surface
         mockDependency('./ElementOutput.js', ElementOutput);
@@ -57,10 +41,7 @@ describe('View', () => {
     });
 
     after(() => {
-        if (global && (global['window'] || global['document'])) {
-            delete global['document'];
-            delete global['window'];
-        }
+        restoreDOMGlobals();
     });
 
     describe('#constructor', () => {
@@ -281,7 +262,7 @@ describe('View', () => {
             })
         });
 
-        it('causes 40 matrix transformations to be done in above experiment', (done) => {
+        it('causes 40 matrix transformations or less to be executed in above experiment', (done) => {
             let origFunc = imports.Transform.multiply;
             let multiplyCount = 0;
             imports.Transform.multiply = function () {
@@ -290,11 +271,11 @@ describe('View', () => {
             };
             setupPerformanceExperiment(done, (i) => {
                 let expectedCount = 40;
-                if(i==0){
+                if (i == 0) {
                     expectedCount = 21
-                } else if(i==1){
+                } else if (i == 1) {
                     expectedCount = 28;
-                } else if(i===2){
+                } else if (i === 2) {
                     expectedCount = 36;
                 }
                 expect(multiplyCount).to.be.equal(expectedCount);
