@@ -8,7 +8,7 @@
  @copyright Bizboard, 2015
 
  */
-
+import _                            from 'lodash';
 import {provide}                    from 'di';
 import {ObjectHelper}               from '../../utils/ObjectHelper.js';
 import {UrlParser}                  from '../../utils/request/UrlParser.js';
