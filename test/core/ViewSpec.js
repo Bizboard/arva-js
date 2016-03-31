@@ -74,20 +74,35 @@ describe('View', () => {
 
     });
 
-    describe('#creating renderables', () => {
+    describe('#renderable creation', () => {
 
         let createDecoratedView = () => {
-            class DecoratedView extends imports.View {
-                @imports.decorators.layout.dock('top', 50)
-                renderable1 = new imports.Surface({});
+            let layout = imports.decorators.layout;
+            let {Surface, View} = imports;
+            class DecoratedView extends View {
+                @layout.dock('top', 50)
+                top1 = new Surface({});
 
-                @imports.decorators.layout.dock('top', 50)
-                renderable2 = new imports.Surface({});
+                @layout.dock('top', 50)
+                top2 = new Surface({});
+
+                @layout.dock('fill')
+                fill = new Surface({});
+
+                @layout.size(50, 50)
+                @layout.place('center')
+                center = new Surface({});
+
+                @layout.renderable
+                ignored = new Surface({});
+
+                @layout.fullscreen
+                fullscreen = new Surface({});
             }
             return new DecoratedView();
         };
 
-        it('has children which are added to the datasource on the first commit', () => {
+        it('has its children added to the datasource on the first commit', () => {
             addRenderablesTest();
         });
 
@@ -95,8 +110,19 @@ describe('View', () => {
         it('can instantiate children through decorators', () => {
             let instance = createDecoratedView();
             should.exist(instance);
-            should.exist(instance.renderable1);
-            should.exist(instance.renderable2);
+            should.exist(instance.top1);
+            should.exist(instance.top2);
+            should.exist(instance.fill);
+            should.exist(instance.center);
+            should.exist(instance.ignored);
+            should.exist(instance.fullscreen);
+
+            should.exist(instance.decoratedRenderables['top1']);
+            should.exist(instance.decoratedRenderables['top2']);
+            should.exist(instance.decoratedRenderables['fill']);
+            should.exist(instance.decoratedRenderables['center']);
+            should.exist(instance.decoratedRenderables['ignored']);
+            should.exist(instance.decoratedRenderables['fullscreen']);
         });
 
         it('can create "decorated" renderables at runtime, resulting in the same setup', () => {
@@ -105,9 +131,28 @@ describe('View', () => {
 
             let runTimeDecoratedView = new RunTimeDecoratedView();
             let decoratedView = createDecoratedView();
-            runTimeDecoratedView.addRenderable(decoratedView.renderable1, 'renderable1', imports.decorators.layout.dock('top', 50));
-            runTimeDecoratedView.addRenderable(decoratedView.renderable2, 'renderable2', imports.decorators.layout.dock('top', 50));
+            runTimeDecoratedView.addRenderable(decoratedView.top1, 'top1', imports.decorators.layout.dock('top', 50));
+            runTimeDecoratedView.addRenderable(decoratedView.top2, 'top2', imports.decorators.layout.dock('top', 50));
+            runTimeDecoratedView.addRenderable(decoratedView.fill, 'fill', imports.decorators.layout.dock('fill'));
+            runTimeDecoratedView.addRenderable(decoratedView.center, 'center', imports.decorators.layout.size(50, 50), imports.decorators.layout.place('center'));
+            runTimeDecoratedView.addRenderable(decoratedView.ignored, 'ignored', imports.decorators.layout.renderable);
+            runTimeDecoratedView.addRenderable(decoratedView.fullscreen, 'fullscreen', imports.decorators.layout.fullscreen);
             decoratedView.renderables.should.deep.equal(runTimeDecoratedView.renderables);
+        });
+
+        it('correctly groups decorated renderables', () => {
+            let decoratedView = createDecoratedView();
+            decoratedView._groupedRenderables.should.include.keys('docked');
+            decoratedView._groupedRenderables.should.include.keys('filled');
+            decoratedView._groupedRenderables.should.include.keys('traditional');
+            decoratedView._groupedRenderables.should.include.keys('ignored');
+            decoratedView._groupedRenderables.should.include.keys('fullscreen');
+
+            decoratedView._groupedRenderables.docked.keys().should.deep.equal(['top1', 'top2']);
+            decoratedView._groupedRenderables.filled.keys().should.deep.equal(['fill']);
+            decoratedView._groupedRenderables.traditional.keys().should.deep.equal(['center']);
+            decoratedView._groupedRenderables.ignored.keys().should.deep.equal(['ignored']);
+            decoratedView._groupedRenderables.fullscreen.keys().should.deep.equal(['fullscreen']);
         });
     });
 

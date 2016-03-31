@@ -1,8 +1,8 @@
 System.config({
-  "baseURL": "./",
-  "defaultJSExtensions": true,
-  "transpiler": "babel",
-  "babelOptions": {
+  baseURL: "./",
+  defaultJSExtensions: true,
+  transpiler: "babel",
+  babelOptions: {
     "stage": 0,
     "optional": [
       "runtime",
@@ -11,14 +11,12 @@ System.config({
       "optimisation.modules.system"
     ]
   },
-  "paths": {
+  paths: {
     "github:*": "jspm_packages/github/*",
     "npm:*": "jspm_packages/npm/*"
-  }
-});
+  },
 
-System.config({
-  "map": {
+  map: {
     "SPSoapAdapter": "github:bizboard/SPSoapAdapter@develop",
     "babel": "npm:babel-core@5.8.35",
     "babel-runtime": "npm:babel-runtime@5.8.35",
@@ -33,6 +31,7 @@ System.config({
     "firebase": "github:firebase/firebase-bower@2.2.7",
     "fs": "github:jspm/nodelibs-fs@0.1.2",
     "lodash": "npm:lodash@4.6.1",
+    "ordered-hashmap": "npm:ordered-hashmap@1.0.0",
     "path": "github:jspm/nodelibs-path@0.1.0",
     "request-animation-frame-mock": "github:erykpiast/request-animation-frame-mock@0.1.8",
     "traceur": "github:jmcriffey/bower-traceur@0.0.92",
@@ -162,4 +161,3 @@ System.config({
     }
   }
 });
-
