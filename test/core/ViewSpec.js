@@ -263,12 +263,7 @@ describe('View', () => {
         });
 
         it('causes 40 matrix transformations or less to be executed in above experiment', (done) => {
-            let origFunc = imports.Transform.multiply;
-            let multiplyCount = 0;
-            imports.Transform.multiply = function () {
-                multiplyCount++;
-                return origFunc(...arguments);
-            };
+            let spy = sinon.spy(imports.Transform,'multiply');
             setupPerformanceExperiment(done, (i) => {
                 let expectedCount = 40;
                 if (i == 0) {
@@ -276,10 +271,11 @@ describe('View', () => {
                 } else if (i == 1) {
                     expectedCount = 28;
                 } else if (i === 2) {
-                    expectedCount = 36;
+                    expectedCount = 36
+
                 }
-                expect(multiplyCount).to.be.equal(expectedCount);
-                multiplyCount = 0;
+                expect(spy.callCount).to.be.equal(expectedCount);
+                spy.reset();
             });
         });
     });
