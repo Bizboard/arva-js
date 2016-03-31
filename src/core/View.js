@@ -79,11 +79,16 @@ export class View extends FamousView {
         }
         let size = this._resolvedSizesCache.get(renderable);
 
-        if (!size) {
-            return null;
-        }
-        if (size[0] === true || size[1] === true) {
+
+        if (size && (size[0] === true || size[1] === true)) {
             return renderable.getSize();
+        }
+        if(!size && renderable.decorations){
+            let decoratedSize = renderable.decorations.size;
+            let isValidSize = (inputSize) => typeof inputSize == 'number' && inputSize > 0;
+            if(decoratedSize && isValidSize(decoratedSize[0]) && isValidSize(decoratedSize[1])){
+                size = decoratedSize;
+            }
         }
 
         return size;
@@ -712,6 +717,9 @@ export class View extends FamousView {
                     renderableSpec.translate = renderableSpec.transform.slice(-4, -1);
                 } else {
                     renderableSpec = renderable.decorations;
+                    renderableSpec.align = renderableSpec.align || [0, 0];
+                    renderableSpec.translate = renderableSpec.translate || [0, 0, 0];
+                    
                     if (renderableSpec.translate) {
                         renderableSpec.translate = this._adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0]
                             , renderableSpec.translate);
@@ -719,6 +727,7 @@ export class View extends FamousView {
                         renderableSpec.translate = [0, 0, 0];
                     }
                 }
+                
 
                 /* If there has been an align specified, then nothing can be calculated */
                 if (!renderableSpec || !renderableSpec.size || (renderableSpec.align[0] && renderableSpec.align[1])) {
@@ -726,13 +735,12 @@ export class View extends FamousView {
                 }
 
                 let {translate, align} = renderableSpec;
-
                 /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
                 for (let i = 0; i < 2; i++) {
                     /* Undefined is the same as context size */
                     if (size[i] !== undefined && !(align && align[i]) && maxPosition[i] !== undefined) {
-                        minPosition[i] = Math.min(minPosition[i], translate[0] + size[i]);
-                        maxPosition[i] = Math.max(maxPosition[i], translate[1] + size[i]);
+                        minPosition[i] = Math.min(minPosition[i], translate[i]);
+                        maxPosition[i] = Math.max(maxPosition[i], translate[i] + size[i]);
                     }
 
                 }
