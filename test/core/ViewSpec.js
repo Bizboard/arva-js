@@ -6,10 +6,31 @@ import {mockDOMGlobals, loadDependencies, restoreDOMGlobals,
 import requestAnimationFrame        from 'request-animation-frame-mock';
 
 let should = chai.should();
-let expect = chai.expect;
+let imports = {};
+
+let fakeCommit = (view)=> {
+    view.layout.commit({size: [100, 100]});
+};
+
+let addRenderablesTest = () => {
+
+    class MyView extends imports.View {
+        constructor() {
+            super();
+            this.renderables = {
+                surface1: new imports.Surface(),
+                surface2: new imports.Surface()
+            }
+        }
+    }
+    let instance = new MyView();
+    should.not.exist(instance.layout.getDataSource());
+    fakeCommit(instance);
+    Object.keys(instance.layout.getDataSource()).length.should.equal(2);
+    return instance;
+};
 
 describe('View', () => {
-    let imports = {};
 
     before(async function () {
         mockDependency('famous/surfaces/ImageSurface.js');
@@ -53,43 +74,35 @@ describe('View', () => {
 
     });
 
-
-    let fakeCommit = (view)=> {
-        view.layout.commit({size: [100, 100]});
-    };
-
-    let addRenderablesTest = () => {
-
-        class MyView extends imports.View {
-            constructor() {
-                super();
-                this.renderables = {
-                    surface1: new imports.Surface(),
-                    surface2: new imports.Surface()
-                }
-            }
-        }
-        let instance = new MyView();
-        expect(instance.layout.getDataSource()).to.not.exist;
-        fakeCommit(instance);
-        expect(Object.keys(instance.layout.getDataSource()).length).to.equal(2);
-        return instance;
-    };
-
-    describe('#creating renderables', () => {
+    describe('#renderable creation', () => {
 
         let createDecoratedView = () => {
-            class DecoratedView extends imports.View {
-                @imports.decorators.layout.dock('top', 50)
-                renderable1 = new imports.Surface({});
+            let layout = imports.decorators.layout;
+            let {Surface, View} = imports;
+            class DecoratedView extends View {
+                @layout.dock('top', 50)
+                top1 = new Surface({});
 
-                @imports.decorators.layout.dock('top', 50)
-                renderable2 = new imports.Surface({});
+                @layout.dock('top', 50)
+                top2 = new Surface({});
+
+                @layout.dock('fill')
+                fill = new Surface({});
+
+                @layout.size(50, 50)
+                @layout.place('center')
+                center = new Surface({});
+
+                @layout.renderable
+                ignored = new Surface({});
+
+                @layout.fullscreen
+                fullscreen = new Surface({});
             }
             return new DecoratedView();
         };
 
-        it('has children which are added to the datasource on the first commit', () => {
+        it('has its children added to the datasource on the first commit', () => {
             addRenderablesTest();
         });
 
@@ -97,8 +110,19 @@ describe('View', () => {
         it('can instantiate children through decorators', () => {
             let instance = createDecoratedView();
             should.exist(instance);
-            should.exist(instance.renderable1);
-            should.exist(instance.renderable2);
+            should.exist(instance.top1);
+            should.exist(instance.top2);
+            should.exist(instance.fill);
+            should.exist(instance.center);
+            should.exist(instance.ignored);
+            should.exist(instance.fullscreen);
+
+            should.exist(instance.decoratedRenderables['top1']);
+            should.exist(instance.decoratedRenderables['top2']);
+            should.exist(instance.decoratedRenderables['fill']);
+            should.exist(instance.decoratedRenderables['center']);
+            should.exist(instance.decoratedRenderables['ignored']);
+            should.exist(instance.decoratedRenderables['fullscreen']);
         });
 
         it('can create "decorated" renderables at runtime, resulting in the same setup', () => {
@@ -107,25 +131,44 @@ describe('View', () => {
 
             let runTimeDecoratedView = new RunTimeDecoratedView();
             let decoratedView = createDecoratedView();
-            runTimeDecoratedView.addRenderable(decoratedView.renderable1, 'renderable1', imports.decorators.layout.dock('top', 50));
-            runTimeDecoratedView.addRenderable(decoratedView.renderable2, 'renderable2', imports.decorators.layout.dock('top', 50));
-            expect(decoratedView.renderables).to.deep.equal(runTimeDecoratedView.renderables);
+            runTimeDecoratedView.addRenderable(decoratedView.top1, 'top1', imports.decorators.layout.dock('top', 50));
+            runTimeDecoratedView.addRenderable(decoratedView.top2, 'top2', imports.decorators.layout.dock('top', 50));
+            runTimeDecoratedView.addRenderable(decoratedView.fill, 'fill', imports.decorators.layout.dock('fill'));
+            runTimeDecoratedView.addRenderable(decoratedView.center, 'center', imports.decorators.layout.size(50, 50), imports.decorators.layout.place('center'));
+            runTimeDecoratedView.addRenderable(decoratedView.ignored, 'ignored', imports.decorators.layout.renderable);
+            runTimeDecoratedView.addRenderable(decoratedView.fullscreen, 'fullscreen', imports.decorators.layout.fullscreen);
+            decoratedView.renderables.should.deep.equal(runTimeDecoratedView.renderables);
+        });
+
+        it('correctly groups decorated renderables', () => {
+            let decoratedView = createDecoratedView();
+            decoratedView._groupedRenderables.should.include.keys('docked');
+            decoratedView._groupedRenderables.should.include.keys('filled');
+            decoratedView._groupedRenderables.should.include.keys('traditional');
+            decoratedView._groupedRenderables.should.include.keys('ignored');
+            decoratedView._groupedRenderables.should.include.keys('fullscreen');
+
+            decoratedView._groupedRenderables.docked.keys().should.deep.equal(['top1', 'top2']);
+            decoratedView._groupedRenderables.filled.keys().should.deep.equal(['fill']);
+            decoratedView._groupedRenderables.traditional.keys().should.deep.equal(['center']);
+            decoratedView._groupedRenderables.ignored.keys().should.deep.equal(['ignored']);
+            decoratedView._groupedRenderables.fullscreen.keys().should.deep.equal(['fullscreen']);
         });
     });
 
     describe('#piping', () => {
-        it('has children which pipes to the view', () => {
+        it('has children which pipe to the view', () => {
             let instance = addRenderablesTest();
             let eventCallback = sinon.spy();
             instance.on('customEvent', eventCallback);
             instance.renderables.surface1._eventOutput.emit('customEvent');
             instance.renderables.surface2._eventOutput.emit('customEvent');
-            expect(eventCallback.calledTwice).to.be.true;
+            eventCallback.calledTwice.should.be.ok;
         });
-        it('has recursive reflows which propagate upwards', () => {
+        it('has recursive reflows that propagate upwards', () => {
             class MyView1 extends imports.View {
             }
-            ;
+            
             class MyView2 extends imports.View {
                 @imports.decorators.layout.dock('top', 50)
                 inside = new MyView1();
@@ -135,8 +178,8 @@ describe('View', () => {
             let parentReflow = sinon.spy(parentView.layout, 'reflowLayout');
             let childReflow = sinon.spy(parentView.inside.layout, 'reflowLayout');
             parentView.inside.reflowRecursively();
-            expect(parentReflow.calledOnce).to.be.true;
-            expect(childReflow.calledOnce).to.be.true;
+            parentReflow.calledOnce.should.be.ok;
+            childReflow.calledOnce.should.be.ok;
         });
     });
 
@@ -152,7 +195,7 @@ describe('View', () => {
                     @imports.decorators.layout.dock(direction, 50)
                     c = new imports.Surface();
                 }
-                expect(new StackedView().getSize()).to.deep.equal(isVerticalDirection ? [undefined, 150] : [150, undefined]);
+                new StackedView().getSize().should.deep.equal(isVerticalDirection ? [undefined, 150] : [150, undefined]);
             });
             it(`calculates the bounding box when stacked in direction ${direction}, also when the other dimension is specified`, () => {
                 class StackedView extends imports.View {
@@ -166,7 +209,7 @@ describe('View', () => {
                     @imports.decorators.layout.dock(direction)
                     c = new imports.Surface();
                 }
-                expect(new StackedView().getSize()).to.deep.equal(isVerticalDirection ? [50, 150] : [150, 50]);
+                new StackedView().getSize().should.deep.equal(isVerticalDirection ? [50, 150] : [150, 50]);
             });
             it(`can also let the fill determine the size in other dimension of ${direction}`, () => {
                 class StackedView extends imports.View {
@@ -176,23 +219,22 @@ describe('View', () => {
                     @imports.decorators.layout.dock('fill')
                     b = new imports.Surface();
                 }
-                expect(new StackedView().getSize()).to.deep.equal(isVerticalDirection ? [400, undefined] : [undefined, 400]);
+                new StackedView().getSize().should.deep.equal(isVerticalDirection ? [400, undefined] : [undefined, 400]);
             });
         }
     });
-
-    let decorateApplyCommit = (extraFn) => {
-        /* Spec parser is called every time _applyCommit is called, so we will decorate this one */
-        let oldSpecParserFn = imports.SpecParser.parse;
-        imports.SpecParser.parse = function () {
-            extraFn(...arguments);
-            return oldSpecParserFn.apply(this, arguments);
-        }
-
-    };
-
-
+    
     describe('#performance', () => {
+
+        let decorateApplyCommit = (extraFn) => {
+            /* Spec parser is called every time _applyCommit is called, so we will decorate this one */
+            let oldSpecParserFn = imports.SpecParser.parse;
+            imports.SpecParser.parse = function () {
+                extraFn(...arguments);
+                return oldSpecParserFn.apply(this, arguments);
+            }
+
+        };
 
         let setupPerformanceExperiment = (done, loopFn) => {
             let context = imports.Engine.createContext({style: {}, appendChild: new Function()});
@@ -256,7 +298,7 @@ describe('View', () => {
                 } else if (i === 1) {
                     expectedTimesCalled = 5;
                 }
-                expect(nApplyCommitCalled).to.equal(expectedTimesCalled);
+                nApplyCommitCalled.should.equal(expectedTimesCalled);
                 nApplyCommitCalled = 0;
 
             })
@@ -274,8 +316,13 @@ describe('View', () => {
                     expectedCount = 36
 
                 }
+<<<<<<< HEAD
                 expect(spy.callCount).to.be.equal(expectedCount);
                 spy.reset();
+=======
+                multiplyCount.should.equal(expectedCount);
+                multiplyCount = 0;
+>>>>>>> bc12e110f09fe48c7fccb32f6f5fa09058bbc435
             });
         });
     });
