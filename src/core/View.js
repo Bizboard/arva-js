@@ -698,7 +698,6 @@ export class View extends FamousView {
         }
 
         if (traditionalRenderables || ignoredRenderables) {
-            let minPosition = [0, 0], maxPosition = totalSize;
             let traditionalNames = traditionalRenderables ? traditionalRenderables.keys() : [];
             let ignoredNames = ignoredRenderables ? ignoredRenderables.keys() : [];
             let combinedNames = traditionalNames.concat(ignoredNames);
@@ -738,14 +737,13 @@ export class View extends FamousView {
                 /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
                 for (let i = 0; i < 2; i++) {
                     /* Undefined is the same as context size */
-                    if (size[i] !== undefined && !(align && align[i]) && maxPosition[i] !== undefined) {
-                        minPosition[i] = Math.min(minPosition[i], translate[i]);
-                        maxPosition[i] = Math.max(maxPosition[i], translate[i] + size[i]);
+                    if (size[i] !== undefined && !(align && align[i]) && totalSize[i] !== undefined) {
+                        totalSize[i] = Math.max(totalSize[i], translate[i] + size[i]);
                     }
 
                 }
             }
-            let width = maxPosition[0] - minPosition[0], height = maxPosition[1] - minPosition[1];
+            let width = totalSize[0], height = totalSize[1];
             totalSize = [(width || width == 0) ? width : undefined, (height || height == 0) ? height : undefined];
         }
         return totalSize;
