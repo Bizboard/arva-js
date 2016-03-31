@@ -323,15 +323,9 @@ describe('View', () => {
                     expectedCount = 28;
                 } else if (i === 2) {
                     expectedCount = 36
-
                 }
-<<<<<<< HEAD
-                expect(spy.callCount).to.be.equal(expectedCount);
+                spy.callCount.should.equal(expectedCount);
                 spy.reset();
-=======
-                multiplyCount.should.equal(expectedCount);
-                multiplyCount = 0;
->>>>>>> bc12e110f09fe48c7fccb32f6f5fa09058bbc435
             });
         });
     });
