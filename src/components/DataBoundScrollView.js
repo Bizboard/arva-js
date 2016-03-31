@@ -209,15 +209,17 @@ export class DataBoundScrollView extends FlexScrollView {
             if (this.options.orderBy && typeof this.options.orderBy === 'function') {
                 let foundOrderedIndex = this.orderBy(child, this.options.orderBy);
                 if (foundOrderedIndex !== -1) {
-                    insertIndex = foundOrderedIndex;
                     if (this.isGrouped) {
                         let groupIndex;
+                        let groupId = this._getGroupByValue(child);
                         let groupData = this._findGroup(groupId);
                         if (groupData) groupIndex = groupData.position;
-                        if (this._viewSequence.findByIndex(insertIndex) && groupIndex === undefined) {
+                        if (this._viewSequence.findByIndex(insertIndex) && groupIndex === undefined && groupData !== -1) {
                             insertIndex = this._internalGroups[groupIndex].position - 1;
                         }
 
+                    } else {
+                        insertIndex = foundOrderedIndex;
                     }
                 }
                 /*
