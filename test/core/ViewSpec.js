@@ -193,6 +193,37 @@ describe('View', () => {
     });
 
     describe('#sizing', () => {
+        it('adapts is size to a single placed renderable', () => {
+            class SimpleView extends imports.View {
+                @imports.decorators.layout.size(100,100)
+                a = new imports.Surface();
+            }
+            new SimpleView().getSize().should.deep.equal([100,100]);
+        });
+
+        it('adapts is size to bound two renderables', () => {
+            class TwoNodesView extends imports.View {
+                @imports.decorators.layout.size(100,100)
+                a = new imports.Surface();
+
+                @imports.decorators.layout.size(80,200)
+                b = new imports.Surface();
+            }
+            new TwoNodesView().getSize().should.deep.equal([100,200]);
+        });
+
+        it('adapts is size to a displaced renderable', () => {
+            class DisplacedView extends imports.View {
+                @imports.decorators.layout.size(100,100)
+                a = new imports.Surface();
+
+                @imports.decorators.layout.size(100,100)
+                @imports.decorators.layout.translate(0,10,0)
+                b = new imports.Surface();
+            }
+            new DisplacedView().getSize().should.deep.equal([100,110]);
+        });
+
         for (let direction of ['top', 'bottom', 'left', 'right']) {
             let isVerticalDirection = !!~['top', 'bottom'].indexOf(direction);
             it(`sizes automatically when stacked in direction ${direction}`, () => {
@@ -231,6 +262,23 @@ describe('View', () => {
                 new StackedView().getSize().should.deep.equal(isVerticalDirection ? [400, undefined] : [undefined, 400]);
             });
         }
+
+        it('handles a difficult sizing situation', () => {
+            class DifficultView extends imports.View {
+                @imports.decorators.layout.size(100,100)
+                @imports.decorators.layout.dock('top')
+                a = new imports.Surface();
+
+                @imports.decorators.layout.size(100,100)
+                @imports.decorators.layout.dock('bottom')
+                b = new imports.Surface();
+
+                @imports.decorators.layout.size(70,300)
+                @imports.decorators.layout.translate(50,10,0)
+                c = new imports.Surface();
+            }
+            new DifficultView().getSize().should.deep.equal([120,undefined]);
+        });
     });
     
     describe('#performance', () => {
