@@ -2,6 +2,7 @@
  * Created by tom on 14/03/16.
  */
 
+import _                            from 'lodash';
 import chai                         from 'chai';
 import sinon                        from 'sinon';
 import {loadDependencies, mockDependency,
@@ -14,26 +15,14 @@ describe('DataBoundScrollView', () => {
     let on, once, off;
 
     before(async function() {
-        /* Mock famous-flex's FlexScrollView so no attempt to insert anything into the DOM is made. */
-        //mockDependency('famous-flex/FlexScrollView.js', function () { this.options = {}; });
         mockDOMGlobals();
-
-        mockDependency('famous/core/Group.js', function () {
-            this.add = sinon.stub();
-            this.render = sinon.stub();
-        });
-
-        //mockDependency('famous/core/Group.js', function(){return sinon.stub()});
 
         let ElementOutput = await System.import('famous/core/ElementOutput');
         //Mock for the Famous Surface
         mockDependency('./ElementOutput.js', ElementOutput);
-
-        //System.set('famous/core/Group.js', System.newModule({default: function(){return {render: sinon.stub(), add: sinon.stub()}}}));
         mockDependency('famous/utilities/Timer.js');
-        mockDependency('famous-flex/LayoutUtility.js', {registerHelper: new Function()});
+        mockDependency('famous-flex/LayoutUtility.js', {registerHelper: function(){}, combineOptions: (one, two) => _.merge(one, two)});
 
-        //sinon.stub().returns({add: sinon.stub(), render: sinon.stub()}
 
         mockDependency('./src/utils/Context.js', {
             Context: {
@@ -55,7 +44,6 @@ describe('DataBoundScrollView', () => {
     });
 
     after(() => {
-        System.delete(System.normalizeSync('famous-flex/FlexScrollView.js'));
         restoreDOMGlobals();
     });
 

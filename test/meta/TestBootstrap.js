@@ -37,6 +37,9 @@ export function mockDOMGlobals() {
                 style: {},
                 addEventListener: new Function(),
                 classList: {add: sinon.stub()}
+            }),
+            createDocumentFragment: sinon.stub().returns({
+                appendChild: sinon.stub()
             })
         };
         global['window'] = {
