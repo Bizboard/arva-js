@@ -749,6 +749,7 @@ export class View extends FamousView {
 
         let {dockMethod} = dockedRenderables.get(dockedRenderables.keyAt(0)).decorations.dock;
         let dockTypes = [['right', 'left'], ['top', 'bottom']];
+        /* Gets the dock type where, 0 is right or left (horizontal) and 1 is top or bottom (vertical) */
         let getDockType = (dockMethodToGet) => _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
         let dockType = getDockType(dockMethod);
         let dockingDirection = dockType;
