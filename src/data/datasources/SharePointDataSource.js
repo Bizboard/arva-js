@@ -52,20 +52,10 @@ export class SharePointDataSource extends DataSource {
                 listName: this.key()
             };
 
-            if (this.options.query) {
-                configuration.query = this.options.query;
-            }
-
-            if (this.options.orderBy) {
-                configuration.orderBy = this.options.orderBy;
-            }
-
-            if (this.options.limit) {
-                configuration.limit = this.options.limit;
-            }
+            let sharePointOptions = _.extend({},this.options, configuration);
 
             /* Bind the soap adapter against the datasource with given configuration */
-            this._dataReference = new SharePoint(configuration);
+            this._dataReference = new SharePoint(sharePointOptions);
         }
     }
 
