@@ -154,6 +154,15 @@ describe('View', () => {
             decoratedView._groupedRenderables.ignored.keys().should.deep.equal(['ignored']);
             decoratedView._groupedRenderables.fullscreen.keys().should.deep.equal(['fullscreen']);
         });
+
+        it('allows manipulation of the rendering order of renderables', () => {
+            let decoratedView = createDecoratedView();
+            decoratedView._groupedRenderables.should.include.keys('docked');
+            
+            decoratedView.prioritiseDockBefore('top2', 'top1').should.be.ok;
+
+            decoratedView._groupedRenderables.docked.keys().should.deep.equal(['top2', 'top1']);
+        });
     });
 
     describe('#piping', () => {

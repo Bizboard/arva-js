@@ -125,7 +125,7 @@ export class View extends FamousView {
      */
     addRenderable() {
         let [renderable, renderableName, ...decorators] = arguments;
-        if(decorators.length){
+        if (decorators.length) {
             renderable.decorations = {};
         }
         for (let decorator of decorators) {
@@ -135,6 +135,30 @@ export class View extends FamousView {
 
         this._assignRenderable(renderable, renderableName);
         return renderable;
+    }
+
+    /**
+     * Rearranges the order in which docked renderables are parsed for rendering, ensuring that 'renderableName' is processed
+     * before 'nextRenderableName'.
+     * @param {String} renderableName
+     * @param {String} nextRenderableName
+     */
+    prioritiseDockBefore(renderableName, nextRenderableName) {
+        let docked = this._groupedRenderables.docked;
+        if (!docked) { this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': no docked renderables present.`); return false; }
+
+        let nextIndex = docked.indexOf(nextRenderableName);
+        let renderableToRearrange = docked.get(renderableName);
+
+        if(nextIndex < 0 || !renderableToRearrange) {
+            this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': could not find one of the renderables by name.
+                        The following docked renderables are present: ${docked.keys()}`); 
+            return false;
+        }
+
+        docked.remove(renderableName);
+        docked.insert(nextIndex, renderableName, renderableToRearrange);
+        return true;
     }
 
     /** Requests for a parent layoutcontroller trying to resolve the size of this view
@@ -218,10 +242,9 @@ export class View extends FamousView {
     }
 
 
-
     _assignRenderable(renderable, renderableName) {
         /* Auto pipe events from the renderable to the view */
-        if(renderable.pipe){
+        if (renderable.pipe) {
             renderable.pipe(this);
             renderable.pipe(this._eventOutput);
         }
@@ -439,7 +462,6 @@ export class View extends FamousView {
 
         return trueSizedSurfaceInfo;
     }
-    
 
 
     _layoutDecoratedRenderables(context, options) {
@@ -653,8 +675,10 @@ export class View extends FamousView {
     _getLayoutSize() {
 
 
-        let {docked: dockedRenderables,
-            traditional: traditionalRenderables, ignored: ignoredRenderables} = this._groupedRenderables;
+        let {
+            docked: dockedRenderables,
+            traditional: traditionalRenderables, ignored: ignoredRenderables
+        } = this._groupedRenderables;
         if (!traditionalRenderables && !ignoredRenderables && !dockedRenderables) {
             return [undefined, undefined];
         }
@@ -782,7 +806,7 @@ export class View extends FamousView {
 
             if (orthogonalSizes) {
                 let originalOrthogonalSize = dockSize[orthogonalDirection];
-                if(originalOrthogonalSize || originalOrthogonalSize === 0){
+                if (originalOrthogonalSize || originalOrthogonalSize === 0) {
                     orthogonalSizes.push(originalOrthogonalSize)
                 }
                 dockSize[orthogonalDirection] = Math.max(...orthogonalSizes);
