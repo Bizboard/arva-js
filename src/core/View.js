@@ -10,6 +10,7 @@
  */
 
 import _                            from 'lodash';
+import OrderedHashMap               from 'ordered-hashmap';
 import FamousView                   from 'famous/core/View.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
 import FlexScrollView               from 'famous-flex/FlexScrollView.js';
@@ -78,11 +79,16 @@ export class View extends FamousView {
         }
         let size = this._resolvedSizesCache.get(renderable);
 
-        if (!size) {
-            return null;
-        }
-        if (size[0] === true || size[1] === true) {
+
+        if (size && (size[0] === true || size[1] === true)) {
             return renderable.getSize();
+        }
+        if(!size && renderable.decorations){
+            let decoratedSize = renderable.decorations.size;
+            let isValidSize = (inputSize) => typeof inputSize == 'number' && inputSize > 0;
+            if(decoratedSize && isValidSize(decoratedSize[0]) && isValidSize(decoratedSize[1])){
+                size = decoratedSize;
+            }
         }
 
         return size;
@@ -124,7 +130,7 @@ export class View extends FamousView {
      */
     addRenderable() {
         let [renderable, renderableName, ...decorators] = arguments;
-        if(decorators.length){
+        if (decorators.length) {
             renderable.decorations = {};
         }
         for (let decorator of decorators) {
@@ -134,6 +140,30 @@ export class View extends FamousView {
 
         this._assignRenderable(renderable, renderableName);
         return renderable;
+    }
+
+    /**
+     * Rearranges the order in which docked renderables are parsed for rendering, ensuring that 'renderableName' is processed
+     * before 'nextRenderableName'.
+     * @param {String} renderableName
+     * @param {String} nextRenderableName
+     */
+    prioritiseDockBefore(renderableName, nextRenderableName) {
+        let docked = this._groupedRenderables.docked;
+        if (!docked) { this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': no docked renderables present.`); return false; }
+
+        let nextIndex = docked.indexOf(nextRenderableName);
+        let renderableToRearrange = docked.get(renderableName);
+
+        if(nextIndex < 0 || !renderableToRearrange) {
+            this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': could not find one of the renderables by name.
+                        The following docked renderables are present: ${docked.keys()}`); 
+            return false;
+        }
+
+        docked.remove(renderableName);
+        docked.insert(nextIndex, renderableName, renderableToRearrange);
+        return true;
     }
 
     /** Requests for a parent layoutcontroller trying to resolve the size of this view
@@ -217,10 +247,9 @@ export class View extends FamousView {
     }
 
 
-
     _assignRenderable(renderable, renderableName) {
         /* Auto pipe events from the renderable to the view */
-        if(renderable.pipe){
+        if (renderable.pipe) {
             renderable.pipe(this);
             renderable.pipe(this._eventOutput);
         }
@@ -438,7 +467,6 @@ export class View extends FamousView {
 
         return trueSizedSurfaceInfo;
     }
-    
 
 
     _layoutDecoratedRenderables(context, options) {
@@ -455,8 +483,9 @@ export class View extends FamousView {
         }
 
         /* Process Renderables with a non-fill dock */
-        for (let name in dockedRenderables) {
-            let renderable = dockedRenderables[name];
+        let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
+        for (let name of dockedNames) {
+            let renderable = dockedRenderables.get(name);
             let {dockMethod, space} = renderable.decorations.dock;
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
             let renderableSize = this._resolveDecoratedSize(name, renderable, context);
@@ -475,24 +504,26 @@ export class View extends FamousView {
         }
 
         /* Process Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
-        for (let renderableName in filledRenderables) {
-            let renderable = filledRenderables[renderableName];
+        let filledNames = filledRenderables ? filledRenderables.keys() : [];
+        for (let renderableName of filledNames) {
+            let renderable = filledRenderables.get(renderableName);
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
             dock.fill(renderableName, this._resolveDecoratedSize(renderableName, renderable, context), zIndex);
         }
     }
 
     _layoutFullScreenRenderables(fullScreenRenderables, context) {
-
-        for (let name in fullScreenRenderables) {
-            let renderable = fullScreenRenderables[name];
+        let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
+        for (let name of names) {
+            let renderable = fullScreenRenderables.get(name);
             context.set(name, _.merge({translate: renderable.decorations.translate || [0, 0, 0]}, context));
         }
     }
 
     _layoutTraditionalRenderables(traditionalRenderables, context) {
-        for (let renderableName in traditionalRenderables) {
-            let renderable = traditionalRenderables[renderableName];
+        let names = traditionalRenderables ? traditionalRenderables.keys() : [];
+        for (let renderableName of names) {
+            let renderable = traditionalRenderables.get(renderableName);
             let renderableSize = this._resolveDecoratedSize(renderableName, renderable, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0]} = renderable.decorations;
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
@@ -649,8 +680,10 @@ export class View extends FamousView {
     _getLayoutSize() {
 
 
-        let {docked: dockedRenderables,
-            traditional: traditionalRenderables, ignored: ignoredRenderables} = this._groupedRenderables;
+        let {
+            docked: dockedRenderables,
+            traditional: traditionalRenderables, ignored: ignoredRenderables
+        } = this._groupedRenderables;
         if (!traditionalRenderables && !ignoredRenderables && !dockedRenderables) {
             return [undefined, undefined];
         }
@@ -665,8 +698,11 @@ export class View extends FamousView {
         }
 
         if (traditionalRenderables || ignoredRenderables) {
-            let minPosition = [0, 0], maxPosition = totalSize;
-            for (let renderableName in _.extend(traditionalRenderables, ignoredRenderables)) {
+            let traditionalNames = traditionalRenderables ? traditionalRenderables.keys() : [];
+            let ignoredNames = ignoredRenderables ? ignoredRenderables.keys() : [];
+            let combinedNames = traditionalNames.concat(ignoredNames);
+
+            for (let renderableName of combinedNames) {
                 let renderable = this.renderables[renderableName];
                 let size = this.getResolvedSize(renderable);
                 if (!size) {
@@ -674,12 +710,15 @@ export class View extends FamousView {
                 }
                 let renderableSpec;
                 /* If the renderable is included in the ignored renderables */
-                if (renderableName in (ignoredRenderables || {})) {
+                if (ignoredRenderables && ignoredRenderables.indexOf(renderableName) !== -1) {
                     /* We rather not want to do this, because this function makes a loop that means quadratic complexity */
                     renderableSpec = this.layout.getSpec(renderableName);
                     renderableSpec.translate = renderableSpec.transform.slice(-4, -1);
                 } else {
                     renderableSpec = renderable.decorations;
+                    renderableSpec.align = renderableSpec.align || [0, 0];
+                    renderableSpec.translate = renderableSpec.translate || [0, 0, 0];
+                    
                     if (renderableSpec.translate) {
                         renderableSpec.translate = this._adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0]
                             , renderableSpec.translate);
@@ -687,6 +726,7 @@ export class View extends FamousView {
                         renderableSpec.translate = [0, 0, 0];
                     }
                 }
+                
 
                 /* If there has been an align specified, then nothing can be calculated */
                 if (!renderableSpec || !renderableSpec.size || (renderableSpec.align[0] && renderableSpec.align[1])) {
@@ -694,18 +734,16 @@ export class View extends FamousView {
                 }
 
                 let {translate, align} = renderableSpec;
-
                 /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
                 for (let i = 0; i < 2; i++) {
                     /* Undefined is the same as context size */
-                    if (size[i] !== undefined && !(align && align[i]) && maxPosition[i] !== undefined) {
-                        minPosition[i] = Math.min(minPosition[i], translate[0] + size[i]);
-                        maxPosition[i] = Math.max(maxPosition[i], translate[1] + size[i]);
+                    if (size[i] !== undefined && !(align && align[i]) && totalSize[i] !== undefined) {
+                        totalSize[i] = Math.max(totalSize[i], translate[i] + size[i]);
                     }
 
                 }
             }
-            let width = maxPosition[0] - minPosition[0], height = maxPosition[1] - minPosition[1];
+            let width = totalSize[0], height = totalSize[1];
             totalSize = [(width || width == 0) ? width : undefined, (height || height == 0) ? height : undefined];
         }
         return totalSize;
@@ -715,15 +753,16 @@ export class View extends FamousView {
     _calculateDockedRenderablesBoundingBox() {
         let {docked: dockedRenderables, filled: filledRenderables} = this._groupedRenderables;
 
-        let {dockMethod} = dockedRenderables[Object.keys(dockedRenderables)[0]].decorations.dock;
+        let {dockMethod} = dockedRenderables.get(dockedRenderables.keyAt(0)).decorations.dock;
         let dockTypes = [['right', 'left'], ['top', 'bottom']];
+        /* Gets the dock type where, 0 is right or left (horizontal) and 1 is top or bottom (vertical) */
         let getDockType = (dockMethodToGet) => _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
         let dockType = getDockType(dockMethod);
         let dockingDirection = dockType;
         let orthogonalDirection = !dockType + 0;
 
         /* Add up the different sizes to if they are docked all in the same direction */
-        let dockSize = _.reduce(dockedRenderables, (result, dockedRenderable, name) => {
+        let dockSize = dockedRenderables.reduce((result, dockedRenderable, name) => {
             let {decorations} = dockedRenderable;
             let {dockMethod: otherDockMethod} = decorations.dock;
             /* If docking is done orthogonally */
@@ -761,7 +800,7 @@ export class View extends FamousView {
         if (filledRenderables) {
             dockSize[dockingDirection] = undefined;
             /* We currently support multiple fills, but that might change in the future */
-            let orthogonalSizes = _.reduce(filledRenderables, (result, filledRenderable, renderableName) => {
+            let orthogonalSizes = filledRenderables.reduce((result, filledRenderable, renderableName) => {
                 this._resolveDecoratedSize(renderableName, filledRenderable, {size: [NaN, NaN]});
                 let resolvedSize = this._resolvedSizesCache.get(filledRenderable);
                 if (resolvedSize) {
@@ -774,7 +813,7 @@ export class View extends FamousView {
 
             if (orthogonalSizes) {
                 let originalOrthogonalSize = dockSize[orthogonalDirection];
-                if(originalOrthogonalSize || originalOrthogonalSize === 0){
+                if (originalOrthogonalSize || originalOrthogonalSize === 0) {
                     orthogonalSizes.push(originalOrthogonalSize)
                 }
                 dockSize[orthogonalDirection] = Math.max(...orthogonalSizes);
@@ -970,9 +1009,9 @@ export class View extends FamousView {
 
         if (groupName) {
             if (!(groupName in this._groupedRenderables)) {
-                this._groupedRenderables[groupName] = {};
+                this._groupedRenderables[groupName] = new OrderedHashMap();
             }
-            this._groupedRenderables[groupName][renderableName] = renderable;
+            this._groupedRenderables[groupName].set(renderableName, renderable);
         }
     }
 }
