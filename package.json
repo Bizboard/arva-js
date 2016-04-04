@@ -31,7 +31,7 @@
       "famous-flex": "github:bizboard/famous-flex@master",
       "firebase": "github:firebase/firebase-bower@^2.4.1",
       "fs": "github:jspm/nodelibs-fs@^0.1.2",
-      "lodash": "npm:lodash@^4.2.0",
+      "lodash": "npm:lodash@^4.6.1",
       "path": "github:jspm/nodelibs-path@^0.1.0",
       "request-animation-frame-mock": "github:erykpiast/request-animation-frame-mock@^0.1.8"
     },
@@ -50,7 +50,9 @@
     "babel-runtime": "^6.6.1",
     "chai": "^3.4.0",
     "isparta": "^3.1.0",
-    "mocha": "^2.3.3",
+    "jspm": "^0.16.32",
+    "lodash": "^4.6.1",
+    "mocha": "^2.1.0",
     "request-animation-frame-mock": "git+https://github.com/erykpiast/request-animation-frame-mock.git",
     "sinon": "^1.17.3",
     "systemjs": "^0.19.5"

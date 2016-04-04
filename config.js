@@ -1,8 +1,8 @@
 System.config({
-  "baseURL": "./",
-  "defaultJSExtensions": true,
-  "transpiler": "babel",
-  "babelOptions": {
+  baseURL: "./",
+  defaultJSExtensions: true,
+  transpiler: "babel",
+  babelOptions: {
     "stage": 0,
     "optional": [
       "runtime",
@@ -11,17 +11,15 @@ System.config({
       "optimisation.modules.system"
     ]
   },
-  "paths": {
+  paths: {
     "github:*": "jspm_packages/github/*",
     "npm:*": "jspm_packages/npm/*"
-  }
-});
+  },
 
-System.config({
-  "map": {
+  map: {
     "SPSoapAdapter": "github:bizboard/SPSoapAdapter@develop",
-    "babel": "npm:babel-core@5.8.35",
-    "babel-runtime": "npm:babel-runtime@5.8.35",
+    "babel": "npm:babel-core@5.8.38",
+    "babel-runtime": "npm:babel-runtime@5.8.38",
     "bowser": "npm:bowser@1.0.0",
     "camelcase": "npm:camelcase@2.1.0",
     "core-js": "npm:core-js@1.2.6",
@@ -82,7 +80,7 @@ System.config({
     "npm:assert@1.3.0": {
       "util": "npm:util@0.10.3"
     },
-    "npm:babel-runtime@5.8.35": {
+    "npm:babel-runtime@5.8.38": {
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:buffer@3.6.0": {
@@ -162,4 +160,3 @@ System.config({
     }
   }
 });
-
