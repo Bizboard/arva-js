@@ -248,6 +248,11 @@ export class View extends FamousView {
 
 
     _assignRenderable(renderable, renderableName) {
+        /* Auto pipe events from the renderable to the view */
+        if (renderable.pipe) {
+            renderable.pipe(this);
+            renderable.pipe(this._eventOutput);
+        }
 
         if (renderable.decorations) {
             this._addDecoratedRenderable(renderable, renderableName)
@@ -563,7 +568,6 @@ export class View extends FamousView {
     _combineLayouts() {
 
         this.layout = new LayoutController({
-            autoPipeEvents: true,
             layout: function (context, options) {
 
                 /* Because views that extend this View class first call super() and then define their renderables,
@@ -650,7 +654,6 @@ export class View extends FamousView {
         }
         else {
             this.add(this.layout);
-            this.layout.pipe(this._eventOutput);
         }
     }
 
@@ -678,7 +681,7 @@ export class View extends FamousView {
         let {
             docked: dockedRenderables,
             traditional: traditionalRenderables, ignored: ignoredRenderables
-        } = this._groupedRenderables;
+            } = this._groupedRenderables;
         if (!traditionalRenderables && !ignoredRenderables && !dockedRenderables) {
             return [undefined, undefined];
         }
