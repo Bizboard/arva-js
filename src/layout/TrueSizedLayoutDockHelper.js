@@ -165,7 +165,7 @@ TrueSizedLayoutDockHelper.prototype.right = function (node, size, z, space = 0) 
     this._data.right -= this._resolveSingleSize(width);
     this._context.set(node, {
         size: [this._ensureTrueSize(width), height || (this._data.bottom - this._data.top)],
-        translate: [-(this._size[0] - this._data.right), this._data.top, (z === undefined) ? this._data.z : z]
+        translate: [this._data.right, this._data.top, (z === undefined) ? this._data.z : z]
     });
     return this;
 };
