@@ -248,11 +248,6 @@ export class View extends FamousView {
 
 
     _assignRenderable(renderable, renderableName) {
-        /* Auto pipe events from the renderable to the view */
-        if (renderable.pipe) {
-            renderable.pipe(this);
-            renderable.pipe(this._eventOutput);
-        }
 
         if (renderable.decorations) {
             this._addDecoratedRenderable(renderable, renderableName)
