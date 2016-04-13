@@ -142,6 +142,15 @@ export class View extends FamousView {
         return renderable;
     }
 
+    removeRenderable(renderableName) {
+        let renderable = this[renderableName];
+        this._setPipes(renderable, false);
+        this._removeDecoratedRenderable(renderable,renderableName);
+        delete this.renderables[renderableName];
+        delete this[renderableName];
+        this.layout.reflowLayout();
+    }
+
     /**
      * Rearranges the order in which docked renderables are parsed for rendering, ensuring that 'renderableName' is processed
      * before 'nextRenderableName'.
@@ -285,18 +294,19 @@ export class View extends FamousView {
         }
     }
 
-    _setPipes(renderable) {
+    _setPipes(renderable, enabled = true) {
         if (!this._initialised || !renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable)) {
             return;
         }
         let pipes = renderable.decorations.pipes;
         for (let pipeToName of pipes) {
             let target = pipeToName ? this[pipeToName] : this;
-            if (renderable.pipe) {
-                renderable.pipe(target);
+            let pipeFn = (enabled ? '' : 'un') + 'pipe';
+            if (renderable[pipeFn]) {
+                renderable[pipeFn](target);
             }
-            if (renderable.pipe && target._eventOutput) {
-                renderable.pipe(target._eventOutput);
+            if (renderable[pipeFn] && target._eventOutput) {
+                renderable[pipeFn](target._eventOutput);
             }
         }
     }
@@ -716,7 +726,7 @@ export class View extends FamousView {
                     renderableSpec = renderable.decorations;
                     renderableSpec.align = renderableSpec.align || [0, 0];
                     renderableSpec.translate = renderableSpec.translate || [0, 0, 0];
-                    
+
                     if (renderableSpec.translate) {
                         renderableSpec.translate = this._adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0]
                             , renderableSpec.translate);
@@ -724,7 +734,7 @@ export class View extends FamousView {
                         renderableSpec.translate = [0, 0, 0];
                     }
                 }
-                
+
 
                 /* If there has been an align specified, then nothing can be calculated */
                 if (!renderableSpec || !renderableSpec.size || (renderableSpec.align[0] && renderableSpec.align[1])) {
@@ -988,28 +998,41 @@ export class View extends FamousView {
     }
 
     _addDecoratedRenderable(renderable, renderableName) {
-        let {decorations} = renderable;
         this.decoratedRenderables[renderableName] = renderable;
 
         /* Group the renderable */
-        let groupName;
-        if (!!decorations.dock) {
-            /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
-            groupName = decorations.dock.dockMethod === 'fill' ? 'filled' : 'docked';
-        } else if (!!decorations.fullscreen) {
-            groupName = 'fullscreen';
-        } else if (decorations.size || decorations.origin || decorations.align || decorations.translate) {
-            groupName = 'traditional';
-        } else {
-            /* This occurs e.g. when a renderable is only marked @renderable, and its parent view has a @layout.custom decorator to define its context. */
-            groupName = 'ignored';
-        }
+        let groupName = this._getGroupName(renderable);
 
         if (groupName) {
             if (!(groupName in this._groupedRenderables)) {
                 this._groupedRenderables[groupName] = new OrderedHashMap();
             }
             this._groupedRenderables[groupName].set(renderableName, renderable);
+        }
+    }
+
+    _removeDecoratedRenderable(renderable, renderableName){
+        let groupName = this._getGroupName(renderable);
+        let group = this._groupedRenderables[groupName];
+        group.remove(renderableName);
+        if(!group.count()){
+            this._groupedRenderables[groupName] = {};
+        }
+    }
+
+    _getGroupName(renderable){
+        let {decorations} = renderable;
+
+        if (!!decorations.dock) {
+            /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
+            return decorations.dock.dockMethod === 'fill' ? 'filled' : 'docked';
+        } else if (!!decorations.fullscreen) {
+            return 'fullscreen';
+        } else if (decorations.size || decorations.origin || decorations.align || decorations.translate) {
+            return 'traditional';
+        } else {
+            /* This occurs e.g. when a renderable is only marked @renderable, and its parent view has a @layout.custom decorator to define its context. */
+            return 'ignored';
         }
     }
 }
