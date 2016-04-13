@@ -1016,7 +1016,7 @@ export class View extends FamousView {
         let group = this._groupedRenderables[groupName];
         group.remove(renderableName);
         if(!group.count()){
-            this._groupedRenderables[groupName] = {};
+            delete this._groupedRenderables[groupName];
         }
     }
 
