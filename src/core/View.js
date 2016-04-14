@@ -131,7 +131,7 @@ export class View extends FamousView {
     addRenderable() {
         let [renderable, renderableName, ...decorators] = arguments;
         if (decorators.length) {
-            renderable.decorations = {};
+            //renderable.decorations = {};
         }
         for (let decorator of decorators) {
             /* The decorator(s) provided in the last argument needed to decorate the renderable */
