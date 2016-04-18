@@ -88,5 +88,5 @@ export function combineOptions(defaultOptions, options) {
      *  function.
      */
 
-    return _.mergeWith({root: defaultOptions}, {root: options}, famousMerge).root;
+    return _.mergeWith({root: _.cloneDeep(defaultOptions)}, {root: _.cloneDeep(options)}, famousMerge).root;
 }
