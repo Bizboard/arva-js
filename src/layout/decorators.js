@@ -88,7 +88,7 @@ export const layout = {
         }
     },
 
-    dock: function (dockMethod, size, space = 0, zIndex = 0) {
+    dock: function (dockMethod, size, space = 0, zIndex) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
 
@@ -108,7 +108,9 @@ export const layout = {
             }
 
             if (!renderable.decorations.translate) { renderable.decorations.translate = [0, 0, 0]; }
-            renderable.decorations.translate[2] = zIndex;
+            if(zIndex){
+                renderable.decorations.translate[2] = zIndex;
+            }
         }
     },
 
