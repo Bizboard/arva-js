@@ -183,8 +183,8 @@ export const layout = {
             options = _.merge({animation: AnimationController.Animation.FadedZoom, transition: {duration: 250, curve: Easing.inQuad}}, options);
 
             /* We let the renderable variable below be instantiated when the View.js instance constructs this renderable */
-            let constructor = view.renderableConstructors[renderableName] = (constructorOptions) => {
-                let renderable = renderableConstructor(constructorOptions);
+            let constructor = view.renderableConstructors.get(view.constructor)[renderableName] = function(constructorOptions) {
+                let renderable = renderableConstructor.call(this,constructorOptions);
                 let animationController = renderable.animationController = new AnimationController(options);
                 if (renderable.pipe) { renderable.pipe(animationController._eventOutput); }
 
