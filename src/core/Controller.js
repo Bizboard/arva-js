@@ -10,11 +10,13 @@
  */
 
 import _                        from 'lodash';
+import EventEmitter             from 'eventemitter3';
+import AnimationController      from 'famous-flex/AnimationController.js';
+
 import {inject}                 from 'di';
+
 import {Router}                 from './Router.js';
 import {ObjectHelper}           from '../utils/ObjectHelper.js';
-import EventHandler             from 'famous/core/EventHandler.js';
-import AnimationController      from 'famous-flex/AnimationController.js';
 
 
 /**
@@ -23,17 +25,14 @@ import AnimationController      from 'famous-flex/AnimationController.js';
  * control the creation of Views and Transitions.
  */
 @inject(Router, AnimationController)
-export class Controller {
+export class Controller extends EventEmitter {
 
     constructor(router, context, spec) {
-        //super();
+        super();
         this.spec = spec;
         this.router = router;
         this.context = context;
-        this._eventOutput = new EventHandler();
 
-        // register the controller object in the router
-        //this.router.controllers.push(this);
 
 
         ObjectHelper.bindAllMethods(this, this);
@@ -44,17 +43,7 @@ export class Controller {
         routeName += '/:method';
 
         // handle router url changes and execute the appropiate controller method
-        this.router.add(routeName, this.onRouteCalled);
-    }
-
-    /**
-     * Adds an event handler for the given even type. Currently used event types are 'renderstart', 'rendering', and 'renderend'.
-     * @param {String} event Event type to subscribe on.
-     * @param {Function} handler Function to call when the given event type is emitted.
-     * @return {void}
-     */
-    on(event, handler) {
-        this._eventOutput.on(event, handler);
+        this.router.add(routeName, this.onRouteCalled, this);
     }
 
     /**
@@ -69,28 +58,28 @@ export class Controller {
             var result = this[route.method].apply(this, route.values);
 
             if (result) {
-                this._eventOutput.emit('renderstart', route.method);
+                this.emit('renderstart', route.method);
 
                 if (result instanceof Promise) { // we can assume the method called was asynchronous from nature, therefore we await the result
 
                     result.then((delegatedresult) => {
                         // assemble a callback based on the execution scope and have that called when rendering is completed
                         this.context.show(delegatedresult, _.extend(route.spec, this.spec), () => {
-                            this._eventOutput.emit('renderend', route.method);
+                            this.emit('renderend', route.method);
                         });
-                        this._eventOutput.emit('rendering', route.method);
+                        this.emit('rendering', route.method);
                     });
                 } else {
 
                     // assemble a callback based on the execution scope and have that called when rendering is completed
                     this.context.show(result, _.extend(route.spec, this.spec), () => {
-                        this._eventOutput.emit('renderend', route.method);
+                        this.emit('renderend', route.method);
                     });
-                    this._eventOutput.emit('rendering', route.method);
+                    this.emit('rendering', route.method);
                 }
                 // assemble a callback based on the execution scope and have that called when rendering is completed
-                this.context.show(result, _.extend(route.spec, this.spec), function(){ this._eventOutput.emit('renderend', route.method); }.bind(this));
-                this._eventOutput.emit('rendering', route.method);
+                this.context.show(result, _.extend(route.spec, this.spec), function(){ this.emit('renderend', route.method); }.bind(this));
+                this.emit('rendering', route.method);
 
                 return true;
             } else {

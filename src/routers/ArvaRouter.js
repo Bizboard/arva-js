@@ -93,7 +93,7 @@ export class ArvaRouter extends Router {
      * @param {Function} handler Method to call on given route.
      * @returns {void}
      */
-    add(route, handler) {
+    add(route, handler,controller) {
         let pieces = route.split('/'),
             rules = this.routes;
 
@@ -109,6 +109,7 @@ export class ArvaRouter extends Router {
         }
 
         rules['@'] = handler;
+        rules['controller'] = controller;
 
     }
 
@@ -117,11 +118,11 @@ export class ArvaRouter extends Router {
      * @returns {Boolean} Whether the current route was successfully ran.
      */
     run() {
-        
+
         //if (!url || typeof(url) == 'object')
         let url = window.location.hash.replace('#', ''); // || '#';
 
-        
+
         if (url !== '') {
             url = url.replace('/?', '?');
             url[0] === '/' && (url = url.slice(1));
@@ -179,7 +180,7 @@ export class ArvaRouter extends Router {
                 }
             }
         }).call(this, querySplit.length > 1 ? querySplit[1] : '');
-            
+
         if (rule && rule['@']) {
 
             /* Push current route to the history stack for later use */
@@ -187,6 +188,7 @@ export class ArvaRouter extends Router {
             let currentRoute = {
                 url: url,
                 controller: controller,
+                controllerObject: rule['controller'],
                 method: method,
                 keys: keys,
                 values: values
@@ -334,7 +336,7 @@ export class ArvaRouter extends Router {
             return controller.name.replace('Controller', '');
         } else{
             return typeof controller === 'object' ?
-                   Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
+                Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
         }
     }
 
