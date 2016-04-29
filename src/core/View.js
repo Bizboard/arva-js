@@ -216,6 +216,11 @@ export class View extends FamousView {
 
                 let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
 
+                /* The margin decorator is treated specially when the renderable is a surface */
+                if(this._renderableIsSurface(renderable) && decorations.viewMargins){
+                    renderable.setProperties({padding:decorations.viewMargins.map((margin) => `${margin}px`).join(' ')});
+                }
+
                 /* Clone the decorator properties, because otherwise every view of the same type willl share them between
                  * the same corresponding renderable
                  */
