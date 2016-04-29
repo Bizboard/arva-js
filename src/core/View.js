@@ -16,10 +16,12 @@ import LayoutController             from 'famous-flex/LayoutController.js';
 import FlexScrollView               from 'famous-flex/FlexScrollView.js';
 import Surface                      from 'famous/core/Surface.js';
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
+import AnimationController          from 'famous-flex/AnimationController.js';
 
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
+
 
 export class View extends FamousView {
 
@@ -128,8 +130,7 @@ export class View extends FamousView {
      * @param {Decorator} Decorator Any decorator(s) to apply to the renderable
      * @returns {Renderable} The renderable that was assigned
      */
-    addRenderable() {
-        let [renderable, renderableName, ...decorators] = arguments;
+    addRenderable(renderable, renderableName, ...decorators) {
         if (decorators.length) {
             //renderable.decorations = {};
         }
@@ -166,7 +167,7 @@ export class View extends FamousView {
 
         if(nextIndex < 0 || !renderableToRearrange) {
             this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': could not find one of the renderables by name.
-                        The following docked renderables are present: ${docked.keys()}`); 
+                        The following docked renderables are present: ${docked.keys()}`);
             return false;
         }
 
@@ -215,11 +216,6 @@ export class View extends FamousView {
 
 
                 let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
-
-                /* The margin decorator is treated specially when the renderable is a surface */
-                if(this._renderableIsSurface(renderable) && decorations.viewMargins){
-                    renderable.setProperties({padding:decorations.viewMargins.map((margin) => `${margin}px`).join(' ')});
-                }
 
                 /* Clone the decorator properties, because otherwise every view of the same type willl share them between
                  * the same corresponding renderable
@@ -318,13 +314,13 @@ export class View extends FamousView {
 
     /**
      * Resolves a decorated renderable's size (both x and y)
-     * @name {String} name The name of the renderable such that this.renderables[name] = renderable
-     * @param {Object} renderable Decorated renderable to query size of.
+     * @name {String} name The name of the renderable such that this.[name] = renderable
      * @param {Object} context Famous-flex context in which the renderable is rendered.
      * @returns {Array|Object} Array of [x, y] sizes, or null if resolving is not possible.
      * @private
      */
-    _resolveDecoratedSize(renderableName, renderable, context) {
+    _resolveDecoratedSize(renderableName, context) {
+        let renderable = this[renderableName];
         if (!renderable.decorations || !('size' in renderable.decorations)) {
             return null;
         }
@@ -453,7 +449,6 @@ export class View extends FamousView {
     }
 
     _renderableIsSurface(renderable) {
-        /* Todo: Still have to check if this works for ImageSurfaces, but it should */
         return renderable instanceof Surface || renderable instanceof ImageSurface;
     }
 
@@ -503,7 +498,7 @@ export class View extends FamousView {
             let renderable = dockedRenderables.get(name);
             let {dockMethod, space} = renderable.decorations.dock;
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
-            let renderableSize = this._resolveDecoratedSize(name, renderable, context);
+            let renderableSize = this._resolveDecoratedSize(name, context);
             let inUseSize = this._resolvedSizesCache.get(renderable);
             for (let i = 0; i < 2; i++) {
                 if (renderableSize[i] == true) {
@@ -523,7 +518,7 @@ export class View extends FamousView {
         for (let renderableName of filledNames) {
             let renderable = filledRenderables.get(renderableName);
             let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
-            dock.fill(renderableName, this._resolveDecoratedSize(renderableName, renderable, context), zIndex);
+            dock.fill(renderableName, this._resolveDecoratedSize(renderableName, context), zIndex);
         }
     }
 
@@ -539,7 +534,7 @@ export class View extends FamousView {
         let names = traditionalRenderables ? traditionalRenderables.keys() : [];
         for (let renderableName of names) {
             let renderable = traditionalRenderables.get(renderableName);
-            let renderableSize = this._resolveDecoratedSize(renderableName, renderable, context) || [undefined, undefined];
+            let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0]} = renderable.decorations;
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             context.set(renderableName, {
@@ -691,8 +686,6 @@ export class View extends FamousView {
      * @private
      */
     _getLayoutSize() {
-
-
         let {
             docked: dockedRenderables,
             traditional: traditionalRenderables, ignored: ignoredRenderables
@@ -782,7 +775,7 @@ export class View extends FamousView {
             if (getDockType(otherDockMethod) !== dockType) {
                 return [NaN, NaN];
             } else {
-                this._resolveDecoratedSize(name, dockedRenderable, {size: [NaN, NaN]});
+                this._resolveDecoratedSize(name, {size: [NaN, NaN]});
                 let resolvedSize = this._resolvedSizesCache.get(dockedRenderable);
                 if (!resolvedSize) {
                     return [NaN, NaN];
@@ -814,7 +807,7 @@ export class View extends FamousView {
             dockSize[dockingDirection] = undefined;
             /* We currently support multiple fills, but that might change in the future */
             let orthogonalSizes = filledRenderables.reduce((result, filledRenderable, renderableName) => {
-                this._resolveDecoratedSize(renderableName, filledRenderable, {size: [NaN, NaN]});
+                this._resolveDecoratedSize(renderableName, {size: [NaN, NaN]});
                 let resolvedSize = this._resolvedSizesCache.get(filledRenderable);
                 if (resolvedSize) {
                     let orthogonalSize = resolvedSize[orthogonalDirection];
@@ -895,14 +888,11 @@ export class View extends FamousView {
                 this._warn(`Attempted to delay showing renderable ${this._name()}.${animation.waitFor}, which does not exist or contain an on() method.`);
             }
         }
+        /*
+         for (let animation of (this.delayedAnimations || [])) {
+         Timer.setTimeout(() => animation.showMethod, animation.delay)
+         }*/
 
-        for (let animation of (this.delayedAnimations || [])) {
-            Timer.setTimeout(() => animation.showMethod, animation.delay)
-        }
-
-        for (let animation of (this.immediateAnimations || [])) {
-            animation.showMethod()
-        }
     }
 
     _copyPrototypeProperties() {
@@ -999,6 +989,15 @@ export class View extends FamousView {
         if (!this.renderableConstructors || _.isEmpty(this.renderableConstructors)) {
             this.renderableConstructors = new Map();
         }
+        if (!this.delayedAnimations) {
+            this.delayedAnimations = [];
+        }
+        if (!this.waitingAnimations) {
+            this.waitingAnimations = [];
+        }
+        if (!this.immediateAnimations) {
+            this.immediateAnimations = [];
+        }
         this._groupedRenderables = {};
     }
 
@@ -1013,6 +1012,38 @@ export class View extends FamousView {
                 this._groupedRenderables[groupName] = new OrderedHashMap();
             }
             this._groupedRenderables[groupName].set(renderableName, renderable);
+        }
+
+        let {animation, viewMargins} = renderable.decorations;
+
+        if(animation){
+            this._processAnimatedRenderable(renderable, animation);
+        }
+        /* The margin decorator is treated specially when the renderable is a surface */
+        if(this._renderableIsSurface(renderable) && viewMargins){
+            renderable.setProperties({padding:viewMargins.map((margin) => `${margin}px`).join(' ')});
+        }
+    }
+
+    _processAnimatedRenderable(renderable, options){
+        let animationController = renderable.animationController = new AnimationController(options);
+        if (renderable.pipe) {
+            renderable.pipe(animationController._eventOutput);
+        }
+
+        let showMethod = () => {
+            animationController.show.call(animationController, renderable, options, () => {
+                if (renderable.emit) {
+                    renderable.emit('shown');
+                }
+            });
+        };
+        if (options.delay && options.delay > 0 && options.showInitially) {
+            Timer.setTimeout(showMethod, options.delay);
+        } else if (options.waitFor) {
+            this.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
+        } else if(options.showInitially){
+            showMethod();
         }
     }
 
