@@ -48,6 +48,7 @@ export class FirebaseDataSource extends DataSource {
         /* Populate the orderedReference, which is the standard Firebase reference with an optional ordering
          * defined. This needs to be saved seperately, because methods like child() and key() can't be called
          * from the ordered reference, and must instead be performed on the standard reference. */
+
         if (this.options.orderBy && this.options.orderBy === '.priority') {
             this._orderedDataReference = this._dataReference.orderByPriority();
         } else if (this.options.orderBy && this.options.orderBy === '.value') {
@@ -58,7 +59,7 @@ export class FirebaseDataSource extends DataSource {
             this._orderedDataReference = this._dataReference;
         }
 
-        if(this.options.limitToFirst !== undefined) {
+        if (this.options.limitToFirst !== undefined) {
             this._orderedDataReference = this._orderedDataReference.limitToFirst(this.options.limitToFirst);
         } else if (this.options.limitToLast !== undefined) {
             this._orderedDataReference = this._orderedDataReference.limitToLast(this.options.limitToLast);
@@ -110,7 +111,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {void}
      */
     set(newData) {
-        return this._orderedDataReference.set(newData);
+        return this._dataReference.set(newData);
     }
 
     /**
@@ -118,7 +119,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {void}
      */
     remove() {
-        return this._orderedDataReference.remove();
+        return this._dataReference.remove();
     }
 
     /**
@@ -128,7 +129,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {void}
      */
     push(newData) {
-        return new FirebaseDataSource(this._orderedDataReference.push(newData).toString());
+        return new FirebaseDataSource(this._dataReference.push(newData).toString());
     }
 
     /**
@@ -138,7 +139,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {void}
      */
     setWithPriority(newData, priority) {
-        return this._orderedDataReference.setWithPriority(newData, priority);
+        return this._dataReference.setWithPriority(newData, priority);
     }
 
     /**
@@ -147,7 +148,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {void}
      */
     setPriority(newPriority) {
-        return this._orderedDataReference.setPriority(newPriority);
+        return this._dataReference.setPriority(newPriority);
     }
 
     /**
