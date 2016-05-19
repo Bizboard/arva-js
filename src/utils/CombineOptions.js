@@ -2,22 +2,8 @@
  * Created by lundfall on 2/24/16.
  */
 
-import _            from 'lodash';
-import camelCase    from 'camelcase';
-
-/**
- * Changes all keys with a dash to camel case, in order to be merge for example 'text-align' with tetxAlign
- * @param param
- */
-function camelCaseKeys(param){
-    for(let key in param){
-        if(~key.indexOf('-')){
-            let value = param[key];
-            delete param[key];
-            param[camelCase(key)] = value;
-        }
-    }
-}
+import camelCase from 'camelcase';
+import _         from 'lodash';
 
 function famousMerge(defaultParam, specifiedParam) {
     if (Array.isArray(defaultParam) && Array.isArray(specifiedParam)) {
@@ -50,13 +36,12 @@ function famousMerge(defaultParam, specifiedParam) {
     for (let param of [specifiedParam, defaultParam]) {
         if (!Array.isArray(param)) {
 
-            if (typeof param === 'object' && !!param) {
+            if (typeof param === 'object') {
 
                 /*
                  * Make sure that we don't merge instances of classes. You _could_ trick this system by specifying an object
                  * with the parameter constructor {name: 'Object'} or specifying a class named Object (don't)
                  */
-
                 if(param.constructor.name !== 'Object'){
                     return specifiedParam;
                 }
@@ -66,15 +51,32 @@ function famousMerge(defaultParam, specifiedParam) {
                     return param === specifiedParam ? defaultParam : specifiedParam;
                 }
 
-                /*
-                 * Style parameters can be specified with dash-case or camelCase, which we correct here
-                 */
-                camelCaseKeys(param);
+
+
+
             }
         }
-
     }
-    return undefined;
+    let hasDashProperty = false;
+    /*
+     * Style parameters can be specified with dash-case or camelCase, which we correct here
+     */
+    let shallowParamCopies = [{},{}]
+    for (let [param, shallowCopy] of [[specifiedParam, shallowParamCopies[0]], [defaultParam, shallowParamCopies[1]]]) {
+        for (let key in param) {
+            let value = param[key];
+            if (~key.indexOf('-')) {
+                hasDashProperty = true;
+                key = camelCase(key);
+            }
+            shallowCopy[key] = value;
+        }
+    }
+    if(hasDashProperty){
+        return _.mergeWith(shallowParamCopies[1], shallowParamCopies[0], famousMerge);
+    } else {
+        return undefined;
+    }
 }
 
 /**
@@ -84,9 +86,5 @@ function famousMerge(defaultParam, specifiedParam) {
  * @returns {*}
  */
 export function combineOptions(defaultOptions, options) {
-    /* Add an extra level of depth on the object to make sure we are getting the full object to our specialized
-     *  function.
-     */
-
-    return _.mergeWith({root: _.cloneDeep(defaultOptions)}, {root: _.cloneDeep(options)}, famousMerge).root;
+    return _.mergeWith({root: defaultOptions}, {root: options}, famousMerge).root;
 }
