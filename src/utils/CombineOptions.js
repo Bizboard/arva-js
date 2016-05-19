@@ -36,7 +36,7 @@ function famousMerge(defaultParam, specifiedParam) {
     for (let param of [specifiedParam, defaultParam]) {
         if (!Array.isArray(param)) {
 
-            if (typeof param === 'object') {
+            if (typeof param === 'object' && !!param) {
 
                 /*
                  * Make sure that we don't merge instances of classes. You _could_ trick this system by specifying an object
