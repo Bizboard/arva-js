@@ -225,7 +225,7 @@ export class DataBoundScrollView extends FlexScrollView {
                 /*
                  There is no guarantee of order when grouping objects unless orderBy is explicitly defined
                  */
-            } else if (previousSiblingID !== undefined) {
+            } else if (previousSiblingID !== undefined && previousSiblingID != null) {
                 /* We don't have an orderBy method, but do have a previousSiblingID we can use to find the correct insertion index. */
                 let siblingIndex = this._findData(previousSiblingID).position;
                 if (siblingIndex !== -1) {
@@ -237,7 +237,7 @@ export class DataBoundScrollView extends FlexScrollView {
         return insertIndex;
     }
 
-    _addItem(child, previousSiblingID) {
+    _addItem(child, previousSiblingID = undefined) {
 
         if (this._findData(child.id)) {
             console.log('Child already exists ', child.id);
