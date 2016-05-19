@@ -220,7 +220,7 @@ export class View extends FamousView {
                 /* Clone the decorator properties, because otherwise every view of the same type willl share them between
                  * the same corresponding renderable
                  */
-                renderable.decorations = _.cloneDeep(_.extend(decorations, renderable.decorations || {}));
+                renderable.decorations = _.cloneDeep(_.extend({}, decorations, renderable.decorations || {}));
 
 
                 /* Since after constructor() of this View class is called, all decorated renderables will
