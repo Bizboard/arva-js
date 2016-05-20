@@ -121,8 +121,10 @@ export class PrioritisedObject extends EventEmitter {
                     /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
                     this._dataSource.setValueChangedCallback(this._onChildValue);
                 } else {
-                    /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
-                    handler.call(context, this);
+                    if(this._dataSource.ready){
+                        /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
+                        handler.call(context, this);
+                    }
                 }
                 break;
             case 'added':
