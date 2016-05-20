@@ -51,17 +51,16 @@ export class DataBoundScrollView extends FlexScrollView {
         this.throttler = new Throttler(this.options.throttleDelay, true, this);
 
         /* If no orderBy method is set, or it is a string field name, we set our own ordering method. */
-        if (this.options.orderBy) {
-            if (typeof this.options.orderBy === 'string') {
-                let fieldName = this.options.orderBy || 'id';
-                this.options.orderBy = function (currentChild, {model}) {
-                    if (this.isDescending) {
-                        return currentChild[fieldName] > model[fieldName];
-                    } else {
-                        return currentChild[fieldName] < model[fieldName];
-                    }
-                }.bind(this);
-            }
+        if (!this.options.orderBy || typeof this.options.orderBy === 'string') {
+            let fieldName = this.options.orderBy || 'id';
+            this.options.orderBy = function (currentChild, {model}) {
+                if (this.isDescending) {
+                    return currentChild[fieldName] > model[fieldName];
+                } else {
+                    return currentChild[fieldName] < model[fieldName];
+                }
+            }.bind(this);
+        } else if(typeof this.options.orderBy !== 'string'){
             this.useCustomOrdering = true;
         }
 
