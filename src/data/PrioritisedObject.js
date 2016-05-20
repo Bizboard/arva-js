@@ -238,7 +238,8 @@ export class PrioritisedObject extends EventEmitter {
         for (let key in data) {
 
             /* Only map properties that exists on our model */
-            if (Object.getOwnPropertyDescriptor(this, key)) {
+            let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
+            if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
                 /* If child is a primitive, listen to changes so we can synch with Firebase */
                 ObjectHelper.addPropertyToObject(this, key, data[key], true, true, this._onSetterTriggered);
             }
