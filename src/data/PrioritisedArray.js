@@ -320,10 +320,10 @@ export class PrioritisedArray extends Array {
      */
     _onChildAdded(snapshot, prevSiblingId) {
         let id = snapshot.key();
-        let model = new this._dataType(id, null, {
+        let model = new this._dataType(id, null, _.extend({}, this._modelOptions, {
             dataSnapshot: snapshot,
             dataSource: this._dataSource.child(id)
-        });
+        }));
 
         let previousPosition = this.findIndexById(id);
         if(previousPosition >= 0) {
@@ -353,7 +353,7 @@ export class PrioritisedArray extends Array {
      */
     _onChildChanged(snapshot, prevSiblingId) {
         let id = snapshot.key();
-        let changedModel = new this._dataType(id, null, {dataSnapshot: snapshot, dataSource: snapshot.ref()});
+        let changedModel = new this._dataType(id, null, _.extend({}, this._modelOptions, {dataSnapshot: snapshot, dataSource: snapshot.ref()}));
 
         let previousPosition = this.findIndexById(id);
         if (previousPosition < 0) {
