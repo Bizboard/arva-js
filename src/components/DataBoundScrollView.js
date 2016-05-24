@@ -9,14 +9,13 @@
 
  */
 
-import _                from 'lodash';
-import FlexScrollView   from 'famous-flex/FlexScrollView.js';
-import {ObjectHelper}   from '../utils/ObjectHelper.js';
-import {Throttler}      from '../utils/Throttler.js';
-import {combineOptions} from '../utils/CombineOptions.js';
+import _                            from 'lodash';
+import FlexScrollView               from 'famous-flex/FlexScrollView.js';
+import {Throttler}                  from '../utils/Throttler.js';
+import {combineOptions}             from '../utils/CombineOptions.js';
+import {ReflowingScrollView}        from './ReflowingScrollView.js';
 
-
-export class DataBoundScrollView extends FlexScrollView {
+export class DataBoundScrollView extends ReflowingScrollView {
 
     get internalDataSource() {
         return this._internalDataSource;
@@ -42,7 +41,6 @@ export class DataBoundScrollView extends FlexScrollView {
             ensureVisible: null,
             scrollToNewChild: false
         }, OPTIONS));
-        ObjectHelper.bindAllMethods(this, this);
 
         this._internalDataSource = {};
         this._internalGroups = {};
@@ -417,15 +415,6 @@ export class DataBoundScrollView extends FlexScrollView {
         this.options.dataStore.on('child_changed', this._onChildChanged.bind(this));
         this.options.dataStore.on('child_moved', this._onChildMoved.bind(this));
         this.options.dataStore.on('child_removed', this._onChildRemoved.bind(this));
-
-        this._eventInput.on('recursiveReflow', this._reflowWhenPossible);
-
-    }
-
-    _reflowWhenPossible() {
-        if (!this.isScrolling() && !this._nodes._reevalTrueSize) {
-            this.reflowLayout();
-        }
     }
 
 

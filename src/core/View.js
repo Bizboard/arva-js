@@ -21,6 +21,7 @@ import AnimationController          from 'famous-flex/AnimationController.js';
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
+import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 
 
 export class View extends FamousView {
@@ -41,10 +42,10 @@ export class View extends FamousView {
 
         this._initDataStructures();
 
-        this._constructDecoratedRenderables();
-
-        this._initTrueSizedBookkeeping();
         this._combineLayouts();
+
+        this._constructDecoratedRenderables();
+        this._initTrueSizedBookkeeping();
 
     }
 
@@ -162,19 +163,38 @@ export class View extends FamousView {
     prioritiseDockBefore(renderableName, nextRenderableName) {
         let docked = this._groupedRenderables.docked;
         if (!docked) { this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': no docked renderables present.`); return false; }
-
-        let nextIndex = docked.indexOf(nextRenderableName);
-        let renderableToRearrange = docked.get(renderableName);
-
-        if(nextIndex < 0 || !renderableToRearrange) {
+        if(!this._prioritiseDockAtIndex(renderableName, docked.indexOf(nextRenderableName))){
             this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': could not find one of the renderables by name.
                         The following docked renderables are present: ${docked.keys()}`);
+        }
+    }
+
+    /**
+     * @param {String} renderableName
+     * @param {String} prevRenderableName
+     */
+    prioritiseDockAfter(renderableName, prevRenderableName) {
+        let docked = this._groupedRenderables.docked;
+        if (!docked) { this._warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': no docked renderables present.`); return false; }
+        if(!this._prioritiseDockAtIndex(renderableName, docked.indexOf(prevRenderableName) + 1)){
+            this._warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': could not find one of the renderables by name.
+                        The following docked renderables are present: ${docked.keys()}`);
+        }
+    }
+
+    _prioritiseDockAtIndex(renderableName, index){
+        let docked = this._groupedRenderables.docked;
+        let renderableToRearrange = docked.get(renderableName);
+
+        if(index < 0 || !renderableToRearrange) {
+
             return false;
         }
 
         docked.remove(renderableName);
-        docked.insert(nextIndex, renderableName, renderableToRearrange);
+        docked.insert(index, renderableName, renderableToRearrange);
         return true;
+
     }
 
     /** Requests for a parent layoutcontroller trying to resolve the size of this view
@@ -650,10 +670,8 @@ export class View extends FamousView {
      */
     _prepareLayoutController() {
         if (this.decorations.isScrollable) {
-            let scrollView = new FlexScrollView();
-
+            let scrollView = new ReflowingScrollView();
             this.layout.getSize = this.getSize;
-
             scrollView.push(this.layout);
             this.pipe(scrollView);
             this.add(scrollView);
