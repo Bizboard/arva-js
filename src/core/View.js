@@ -387,6 +387,10 @@ export class View extends FamousView {
                 'up a proportion of your view, please define a function doing so by ' +
                 'using the context size');
         }
+        let renderableCounterpart = this.renderables[name];
+        if(renderableCounterpart instanceof AnimationController && !renderableCounterpart.get()){
+            return 0;
+        }
         /* True sized element. This has been specified as ~100 where 100 is the initial size
          * applying this operator again (e.g. ~~100) gives us the value 100 back
          * */
