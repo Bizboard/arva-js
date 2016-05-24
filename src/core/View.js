@@ -674,17 +674,20 @@ export class View extends FamousView {
      */
     _prepareLayoutController() {
         if (this.decorations.isScrollable) {
-            let scrollView = new ReflowingScrollView();
+            this._scrollView = new ReflowingScrollView();
             this.layout.getSize = this.getSize;
-            scrollView.push(this.layout);
-            this.pipe(scrollView);
-            this.add(scrollView);
+            this._scrollView.push(this.layout);
+            this.pipe(this._scrollView);
+            this.add(this._scrollView);
         }
         else {
             this.add(this.layout);
         }
     }
 
+    getScrollView() {
+        return this._scrollView;
+    }
     /**
      * getSize() is called by this view and by layoutControllers. For lazy people that don't want to specifiy their own getSize() function,
      * we provide a fallback. This function can be performance expensive when using non-docked renderables, but for docked renderables it
