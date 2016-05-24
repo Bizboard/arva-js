@@ -353,13 +353,16 @@ export class PrioritisedArray extends Array {
      */
     _onChildChanged(snapshot, prevSiblingId) {
         let id = snapshot.key();
-        let changedModel = new this._dataType(id, null, _.extend({}, this._modelOptions, {dataSnapshot: snapshot, dataSource: snapshot.ref()}));
 
         let previousPosition = this.findIndexById(id);
         if (previousPosition < 0) {
             /* The model doesn't exist, so we won't emit a changed event. */
             return;
         }
+
+        let changedModel = new this._dataType(id, null, _.extend({}, this._modelOptions, {dataSnapshot: snapshot, dataSource: this[previousPosition].dataSource}));
+
+
 
         this.remove(previousPosition);
 

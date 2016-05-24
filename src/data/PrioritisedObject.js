@@ -25,6 +25,10 @@ export class PrioritisedObject extends EventEmitter {
         return this._priority;
     }
 
+    get dataSource() {
+        return this._dataSource;
+    }
+
     set priority(value) {
         if (this._priority !== value) {
             this._priority = value;
@@ -68,6 +72,9 @@ export class PrioritisedObject extends EventEmitter {
 
         /* Hide the priority field from enumeration, so we don't save it to the dataSource. */
         ObjectHelper.hidePropertyFromObject(this, 'priority');
+
+        /* Hide the dataSource field from enumeration, so we don't save it to the dataSource. */
+        ObjectHelper.hidePropertyFromObject(this, 'dataSource');
 
         if (dataSnapshot) {
             this._buildFromSnapshot(dataSnapshot);
