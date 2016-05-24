@@ -74,33 +74,35 @@ describe('View', () => {
 
     });
 
+    let createDecoratedView = () => {
+        let layout = imports.decorators.layout;
+        let {Surface, View} = imports;
+        class DecoratedView extends View {
+            @layout.dock('top', 50)
+            top1 = new Surface({});
+
+            @layout.dock('top', 50)
+            top2 = new Surface({});
+
+            @layout.dock('fill')
+            fill = new Surface({});
+
+            @layout.size(50, 50)
+            @layout.place('center')
+            center = new Surface({});
+
+            @layout.renderable
+            ignored = new Surface({});
+
+            @layout.fullscreen
+            fullscreen = new Surface({});
+        }
+        return new DecoratedView();
+    };
+
     describe('#renderable creation', () => {
 
-        let createDecoratedView = () => {
-            let layout = imports.decorators.layout;
-            let {Surface, View} = imports;
-            class DecoratedView extends View {
-                @layout.dock('top', 50)
-                top1 = new Surface({});
 
-                @layout.dock('top', 50)
-                top2 = new Surface({});
-
-                @layout.dock('fill')
-                fill = new Surface({});
-
-                @layout.size(50, 50)
-                @layout.place('center')
-                center = new Surface({});
-
-                @layout.renderable
-                ignored = new Surface({});
-
-                @layout.fullscreen
-                fullscreen = new Surface({});
-            }
-            return new DecoratedView();
-        };
 
         it('has its children added to the datasource on the first commit', () => {
             addRenderablesTest();
@@ -171,9 +173,31 @@ describe('View', () => {
             let eventCallback = sinon.spy();
             instance.on('customEvent', eventCallback);
             instance.renderables.surface1._eventOutput.emit('customEvent');
-            instance.renderables.surface2._eventOutput.emit('customEvent');
+            instance.renderables.surface2._eventOutput.emit('customEvent');            console.log(`eventCallback.callCount: ${eventCallback.callCount}`);
             eventCallback.calledTwice.should.be.ok;
         });
+
+        it('has decorated children which triggers not more than necessary', () => {
+            let instance = createDecoratedView();
+            let eventCallback = sinon.spy();
+            fakeCommit(instance);
+            instance.on('customEvent', eventCallback);
+            instance.renderables.top1._eventOutput.emit('customEvent');
+            instance.renderables.top2._eventOutput.emit('customEvent');
+            eventCallback.calledTwice.should.be.ok;
+        });
+
+
+        it('pipes the scrollcontroller', () => {
+            let instance = createDecoratedView();
+            let eventCallback = sinon.spy();
+            fakeCommit(instance);
+            instance.on('customEvent', eventCallback);
+            instance.renderables.top1._eventOutput.emit('customEvent');
+            instance.renderables.top2._eventOutput.emit('customEvent');
+            eventCallback.calledTwice.should.be.ok;
+        });
+
         it('has recursive reflows that propagate upwards', () => {
             class MyView1 extends imports.View {
             }

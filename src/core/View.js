@@ -42,9 +42,10 @@ export class View extends FamousView {
         this._initDataStructures();
 
         this._constructDecoratedRenderables();
-        this._initTrueSizedBookkeeping();
 
+        this._initTrueSizedBookkeeping();
         this._combineLayouts();
+
     }
 
     get hasDecorators() {
@@ -257,12 +258,16 @@ export class View extends FamousView {
     }
 
 
-    _assignRenderable(renderable, renderableName) {
+    _pipeRenderable(renderable){
         /* Auto pipe events from the renderable to the view */
         if (renderable.pipe) {
             renderable.pipe(this);
             renderable.pipe(this._eventOutput);
+            this._pipedRenderables.push(renderable);
         }
+    }
+    _assignRenderable(renderable, renderableName) {
+        this._pipeRenderable(renderable);
 
         if (renderable.decorations) {
             this._addDecoratedRenderable(renderable, renderableName)
@@ -645,21 +650,12 @@ export class View extends FamousView {
      */
     _prepareLayoutController() {
         if (this.decorations.isScrollable) {
-            let scrollView = new FlexScrollView({
-                autoPipeEvents: true
-            });
+            let scrollView = new FlexScrollView();
 
-            let viewSize = [undefined, undefined];
-            this.layout.on('reflow', () => {
-                viewSize = [undefined, this._getLayoutSize()[1]];
-            });
-
-            this.layout.getSize = function () {
-                return viewSize;
-            };
+            this.layout.getSize = this.getSize;
 
             scrollView.push(this.layout);
-            scrollView.pipe(this._eventOutput);
+            this.pipe(scrollView);
             this.add(scrollView);
         }
         else {
@@ -869,6 +865,12 @@ export class View extends FamousView {
      */
     _addRenderables() {
         this.layout.setDataSource(this.renderables);
+
+        for(let [renderableName, renderable] of Object.entries(this.renderables)){
+            if(!~this._pipedRenderables.indexOf(renderable)){
+                this._pipeRenderable(renderable);
+            }
+        }
     }
 
     _initializeAnimations() {
@@ -998,6 +1000,8 @@ export class View extends FamousView {
         if (!this.immediateAnimations) {
             this.immediateAnimations = [];
         }
+        /* Keeping track of piped renderables */
+        this._pipedRenderables = [];
         this._groupedRenderables = {};
     }
 
