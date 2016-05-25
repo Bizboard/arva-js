@@ -278,16 +278,16 @@ export class View extends FamousView {
     }
 
 
-    _pipeRenderable(renderable){
+    _pipeRenderable(renderable, renderableName){
         /* Auto pipe events from the renderable to the view */
         if (renderable.pipe) {
             renderable.pipe(this);
             renderable.pipe(this._eventOutput);
-            this._pipedRenderables.push(renderable);
+            this._pipedRenderables.push(renderableName);
         }
     }
     _assignRenderable(renderable, renderableName) {
-        this._pipeRenderable(renderable);
+        this._pipeRenderable(renderable, renderableName);
 
         if (renderable.decorations) {
             this._addDecoratedRenderable(renderable, renderableName)
@@ -892,8 +892,8 @@ export class View extends FamousView {
         this.layout.setDataSource(this.renderables);
 
         for(let [renderableName, renderable] of Object.entries(this.renderables)){
-            if(!~this._pipedRenderables.indexOf(renderable)){
-                this._pipeRenderable(renderable);
+            if(!~this._pipedRenderables.indexOf(renderableName)){
+                this._pipeRenderable(renderable, renderableName);
             }
         }
     }
