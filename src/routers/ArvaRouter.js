@@ -193,7 +193,7 @@ export class ArvaRouter extends Router {
                 keys: keys,
                 values: values
             };
-            currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : {};
+            currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : (this._initialSpec || {});
             this._setHistory(currentRoute);
 
             this._executeRoute(rule, currentRoute);
@@ -204,6 +204,10 @@ export class ArvaRouter extends Router {
         }
 
         return false;
+    }
+
+    setInitialSpec(spec) {
+        this._initialSpec = spec;
     }
 
     /**
