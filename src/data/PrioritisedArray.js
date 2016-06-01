@@ -432,4 +432,8 @@ export class PrioritisedArray extends Array {
         return (position == undefined || position == null) ? -1 : position;
     }
 
+    findById(id){
+        return this[this.findIndexById(id)];
+    }
+
 }
