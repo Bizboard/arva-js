@@ -14,7 +14,6 @@ import Easing                   from 'famous/transitions/Easing.js';
 import AnimationController      from 'famous-flex/AnimationController.js';
 import LayoutUtility            from 'famous-flex/LayoutUtility.js'
 
-
 import {View}                   from '../core/View.js'
 
 function prepDecoratedRenderable(viewOrRenderable, renderableName, descriptor) {
@@ -101,17 +100,15 @@ export const layout = {
             if (renderable.decorations.dock) {
                 space = space || renderable.decorations.dock.space;
             }
-            // Todo refactor also the z index to the dock, probably
-            renderable.decorations.dock = {space, dockMethod};
 
-            if (!renderable.decorations.size) {
-                let width = dockMethod === 'left' || dockMethod === 'right' ? size : undefined;
-                let height = dockMethod === 'top' || dockMethod === 'bottom' ? size : undefined;
-                renderable.decorations.size = [width, height];
-            } else if (size) {
-                throw Error("A size was specified both in the dock function and explicitly, which creates a conflict. " +
-                    "Please use one of the two");
-            }
+            let width = dockMethod === 'left' || dockMethod === 'right' ? size : undefined;
+            let height = dockMethod === 'top' || dockMethod === 'bottom' ? size : undefined;
+
+            let twoDimensionalSize = [width, height];
+            // Todo refactor also the z index to the dock, probably
+            renderable.decorations.dock = {space, dockMethod, size: twoDimensionalSize};
+
+
 
             if (!renderable.decorations.translate) {
                 renderable.decorations.translate = [0, 0, 0];
@@ -149,10 +146,23 @@ export const layout = {
                 case 'topright':
                     origin = align = [1, 0];
                     break;
+                case 'left':
+                    origin = align = [0, 0.5];
+                    break;
+                case 'right':
+                    origin = align = [1, 0.5];
+                    break;
+                case 'top':
+                    origin = align = [0.5, 0];
+                    break;
+                case 'down':
+                    origin = align = [0.5, 1];
+                    break;
                 default:
                 case 'topleft':
                     origin = align = [0, 0];
                     break;
+
             }
 
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);

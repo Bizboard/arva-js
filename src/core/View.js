@@ -163,10 +163,12 @@ export class View extends FamousView {
     prioritiseDockBefore(renderableName, nextRenderableName) {
         let docked = this._groupedRenderables.docked;
         if (!docked) { this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': no docked renderables present.`); return false; }
-        if(!this._prioritiseDockAtIndex(renderableName, docked.indexOf(nextRenderableName))){
+        let result = this._prioritiseDockAtIndex(renderableName, docked.indexOf(nextRenderableName));
+        if(!result){
             this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': could not find one of the renderables by name.
                         The following docked renderables are present: ${docked.keys()}`);
         }
+        return result;
     }
 
     /**
@@ -176,10 +178,12 @@ export class View extends FamousView {
     prioritiseDockAfter(renderableName, prevRenderableName) {
         let docked = this._groupedRenderables.docked;
         if (!docked) { this._warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': no docked renderables present.`); return false; }
-        if(!this._prioritiseDockAtIndex(renderableName, docked.indexOf(prevRenderableName) + 1)){
+        let result = this._prioritiseDockAtIndex(renderableName, docked.indexOf(prevRenderableName) + 1);
+        if(!result){
             this._warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': could not find one of the renderables by name.
                         The following docked renderables are present: ${docked.keys()}`);
         }
+        return result;
     }
 
     _prioritiseDockAtIndex(renderableName, index){
@@ -187,7 +191,6 @@ export class View extends FamousView {
         let renderableToRearrange = docked.get(renderableName);
 
         if(index < 0 || !renderableToRearrange) {
-
             return false;
         }
 
@@ -340,20 +343,19 @@ export class View extends FamousView {
     /**
      * Resolves a decorated renderable's size (both x and y)
      * @name {String} name The name of the renderable such that this.[name] = renderable
+     * @param renderableName
      * @param {Object} context Famous-flex context in which the renderable is rendered.
+     * @param specifiedSize
      * @returns {Array|Object} Array of [x, y] sizes, or null if resolving is not possible.
      * @private
      */
-    _resolveDecoratedSize(renderableName, context) {
+    _resolveDecoratedSize(renderableName, context, specifiedSize = this[renderableName].decorations.size) {
         let renderable = this[renderableName];
-        if (!renderable.decorations || !('size' in renderable.decorations)) {
-            return null;
-        }
 
         let size = [];
         let cacheResolvedSize = [];
         for (let dim = 0; dim < 2; dim++) {
-            size[dim] = this._resolveSingleSize(renderable.decorations.size[dim], context.size[dim]);
+            size[dim] = this._resolveSingleSize(specifiedSize[dim], context.size[dim]);
             if (size[dim] < 0 || size[dim] === true) {
                 cacheResolvedSize[dim] = this._resolveSingleTrueSizedRenderable(renderable, renderableName, size, dim);
                 if (this._renderableIsSurface(renderable)) {
@@ -524,30 +526,16 @@ export class View extends FamousView {
         /* Process Renderables with a non-fill dock */
         let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
         for (let name of dockedNames) {
-            let renderable = dockedRenderables.get(name);
-            let {dockMethod, space} = renderable.decorations.dock;
-            let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
-            let renderableSize = this._resolveDecoratedSize(name, context);
-            let inUseSize = this._resolvedSizesCache.get(renderable);
-            for (let i = 0; i < 2; i++) {
-                if (renderableSize[i] == true) {
-                    /* If a true size is used, do a tilde on it in order for the dockhelper to recognize it */
-                    renderableSize[i] = ~inUseSize[i];
-                }
-            }
-            if (dock[dockMethod]) {
-                dock[dockMethod](name, renderableSize, zIndex, space, !!this._trueSizedSurfaceInfo.get(renderable));
-            } else {
-                this._warn(`Arva: ${this._name()}.${name} contains an unknown @dock method '${dockMethod}', and was ignored.`);
-            }
+            this._layoutDockedSingleRenderable(dockedRenderables.get(name), name, context, dock);
         }
 
         /* Process Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
         let filledNames = filledRenderables ? filledRenderables.keys() : [];
         for (let renderableName of filledNames) {
             let renderable = filledRenderables.get(renderableName);
-            let zIndex = renderable.decorations.translate ? renderable.decorations.translate[2] : 0;
-            dock.fill(renderableName, this._resolveDecoratedSize(renderableName, context), zIndex);
+            let {decorations} = renderable;
+            let zIndex  = decorations.translate ? decorations.translate[2] : 0;
+            dock.fill(renderableName, this._resolveDecoratedSize(renderableName, context, renderable.decorations.dock.size), zIndex);
         }
     }
 
@@ -572,6 +560,48 @@ export class View extends FamousView {
                 origin,
                 align
             });
+        }
+    }
+
+    _layoutDockedSingleRenderable(renderable, name, context, dock) {
+        let {decorations} = renderable;
+        let {translate = [0, 0, 0]} = decorations;
+        let {dockMethod, space} = decorations.dock;
+        let dockSizeSpecified = !(_.isEqual(decorations.dock.size,[undefined, undefined]));
+        let dockSize = this._resolveDecoratedSize(name, context, dockSizeSpecified ? decorations.dock.size : undefined);
+        let inUseDockSize = this._resolvedSizesCache.get(renderable);
+        let innerSize;
+        let {origin, align} = decorations;
+        if(decorations.size && (origin || align)){
+            /* If origin and align is used, we have to add this to the translate of the renderable */
+            this._resolveDecoratedSize(name, context);
+            innerSize = this._resolvedSizesCache.get(renderable);
+            if(innerSize){
+                let translateWithProportion = (proportion, size, translation, dimension, factor) =>
+                    translation[dimension] += size[dimension] ? factor*size[dimension]*proportion[dimension] : 0;
+                translate = [...translate]; //shallow copy the translation to prevent the translation for happening multiple times
+                if(origin){
+                    translateWithProportion(origin, innerSize, translate, 0, -1);
+                    translateWithProportion(origin, innerSize, translate, 1, -1);
+                }
+                if(align){
+                    /* If no docksize was specified, then use the context size */
+                    let outerDockSize = dockSizeSpecified ? dockSize : context.size;
+                    translateWithProportion(align, outerDockSize, translate, 0, 1);
+                    translateWithProportion(align, outerDockSize, translate, 1, 1);
+                }
+            }
+        }
+        for (let i = 0; i < 2; i++) {
+            if (dockSize[i] == true) {
+                /* If a true size is used, do a tilde on it in order for the dockhelper to recognize it as true-sized */
+                dockSize[i] = ~inUseDockSize[i];
+            }
+        }
+        if (dock[dockMethod]) {
+            dock[dockMethod](name, dockSize, space, translate, innerSize);
+        } else {
+            this._warn(`Arva: ${this._name()}.${name} contains an unknown @dock method '${dockMethod}', and was ignored.`);
         }
     }
 
@@ -796,11 +826,21 @@ export class View extends FamousView {
             if (getDockType(otherDockMethod) !== dockType) {
                 return [NaN, NaN];
             } else {
-                this._resolveDecoratedSize(name, {size: [NaN, NaN]});
-                let resolvedSize = this._resolvedSizesCache.get(dockedRenderable);
-                if (!resolvedSize) {
+                /* Resolve both inner size and outer size */
+                this._resolveDecoratedSize(name, {size: [NaN, NaN]}, dockedRenderable.decorations.dock.size);
+                let resolvedOuterSize = this._resolvedSizesCache.get(dockedRenderable);
+
+                let resolvedInnerSize = [undefined, undefined];
+                if(dockedRenderable.decorations.size){
+                    this._resolveDecoratedSize(name, {size: [NaN, NaN]});
+                    resolvedInnerSize = this._resolvedSizesCache.get(dockedRenderable);
+                }
+
+                if (!resolvedOuterSize || !resolvedInnerSize) {
                     return [NaN, NaN];
                 }
+                let resolvedSize = [resolvedOuterSize[0] === undefined ? resolvedInnerSize[0] : resolvedOuterSize[0],
+                    resolvedOuterSize[1] === undefined ? resolvedInnerSize[1] : resolvedOuterSize[1]];
                 let newResult = new Array(2);
                 /* If docking is done from opposite directions */
                 if (dockMethod !== otherDockMethod) {

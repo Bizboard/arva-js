@@ -87,16 +87,15 @@ TrueSizedLayoutDockHelper.prototype.parse = function (data) {
  * @param {Array}  size of the node. If number, draws only one dimension and leaves the other one undefined
  * @param {Number} [z] z-index to use for the node
  * @param {Number} space the space inserted before this item, defaults to 0
+ * @param extraTranslation
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.top = function (node, size, z, space =0 ) {
+TrueSizedLayoutDockHelper.prototype.top = function (node, size, space =0, extraTranslation = [0,0,0], innerSize) {
     let [width, height] = this._setupAccordingToDimension(size, 1);
     this._data.top += space;
     this._context.set(node, {
-        size: [width || (this._data.right - this._data.left), this._ensureTrueSize(height)],
-        origin: [0, 0],
-        align: [0, 0],
-        translate: [this._data.left, this._data.top, (z === undefined) ? this._data.z : z]
+        size: innerSize || ([width || (this._data.right - this._data.left), this._ensureTrueSize(height)]),
+        translate: this._addTranslations([this._data.left, this._data.top, this._data.z], extraTranslation)
     });
     /* If height was negative, then it is true sized and it needs to be tild'd to return to original */
     this._data.top += this._resolveSingleSize(height);
@@ -110,17 +109,15 @@ TrueSizedLayoutDockHelper.prototype.top = function (node, size, z, space =0 ) {
  * @param {Array}  size of the node. If number, draws only one dimension and leaves the other one undefined
  * @param {Number} [z] z-index to use for the node
  * @param {Number} space the space inserted before this item, defaults to 0
+ * @param extraTranslation
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.left = function (node, size, z, space = 0) {
+TrueSizedLayoutDockHelper.prototype.left = function (node, size, space = 0, extraTranslation = [0, 0, 0], innerSize) {
     let [width, height] = this._setupAccordingToDimension(size, 0);
-
     this._data.left += space;
     this._context.set(node, {
-        size: [this._ensureTrueSize(width), height || (this._data.bottom - this._data.top)],
-        origin: [0, 0],
-        align: [0, 0],
-        translate: [this._data.left, this._data.top, (z === undefined) ? this._data.z : z]
+        size: innerSize || ([this._ensureTrueSize(width), height || (this._data.bottom - this._data.top)]),
+        translate: this._addTranslations([this._data.left, this._data.top, this._data.z], extraTranslation)
     });
     this._data.left += this._resolveSingleSize(width);
     return this;
@@ -133,17 +130,17 @@ TrueSizedLayoutDockHelper.prototype.left = function (node, size, z, space = 0) {
  * @param {Array}  size of the node. If number, draws only one dimension and leaves the other one undefined
  * @param {Number} [z] z-index to use for the node
  * @param {Number} space the space inserted before this item, defaults to 0
+ * @param extraTranslation
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.bottom = function (node, size, z,space = 0) {
+TrueSizedLayoutDockHelper.prototype.bottom = function (node, size,space = 0, extraTranslation = [0,0,0], innerSize) {
 
     let [width, height] = this._setupAccordingToDimension(size, 1);
-
     this._data.bottom -= space;
     this._data.bottom -= this._resolveSingleSize(height);
     this._context.set(node, {
-        size: [width || (this._data.right - this._data.left), this._ensureTrueSize(height)],
-        translate: [this._data.left, this._data.bottom, (z === undefined) ? this._data.z : z]
+        size: innerSize || ([width || (this._data.right - this._data.left), this._ensureTrueSize(height)]),
+        translate: this._addTranslations([this._data.left, this._data.bottom, this._data.z], extraTranslation)
     });
     return this;
 };
@@ -153,19 +150,19 @@ TrueSizedLayoutDockHelper.prototype.bottom = function (node, size, z,space = 0) 
  *
  * @param {LayoutNode|String} [node] layout-node to dock, when omitted the `width` argument argument is used for padding
  * @param {Array}  size of the node. If number, draws only one dimension and leaves the other one undefined
- * @param {Number} [z] z-index to use for the node
+ * @param {Number} [this._data.z] z-index to use for the node
  * @param {Number} space the space inserted before this item, defaults to 0
- * @param {Boolean} use true size, defaults to false
+ * @param extraTranslation
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.right = function (node, size, z, space = 0) {
+TrueSizedLayoutDockHelper.prototype.right = function (node, size, space = 0, extraTranslation = [0, 0, 0], innerSize) {
     let [width, height] = this._setupAccordingToDimension(size, 0);
 
     this._data.right -= space;
     this._data.right -= this._resolveSingleSize(width);
     this._context.set(node, {
-        size: [this._ensureTrueSize(width), height || (this._data.bottom - this._data.top)],
-        translate: [this._data.right, this._data.top, (z === undefined) ? this._data.z : z]
+        size: innerSize || ([this._ensureTrueSize(width), height || (this._data.bottom - this._data.top)]),
+        translate: this._addTranslations([this._data.right, this._data.top, this._data.z], extraTranslation)
     });
     return this;
 };
@@ -203,9 +200,13 @@ TrueSizedLayoutDockHelper.prototype.margins = function (margins) {
 TrueSizedLayoutDockHelper.prototype._resolveSingleSize = function (size) {
     return size < 0 ? ~size : size;
 };
+TrueSizedLayoutDockHelper.prototype._addTranslations = function (translation1, translation2) {
+    return [translation1[0] + translation2[0], translation1[1] + translation2[1], translation1[2] + translation2[2]];
+};
 TrueSizedLayoutDockHelper.prototype._ensureTrueSize = function (size) {
     return size < 0 ? true : size;
 };
+
 
 TrueSizedLayoutDockHelper.prototype._setupAccordingToDimension = function (size, dim) {
     let height;
