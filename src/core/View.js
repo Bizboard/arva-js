@@ -242,7 +242,7 @@ export class View extends FamousView {
                 let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
 
                 /* Clone the decorator properties, because otherwise every view of the same type willl share them between
-                 * the same corresponding renderable
+                 * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
                  */
                 renderable.decorations = _.cloneDeep(_.extend({}, decorations, renderable.decorations || {}));
 

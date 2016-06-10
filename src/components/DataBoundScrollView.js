@@ -114,8 +114,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this.options.dataFilter = newFilter;
 
         for (let entry of this.options.dataStore || []) {
-            let surface = _.find(this._dataSource, (surface) => surface.dataId === entry.id);
-            let alreadyExists = surface !== undefined;
+            let alreadyExists = this._internalDataSource[entry.id] !== undefined;
             let result = newFilter(entry);
 
             if (result instanceof Promise) {
@@ -311,9 +310,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
     _removeItem(child) {
         let index = this.internalDataSource[child.id].position;
         if (index > -1) {
+            this._updatePosition(index, -1);
             this.remove(index);
             delete this.internalDataSource[child.id];
-            this._updatePosition(index, -1);
         }
 
         /* If we're using groups, check if we need to remove the group that this child belonged to. */
