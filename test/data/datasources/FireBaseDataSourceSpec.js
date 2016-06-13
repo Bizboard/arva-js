@@ -30,7 +30,7 @@ describe('FirebaseDataSource', () => {
         on = sinon.stub();
         once = sinon.stub();
         off = sinon.stub();
-        push = sinon.stub().returns({key: () => '1234567890'});
+        push = sinon.stub().returns({key: '1234567890'});
 
         /* Create a spy mocking the normal firebase.database().ref() object */
         let refSpy = sinon.spy(function(path){
@@ -41,11 +41,9 @@ describe('FirebaseDataSource', () => {
             let parent = path.indexOf('http') === 0 ? 'https://' + pathComponents.slice(1).join('/') : `https://x.firebaseio.com/${pathComponents.join('/')}`;
             let toString = path.indexOf('http') === 0 ? path : `https://x.firebaseio.com/${path}`;
             return {
-                on, once, off, push,
-                key: () => key,
-                parent: () => parent[parent.length - 1] === '/' ? parent.substring(0, parent.length - 1) : parent,
-                toString: () => toString,
-                root: () => 'https://x.firebaseio.com',
+                on, once, off, push, key, toString: () => toString,
+                parent: parent[parent.length - 1] === '/' ? parent.substring(0, parent.length - 1) : parent,
+                root: 'https://x.firebaseio.com',
                 orderByPriority: () => refSpy(path)
             };
         });

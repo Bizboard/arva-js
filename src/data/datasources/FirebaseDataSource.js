@@ -106,7 +106,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {String} Current branch name.
      */
     key() {
-        return this._dataReference.key();
+        return this._dataReference.key;
     }
 
     /**
@@ -114,7 +114,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {String} Full resource path of parent.
      */
     parent() {
-        return this._dataReference.parent();
+        return this._dataReference.parent;
     }
 
     /**
@@ -122,7 +122,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {String} Full resource path of root.
      */
     root() {
-        return this._dataReference.root();
+        return this._dataReference.root;
     }
 
     /**
@@ -149,7 +149,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {FirebaseDataSource}
      */
     push(newData) {
-        return new FirebaseDataSource(`${this.path()}/${this._dataReference.push(newData).key()}`);
+        return new FirebaseDataSource(`${this.path()}/${this._dataReference.push(newData).key}`);
     }
 
     /**
