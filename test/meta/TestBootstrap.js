@@ -76,6 +76,6 @@ export function loadDependencies(dependencies) {
     }
 
     return Promise.all(promises).then(() => {
-        return Promise.resolve(imports);
+        return imports;
     });
 }
