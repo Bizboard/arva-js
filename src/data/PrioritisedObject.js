@@ -233,7 +233,7 @@ export class PrioritisedObject extends EventEmitter {
         let numChildren = dataSnapshot.numChildren();
 
         if (!this._id) {
-            this._id = dataSnapshot.key();
+            this._id = dataSnapshot.key;
         }
 
         /* If there is no data at this point yet, fire a ready event */
