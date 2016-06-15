@@ -29,7 +29,7 @@
       "eventemitter3": "npm:eventemitter3@^1.1.0",
       "famous": "github:bizboard/famous@develop",
       "famous-flex": "github:bizboard/famous-flex@master",
-      "firebase": "github:firebase/firebase-bower@3.0.4",
+      "firebase": "github:firebase/firebase-bower@^3.0.5",
       "fs": "github:jspm/nodelibs-fs@^0.1.2",
       "lodash": "npm:lodash@^4.6.1",
       "ordered-hashmap": "npm:ordered-hashmap@^1.0.0",
