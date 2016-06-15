@@ -255,7 +255,7 @@ export class PrioritisedArray extends Array {
             function (child) {
                 /* Create a new instance of the given data type and prefill it with the snapshot data. */
                 let options = {dataSnapshot: child};
-                let childRef = this._dataSource.child(child.key());
+                let childRef = this._dataSource.child(child.key);
 
                 /* whenever the ref() is a datasource, we can bind that source to the model.
                  * whenever it's not a datasource, we assume the model should instantiate a new
@@ -268,7 +268,7 @@ export class PrioritisedArray extends Array {
                     options.path = dataSnapshot.ref().toString().replace(rootPath, '/');
                 }
 
-                let newModel = new this._dataType(child.key(), child.val(), _.extend({}, this._modelOptions, options));
+                let newModel = new this._dataType(child.key, child.val(), _.extend({}, this._modelOptions, options));
                 this.add(newModel);
 
                 /* If this is the last child, fire a ready event */
@@ -317,7 +317,7 @@ export class PrioritisedArray extends Array {
      * @private
      */
     _onChildAdded(snapshot, prevSiblingId) {
-        let id = snapshot.key();
+        let id = snapshot.key;
         let model = new this._dataType(id, null, _.extend({}, this._modelOptions, {
             dataSnapshot: snapshot,
             dataSource: this._dataSource.child(id)
@@ -350,7 +350,7 @@ export class PrioritisedArray extends Array {
      * @private
      */
     _onChildChanged(snapshot, prevSiblingId) {
-        let id = snapshot.key();
+        let id = snapshot.key;
 
         let changedModel = new this._dataType(id, null, _.extend({}, this._modelOptions, {dataSnapshot: snapshot,  dataSource: this._dataSource.child(id)}));
 
@@ -382,7 +382,7 @@ export class PrioritisedArray extends Array {
         /* Ignore priority updates whilst we're reordering to avoid floods */
         if (!this._isBeingReordered) {
 
-            let id = snapshot.key();
+            let id = snapshot.key;
             let previousPosition = this.findIndexById(id);
             let tempModel = this[previousPosition];
             this._ids[id] = null;
@@ -406,7 +406,7 @@ export class PrioritisedArray extends Array {
      */
     _onChildRemoved(oldSnapshot) {
         /* TODO: figure out if we can use the snapshot's priority as our array index reliably, to avoid big loops. */
-        let id = oldSnapshot.key();
+        let id = oldSnapshot.key;
         let position = this.findIndexById(id);
         let model = this[position];
 

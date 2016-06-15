@@ -258,8 +258,8 @@ export class FirebaseDataSource extends DataSource {
      * @param {Object} options Optional, additional client arguments, such as configuring session persistence.
      * @returns {Promise} A promise that resolves after successful authentication.
      */
-    authAnonymously(onComplete, options) {
-        return firebase.auth().signInAnonymously().then((user) => { if(onComplete) { onComplete(user); } return user; });
+    authAnonymously(options) {
+        return firebase.auth().signInAnonymously();
     }
 
     /**
@@ -269,7 +269,23 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Object|null} User auth object.
      */
     getAuth() {
-        return firebase.auth().currentUser;
+        let firebaseAuth = firebase.auth();
+        let {currentUser} = firebaseAuth;
+        if(!this._authDataPresent){
+            if(currentUser){
+                this._authDataPresent = true;
+                return Promise.resolve(currentUser);
+            } else {
+                return new Promise((resolve) => {
+                    firebaseAuth.onAuthStateChanged((newUser) => {
+                        this._authDataPresent = true;
+                        resolve(newUser);
+                    });
+                });
+            }
+        } else {
+            return Promise.resolve(currentUser);
+        }
     }
 
     /**
@@ -277,7 +293,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {void}
      */
     unauth() {
-        return firebase.auth().signOut();;
+        return firebase.auth().signOut();
     }
 
     /**
