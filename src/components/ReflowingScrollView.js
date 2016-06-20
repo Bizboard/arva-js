@@ -1,6 +1,9 @@
 /**
- * Created by lundfall on 5/24/16.
- */
+  @author: Karl Lundfall (lundfall)
+  @license NPOSL-3.0
+  @copyright Bizboard, 2015
+*/
+
 import FlexScrollView   from 'famous-flex/FlexScrollView.js';
 import {combineOptions} from '../utils/CombineOptions.js';
 import {ObjectHelper}   from '../utils/ObjectHelper.js';

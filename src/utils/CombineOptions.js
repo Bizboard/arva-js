@@ -1,6 +1,8 @@
 /**
- * Created by lundfall on 2/24/16.
- */
+  @author: Karl Lundfall (lundfall)
+  @license NPOSL-3.0
+  @copyright Bizboard, 2015
+*/
 
 import camelCase from 'camelcase';
 import _         from 'lodash';

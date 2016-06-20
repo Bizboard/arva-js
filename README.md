@@ -37,4 +37,4 @@ You can read the latest documentation about Arva <a href="http://arva.readme.io/
 To get started, clone the Arva Seed project as described <a href="http://arva.readme.io/docs/installation">in the documentation</a>.
 
 ## License
-[![npm](https://img.shields.io/npm/l/express.svg?style=flat-square)](http://opensource.org/licenses/MIT)
+[NPOSL-3.0](https://opensource.org/licenses/NPOSL-3.0) - A variant of the Open Software License 3.0, this license requires that the organization using it is a non-profit and that no revenue is generated from sale of the software.
