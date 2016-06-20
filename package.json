@@ -1,6 +1,6 @@
 {
   "name": "arva-js",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.1",
   "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
   "main": false,
   "homepage": "http://arva.io",
