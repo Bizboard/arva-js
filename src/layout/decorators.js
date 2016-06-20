@@ -153,7 +153,7 @@ export const layout = {
                 case 'top':
                     origin = align = [0.5, 0];
                     break;
-                case 'down':
+                case 'bottom':
                     origin = align = [0.5, 1];
                     break;
                 default:
