@@ -46,5 +46,31 @@ describe('PrioritisedArray', () => {
             should.exist(instance);
         });
     });
+
+    describe('#events', () => {
+        it('triggers a single time on once() without context', () => {
+            let instance = new imports.PrioritisedArray({});
+            let eventhandler = sinon.stub();
+            instance.once('value', eventhandler);
+
+            for(let i = 0; i < 5; i++) {
+                instance._eventEmitter.emit('value', instance);
+            }
+
+            should.equal(eventhandler.calledOnce, true);
+        });
+        
+        it('triggers a single time on once() with context', () => {
+            let instance = new imports.PrioritisedArray({});
+            let eventhandler = sinon.stub();
+            instance.once('value', eventhandler, this);
+
+            for(let i = 0; i < 5; i++) {
+                instance._eventEmitter.emit('value', instance);
+            }
+
+            should.equal(eventhandler.calledOnce, true);
+        });
+    });
 })
 ;
