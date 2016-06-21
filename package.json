@@ -1,6 +1,6 @@
 {
   "name": "arva-js",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.4",
   "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
   "main": false,
   "homepage": "http://arva.io",
@@ -27,7 +27,7 @@
       "camelcase": "npm:camelcase@^2.1.0",
       "di": "github:bizboard/di.js@master",
       "eventemitter3": "npm:eventemitter3@^1.1.0",
-      "famous": "github:bizboard/famous@develop",
+      "famous": "github:bizboard/famous@~0.3.5",
       "famous-flex": "github:bizboard/famous-flex@master",
       "firebase": "github:firebase/firebase-bower@^3.0.5",
       "fs": "github:jspm/nodelibs-fs@^0.1.2",
@@ -45,7 +45,7 @@
     }
   },
   "author": "Tom Clement <tom@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>",
-  "license": "MIT",
+  "license": "NPOSL-3.0",
   "devDependencies": {
     "babel": "^5.8.23",
     "babel-runtime": "^6.6.1",

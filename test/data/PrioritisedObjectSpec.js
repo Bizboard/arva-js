@@ -33,4 +33,13 @@ describe('PrioritisedObject', () => {
             should.exist(instance);
         });
     });
+
+    describe('#events', () => {
+        it('emits ready event only once if no data in dataSource', () => {
+            let instance = new imports.PrioritisedObject(undefined, { getPriority: () => 1, val: () => ({}), numChildren: () => 0, ref: {} });
+            let stub = sinon.stub();
+            instance.on('ready', stub);
+            should.equal(stub.callCount, 1);
+        });
+    });
 });

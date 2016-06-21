@@ -14,27 +14,15 @@ What Arva offers:
 * **Views** *Easy way of declaring your View and layout*
 * **Models** *Two-way data binding to any data source you desire*
 
-And enjoy the benefit of 60 fps animations cross-platform, made possible by [famo.us](http://github.com/famous) and [famous-flex](http://github.com/Ijzerenhein/famous-flex).
-
-
-## Overview
-
-Arva has become much more than just an MV*. These are the components that make up the entire framework:
-
-* [arva-js](//github.com/Bizboard/arva-js): 100% ES2016 MVC Framework
-* [arva-ds](//github.com/Bizboard/arva-ds): DataSources for Firebase and SharePoint (or build your own!), so you can benefit from the same model and collection interfaces*
-* [arva-utils](//github.com/Bizboard/arva-utils): Utilities to make things like object property manipulation and execution throttling easy
-* [arva-components](//github.com/Bizboard/arva-components): Make development more efficient by using components like `BrandingEngine` and `Localizer`
-
+Enjoy the benefit of 60 fps animations cross-platform in an enterprise grade style.
 
 ## Documentation
 You can read the latest documentation about Arva <a href="http://arva.readme.io/docs/installation">here</a>.
 
 ## installation
-
 > **Important note:** We don't support npm and bower installs (yet). We know these platforms are very popular and we will consider these for the near future. No guarantees though.
 
 To get started, clone the Arva Seed project as described <a href="http://arva.readme.io/docs/installation">in the documentation</a>.
 
 ## License
-[![npm](https://img.shields.io/npm/l/express.svg?style=flat-square)](http://opensource.org/licenses/MIT)
+[NPOSL-3.0](https://opensource.org/licenses/NPOSL-3.0) - A variant of the Open Software License 3.0, this license requires that the organization using it is a non-profit and that no revenue is generated from sale of the software.

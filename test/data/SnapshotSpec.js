@@ -26,5 +26,10 @@ describe('Snapshot', () => {
             let instance = new imports.Snapshot();
             should.exist(instance);
         });
+        it('has property based key and ref references', () => {
+            let instance = new imports.Snapshot('', {});
+            should.not.equal(typeof instance.key, 'function');
+            should.not.equal(typeof instance.ref, 'function');
+        });
     });
 });

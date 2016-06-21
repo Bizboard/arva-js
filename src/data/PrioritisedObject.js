@@ -233,11 +233,16 @@ export class PrioritisedObject extends EventEmitter {
         if (!this._id) {
             this._id = dataSnapshot.key;
         }
+        
+        if(!this._dataSource) {
+            this._dataSource = dataSnapshot.ref;
+        }
 
         /* If there is no data at this point yet, fire a ready event */
         if (numChildren === 0) {
             this._dataSource.ready = true;
             this.emit('ready');
+            return;
         }
 
         for (let key in data) {
@@ -282,7 +287,7 @@ export class PrioritisedObject extends EventEmitter {
 
     /**
      * Gets called whenever the current PrioritisedObject is changed by the dataSource.
-     * @param {DataSnapshot} dataSnapshot Snapshot of the new object value.
+     * @param {Snapshot} dataSnapshot Snapshot of the new object value.
      * @param {String} previousSiblingID ID of the model preceding the current one.
      * @returns {void}
      * @private

@@ -1,12 +1,12 @@
 /**
-
-
+ 
  @author: Tom Clement (tjclement)
  @license NPOSL-3.0
  @copyright Bizboard, 2015
 
  */
 
+import Timer                            from 'famous/utilities/Timer.js';
 import {ObjectHelper}                   from './ObjectHelper.js';
 
 export class Throttler {
@@ -20,12 +20,12 @@ export class Throttler {
      */
     constructor(throttleDelay = 0, shouldQueue = true, actionContext = this) {
         this.delay = throttleDelay;
+        this.timer = null;
         this.shouldQueue = shouldQueue;
         this.actionContext = actionContext;
 
         this.queue = [];
         this.executionTimer = null;
-        this.lastExecuted = Date.now() - throttleDelay;
 
         ObjectHelper.bindAllMethods(this, this);
     }
@@ -41,44 +41,19 @@ export class Throttler {
         if(!this.shouldQueue) { this.queue.pop(); }
 
         this.queue.push(action);
-        this._checkTimer();
-    }
-
-    /**
-     * Checks if the time since the last executed action is greater than or equal to the given throttleDelay.
-     * If it is, the top action will be executed Throttler's timer reset if there are more actions waiting.
-     * @returns {void}
-     * @private
-     */
-    _checkTimer() {
-        let timeSinceLastExecuted = Date.now() - this.lastExecuted;
-
-        if(timeSinceLastExecuted >= this.delay) {
-            /* It's been at least the given throttleDelay since the last execution, so we can go ahead and execute the top action. */
-            this._executeTopAction();
-            this.lastExecuted = Date.now();
-
-            /* If we have more actions in the queue, fire up the timer. */
-            if(this.queue.length) {
-                this._resetTimer();
-            }
-        } else {
-            /* We've not reached the throttleDelay yet, so we'll need to wait at least long enough to reach it. */
-            let timeToWait = this.delay - timeSinceLastExecuted;
-            this._resetTimer(timeToWait);
+        if(!this.timer){
+            this.timer = Timer.setInterval(this._executeTopAction, this.delay);
         }
     }
 
     /**
-     * Clears the Throttler's timer if it is set, and sets it to the given timeToWait.
-     * @param {Number} timeToWait Time to set the timer to, in milliseconds.
+     * Clears the Throttler's timer if it is set.
      * @returns {void}
      * @private
      */
-    _resetTimer(timeToWait = this.delay) {
-        clearTimeout(this.executionTimer);
-        this.executionTimer = setTimeout(this._checkTimer, timeToWait);
-
+    _clearTimer() {
+        Timer.clear(this.timer);
+        this.timer = null;
     }
 
     /**
@@ -90,6 +65,9 @@ export class Throttler {
         let action = this.queue.shift();
         if(action && typeof action === 'function'){
             action.call(this.actionContext);
+        }
+        if(!this.queue.length) {
+            this._clearTimer();
         }
     }
 }
