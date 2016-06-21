@@ -350,6 +350,12 @@ export class View extends FamousView {
     _resolveDecoratedSize(renderableName, context, specifiedSize = this[renderableName].decorations.size) {
         let renderable = this[renderableName];
 
+        if(specifiedSize === undefined) {
+            this._warn(`Renderable "${renderableName}" does not appear to have a size defined. 
+                        Please verify that its size is defined in a @layout.size or @layout.dock decorator.`);
+            return null;
+        }
+
         let size = [];
         let cacheResolvedSize = [];
         for (let dim = 0; dim < 2; dim++) {
