@@ -366,6 +366,10 @@ export class View extends FamousView {
             }
         }
 
+        if(this._renderableIsSurface(renderable) && !Number.isNaN(size[0]) && !Number.isNaN(size[1])){
+            /* Need to set the size in order to get resize notifications */
+            renderable.size = [...size];
+        }
 
         this._resolvedSizesCache.set(renderable, [cacheResolvedSize[0], cacheResolvedSize[1]]);
 
@@ -1007,7 +1011,7 @@ export class View extends FamousView {
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
         let {trueSizedDimensions} = trueSizedInfo;
 
-        if (renderableHtmlElement && (renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!renderable.getContent() && !(renderable instanceof ImageSurface)) && renderableHtmlElement.innerHTML === renderable.getContent() &&
+        if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!renderable.getContent() && !(renderable instanceof ImageSurface))) && renderableHtmlElement.innerHTML === renderable.getContent() &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
             let newSize;
 
@@ -1029,13 +1033,12 @@ export class View extends FamousView {
             if (sizeChange) {
                 trueSizedInfo.size = newSize;
                 trueSizedInfo.isUncalculated = false;
-                this.reflowRecursively();
             }
+            this.reflowRecursively();
             /* Sanity check */
         } else if (renderableHtmlElement && renderableHtmlElement.childElementCount) {
             this._warn(`Cannot calculate truesized surface in class ${this._name()} as the content contains one or more html elements. Behaviour is undeterministic`);
         } else {
-            trueSizedInfo.calculateOnNext = true;
             this.layout.reflowLayout();
             this._requestLayoutControllerReflow();
         }
