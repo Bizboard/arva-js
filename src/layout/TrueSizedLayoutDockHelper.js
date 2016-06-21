@@ -1,8 +1,12 @@
 /**
- * Created by lundfall on 2/16/16.
- *
- * Adapted version of the LayoutDockHelper made by Hein Rutjes in famous-flex
- */
+  @author: Karl Lundfall (lundfall)
+  @license NPOSL-3.0
+  @copyright Bizboard, 2015
+
+  Adapted version of the LayoutDockHelper made by Hein Rutjes in famous-flex
+*/
+
+
 
 import LayoutUtility from 'famous-flex/LayoutUtility';
 
@@ -234,4 +238,3 @@ TrueSizedLayoutDockHelper.prototype._setupAccordingToDimension = function (size,
 TrueSizedLayoutDockHelper.prototype.get = function () {
     return this._data;
 };
-

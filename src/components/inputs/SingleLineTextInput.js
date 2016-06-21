@@ -1,6 +1,8 @@
 /**
- * Created by tom on 22/06/15.
- */
+  @author: Tom Clement (tjclement)
+  @license NPOSL-3.0
+  @copyright Bizboard, 2015
+*/
 
 import _                            from 'lodash';
 import InputSurface                 from 'famous/surfaces/InputSurface.js';
