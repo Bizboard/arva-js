@@ -26,5 +26,10 @@ describe('SharePointSnapshot', () => {
             let instance = new imports.SharePointSnapshot('', {});
             should.exist(instance);
         });
+        it('has property based key and ref references', () => {
+            let instance = new imports.SharePointSnapshot('', {});
+            should.not.equal(typeof instance.key, 'function');
+            should.not.equal(typeof instance.ref, 'function');
+        });
     });
 });

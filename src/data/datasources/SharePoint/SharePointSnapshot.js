@@ -24,7 +24,7 @@ export class SharePointSnapshot extends Snapshot {
         ObjectHelper.bindAllMethods(this, this);
     }
 
-    key() {
+    get key() {
 
         if (this._kvpair) return this._kvpair.key;
 
@@ -41,7 +41,7 @@ export class SharePointSnapshot extends Snapshot {
         else return this._data;
     }
 
-    ref() {
+    get ref() {
         return this._dataSource;
     }
 

@@ -11,9 +11,9 @@
 export class Snapshot{
     constructor(dataSnapshot){}
 
-    key(){}
+    get key(){}
     val(){}
-    ref(){}
+    get ref(){}
     getPriority(){}
     forEach(){}
     numChildren(){}
