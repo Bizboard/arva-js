@@ -57,9 +57,9 @@ describe('PrioritisedArray', () => {
                 instance._eventEmitter.emit('value', instance);
             }
 
-            should.equal(eventhandler.calledOnce, true);
+            should.equal(eventhandler.callCount, 1);
         });
-        
+
         it('triggers a single time on once() with context', () => {
             let instance = new imports.PrioritisedArray({});
             let eventhandler = sinon.stub();
@@ -69,8 +69,37 @@ describe('PrioritisedArray', () => {
                 instance._eventEmitter.emit('value', instance);
             }
 
-            should.equal(eventhandler.calledOnce, true);
+            should.equal(eventhandler.callCount, 1);
+        });
+
+        it('doesn\'t loop when causing a change event inside once()', () => {
+            let instance = new imports.PrioritisedArray({});
+            let maxExecutionTimes = 10;
+            let eventhandler = sinon.spy(function(){ 
+                if(maxExecutionTimes-- > 0){
+                    instance._eventEmitter.emit('value', instance);
+                } 
+            });
+            instance.once('value', eventhandler, this);
+
+            for(let i = 0; i < 5; i++) {
+                instance._eventEmitter.emit('value', instance);
+            }
+
+            should.equal(eventhandler.callCount, 1);
+        });
+
+        it('_onChildChanged changes the existing model instead of creating a new one', () => {
+            class ModelMock { _onChildValue = sinon.stub(); }
+            let instance = new imports.PrioritisedArray({});
+            let model = new ModelMock();
+
+            instance[0] = model;
+            instance._ids = {'1': 0};
+            instance._dataType = ModelMock;
+            instance._onChildChanged({key: '1', ref: {}, val: () => ({})});
+
+            should.equal(model._onChildValue.callCount, 1);
         });
     });
-})
-;
+});
