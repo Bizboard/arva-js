@@ -206,20 +206,24 @@ export class DataBoundScrollView extends ReflowingScrollView {
         if (!placedWithinGroup) {
             /* If we have an orderBy function, find the index we should be inserting at. */
             if ((this._useCustomOrdering && this.options.orderBy && typeof this.options.orderBy === 'function') || this.isGrouped) {
-                let foundOrderedIndex = this.orderBy(child, this.options.orderBy);
-                if (foundOrderedIndex !== -1) {
-                    if (this.isGrouped) {
-                        let groupIndex;
-                        let groupId = this._getGroupByValue(child);
-                        let groupData = this._findGroup(groupId);
-                        if (groupData) groupIndex = groupData.position;
-                        if (this._viewSequence.findByIndex(insertIndex) && groupIndex === undefined && groupData !== -1) {
-                            insertIndex = this._internalGroups[groupIndex].position - 1;
+                let foundOrderedIndex = -1;
+                if(this.isGrouped) {
+                    for (let [groupId, group] of Object.entries(this._internalGroups)) {
+                        /* Check the first and last item of every group (they're sorted) */
+                        for (let position of group.itemsCount > 1 ? [group.position + 1, group.position + group.itemsCount - 1] : [group.position + 1]) {
+                            let {dataId} = this._viewSequence.findByIndex(position)._value;
+                            if (this.options.orderBy(child, this._internalDataSource[dataId])) {
+                                foundOrderedIndex = group.position;
+                                break;
+                            }
                         }
-
-                    } else {
-                        insertIndex = foundOrderedIndex;
                     }
+                } else {
+                    foundOrderedIndex = this.orderBy(child, this.options.orderBy);
+                }
+
+                if (foundOrderedIndex !== -1) {
+                    insertIndex = foundOrderedIndex;
                 }
                 /*
                  There is no guarantee of order when grouping objects unless orderBy is explicitly defined
@@ -242,10 +246,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
             let groupExists = groupIndex !== -1;
             if (!groupExists) {
                 /* No group of this value exists yet, so we'll need to create one. */
+                this._updatePosition(insertIndex,1);
                 let newSurface = this._addGroupItem(groupByValue, insertIndex);
                 this._insertId(`group_${groupByValue}`, insertIndex, newSurface, null, {groupId: groupByValue});
                 /*insertIndex++;*/
-                this._updatePosition(insertIndex,1);
             }
             return !groupExists;
         }
@@ -321,8 +325,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
     _removeGroupIfNecessary(groupByValue) {
         /* Check if the group corresponding to the child is now empty */
         if(this._internalGroups[groupByValue].itemsCount === 0){
-            this.remove(this._internalGroups[groupByValue].position);
+            /* TODO: Maybe remove internalgroups[groupByValue]? (Or not?) */
             this._updatePosition(this._internalGroups[groupByValue].position, -1);
+            this.remove(this._internalGroups[groupByValue].position);
             delete this._internalGroups[groupByValue];
         }
 
