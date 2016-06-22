@@ -59,19 +59,13 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 }
             }.bind(this);
         } else if(typeof this.options.orderBy !== 'string'){
-            this.useCustomOrdering = true;
+            this._useCustomOrdering = true;
         }
 
 
         /* If present in options.headerTemplate or options.placeholderTemplate, we build the header and placeholder elements. */
         this.addHeader();
-
-        let {alwaysDisplayGroups} = this.options;
-        if(alwaysDisplayGroups){
-            this.ensureGroupsPresent(alwaysDisplayGroups);
-        } else {
-            this._addPlaceholder();
-        }
+        this._addPlaceholder();
 
 
         if (this.options.dataStore) {
@@ -211,7 +205,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         if (!placedWithinGroup) {
             /* If we have an orderBy function, find the index we should be inserting at. */
-            if (this.useCustomOrdering && this.options.orderBy && typeof this.options.orderBy === 'function') {
+            if ((this._useCustomOrdering && this.options.orderBy && typeof this.options.orderBy === 'function') || this.isGrouped) {
                 let foundOrderedIndex = this.orderBy(child, this.options.orderBy);
                 if (foundOrderedIndex !== -1) {
                     if (this.isGrouped) {
@@ -348,9 +342,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
             this._internalGroups[groupByValue].itemsCount--;
 
 
-            if (!this._alwaysDisplayGroups || !~this._alwaysDisplayGroups.indexOf(groupByValue)) {
-                this._removeGroupIfNecessary(groupByValue);
-            }
+
+            this._removeGroupIfNecessary(groupByValue);
+
         }
 
         /* The amount of items in the dataSource is subtracted with a header if present, to get the total amount of actual items in the scrollView. */
@@ -383,22 +377,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         }
     }
 
-    ensureGroupsPresent(mandatoryGroups) {
-        if(this._alwaysDisplayGroups){
-            for(let oldMandatoryGroup of this._alwaysDisplayGroups){
-                if(!~mandatoryGroups.indexOf(oldMandatoryGroup)){
-                    this._removeGroupIfNecessary(oldMandatoryGroup);
-                }
-            }
-        }
-        this._alwaysDisplayGroups = mandatoryGroups;
-        let index = this._getZeroIndex();
-        for(let mandatoryGroup of mandatoryGroups){
-            if(this._insertGroup(index, mandatoryGroup)){
-                index++;
-            }
-        }
-    }
+
 
     removeHeader() {
         if (this.header) {
@@ -512,7 +491,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 } else {
                     this.throttler.add(() => {
                         this._replaceItem(child);
-                        if (previousSiblingID && !this.isGrouped && !this.useCustomOrdering) {
+                        if (previousSiblingID && !this.isGrouped && !this._useCustomOrdering) {
                             this._moveItem(child.id, previousSiblingID);
                         }
                     });
