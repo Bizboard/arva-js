@@ -200,7 +200,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         if (!placedWithinGroup) {
             /* If we have an orderBy function, find the index we should be inserting at. */
-            if (this.options.orderBy && typeof this.options.orderBy === 'function') {
+            if (this.useCustomOrdering && this.options.orderBy && typeof this.options.orderBy === 'function') {
                 let foundOrderedIndex = this.orderBy(child, this.options.orderBy);
                 if (foundOrderedIndex !== -1) {
                     if (this.isGrouped) {
