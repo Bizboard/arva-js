@@ -600,8 +600,11 @@ export class View extends FamousView {
                     translateWithProportion(origin, innerSize, translate, 1, -1);
                 }
                 if (align) {
-                    /* If no docksize was specified, then use the context size */
-                    let outerDockSize = dockSizeSpecified ? dockSize : context.size;
+                    /* If no docksize was specified in a certain direction, then use the context size */
+                    let outerDockSize = [];
+                    for(let [index, singleSize] of dockSize.entries()){
+                        outerDockSize.push(singleSize ===  undefined ? context.size[index] : singleSize);
+                    }
                     translateWithProportion(align, outerDockSize, translate, 0, 1);
                     translateWithProportion(align, outerDockSize, translate, 1, 1);
                 }
