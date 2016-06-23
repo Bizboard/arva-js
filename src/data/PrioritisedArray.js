@@ -195,6 +195,10 @@ export class PrioritisedArray extends Array {
      */
     insertAt(model, position) {
         if (model instanceof this._dataType) {
+            for(let i=position;i<this.length;i++){
+                /* Increase the index of items further on in the prio array */
+                this._ids[this[i].id]++;
+            }
             this.splice(position, 0, model);
             this._ids[model._id] = position;
         } else {
@@ -228,6 +232,10 @@ export class PrioritisedArray extends Array {
      * @returns {void}
      */
     remove(position) {
+        for(let i=position;i<this.length;i++){
+            /* Decrease the index of items further on in the prio array */
+            this._ids[this[i].id]--;
+        }
         this.splice(position, 1);
     }
 
@@ -356,10 +364,9 @@ export class PrioritisedArray extends Array {
 
         let model = this[previousPosition];
         model._onChildValue(snapshot, prevSiblingId);
-        this.remove(previousPosition);
-
         let newPosition = this.findIndexById(prevSiblingId) + 1;
-        this.insertAt(model, newPosition);
+
+        this._moveItem(previousPosition, newPosition, model);
 
         this._eventEmitter.emit('child_changed', model, prevSiblingId);
         this._eventEmitter.emit('value', this);
@@ -378,17 +385,29 @@ export class PrioritisedArray extends Array {
 
             let id = snapshot.key;
             let previousPosition = this.findIndexById(id);
-            let tempModel = this[previousPosition];
-            this._ids[id] = null;
-            this.remove(previousPosition);
-
             let newPosition = this.findIndexById(prevSiblingId) + 1;
-            this.insertAt(tempModel, newPosition);
+            let tempModel = this[previousPosition];
+            this._moveItem(previousPosition, newPosition, tempModel);
 
             let model = this[newPosition];
 
             this._eventEmitter.emit('child_moved', model, previousPosition);
             this._eventEmitter.emit('value', this);
+        }
+    }
+
+    _moveItem(previousPosition, newPosition, modelToMove) {
+        this._ids[modelToMove._id] = newPosition;
+        for(let i=previousPosition;i<newPosition;i++){
+            /* Update the positions of things coming inbetween */
+            this._ids[this[i].id]--;
+        }
+
+        if(previousPosition === newPosition){
+            this[newPosition] = modelToMove;
+        } else {
+            this.splice(previousPosition, 1);
+            this.splice(newPosition, 0, modelToMove);
         }
     }
 
