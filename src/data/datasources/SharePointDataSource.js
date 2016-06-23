@@ -11,7 +11,7 @@ import {provide}                    from 'di';
 import {ObjectHelper}               from '../../utils/ObjectHelper.js';
 import {UrlParser}                  from '../../utils/request/UrlParser.js';
 import {DataSource}                 from '../DataSource.js';
-import {SharePoint}                 from 'SPSoapAdapter/SharePoint.js';
+import {SharePoint}                 from './SharePoint/SPSoapAdapter/SharePoint.js';
 import {SharePointSnapshot}         from './SharePoint/SharePointSnapshot.js';
 
 let _currentUser;

@@ -17,7 +17,6 @@ System.config({
   },
 
   map: {
-    "SPSoapAdapter": "github:bizboard/SPSoapAdapter@develop",
     "babel": "npm:babel-core@5.8.38",
     "babel-runtime": "npm:babel-runtime@5.8.38",
     "bowser": "npm:bowser@1.3.0",
@@ -36,21 +35,7 @@ System.config({
     "request-animation-frame-mock": "github:erykpiast/request-animation-frame-mock@0.1.8",
     "traceur": "github:jmcriffey/bower-traceur@0.0.92",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90",
-    "github:bizboard/SPSoapAdapter@develop": {
-      "arva-utils": "github:bizboard/arva-utils@develop",
-      "eventemitter3": "npm:eventemitter3@1.2.0",
-      "json-query": "npm:json-query@1.8.0",
-      "lodash": "npm:lodash@4.13.1",
-      "xml2js": "npm:xml2js@0.4.16"
-    },
-    "github:bizboard/arva-utils@develop": {
-      "bowser": "npm:bowser@1.3.0",
-      "calmelcase": "npm:camelcase@2.1.1",
-      "di": "github:bizboard/di.js@master",
-      "fs": "github:jspm/nodelibs-fs@0.1.2",
-      "lodash": "npm:lodash@4.13.1",
-      "path": "github:jspm/nodelibs-path@0.1.0"
-    },
+    "xml2js": "npm:xml2js@0.4.16",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.4.1"
     },
@@ -112,9 +97,6 @@ System.config({
     },
     "npm:isarray@1.0.0": {
       "systemjs-json": "github:systemjs/plugin-json@0.1.2"
-    },
-    "npm:json-query@1.8.0": {
-      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:lodash@4.13.1": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
