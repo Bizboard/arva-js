@@ -62,21 +62,21 @@ describe('DataBoundScrollView', () => {
             should.exist(instance);
         });
 
-        it('remove children to the data source on child_removed', () => {
+        it('removes children from the data source on child_removed', () => {
             let dataStore = new imports.PrioritisedArray();
             let instance = new imports.DataBoundScrollView({dataStore});
             dataStore._eventEmitter.emit('child_removed', {});
             should.exist(instance);
         });
 
-        it('change children to the data source on child_changed', () => {
+        it('changes children of the data source on child_changed', () => {
             let dataStore = new imports.PrioritisedArray();
             let instance = new imports.DataBoundScrollView({dataStore});
             dataStore._eventEmitter.emit('child_changed', {});
             should.exist(instance);
         });
 
-        it('move things to the data source on child_moved', () => {
+        it('moves children on the data source on child_moved', () => {
             let dataStore = new imports.PrioritisedArray();
             let instance = new imports.DataBoundScrollView({dataStore});
             dataStore._eventEmitter.emit('child_moved', {});
