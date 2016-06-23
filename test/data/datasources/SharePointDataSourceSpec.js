@@ -19,11 +19,11 @@ describe('SharePointDataSource', () => {
         if (typeof Worker === 'undefined') { global.Worker = class Worker { postMessage() {} }; }
 
         return loadDependencies({
-            SharePoint: 'SPSoapAdapter/SharePoint.js'
+            SharePoint: './src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js'
         }).then((importedObjects) => {
             let originalSharePoint = importedObjects.SharePoint;
 
-            mockDependency('SPSoapAdapter/SharePoint.js', {
+            mockDependency('./src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js', {
                 SharePoint: class SharePoint extends originalSharePoint {
                     constructor(options) {
                         super(options);
@@ -108,6 +108,7 @@ describe('SharePointDataSource', () => {
             instance.on('child_removed', callback);
 
             let on = instance._dataReference.on;
+            console.log(on.args);
             on.callCount.should.equal(5);
             should.equal(on.calledWith('value'), true);
             should.equal(on.calledWith('child_added'), true);

@@ -14,6 +14,7 @@ import xmljs                from 'xml2js';
 import _                    from 'lodash';
 import {ObjectHelper}       from '../../../../../utils/ObjectHelper';
 import {PostRequest}        from '../../../../../utils/request/RequestClient';
+import {ParseStringToXml}   from '../../../../../utils/request/XmlParser';
 
 export class SoapClient {
 

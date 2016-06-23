@@ -16,9 +16,13 @@ var tempKeys = [];
 
 export class SharePointClient extends EventEmitter {
 
-    get refreshTimer() { return this._refreshTimer; }
+    get refreshTimer() {
+        return this._refreshTimer;
+    }
 
-    set refreshTimer(value) { this._refreshTimer = value; }
+    set refreshTimer(value) {
+        this._refreshTimer = value;
+    }
 
     constructor(options) {
         super();
@@ -27,6 +31,8 @@ export class SharePointClient extends EventEmitter {
         this.interval = 3000;
         this.retriever = null;
         this.cache = [];
+        this.hasNoServerResponse = true;
+        this._active = false;
     }
 
     init() {
@@ -52,6 +58,7 @@ export class SharePointClient extends EventEmitter {
     dispose() {
         clearTimeout(this.refreshTimer);
         this.refreshTimer = null;
+        this._active = false;
     }
 
     getAuth() {
@@ -77,7 +84,10 @@ export class SharePointClient extends EventEmitter {
     subscribeToChanges() {
         if (!this.isChild) {
             /* Don't monitor child item updates/removes. We only do that on parent arrays. */
-            this._refresh();
+            if (!this._active) {
+                this._active = true;
+                this._refresh();
+            }
         }
     }
 
@@ -127,9 +137,7 @@ export class SharePointClient extends EventEmitter {
             };
 
 
-            if (args.query) resultconfig.query = args.query;
-            if (args.limit) resultconfig.limit = args.limit;
-            if (args.orderBy) resultconfig.orderBy = args.orderBy;
+            _.extend(resultconfig, _.pick(args, ['query', 'limit', 'orderBy', 'pageSize']));
 
             return {settings: resultconfig, isChild: isChild};
         }
@@ -192,9 +200,23 @@ export class SharePointClient extends EventEmitter {
             }
         }
 
-        if (args.limit) {
-            this.retriever.params.rowLimit = args.limit;
+
+        let rowLimit;
+        this.explicitRowLimit = args.limit !== undefined;
+        if (this.explicitRowLimit) {
+            rowLimit = this.explicitRowLimit = args.limit;
         }
+        if (args.pageSize) {
+            rowLimit = args.pageSize;
+            this.pageSize = args.pageSize;
+        }
+        if (rowLimit) {
+            this.retriever.params.rowLimit = rowLimit;
+        }
+    }
+
+    _isLimitExceeded() {
+        return this.explicitRowLimit !== false && this.cache.length >= this.explicitRowLimit;
     }
 
 
@@ -204,49 +226,56 @@ export class SharePointClient extends EventEmitter {
      * @param {Boolean} calledManually If set to false, ignores any existing timer in this.refreshTimer and executes the refresh regardless.
      * @private
      */
-    _refresh(calledManually = true) {
-        /* Prevent refresh from being called more than once at a time. */
-        if (this.refreshTimer && calledManually) { return; }
-        this.refreshTimer = 1;
-
+    _refresh() {
         if (this.retriever) {
+            if (this._isLimitExceeded()) {
+                this.retriever.params.rowLimit = this.explicitRowLimit;
+            }
             soapClient.call(this.retriever, tempKeys)
                 .then((result) => {
-                    let changes = result.data["soap:Envelope"]["soap:Body"][0].GetListItemChangesSinceTokenResponse[0].GetListItemChangesSinceTokenResult[0].listitems[0].Changes[0];
-                    let lastChangedToken = changes.$.LastChangeToken;
-                    let isFirstResponse = !this.retriever.params.changeToken;
-                    /* True if this is the first server response for the current path. */
 
-                    this._setLastUpdated(lastChangedToken);
-                    let hasDeletions = this._handleDeleted(changes);
+
+                    let listItem = result.data["soap:Envelope"]["soap:Body"][0].GetListItemChangesSinceTokenResponse[0].GetListItemChangesSinceTokenResult[0].listitems[0];
+                    let hasDeletions = false;
+                    if (listItem.Changes) {
+                        let changes = listItem.Changes[0];
+                        hasDeletions = this._handleDeleted(changes);
+                    }
 
                     let data = this._getResults(result.data);
                     let messages = this._updateCache(data);
 
+                    this._handleNextToken(listItem);
+
                     /* If any data is new or modified, emit a 'value' event. */
                     if (hasDeletions || data.length > 0) {
                         this.emit('message', {event: 'value', result: this.cache});
-                    } else if (isFirstResponse) {
+
+                    } else if (this.hasNoServerResponse) {
                         /* If there is no data, and this is the first time we get a response from the server,
                          * emit a value event that shows subscribers that there is no data at this path. */
                         this.emit('message', {event: 'value', result: null});
                     }
 
-                    if (!isFirstResponse) {
+                    if (!this.hasNoServerResponse) {
                         /* Emit any added/changed events. */
                         for (let message of messages) {
                             this.emit('message', message);
                         }
                     }
-
-                    this.refreshTimer = setTimeout(this._refresh.bind(this, false), this.interval);
-                    this.refreshTimer = null;
+                    this.hasNoServerResponse = false;
+                    if (this._active) {
+                        this.refreshTimer = setTimeout(this._refresh.bind(this), this.interval);
+                    }
 
                 }).catch((err) => {
-                    this.emit('error', err);
-                    this.refreshTimer = setTimeout(this._refresh.bind(this, false), this.interval);
-                    this.refreshTimer = null;
-                });
+                this.emit('error', err);
+                if (this._active) {
+
+                    this.refreshTimer = setTimeout(this._refresh.bind(this), this.interval);
+                }
+
+            });
         }
     }
 
@@ -346,7 +375,11 @@ export class SharePointClient extends EventEmitter {
 
                         // push ID mapping for given session to collection of temp keys
                         if (newData['_temporary-identifier']) {
-                            tempKeys.push({localId: newData['_temporary-identifier'], remoteId: remoteId, client: this});
+                            tempKeys.push({
+                                localId: newData['_temporary-identifier'],
+                                remoteId: remoteId,
+                                client: this
+                            });
                         }
                         let messages = this._updateCache(data);
                         for (let message of messages) {
@@ -486,9 +519,46 @@ export class SharePointClient extends EventEmitter {
      * @param newDate
      * @private
      */
-    _setLastUpdated(lastChangeToken) {
+    _activateChangeToken(lastChangeToken) {
         this.retriever.params.changeToken = lastChangeToken;
     }
+
+    _setNextPage(nextPaginationToken){
+        this.retriever.params.queryOptions.QueryOptions.Paging = {_ListItemCollectionPositionNext: nextPaginationToken};
+    }
+
+    _clearNextPage() {
+        delete this.retriever.params.queryOptions.QueryOptions.Paging;
+    }
+
+    _deactivateChangeToken() {
+        delete this.retriever.params.changeToken;
+    }
+
+
+    _handleNextToken(listItem) {
+        let lastQueryHadPagination = this.retriever.params.queryOptions.QueryOptions.Paging;
+
+        if (!lastQueryHadPagination && listItem.Changes) {
+            this.lastChangeToken = listItem.Changes[0].$.LastChangeToken;
+        }
+
+        if (this._isLimitExceeded()) {
+            this._clearNextPage();
+            this._activateChangeToken(this.lastChangeToken);
+        } else {
+            let {ListItemCollectionPositionNext: nextPaginationToken} = listItem["rs:data"][0].$;
+
+            if (nextPaginationToken !== undefined) {
+                this._setNextPage(nextPaginationToken);
+                this._deactivateChangeToken();
+            } else {
+                this._clearNextPage();
+                this._activateChangeToken(this.lastChangeToken);
+            }
+        }
+    }
+
 
     _handleDeleted(result) {
 
@@ -586,10 +656,14 @@ export class SharePointClient extends EventEmitter {
         for (let attribute in record) {
 
             let name = attribute.replace('ows_', '');
-            if (name == 'xmlns:z') { continue; }
+            if (name == 'xmlns:z') {
+                continue;
+            }
 
             let value = record[attribute];
-            if (value === '') { continue; }
+            if (value === '') {
+                continue;
+            }
 
             if (name == "ID") {
                 name = "id";
@@ -717,13 +791,15 @@ export class SharePointClient extends EventEmitter {
      * Binding to specific children is not supported by the SharePoint interface, and shouldn't be necessary either
      * because there is a subscription to child_changed events on the parent array containing this child. */
     _isChildItem(path) {
-        if (path[path.length - 1] === '/') { path = path.substring(0, path.length - 2); }
+        if (path[path.length - 1] === '/') {
+            path = path.substring(0, path.length - 2);
+        }
 
         let parts = path.split('/');
         if (parts.length) {
             let lastArgument = parts[parts.length - 1];
 
-            let isNumeric = (n) =>  !isNaN(parseFloat(n)) && isFinite(n);
+            let isNumeric = (n) => !isNaN(parseFloat(n)) && isFinite(n);
 
             if (isNumeric(lastArgument) || lastArgument.indexOf(Settings.localKeyPrefix) === 0) {
                 this.childID = lastArgument;
