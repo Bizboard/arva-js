@@ -1061,9 +1061,6 @@ export class View extends FamousView {
                 trueSizedInfo.isUncalculated = false;
             }
             this.reflowRecursively();
-            /* Sanity check */
-        } else if (renderableHtmlElement && renderableHtmlElement.childElementCount) {
-            this._warn(`Cannot calculate truesized surface in class ${this._name()} as the content contains one or more html elements. Behaviour is undeterministic`);
         } else {
             this.layout.reflowLayout();
             this._requestLayoutControllerReflow();
