@@ -4,7 +4,7 @@
 
 var handler = {
     defineProperty (target, key, descriptor) {
-        self[key] = descriptor.value;
+        self[key] = target[key] = descriptor.value;
         return true;
     }
 };
