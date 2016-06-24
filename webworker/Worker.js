@@ -28,12 +28,15 @@ class Storage {
         return this.storageObject[key];
     }
     setItem(key, value){
-        return this.storageObject[key] = value;
+        this.storageObject[key] = value;
+        return value;
     }
     removeItem(key){
         return delete this.storageObject[key];
     }
 }
+
+window.document = {documentElement:  {appendChild: () => {return {}}},appendChild: () => {return {};},getElementsByTagName: () => {return {length: 0}}, readyState: "complete", createElement:() => {return {setAttribute:() => {}}}};
 
 self.window.sessionStorage = new Storage({});
 self.window.localStorage = new Storage({});
