@@ -591,7 +591,7 @@ export class View extends FamousView {
         let inUseDockSize = this._resolvedSizesCache.get(renderable);
         let innerSize;
         let {origin, align} = decorations;
-        if (decorations.size && (origin || align)) {
+        if (decorations.size || origin || align) {
             /* If origin and align is used, we have to add this to the translate of the renderable */
             this._resolveDecoratedSize(name, context);
             innerSize = this._resolvedSizesCache.get(renderable);
