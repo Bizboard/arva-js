@@ -183,13 +183,27 @@ export const layout = {
         }
     },
 
+    /**
+     * Specifies a translation of a renderable. Can also be applied on class level to translate every renderable
+     * @param x
+     * @param y
+     * @param z
+     * @returns {Function}
+     */
     translate: function (x, y, z) {
-        return function (view, renderableName, descriptor) {
+        return function (target, renderableName, descriptor) {
             if (Array.isArray(x)) {
                 throw Error("Please specify translate as three arguments, and not as an array");
             }
-            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            renderable.decorations.translate = [x, y, z];
+            let prototypeOrRenderable, propertyName;
+            if (typeof target == 'function') {
+                prototypeOrRenderable = prepDecoratedPrototype(target.prototype);
+                propertyName = 'extraTranslate';
+            } else {
+                prototypeOrRenderable = prepDecoratedRenderable(...arguments);
+                propertyName = 'translate';
+            }
+            prototypeOrRenderable.decorations[propertyName] = [x, y, z];
         }
     },
 

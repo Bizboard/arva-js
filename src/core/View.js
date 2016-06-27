@@ -11,7 +11,6 @@ import _                            from 'lodash';
 import OrderedHashMap               from 'ordered-hashmap';
 import FamousView                   from 'famous/core/View.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
-import FlexScrollView               from 'famous-flex/FlexScrollView.js';
 import Surface                      from 'famous/core/Surface.js';
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
@@ -549,7 +548,8 @@ export class View extends FamousView {
         for (let renderableName of filledNames) {
             let renderable = filledRenderables.get(renderableName);
             let {decorations} = renderable;
-            let zIndex = decorations.translate ? decorations.translate[2] : 0;
+            let {translate = [0, 0, 0]} = decorations.translate;
+            let zIndex = this._addTranslations(translate, this.decorations.extraTranslate)[2];
             dock.fill(renderableName, this._resolveDecoratedSize(renderableName, context, renderable.decorations.dock.size), zIndex);
         }
     }
@@ -558,9 +558,11 @@ export class View extends FamousView {
         let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
         for (let name of names) {
             let renderable = fullScreenRenderables.get(name);
-            context.set(name, _.merge({translate: renderable.decorations.translate || [0, 0, 0]}, context));
+            let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
+            context.set(name, {translate});
         }
     }
+
 
     _layoutTraditionalRenderables(traditionalRenderables, context) {
         let names = traditionalRenderables ? traditionalRenderables.keys() : [];
@@ -568,6 +570,7 @@ export class View extends FamousView {
             let renderable = traditionalRenderables.get(renderableName);
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0]} = renderable.decorations;
+            translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             context.set(renderableName, {
                 size: renderableSize,
@@ -581,6 +584,7 @@ export class View extends FamousView {
     _layoutDockedSingleRenderable(renderable, name, context, dock) {
         let {decorations} = renderable;
         let {translate = [0, 0, 0]} = decorations;
+        translate = this._addTranslations(this.decorations.extraTranslate, translate);
         let {dockMethod, space} = decorations.dock;
         let dockSizeSpecified = !(_.isEqual(decorations.dock.size, [undefined, undefined]));
         let dockSize = this._resolveDecoratedSize(name, context, dockSizeSpecified ? decorations.dock.size : undefined);
@@ -868,7 +872,7 @@ export class View extends FamousView {
                     return [NaN, NaN];
                 }
                 let resolvedSize = [resolvedOuterSize[0] === undefined ? resolvedInnerSize[0] : resolvedOuterSize[0],
-                                    resolvedOuterSize[1] === undefined ? resolvedInnerSize[1] : resolvedOuterSize[1]];
+                    resolvedOuterSize[1] === undefined ? resolvedInnerSize[1] : resolvedOuterSize[1]];
                 let newResult = new Array(2);
                 /* If docking is done from opposite directions */
                 if (dockMethod !== otherDockMethod) {
@@ -940,6 +944,10 @@ export class View extends FamousView {
         } else {
             console.log(message);
         }
+    }
+
+    _addTranslations(translate1, translate2){
+        return [translate1[0] + translate2[0], translate1[1] + translate2[1], translate1[2] + translate2[2]];
     }
 
     /**
@@ -1073,6 +1081,9 @@ export class View extends FamousView {
         }
         if (!this.layouts) {
             this.layouts = [];
+        }
+        if(!this.decorations.extraTranslate) {
+            this.decorations.extraTranslate = [0, 0, 10];
         }
         if (!this.decoratedRenderables) {
             this.decoratedRenderables = {};
