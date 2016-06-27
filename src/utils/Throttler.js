@@ -1,5 +1,5 @@
 /**
- 
+
  @author: Tom Clement (tjclement)
  @license NPOSL-3.0
  @copyright Bizboard, 2015
@@ -12,14 +12,17 @@ import {ObjectHelper}                   from './ObjectHelper.js';
 export class Throttler {
     /**
      *
-     * @param {Number} throttleDelay Minimum amount of time in between each action executed by the Throttler, in milliseconds.
+     * @param {Number} throttleDelay Minimum amount of time in between each action executed by the Throttler, in milliseconds or ticks.
      * @param {Boolean} shouldQueue Enable if each added action should be executed consecutively, or disable if a newly
      * added action should replace a previous one.
      * @param {Object} actionContext Context to which the actions executed by the Throttler will be bound.
+     * @param {Boolean} useTicks whether ticks should be used instead of milliseconds
      * @returns {Throttler} Throttler instance.
      */
-    constructor(throttleDelay = 0, shouldQueue = true, actionContext = this) {
+    constructor(throttleDelay = 0, shouldQueue = true, actionContext = this, useTicks = false) {
         this.delay = throttleDelay;
+        this._useTicks = useTicks;
+        this._timerFunction = useTicks ? Timer.every : Timer.setInterval;
         this.timer = null;
         this.shouldQueue = shouldQueue;
         this.actionContext = actionContext;
@@ -42,7 +45,7 @@ export class Throttler {
 
         this.queue.push(action);
         if(!this.timer){
-            this.timer = Timer.setInterval(this._executeTopAction, this.delay);
+            this.timer =  this._timerFunction(this._executeTopAction, this.delay);
         }
     }
 

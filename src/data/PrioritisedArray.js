@@ -13,6 +13,7 @@ import EventEmitter                 from 'eventemitter3';
 import {Context}                    from '../utils/Context.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {DataSource}                 from './DataSource.js';
+import {Throttler}                  from '../utils/Throttler.js';
 
 export class PrioritisedArray extends Array {
 
@@ -51,6 +52,7 @@ export class PrioritisedArray extends Array {
         this._modelOptions = modelOptions;
         /* Flag to determine when we're reordering so we don't listen to move updates */
         this._eventEmitter = new EventEmitter();
+        this._childAddedThrottler = new Throttler(1, true, this, true);
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
@@ -102,10 +104,13 @@ export class PrioritisedArray extends Array {
         /* If we already have children stored locally when the subscriber calls this method,
          * fire their callback for all pre-existing children. */
         if (event === 'child_added') {
+
             for (let i = 0; i < this.length; i++) {
-                let model = this[i];
-                let previousSiblingID = i > 0 ? this[i - 1].id : null;
-                handler.call(context, model, previousSiblingID);
+                this._childAddedThrottler.add(() => {
+                    let model = this[i];
+                    let previousSiblingID = i > 0 ? this[i - 1].id : null;
+                    handler.call(context, model, previousSiblingID);
+                });
             }
         }
 
@@ -163,7 +168,7 @@ export class PrioritisedArray extends Array {
 
                 /* If we've already received an on('value') result, this child addition is
                  * a new entry that wasn't on the dataSource before. */
-                if(this._dataSource.ready) {
+                if (this._dataSource.ready) {
                     this._eventEmitter.emit('new_child', model, prevSiblingId);
                 }
 
@@ -182,7 +187,7 @@ export class PrioritisedArray extends Array {
         }
 
         /* Return model so we can do this: let newModel = PrioArray.add(new Model()); newModel.someProperty = true; */
-        return  null;
+        return null;
     }
 
 
@@ -195,7 +200,7 @@ export class PrioritisedArray extends Array {
      */
     insertAt(model, position) {
         if (model instanceof this._dataType) {
-            for(let i=position;i<this.length;i++){
+            for (let i = position; i < this.length; i++) {
                 /* Increase the index of items further on in the prio array */
                 this._ids[this[i].id]++;
             }
@@ -232,7 +237,7 @@ export class PrioritisedArray extends Array {
      * @returns {void}
      */
     remove(position) {
-        for(let i=position;i<this.length;i++){
+        for (let i = position; i < this.length; i++) {
             /* Decrease the index of items further on in the prio array */
             this._ids[this[i].id]--;
         }
@@ -259,8 +264,8 @@ export class PrioritisedArray extends Array {
             this._eventEmitter.emit('value', this);
         }
 
-        dataSnapshot.forEach(
-            function (child) {
+        dataSnapshot.forEach(function(child) {
+            this._childAddedThrottler.add(function (child) {
                 /* Create a new instance of the given data type and prefill it with the snapshot data. */
                 let options = {dataSnapshot: child};
                 let childRef = this._dataSource.child(child.key);
@@ -286,7 +291,8 @@ export class PrioritisedArray extends Array {
                     this._eventEmitter.emit('value', this);
                 }
 
-            }.bind(this));
+            }.bind(this, child));
+        }.bind(this))
     }
 
 
@@ -329,7 +335,7 @@ export class PrioritisedArray extends Array {
 
         /* Skip addition if an item with identical ID already exists. */
         let previousPosition = this.findIndexById(id);
-        if(previousPosition >= 0) {
+        if (previousPosition >= 0) {
             return;
         }
 
@@ -398,12 +404,12 @@ export class PrioritisedArray extends Array {
 
     _moveItem(previousPosition, newPosition, modelToMove) {
         this._ids[modelToMove._id] = newPosition;
-        for(let i=previousPosition;i<newPosition;i++){
+        for (let i = previousPosition; i < newPosition; i++) {
             /* Update the positions of things coming inbetween */
             this._ids[this[i].id]--;
         }
 
-        if(previousPosition === newPosition){
+        if (previousPosition === newPosition) {
             this[newPosition] = modelToMove;
         } else {
             this.splice(previousPosition, 1);
@@ -443,7 +449,7 @@ export class PrioritisedArray extends Array {
         return (position == undefined || position == null) ? -1 : position;
     }
 
-    findById(id){
+    findById(id) {
         return this[this.findIndexById(id)];
     }
 
