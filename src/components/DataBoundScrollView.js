@@ -326,8 +326,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
         /* Check if the group corresponding to the child is now empty */
         if(this._internalGroups[groupByValue].itemsCount === 0){
             /* TODO: Maybe remove internalgroups[groupByValue]? (Or not?) */
-            this._updatePosition(this._internalGroups[groupByValue].position, -1);
-            this.remove(this._internalGroups[groupByValue].position);
+            let {position} = this._internalGroups[groupByValue];
+            this._updatePosition(position, -1);
+            this.remove(position);
             delete this._internalGroups[groupByValue];
         }
 
