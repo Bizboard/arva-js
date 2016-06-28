@@ -967,7 +967,8 @@ export class View extends FamousView {
     _addRenderables() {
         this.layout.setDataSource(this.renderables);
 
-        for (let [renderableName, renderable] of Object.entries(this.renderables)) {
+        for (let renderableName in this.renderables) {
+            let renderable = this.renderables[renderableName];
             if (!~this._pipedRenderables.indexOf(renderableName)) {
                 this._pipeRenderable(renderable, renderableName);
             }
