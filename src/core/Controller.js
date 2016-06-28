@@ -31,16 +31,18 @@ export class Controller extends EventEmitter {
         this.router = router;
         this.context = context;
 
-
+        /* The this._name property can be set by Arva's babel-plugin-transform-runtime-constructor-name plugin.
+         * This allows Arva code to be minified and mangled without losing automated route creation.
+         * If the plugin is not set up to run, which is done e.g. when not minifying your code, we default back to the runtime constructor name.*/
+        let controllerName = this._name || Object.getPrototypeOf(this).constructor.name;
 
         ObjectHelper.bindAllMethods(this, this);
 
-
-        // add the controller route to the router
-        var routeName = Object.getPrototypeOf(this).constructor.name.replace('Controller', '');
+        /* Add the controller route to the router. */
+        let routeName = Object.getPrototypeOf(this).constructor.name.replace('Controller', '');
         routeName += '/:method';
 
-        // handle router url changes and execute the appropiate controller method
+        /* handle router url changes and execute the appropiate controller method. */
         this.router.add(routeName, this.onRouteCalled, this);
     }
 
@@ -53,34 +55,25 @@ export class Controller extends EventEmitter {
      */
     onRouteCalled(route) {
         if (typeof this[route.method] === 'function') {
-            var result = this[route.method].apply(this, route.values);
+            let result = this[route.method].apply(this, route.values);
 
             if (result) {
                 this.emit('renderstart', route.method);
 
-                if (result instanceof Promise) { // we can assume the method called was asynchronous from nature, therefore we await the result
-
+                if (result instanceof Promise) { /* We can assume the method called was asynchronous from nature, therefore we await the result. */
                     result.then((delegatedresult) => {
-                        // assemble a callback based on the execution scope and have that called when rendering is completed
-                        this.context.show(delegatedresult, _.extend(route.spec, this.spec), () => {
-                            this.emit('renderend', route.method);
-                        });
+                        /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
+                        this.context.show(delegatedresult, _.extend(route.spec, this.spec), () => { this.emit('renderend', route.method); });
                         this.emit('rendering', route.method);
                     });
                 } else {
-
-                    // assemble a callback based on the execution scope and have that called when rendering is completed
-                    this.context.show(result, _.extend(route.spec, this.spec), () => {
-                        this.emit('renderend', route.method);
-                    });
+                    /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
+                    this.context.show(result, _.extend(route.spec, this.spec), () => { this.emit('renderend', route.method); });
                     this.emit('rendering', route.method);
                 }
-                // assemble a callback based on the execution scope and have that called when rendering is completed
-                this.context.show(result, _.extend(route.spec, this.spec), function(){ this.emit('renderend', route.method); }.bind(this));
-                this.emit('rendering', route.method);
-
                 return true;
             } else {
+                console.log('Method did not return a View or a Promise instance.');
                 return false;
             }
         } else {
