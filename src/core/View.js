@@ -189,6 +189,14 @@ export class View extends FamousView {
         return result;
     }
 
+    showRenderable(renderableName, show = true){
+        this.renderables[renderableName][show ? 'show' : 'hide'](this[renderableName]);
+    }
+
+    hideRenderable(renderableName){
+        this.showRenderable(renderableName, false);
+    }
+
     _prioritiseDockAtIndex(renderableName, index) {
         let docked = this._groupedRenderables.docked;
         let renderableToRearrange = docked.get(renderableName);
