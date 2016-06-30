@@ -45,7 +45,25 @@ class Injector {
     this._parent = parentInjector;
     this._scopes = scopes;
 
+    this._tokenCache = new Map();
+
     this._loadModules(modules);
+  }
+  
+  _retrieveToken(classConstructor, constructionParams = []) {
+    if(!this._tokenCache.has(classConstructor)) { 
+      this._tokenCache.set(classConstructor, new Map()); 
+    }
+
+    let paramsHash = hash(constructionParams);
+    let cachedClass = this._tokenCache.get(classConstructor);
+    if(!cachedClass.has(paramsHash)) {
+      /* Generate a new token */
+      cachedClass.set(paramsHash, `${Date.now()}${Math.random()}`);
+    }
+    
+    let foundHash = cachedClass.get(paramsHash);
+    return classConstructor.name ? `${classConstructor.name}-${foundHash}` : foundHash;
   }
 
 
@@ -83,7 +101,7 @@ class Injector {
   // This mutates `this._providers`, but it is only called during the constructor.
   _loadFnOrClass(classConstructor, constructionParams = []) {
     var annotations = readAnnotations(classConstructor);
-    var token = `${annotations.provide.token || classConstructor}${hash(constructionParams)}`;
+    var token = this._retrieveToken(annotations.provide.token || classConstructor, hash(constructionParams));
     var provider = createProviderFromFnOrClass(classConstructor, annotations);
 
     this._providers.set(token, provider);
@@ -130,7 +148,7 @@ class Injector {
     var resolvingMsg = '';
     var provider;
     var instance;
-    var token = `${classConstructor}${hash(constructionParams)}`;
+    var token = this._retrieveToken(classConstructor, hash(constructionParams));
 
     if (token === null || token === undefined) {
       resolvingMsg = constructResolvingMessage(resolving, token);
