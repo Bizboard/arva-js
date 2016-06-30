@@ -34,20 +34,22 @@ export class App {
      */
     constructor() {
         /* Options are defined as a static property on the class that extends this App */
-        let options = this.constructor.options || {};
+        let controllers = this.constructor.controllers || [];
+        let defaultRouter = this.constructor.router || ArvaRouter;
+        let defaultDataSource = this.constructor.defaultDataSource;
         
         /* Allow user taps to emit immediately as click events,
          * instead of having the default 300ms delay. */
         FastClick(document.body);
         
         /* Add default class providers to DI engine */
-        Injection.addProviders(options.router || ArvaRouter, FamousContextSingleton, NewAnimationController);
+        Injection.addProviders(defaultDataSource, defaultRouter, FamousContextSingleton, NewAnimationController);
         
         /* Request instances of a Router and a Famous Context. */
         let [router, context] = Injection.getAll(Router, Context);
         
         /* Load controllers */
-        this.controllers = Injection.getAll(...options.controllers);
+        this.controllers = Injection.getAll(...controllers);
         
         if(this.constructor.loaded && typeof this.constructor.loaded === 'function') {
             try { this.constructor.loaded(); } catch(error) { console.log('Caught exception in App.loaded():', error); }
@@ -63,6 +65,11 @@ export class App {
         if(this.done && typeof this.done === 'function') {
             try { this.done(); } catch(error) { console.log('Caught exception in App.done():', error); }
         }
+    }
+    
+    static start(){
+        /* Instantiate this App, which also instantiates the other components. */
+        this.references.app = Injection.get(this);
     }
 }
 
