@@ -62,8 +62,9 @@ export class App {
         /* Hide splash screen */
         if(navigator && navigator.splashscreen) { navigator.splashscreen.hide(); }
 
-        if(this.done && typeof this.done === 'function') {
-            try { this.done(); } catch(error) { console.log('Caught exception in App.done():', error); }
+        let {done} = this.constructor;
+        if(done && typeof done === 'function') {
+            try { done(); } catch(error) { console.log('Caught exception in App.done():', error); }
         }
     }
     
