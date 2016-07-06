@@ -108,18 +108,12 @@ export class View extends FamousView {
     setOptions(options) {
         super.setOptions(options);
         /* If no renderables are constructed, it makes no sense to call this function (this is done automatically by the
-         base class in construction time
+         base class in construction time)
          */
         if (!this.renderables) {
             return;
         }
         this._initOptions(combineOptions(this._customOptions, options));
-        for (let optionName in this.options) {
-            let renderable = this.renderables[optionName];
-            if (renderable && renderable.setOptions) {
-                renderable.setOptions(this._getRenderableOptions(optionName));
-            }
-        }
     }
 
     /**
@@ -130,9 +124,6 @@ export class View extends FamousView {
      * @returns {Renderable} The renderable that was assigned
      */
     addRenderable(renderable, renderableName, ...decorators) {
-        if (decorators.length) {
-            //renderable.decorations = {};
-        }
         for (let decorator of decorators) {
             /* The decorator(s) provided in the last argument needed to decorate the renderable */
             decorator(renderable);
@@ -225,12 +216,10 @@ export class View extends FamousView {
 
     _getRenderableOptions(renderableName, decorations = this.renderables[renderableName]) {
         let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
-        let namedOptions = this.options[renderableName] || {};
-        let renderableOptions = combineOptions(decoratorOptions, namedOptions);
-        if (!this._isPlainObject(renderableOptions) || !this._isPlainObject(namedOptions) || !this._isPlainObject(decoratorOptions)) {
-            this._warn(`Invalid option '${renderableOptions}' given to item ${renderableName}`);
+        if (!this._isPlainObject(decoratorOptions)) {
+            this._warn(`Invalid option '${decoratorOptions}' given to item ${renderableName}`);
         }
-        return renderableOptions;
+        return decoratorOptions;
     }
 
 
@@ -308,16 +297,27 @@ export class View extends FamousView {
             this._addDecoratedRenderable(renderable, renderableName)
         }
 
-
         this._setEventHandlers(renderable);
         this._setPipes(renderable);
 
 
+
+        this[renderableName] = renderable;
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
          * this.renderables is used in the LayoutController in this.layout to render this view. */
         this.renderables[renderableName] = renderable.animationController || renderable;
-        this[renderableName] = renderable;
     }
+
+    replaceRenderable(name, newRenderable){
+        let {decorations} = this[name];
+        if(decorations){
+            newRenderable.decorations = {...newRenderable.decorations, ...decorations};
+            this._removeDecoratedRenderable(this[name],name);
+            this._addDecoratedRenderable(newRenderable,name);
+            this[name] = newRenderable;
+        }
+    }
+
 
     _setEventHandlers(renderable) {
         if (!renderable.decorations || !renderable.decorations.eventSubscriptions) {
@@ -1134,7 +1134,7 @@ export class View extends FamousView {
         let {animation, viewMargins} = renderable.decorations;
 
         if (animation) {
-            this._processAnimatedRenderable(renderable, animation);
+            this._processAnimatedRenderable(renderable, renderableName, animation);
         }
         /* The margin decorator is treated specially when the renderable is a surface */
         if (this._renderableIsSurface(renderable) && viewMargins) {
@@ -1142,25 +1142,32 @@ export class View extends FamousView {
         }
     }
 
-    _processAnimatedRenderable(renderable, options) {
-        let animationController = renderable.animationController = new AnimationController(options);
-        if (renderable.pipe) {
-            renderable.pipe(animationController._eventOutput);
-        }
+    _processAnimatedRenderable(renderable, renderableName, options) {
+        /* If there's already an animationcontroller present, just change the options */
+        if(this.renderables[renderableName] instanceof AnimationController){
+            this.renderables[renderableName].setOptions(options);
+        } else {
+            let animationController = renderable.animationController = new AnimationController(options);
+            if (renderable.pipe) {
+                renderable.pipe(animationController._eventOutput);
+            }
 
-        let showMethod = () => {
-            animationController.show.call(animationController, renderable, options, () => {
-                if (renderable.emit) {
-                    renderable.emit('shown');
-                }
-            });
-        };
-        if (options.delay && options.delay > 0 && options.showInitially) {
-            Timer.setTimeout(showMethod, options.delay);
-        } else if (options.waitFor) {
-            this.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
-        } else if (options.showInitially) {
-            showMethod();
+            let showMethod = () => {
+                animationController.show.call(animationController, renderable, options, () => {
+                    if (renderable.emit) {
+                        renderable.emit('shown');
+                    }
+                });
+            };
+            if (options.delay && options.delay > 0 && options.showInitially) {
+                Timer.setTimeout(showMethod, options.delay);
+            } else if (options.waitFor) {
+                this.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
+            } else if (options.showInitially) {
+                showMethod();
+            }
+
+
         }
     }
 
