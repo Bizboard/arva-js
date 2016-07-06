@@ -633,7 +633,13 @@ export class View extends FamousView {
             }
         }
         if (dock[dockMethod]) {
-            dock[dockMethod](name, dockSize, space, translate, innerSize);
+            /* If the renderable is unrenderable due to zero height/width...*/
+            if(inUseDockSize[0] === 0 || inUseDockSize[1] === 0){
+                /* Don't layout renderable, it will just increase the space and that's not the behaviour we want*/
+            } else {
+                dock[dockMethod](name, dockSize, space, translate, innerSize);
+            }
+
         } else {
             this._warn(`Arva: ${this._name()}.${name} contains an unknown @dock method '${dockMethod}', and was ignored.`);
         }
@@ -862,13 +868,16 @@ export class View extends FamousView {
         let dockingDirection = dockType;
         let orthogonalDirection = !dockType + 0;
 
+
+        /* Previously countered dock size for docking direction and opposite docking direction */
+        let previousDockSize = 0;
         /* Add up the different sizes to if they are docked all in the same direction */
         let dockSize = dockedRenderables.reduce((result, dockedRenderable, name) => {
             let {decorations} = dockedRenderable;
             let {dockMethod: otherDockMethod} = decorations.dock;
             /* If docking is done orthogonally */
-            if (getDockType(otherDockMethod) !== dockType) {
-                return [NaN, NaN];
+        if (getDockType(otherDockMethod) !== dockType) {
+            return [NaN, NaN];
             } else {
                 /* Resolve both inner size and outer size */
                 this._resolveDecoratedSize(name, {size: [NaN, NaN]}, dockedRenderable.decorations.dock.size);
@@ -887,10 +896,14 @@ export class View extends FamousView {
                     resolvedOuterSize[1] === undefined ? resolvedInnerSize[1] : resolvedOuterSize[1]];
                 let newResult = new Array(2);
                 /* If docking is done from opposite directions */
-                if (dockMethod !== otherDockMethod) {
+                let dockingFromOpposite = dockMethod !== otherDockMethod;
+                if (dockingFromOpposite) {
                     newResult[dockingDirection] = NaN;
                 } else {
-                    newResult[dockingDirection] = resolvedSize[dockingDirection] + decorations.dock.space + result[dockingDirection];
+                    /* If this or the previous renderable size is 0, don't add the space */
+                    let spaceSize = (resolvedSize[dockingDirection] === 0 || previousDockSize === 0) ? 0 : decorations.dock.space;
+                    newResult[dockingDirection] = resolvedSize[dockingDirection] + spaceSize + result[dockingDirection];
+                    previousDockSize = resolvedSize[dockingDirection];
                 }
                 /* If a size in the orthogonalDirection has been set... */
                 if (resolvedSize[orthogonalDirection] !== undefined && !Number.isNaN(resolvedSize[orthogonalDirection])) {

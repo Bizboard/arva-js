@@ -26,19 +26,20 @@ export function TrueSizedLayoutDockHelper(context, options) {
     this._data = {
         z: (options && options.translateZ) ? options.translateZ : 0
     };
+    var margins = [0, 0, 0, 0];
     if (options && options.margins) {
-        var margins = LayoutUtility.normalizeMargins(options.margins);
-        this._data.left = margins[3];
-        this._data.top = margins[0];
-        this._data.right = size[0] - margins[1];
-        this._data.bottom = size[1] - margins[2];
+        margins = LayoutUtility.normalizeMargins(options.margins);
     }
-    else {
-        this._data.left = 0;
-        this._data.top = 0;
-        this._data.right = size[0];
-        this._data.bottom = size[1];
-    }
+    this._initialData = {
+        left: margins[3],
+        top: margins[0],
+        right: size[0] - margins[1],
+        bottom: size[1] - margins[2]
+    };
+    this._data.left = this._initialData.left;
+    this._data.top = this._initialData.top;
+    this._data.right = this._initialData.right;
+    this._data.bottom = this._initialData.bottom;
 }
 
 /**
@@ -96,7 +97,9 @@ TrueSizedLayoutDockHelper.prototype.parse = function (data) {
  */
 TrueSizedLayoutDockHelper.prototype.top = function (node, size, space =0, extraTranslation = [0,0,0], innerSize) {
     let [width, height] = this._setupAccordingToDimension(size, 1);
-    this._data.top += space;
+    if(this._data.top !== this._initialData.top){
+        this._data.top += space;
+    };
     this._context.set(node, {
         size: innerSize || ([width || (this._data.right - this._data.left), this._ensureTrueSize(height)]),
         translate: this._addTranslations([this._data.left, this._data.top, this._data.z], extraTranslation)
@@ -118,7 +121,9 @@ TrueSizedLayoutDockHelper.prototype.top = function (node, size, space =0, extraT
  */
 TrueSizedLayoutDockHelper.prototype.left = function (node, size, space = 0, extraTranslation = [0, 0, 0], innerSize) {
     let [width, height] = this._setupAccordingToDimension(size, 0);
-    this._data.left += space;
+    if(this._data.left !== this._initialData.left) {
+        this._data.left += space;
+    }
     this._context.set(node, {
         size: innerSize || ([this._ensureTrueSize(width), height || (this._data.bottom - this._data.top)]),
         translate: this._addTranslations([this._data.left, this._data.top, this._data.z], extraTranslation)
@@ -138,9 +143,10 @@ TrueSizedLayoutDockHelper.prototype.left = function (node, size, space = 0, extr
  * @return {TrueSizedLayoutDockHelper} this
  */
 TrueSizedLayoutDockHelper.prototype.bottom = function (node, size,space = 0, extraTranslation = [0,0,0], innerSize) {
-
     let [width, height] = this._setupAccordingToDimension(size, 1);
-    this._data.bottom -= space;
+    if(this._data.bottom !== this._initialData.bottom) {
+        this._data.bottom -= space;
+    }
     this._data.bottom -= this._resolveSingleSize(height);
     this._context.set(node, {
         size: innerSize || ([width || (this._data.right - this._data.left), this._ensureTrueSize(height)]),
@@ -161,8 +167,9 @@ TrueSizedLayoutDockHelper.prototype.bottom = function (node, size,space = 0, ext
  */
 TrueSizedLayoutDockHelper.prototype.right = function (node, size, space = 0, extraTranslation = [0, 0, 0], innerSize) {
     let [width, height] = this._setupAccordingToDimension(size, 0);
-
-    this._data.right -= space;
+    if(this._data.right !== this._initialData.right) {
+        this._data.right -= space;
+    }
     this._data.right -= this._resolveSingleSize(width);
     this._context.set(node, {
         size: innerSize || ([this._ensureTrueSize(width), height || (this._data.bottom - this._data.top)]),
@@ -198,6 +205,10 @@ TrueSizedLayoutDockHelper.prototype.margins = function (margins) {
     this._data.top += margins[0];
     this._data.right -= margins[1];
     this._data.bottom -= margins[2];
+    this._initialData.left = this._data.left;
+    this._initialData.right = this._data.right;
+    this._initialData.top = this._data.top;
+    this._initialData.bottom = this._data.bottom;
     return this;
 };
 
