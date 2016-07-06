@@ -287,10 +287,11 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._updatePosition(insertIndex);
         this._insertId(child.id, insertIndex, newSurface, child);
 
-        if (this.options.ensureVisible != null) {
+        if (this.options.ensureVisible != null || this.options.scrollToNewChild) {
+            let shouldEnsureVisible  = this.options.ensureVisible != null ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
             if (this.options.scrollToNewChild) {
-                if (child === this._lastChild && this.options.ensureVisible(child, newSurface, insertIndex)) this.ensureVisible(newSurface);
-            } else if (this.options.ensureVisible(child, newSurface, insertIndex)) {
+                if (child === this._lastChild && shouldEnsureVisible) this.ensureVisible(newSurface);
+            } else if (shouldEnsureVisible) {
                 this.ensureVisible(newSurface);
             }
         }
@@ -305,6 +306,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._insertId(child.id, index, newSurface, child);
         this.replace(index, newSurface, true);
     }
+
+
+    
 
 
     /**
