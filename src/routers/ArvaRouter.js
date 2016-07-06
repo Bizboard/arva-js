@@ -27,7 +27,9 @@ export class ArvaRouter extends Router {
         this.history = [];
         this.decode = decodeURIComponent;
 
+
         window.addEventListener('hashchange', this.run);
+        this._setupNativeBackButtonListener();
 
     }
 
@@ -207,6 +209,42 @@ export class ArvaRouter extends Router {
     setInitialSpec(spec) {
         this._initialSpec = spec;
     }
+
+    setBackButtonEnabled(enabled) {
+        this._backButtonEnabled = enabled;
+    }
+
+    isBackButtonEnabled(){
+        return this._backButtonEnabled;
+    }
+
+    goBackInHistory() {
+        /* Default behaviour: go back in history in the arva router */
+        let {history} = this;
+        if(history.length > 1){
+            let {controller,method,keys,values} = history[history.length-2];
+            let inputObject = {};
+            for (let i = 0; i < keys.length; i++) {
+                inputObject[keys[i]] = values[i];
+            }
+            this.go(controller, method, inputObject);
+        } else {
+            this.go(this.defaultController, this.defaultMethod);
+        }
+    }
+
+    _setupNativeBackButtonListener() {
+        this._backButtonEnabled = true;
+        document.addEventListener("backbutton", (e) => {
+            if(!this._backButtonEnabled){
+                e.preventDefault();
+            } else {
+                this.goBackInHistory();
+            }
+        }, false);
+    }
+
+
 
     /**
      * Executes the controller handler associated with a given route, passing the route as a parameter.
