@@ -108,18 +108,12 @@ export class View extends FamousView {
     setOptions(options) {
         super.setOptions(options);
         /* If no renderables are constructed, it makes no sense to call this function (this is done automatically by the
-         base class in construction time
+         base class in construction time)
          */
         if (!this.renderables) {
             return;
         }
         this._initOptions(combineOptions(this._customOptions, options));
-        for (let optionName in this.options) {
-            let renderable = this.renderables[optionName];
-            if (renderable && renderable.setOptions) {
-                renderable.setOptions(this._getRenderableOptions(optionName));
-            }
-        }
     }
 
     /**
@@ -130,9 +124,6 @@ export class View extends FamousView {
      * @returns {Renderable} The renderable that was assigned
      */
     addRenderable(renderable, renderableName, ...decorators) {
-        if (decorators.length) {
-            //renderable.decorations = {};
-        }
         for (let decorator of decorators) {
             /* The decorator(s) provided in the last argument needed to decorate the renderable */
             decorator(renderable);
@@ -225,12 +216,10 @@ export class View extends FamousView {
 
     _getRenderableOptions(renderableName, decorations = this.renderables[renderableName]) {
         let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
-        let namedOptions = this.options[renderableName] || {};
-        let renderableOptions = combineOptions(decoratorOptions, namedOptions);
-        if (!this._isPlainObject(renderableOptions) || !this._isPlainObject(namedOptions) || !this._isPlainObject(decoratorOptions)) {
-            this._warn(`Invalid option '${renderableOptions}' given to item ${renderableName}`);
+        if (!this._isPlainObject(decoratorOptions)) {
+            this._warn(`Invalid option '${decoratorOptions}' given to item ${renderableName}`);
         }
-        return renderableOptions;
+        return decoratorOptions;
     }
 
 
@@ -308,16 +297,27 @@ export class View extends FamousView {
             this._addDecoratedRenderable(renderable, renderableName)
         }
 
-
         this._setEventHandlers(renderable);
         this._setPipes(renderable);
 
 
+
+        this[renderableName] = renderable;
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
          * this.renderables is used in the LayoutController in this.layout to render this view. */
         this.renderables[renderableName] = renderable.animationController || renderable;
-        this[renderableName] = renderable;
     }
+
+    replaceRenderable(name, newRenderable){
+        let {decorations} = this[name];
+        if(decorations){
+            newRenderable.decorations = {...newRenderable.decorations, ...decorations};
+            this._removeDecoratedRenderable(this[name],name);
+            this._addDecoratedRenderable(newRenderable,name);
+            this[name] = newRenderable;
+        }
+    }
+
 
     _setEventHandlers(renderable) {
         if (!renderable.decorations || !renderable.decorations.eventSubscriptions) {
@@ -633,7 +633,13 @@ export class View extends FamousView {
             }
         }
         if (dock[dockMethod]) {
-            dock[dockMethod](name, dockSize, space, translate, innerSize);
+            /* If the renderable is unrenderable due to zero height/width...*/
+            if(inUseDockSize[0] === 0 || inUseDockSize[1] === 0){
+                /* Don't layout renderable, it will just increase the space and that's not the behaviour we want*/
+            } else {
+                dock[dockMethod](name, dockSize, space, translate, innerSize);
+            }
+
         } else {
             this._warn(`Arva: ${this._name()}.${name} contains an unknown @dock method '${dockMethod}', and was ignored.`);
         }
@@ -862,13 +868,16 @@ export class View extends FamousView {
         let dockingDirection = dockType;
         let orthogonalDirection = !dockType + 0;
 
+
+        /* Previously countered dock size for docking direction and opposite docking direction */
+        let previousDockSize = 0;
         /* Add up the different sizes to if they are docked all in the same direction */
         let dockSize = dockedRenderables.reduce((result, dockedRenderable, name) => {
             let {decorations} = dockedRenderable;
             let {dockMethod: otherDockMethod} = decorations.dock;
             /* If docking is done orthogonally */
-            if (getDockType(otherDockMethod) !== dockType) {
-                return [NaN, NaN];
+        if (getDockType(otherDockMethod) !== dockType) {
+            return [NaN, NaN];
             } else {
                 /* Resolve both inner size and outer size */
                 this._resolveDecoratedSize(name, {size: [NaN, NaN]}, dockedRenderable.decorations.dock.size);
@@ -887,10 +896,14 @@ export class View extends FamousView {
                     resolvedOuterSize[1] === undefined ? resolvedInnerSize[1] : resolvedOuterSize[1]];
                 let newResult = new Array(2);
                 /* If docking is done from opposite directions */
-                if (dockMethod !== otherDockMethod) {
+                let dockingFromOpposite = dockMethod !== otherDockMethod;
+                if (dockingFromOpposite) {
                     newResult[dockingDirection] = NaN;
                 } else {
-                    newResult[dockingDirection] = resolvedSize[dockingDirection] + decorations.dock.space + result[dockingDirection];
+                    /* If this or the previous renderable size is 0, don't add the space */
+                    let spaceSize = (resolvedSize[dockingDirection] === 0 || previousDockSize === 0) ? 0 : decorations.dock.space;
+                    newResult[dockingDirection] = resolvedSize[dockingDirection] + spaceSize + result[dockingDirection];
+                    previousDockSize = resolvedSize[dockingDirection];
                 }
                 /* If a size in the orthogonalDirection has been set... */
                 if (resolvedSize[orthogonalDirection] !== undefined && !Number.isNaN(resolvedSize[orthogonalDirection])) {
@@ -1134,7 +1147,7 @@ export class View extends FamousView {
         let {animation, viewMargins} = renderable.decorations;
 
         if (animation) {
-            this._processAnimatedRenderable(renderable, animation);
+            this._processAnimatedRenderable(renderable, renderableName, animation);
         }
         /* The margin decorator is treated specially when the renderable is a surface */
         if (this._renderableIsSurface(renderable) && viewMargins) {
@@ -1142,25 +1155,32 @@ export class View extends FamousView {
         }
     }
 
-    _processAnimatedRenderable(renderable, options) {
-        let animationController = renderable.animationController = new AnimationController(options);
-        if (renderable.pipe) {
-            renderable.pipe(animationController._eventOutput);
-        }
+    _processAnimatedRenderable(renderable, renderableName, options) {
+        /* If there's already an animationcontroller present, just change the options */
+        if(this.renderables[renderableName] instanceof AnimationController){
+            this.renderables[renderableName].setOptions(options);
+        } else {
+            let animationController = renderable.animationController = new AnimationController(options);
+            if (renderable.pipe) {
+                renderable.pipe(animationController._eventOutput);
+            }
 
-        let showMethod = () => {
-            animationController.show.call(animationController, renderable, options, () => {
-                if (renderable.emit) {
-                    renderable.emit('shown');
-                }
-            });
-        };
-        if (options.delay && options.delay > 0 && options.showInitially) {
-            Timer.setTimeout(showMethod, options.delay);
-        } else if (options.waitFor) {
-            this.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
-        } else if (options.showInitially) {
-            showMethod();
+            let showMethod = () => {
+                animationController.show.call(animationController, renderable, options, () => {
+                    if (renderable.emit) {
+                        renderable.emit('shown');
+                    }
+                });
+            };
+            if (options.delay && options.delay > 0 && options.showInitially) {
+                Timer.setTimeout(showMethod, options.delay);
+            } else if (options.waitFor) {
+                this.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
+            } else if (options.showInitially) {
+                showMethod();
+            }
+
+
         }
     }
 
