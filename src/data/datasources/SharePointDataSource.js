@@ -7,7 +7,7 @@
 
  */
 import _                            from 'lodash';
-import {provide}                    from '../../utils/di/Decorators.js';
+import {provide}                    from 'di';
 import {ObjectHelper}               from '../../utils/ObjectHelper.js';
 import {UrlParser}                  from '../../utils/request/UrlParser.js';
 import {DataSource}                 from '../DataSource.js';
