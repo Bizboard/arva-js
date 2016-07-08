@@ -128,6 +128,18 @@ export const layout = {
         };
     },
 
+    clip: function (x, y) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.isClipped = true;
+            let existingSize = renderable.decorations.size;
+            if (existingSize) {
+                renderable.decorations.innerSize = existingSize;
+            }
+            renderable.decorations.size = [x, y];
+        }
+    },
+
 
     place: function (place) {
         return function (view, renderableName, descriptor) {

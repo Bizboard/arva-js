@@ -14,6 +14,7 @@ import LayoutController             from 'famous-flex/LayoutController.js';
 import Surface                      from 'famous/core/Surface.js';
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
+import ContainerSurface             from 'famous/Surfaces/ContainerSurface.js';
 
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
@@ -181,7 +182,15 @@ export class View extends FamousView {
     }
 
     showRenderable(renderableName, show = true){
-        this.renderables[renderableName][show ? 'show' : 'hide'](this[renderableName]);
+        this._showWithAnimationController(this.renderables[renderableName], this[renderableName], show);
+    }
+
+    _showWithAnimationController(animationController, renderable, show = true){
+        animationController[show ? 'show' : 'hide'](renderable.containerSurface || renderable, null, () => {
+            if (renderable.emit) {
+                renderable.emit('shown');
+            }
+        });
     }
 
     hideRenderable(renderableName){
@@ -304,8 +313,9 @@ export class View extends FamousView {
 
         this[renderableName] = renderable;
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
+         * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
          * this.renderables is used in the LayoutController in this.layout to render this view. */
-        this.renderables[renderableName] = renderable.animationController || renderable;
+        this.renderables[renderableName] = renderable.animationController || renderable.containerSurface || renderable;
     }
 
     replaceRenderable(name, newRenderable){
@@ -567,7 +577,7 @@ export class View extends FamousView {
         for (let name of names) {
             let renderable = fullScreenRenderables.get(name);
             let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
-            context.set(name, {translate});
+            context.set(name, {translate, size: context.size});
         }
     }
 
@@ -853,6 +863,10 @@ export class View extends FamousView {
             let width = totalSize[0], height = totalSize[1];
             totalSize = [(width || width == 0) ? width : undefined, (height || height == 0) ? height : undefined];
         }
+        /* If the total size is still [0, 0], there weren't any renderables to do our calculation, so return [undefined, undefined]  */
+        if(totalSize[0] === 0 && totalSize[1] === 0){
+            return [undefined, undefined];
+        }
         return totalSize;
 
     }
@@ -876,8 +890,8 @@ export class View extends FamousView {
             let {decorations} = dockedRenderable;
             let {dockMethod: otherDockMethod} = decorations.dock;
             /* If docking is done orthogonally */
-        if (getDockType(otherDockMethod) !== dockType) {
-            return [NaN, NaN];
+            if (getDockType(otherDockMethod) !== dockType) {
+                return [NaN, NaN];
             } else {
                 /* Resolve both inner size and outer size */
                 this._resolveDecoratedSize(name, {size: [NaN, NaN]}, dockedRenderable.decorations.dock.size);
@@ -1144,11 +1158,26 @@ export class View extends FamousView {
             this._groupedRenderables[groupName].set(renderableName, renderable);
         }
 
-        let {animation, viewMargins} = renderable.decorations;
+        let {clipSize, animation, viewMargins} = renderable.decorations;
+
+        /* If we clip, then we need to create a containerSurface */
+        if(clipSize){
+            /* Resolve clipSize specified as undefined */
+            if(clipSize[0] === undefined || clipSize[1] === undefined){
+                this.layout.once('layoutstart', ({size}) => {
+                    for(let i of [0,1]){clipSize[i] = clipSize[i] || size[i]}
+                });
+            }
+            let containerSurface = new ContainerSurface({size: clipSize, properties: {overflow: 'hidden'}});
+            containerSurface.add(renderable);
+            renderable.containerSurface = containerSurface;
+        }
 
         if (animation) {
             this._processAnimatedRenderable(renderable, renderableName, animation);
         }
+
+
         /* The margin decorator is treated specially when the renderable is a surface */
         if (this._renderableIsSurface(renderable) && viewMargins) {
             renderable.setProperties({padding: viewMargins.map((margin) => `${margin}px`).join(' ')});
@@ -1165,13 +1194,8 @@ export class View extends FamousView {
                 renderable.pipe(animationController._eventOutput);
             }
 
-            let showMethod = () => {
-                animationController.show.call(animationController, renderable, options, () => {
-                    if (renderable.emit) {
-                        renderable.emit('shown');
-                    }
-                });
-            };
+            let showMethod = this._showWithAnimationController.bind(this, animationController, renderable);
+
             if (options.delay && options.delay > 0 && options.showInitially) {
                 Timer.setTimeout(showMethod, options.delay);
             } else if (options.waitFor) {
