@@ -13,6 +13,8 @@ import {Router}                 from './Router.js';
 import Context                  from 'famous/core/Context.js';
 
 import '../utils/hotfixes/Polyfills.js';
+import '../utils/hotfixes/FamousKeyboardOffset.js';
+import '../utils/hotfixes/DisableTextSelection.js';
 
 /**
  * The App class exposes the Router which can be used to configure the Application's routing settings.
