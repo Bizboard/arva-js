@@ -17,6 +17,16 @@ class DialogWrapper extends View {
     @layout.size((size) => Math.min(480, size - 32), true)
     @layout.place('center')
     dialog = this.options.dialog
+
+    onNewParentSize(parentSize) {
+        this._parentSize = parentSize;
+    }
+
+    getSize() {
+        let dialogHeight = this.dialog.getSize()[1];
+        return this._parentSize[1] > dialogHeight ? [undefined, undefined] : [undefined, dialogHeight];
+    }
+
 }
 
 export class DialogManager extends View {
@@ -58,9 +68,9 @@ export class DialogManager extends View {
         let famousContext = Context.get(FamousContext);
         famousContext.add(this);
 
-        if (options.dialogSize) {
-            this.dialogView.decorations.size = options.dialogSize;
-        }
+        this.layout.on('layoutstart', ({size}) => {
+            this.dialog.onNewParentSize(size);
+        });
 
 
         document.addEventListener("backbutton", this._onClose);
