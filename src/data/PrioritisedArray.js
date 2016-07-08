@@ -317,10 +317,12 @@ export class PrioritisedArray extends Array {
      * @private
      */
     _registerCallbacks(dataSource) {
-        dataSource.on('child_added', this._onChildAdded);
-        dataSource.on('child_moved', this._onChildMoved);
-        dataSource.on('child_changed', this._onChildChanged);
-        dataSource.on('child_removed', this._onChildRemoved);
+        this.once('ready', () => {
+            dataSource.on('child_added', this._onChildAdded);
+            dataSource.on('child_moved', this._onChildMoved);
+            dataSource.on('child_changed', this._onChildChanged);
+            dataSource.on('child_removed', this._onChildRemoved);
+        });
     }
 
     /**
