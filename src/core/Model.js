@@ -53,7 +53,7 @@ export class Model extends PrioritisedObject {
             /* No id is present, generate a random one by pushing a new entry to the dataSource. */
             this._dataSource = options.dataSource.push(data);
         } else if(options.path && id) {
-            this._dataSource = dataSource.child(options.path + '/' + id || '');
+            this._dataSource = dataSource.child(options.path + '/' + id || '')
         } else if(options.dataSnapshot){
             this._dataSource = dataSource.child(options.dataSnapshot.ref().path.toString());
         } else if (id) {

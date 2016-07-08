@@ -22,6 +22,7 @@ System.config({
     "bowser": "npm:bowser@1.3.0",
     "camelcase": "npm:camelcase@2.1.1",
     "core-js": "npm:core-js@1.2.6",
+    "di": "github:bizboard/di.js@master",
     "eventemitter3": "npm:eventemitter3@1.2.0",
     "famous": "github:bizboard/famous@develop",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
