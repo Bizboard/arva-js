@@ -24,7 +24,7 @@ System.config({
     "core-js": "npm:core-js@1.2.6",
     "di": "github:bizboard/di.js@master",
     "eventemitter3": "npm:eventemitter3@1.2.0",
-    "famous": "github:bizboard/famous@develop",
+    "famous": "github:bizboard/famous@0.3.6",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
     "famous-flex": "github:bizboard/famous-flex@master",
     "firebase": "github:firebase/firebase-bower@3.0.5",
