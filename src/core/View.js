@@ -541,30 +541,6 @@ export class View extends FamousView {
         this._layoutTraditionalRenderables(this._groupedRenderables['traditional'], context, options);
     }
 
-    _layoutDockedRenderables(dockedRenderables, filledRenderables, context, options) {
-        let dock = new TrueSizedLayoutDockHelper(context, options);
-
-        if (this.decorations.viewMargins) {
-            dock.margins(this.decorations.viewMargins);
-        }
-
-        /* Process Renderables with a non-fill dock */
-        let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
-        for (let name of dockedNames) {
-            this._layoutDockedSingleRenderable(dockedRenderables.get(name), name, context, dock);
-        }
-
-        /* Process Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
-        let filledNames = filledRenderables ? filledRenderables.keys() : [];
-        for (let renderableName of filledNames) {
-            let renderable = filledRenderables.get(renderableName);
-            let {decorations} = renderable;
-            let {translate = [0, 0, 0]} = decorations.translate;
-            let zIndex = this._addTranslations(translate, this.decorations.extraTranslate)[2];
-            dock.fill(renderableName, this._resolveDecoratedSize(renderableName, context, renderable.decorations.dock.size), zIndex);
-        }
-    }
-
     _layoutFullScreenRenderables(fullScreenRenderables, context) {
         let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
         for (let name of names) {
@@ -573,7 +549,6 @@ export class View extends FamousView {
             context.set(name, {translate, size: context.size});
         }
     }
-
 
     _layoutTraditionalRenderables(traditionalRenderables, context) {
         let names = traditionalRenderables ? traditionalRenderables.keys() : [];
@@ -593,19 +568,62 @@ export class View extends FamousView {
         }
     }
 
-    _layoutDockedSingleRenderable(renderable, name, context, dock) {
+
+    _layoutDockedRenderables(dockedRenderables, filledRenderables, context, options) {
+        let dock = new TrueSizedLayoutDockHelper(context, options);
+
+        if (this.decorations.viewMargins) {
+            dock.margins(this.decorations.viewMargins);
+        }
+
+        /* Process Renderables with a non-fill dock */
+        let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
+        for (let renderableName of dockedNames) {
+            let renderable = dockedRenderables.get(renderableName);
+            let {dockSize, translate, innerSize, inUseDockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
+            let {dockMethod, space} = renderable.decorations.dock;
+            if (dock[dockMethod]) {
+                /* If the renderable is unrenderable due to zero height/width...*/
+                if (inUseDockSize[0] === 0 || inUseDockSize[1] === 0) {
+                    /* Don't layout renderable, it will just increase the space and that's not the behaviour we want*/
+                } else {
+                    dock[dockMethod](renderableName, dockSize, space, translate, innerSize);
+                }
+            } else {
+                this._warn(`Arva: ${this._name()}.${renderableName} contains an unknown @dock method '${dockMethod}', and was ignored.`);
+            }
+        }
+
+        /* Process Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
+        let filledNames = filledRenderables ? filledRenderables.keys() : [];
+        for (let renderableName of filledNames) {
+            let renderable = filledRenderables.get(renderableName);
+            let {translate, inUseDockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
+            dock.fill(renderableName, inUseDockSize, translate);
+        }
+    }
+
+    /**
+     * Computes translation, inner size, actual docking size (outer size) and an adjusted docking size for a renderable that is about to be docked
+     * @param renderable
+     * @param {String} renderableName
+     * @param context
+     * @returns {{dockSize: (Array|Object), translate, innerSize: (Array|Number), inUseDockSize: (Array|Number}}
+     * @private
+     */
+    _prepareForDockedRenderable(renderable, renderableName, context) {
         let {decorations} = renderable;
         let {translate = [0, 0, 0]} = decorations;
         translate = this._addTranslations(this.decorations.extraTranslate, translate);
         let {dockMethod, space} = decorations.dock;
         let dockSizeSpecified = !(_.isEqual(decorations.dock.size, [undefined, undefined]));
-        let dockSize = this._resolveDecoratedSize(name, context, dockSizeSpecified ? decorations.dock.size : undefined);
+        let dockSize = this._resolveDecoratedSize(renderableName, context, dockSizeSpecified ? decorations.dock.size : undefined);
         let inUseDockSize = this._resolvedSizesCache.get(renderable);
         let innerSize;
         let {origin, align} = decorations;
         if (decorations.size || origin || align) {
             /* If origin and align is used, we have to add this to the translate of the renderable */
-            this._resolveDecoratedSize(name, context);
+            this._resolveDecoratedSize(renderableName, context);
             innerSize = this._resolvedSizesCache.get(renderable);
             if (innerSize) {
                 let translateWithProportion = (proportion, size, translation, dimension, factor) =>
@@ -636,17 +654,8 @@ export class View extends FamousView {
                 dockSize[i] = ~inUseDockSize[i];
             }
         }
-        if (dock[dockMethod]) {
-            /* If the renderable is unrenderable due to zero height/width...*/
-            if (inUseDockSize[0] === 0 || inUseDockSize[1] === 0) {
-                /* Don't layout renderable, it will just increase the space and that's not the behaviour we want*/
-            } else {
-                dock[dockMethod](name, dockSize, space, translate, innerSize);
-            }
+        return {dockSize, translate, innerSize, inUseDockSize};
 
-        } else {
-            this._warn(`Arva: ${this._name()}.${name} contains an unknown @dock method '${dockMethod}', and was ignored.`);
-        }
     }
 
     /**
