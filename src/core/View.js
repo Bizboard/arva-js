@@ -1167,10 +1167,11 @@ export class View extends FamousView {
             this._groupedRenderables[groupName].set(renderableName, renderable);
         }
 
-        let {clipSize, animation, viewMargins} = renderable.decorations;
+        let {clip, animation, viewMargins} = renderable.decorations;
 
         /* If we clip, then we need to create a containerSurface */
-        if (clipSize) {
+        if (clip) {
+            let clipSize = clip.size;
             /* Resolve clipSize specified as undefined */
             if (clipSize[0] === undefined || clipSize[1] === undefined) {
                 this.layout.once('layoutstart', ({size}) => {
@@ -1179,7 +1180,7 @@ export class View extends FamousView {
                     }
                 });
             }
-            let containerSurface = new ContainerSurface({size: clipSize, properties: {overflow: 'hidden'}});
+            let containerSurface = new ContainerSurface({size: clipSize, properties: {overflow: 'hidden', ...clip.properties}});
             containerSurface.add(renderable);
             if (containerSurface.pipe) {
                 containerSurface.pipe(renderable._eventOutput);

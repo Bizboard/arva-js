@@ -128,10 +128,10 @@ export const layout = {
         };
     },
 
-    clip: function (x, y) {
+    clip: function (x, y, properties = {}) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            renderable.decorations.clipSize = [x, y];
+            renderable.decorations.clip = {size: [x, y], properties};
         }
     },
 
