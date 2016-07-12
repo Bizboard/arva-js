@@ -87,6 +87,10 @@ export class Model extends PrioritisedObject {
     _replaceModelAccessorsWithDatabinding() {
         let prototype = Object.getPrototypeOf(this);
 
+        if(~Object.getOwnPropertyNames(prototype).indexOf('id')){
+            console.log(`Don't define an id property to ${prototype.constructor.name}, as this property is internally used by the PrioritisedArray`);
+        }
+
         while (prototype.constructor.name !== 'Model') {
             /* Get all properties except the id and constructor of this model */
             let propNames = _.difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
