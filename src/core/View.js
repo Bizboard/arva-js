@@ -1181,6 +1181,9 @@ export class View extends FamousView {
             }
             let containerSurface = new ContainerSurface({size: clipSize, properties: {overflow: 'hidden'}});
             containerSurface.add(renderable);
+            if (containerSurface.pipe) {
+                containerSurface.pipe(renderable._eventOutput);
+            }
             renderable.containerSurface = containerSurface;
         }
 
