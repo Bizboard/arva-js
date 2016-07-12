@@ -1,10 +1,10 @@
 /**
-  @author: Karl Lundfall (lundfall)
-  @license NPOSL-3.0
-  @copyright Bizboard, 2015
+ @author: Karl Lundfall (lundfall)
+ @license NPOSL-3.0
+ @copyright Bizboard, 2015
 
-  Adapted version of the LayoutDockHelper made by Hein Rutjes in famous-flex
-*/
+ Adapted version of the LayoutDockHelper made by Hein Rutjes in famous-flex
+ */
 
 
 
@@ -185,10 +185,10 @@ TrueSizedLayoutDockHelper.prototype.right = function (node, size, space = 0, ext
  * @param {Number} [z] z-index to use for the node
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.fill = function (node, size, z) {
+TrueSizedLayoutDockHelper.prototype.fill = function (node, size, translate = [0, 0, 0]) {
     this._context.set(node, {
         size: [size[0] || this._data.right - this._data.left, size[1] || this._data.bottom - this._data.top],
-        translate: [this._data.left, this._data.top, (z === undefined) ? this._data.z : z]
+        translate: this._addTranslations([this._data.left, this._data.top, this._data.z], translate)
     });
     return this;
 };

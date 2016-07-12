@@ -135,7 +135,13 @@ export const layout = {
         }
     },
 
-
+    rotate: function (x, y, z) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.rotate = [x, y, z];
+        }
+    },
+    
     place: function (place) {
         return function (view, renderableName, descriptor) {
             let origin = [0, 0], align = [0, 0];
