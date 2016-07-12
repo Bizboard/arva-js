@@ -634,14 +634,18 @@ export class View extends FamousView {
                     translateWithProportion(origin, innerSize, translate, 1, -1);
                 }
                 if (align) {
-                    /* If no docksize was specified in a certain direction, then use the context size */
+                    /* If no docksize was specified in a certain direction, then use the context size without margins */
                     let outerDockSize = [];
-                    if (dockSizeSpecified) {
+                    let {viewMargins = [0, 0, 0, 0] } = this.decorations;
+                    let horizontalMargins = viewMargins[1] + viewMargins[3];
+                    let verticalMargins = viewMargins[0] + viewMargins[2];
+                    let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
+                    if(dockSizeSpecified) {
                         for (let [index, singleSize] of dockSize.entries()) {
-                            outerDockSize.push(singleSize === undefined ? context.size[index] : singleSize);
+                            outerDockSize.push(singleSize === undefined ? sizeWithoutMargins[index] : singleSize);
                         }
                     } else {
-                        outerDockSize = [...context.size];
+                        outerDockSize = sizeWithoutMargins;
                     }
                     translateWithProportion(align, outerDockSize, translate, 0, 1);
                     translateWithProportion(align, outerDockSize, translate, 1, 1);
