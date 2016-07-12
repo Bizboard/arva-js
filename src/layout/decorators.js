@@ -127,6 +127,13 @@ export const layout = {
         }
     },
 
+    clip: function (x, y) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.clipSize = [x, y];
+        }
+    },
+
 
     place: function (place) {
         return function (view, renderableName, descriptor) {

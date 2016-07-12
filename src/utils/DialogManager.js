@@ -9,7 +9,7 @@ import FamousContext         from 'famous/core/Context.js';
 import {View}                from 'arva-js/core/View.js';
 import {ObjectHelper}        from 'arva-js/utils/ObjectHelper';
 
-import {Context}             from './Context.js';
+import {Injection}           from './Injection.js';
 import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
 
@@ -17,6 +17,16 @@ class DialogWrapper extends View {
     @layout.size((size) => Math.min(480, size - 32), true)
     @layout.place('center')
     dialog = this.options.dialog
+
+    onNewParentSize(parentSize) {
+        this._parentSize = parentSize;
+    }
+
+    getSize() {
+        let dialogHeight = this.dialog.getSize()[1];
+        return this._parentSize[1] > dialogHeight ? [undefined, undefined] : [undefined, dialogHeight];
+    }
+
 }
 
 export class DialogManager extends View {
@@ -54,13 +64,13 @@ export class DialogManager extends View {
                 }
             });
         }
-        this.router = Context.get(Router);
-        let famousContext = Context.get(FamousContext);
+        this.router = Injection.get(Router);
+        let famousContext = Injection.get(FamousContext);
         famousContext.add(this);
 
-        if (options.dialogSize) {
-            this.dialogView.decorations.size = options.dialogSize;
-        }
+        this.layout.on('layoutstart', ({size}) => {
+            this.dialog.onNewParentSize(size);
+        });
 
 
         document.addEventListener("backbutton", this._onClose);
