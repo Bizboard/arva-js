@@ -8,7 +8,7 @@
  */
 
 import {BrandingEngine}         from './BrandingEngine.js';
-import {Context}                from '../../../utils/Context.js';
+import {Injection}              from '../../../utils/Injection.js';
 
 export class BrandingEngineSingleton {
     /**
@@ -16,6 +16,6 @@ export class BrandingEngineSingleton {
      * @returns {BrandingEngine} BrandingEngine instance.
      */
     static getInstance(){
-        return Context.getContext('Default').get(BrandingEngine);
+        return Injection.get(BrandingEngine);
     }
 }
