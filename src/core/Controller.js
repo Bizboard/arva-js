@@ -11,10 +11,9 @@ import _                        from 'lodash';
 import EventEmitter             from 'eventemitter3';
 import AnimationController      from 'famous-flex/AnimationController.js';
 
-import {inject}                 from 'di';
-
-import {Router}                 from './Router.js';
+import {inject}                 from '../utils/di/Decorators.js';
 import {ObjectHelper}           from '../utils/ObjectHelper.js';
+import {Router}                 from './Router.js';
 
 
 /**
@@ -30,7 +29,6 @@ export class Controller extends EventEmitter {
         this.spec = spec;
         this.router = router;
         this.context = context;
-
         /* The this._name property can be set by Arva's babel-plugin-transform-runtime-constructor-name plugin.
          * This allows Arva code to be minified and mangled without losing automated route creation.
          * If the plugin is not set up to run, which is done e.g. when not minifying your code, we default back to the runtime constructor name.*/
@@ -39,7 +37,7 @@ export class Controller extends EventEmitter {
         ObjectHelper.bindAllMethods(this, this);
 
         /* Add the controller route to the router. */
-        let routeName = Object.getPrototypeOf(this).constructor.name.replace('Controller', '');
+        let routeName = controllerName.replace('Controller', '');
         routeName += '/:method';
 
         /* handle router url changes and execute the appropiate controller method. */
