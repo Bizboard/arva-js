@@ -13,6 +13,7 @@ import {Context}             from './Context.js';
 import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
 
+@layout.scrollable
 class DialogWrapper extends View {
     @layout.size((size) => Math.min(480, size - 32), true)
     @layout.place('center')
