@@ -107,7 +107,7 @@ export class DialogManager extends View {
         /* Show the dialog */
         this.showRenderable('dialog');
 
-        this.dialog.on('closedialog', (function () {
+        this.dialog.on('closeDialog', (function () {
             /* Forward the arguments coming from the event emitter when closing */
             this.close(...arguments)
         }).bind(this));
