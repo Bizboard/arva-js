@@ -2,8 +2,10 @@
  * Created by tom on 08/07/16.
  */
 
-let location = window.location;
-let isWebsite = location.protocol.indexOf('http') !== -1 && location.host.indexOf('localhost') === -1;
+var currentLocation = window.location;
+var isWebsite = currentLocation.protocol.indexOf('http') !== -1 && currentLocation.host.indexOf('localhost') === -1;
+
+
 
 if(!isWebsite) {
     /* Source: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/insertRule */

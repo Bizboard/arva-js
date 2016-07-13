@@ -88,5 +88,5 @@ function famousMerge(defaultParam, specifiedParam) {
  * @returns {*}
  */
 export function combineOptions(defaultOptions, options) {
-    return _.mergeWith({root: defaultOptions}, {root: options}, famousMerge).root;
+    return _.mergeWith({}, {root: defaultOptions}, {root: options}, famousMerge).root;
 }

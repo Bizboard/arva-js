@@ -181,11 +181,11 @@ export class View extends FamousView {
         return result;
     }
 
-    showRenderable(renderableName, show = true){
+    showRenderable(renderableName, show = true) {
         this._showWithAnimationController(this.renderables[renderableName], this[renderableName], show);
     }
 
-    _showWithAnimationController(animationController, renderable, show = true){
+    _showWithAnimationController(animationController, renderable, show = true) {
         animationController[show ? 'show' : 'hide'](renderable.containerSurface || renderable, null, () => {
             if (renderable.emit) {
                 renderable.emit('shown');
@@ -193,7 +193,7 @@ export class View extends FamousView {
         });
     }
 
-    hideRenderable(renderableName){
+    hideRenderable(renderableName) {
         this.showRenderable(renderableName, false);
     }
 
@@ -310,7 +310,6 @@ export class View extends FamousView {
         this._setPipes(renderable);
 
 
-
         this[renderableName] = renderable;
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
          * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
@@ -318,12 +317,12 @@ export class View extends FamousView {
         this.renderables[renderableName] = renderable.animationController || renderable.containerSurface || renderable;
     }
 
-    replaceRenderable(name, newRenderable){
+    replaceRenderable(name, newRenderable) {
         let {decorations} = this[name];
-        if(decorations){
+        if (decorations) {
             newRenderable.decorations = {...newRenderable.decorations, ...decorations};
-            this._removeDecoratedRenderable(this[name],name);
-            this._addDecoratedRenderable(newRenderable,name);
+            this._removeDecoratedRenderable(this[name], name);
+            this._addDecoratedRenderable(newRenderable, name);
             this[name] = newRenderable;
         }
     }
@@ -363,22 +362,16 @@ export class View extends FamousView {
     }
 
     /**
-     * Resolves a decorated renderable's size (both x and y)
-     * @name {String} name The name of the renderable such that this.[name] = renderable
+     * Resolves a decorated renderable's size (both width and height)
+     * @name {String} name The name of the renderable such that this[name] = renderable
      * @param renderableName
      * @param {Object} context Famous-flex context in which the renderable is rendered.
      * @param specifiedSize
      * @returns {Array|Object} Array of [x, y] sizes, or null if resolving is not possible.
      * @private
      */
-    _resolveDecoratedSize(renderableName, context, specifiedSize = this[renderableName].decorations.size) {
+    _resolveDecoratedSize(renderableName, context, specifiedSize = this[renderableName].decorations.size || [undefined, undefined]) {
         let renderable = this[renderableName];
-
-        if (specifiedSize === undefined) {
-            this._warn(`Renderable "${renderableName}" does not appear to have a size defined. 
-                        Please verify that its size is defined in a @layout.size or @layout.dock decorator.`);
-            return null;
-        }
 
         let size = [];
         let cacheResolvedSize = [];
@@ -396,7 +389,7 @@ export class View extends FamousView {
             }
         }
 
-        if(this._renderableIsSurface(renderable) && !Number.isNaN(size[0]) && !Number.isNaN(size[1])){
+        if (this._renderableIsSurface(renderable) && !Number.isNaN(size[0]) && !Number.isNaN(size[1])) {
             /* Need to set the size in order to get resize notifications */
             renderable.size = [...size];
         }
@@ -548,30 +541,6 @@ export class View extends FamousView {
         this._layoutTraditionalRenderables(this._groupedRenderables['traditional'], context, options);
     }
 
-    _layoutDockedRenderables(dockedRenderables, filledRenderables, context, options) {
-        let dock = new TrueSizedLayoutDockHelper(context, options);
-
-        if (this.decorations.viewMargins) {
-            dock.margins(this.decorations.viewMargins);
-        }
-
-        /* Process Renderables with a non-fill dock */
-        let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
-        for (let name of dockedNames) {
-            this._layoutDockedSingleRenderable(dockedRenderables.get(name), name, context, dock);
-        }
-
-        /* Process Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
-        let filledNames = filledRenderables ? filledRenderables.keys() : [];
-        for (let renderableName of filledNames) {
-            let renderable = filledRenderables.get(renderableName);
-            let {decorations} = renderable;
-            let {translate = [0, 0, 0]} = decorations.translate;
-            let zIndex = this._addTranslations(translate, this.decorations.extraTranslate)[2];
-            dock.fill(renderableName, this._resolveDecoratedSize(renderableName, context, renderable.decorations.dock.size), zIndex);
-        }
-    }
-
     _layoutFullScreenRenderables(fullScreenRenderables, context) {
         let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
         for (let name of names) {
@@ -581,37 +550,80 @@ export class View extends FamousView {
         }
     }
 
-
     _layoutTraditionalRenderables(traditionalRenderables, context) {
         let names = traditionalRenderables ? traditionalRenderables.keys() : [];
         for (let renderableName of names) {
             let renderable = traditionalRenderables.get(renderableName);
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
-            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0]} = renderable.decorations;
+            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0]} = renderable.decorations;
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             context.set(renderableName, {
                 size: renderableSize,
                 translate: adjustedTranslation,
                 origin,
-                align
+                align,
+                rotate
             });
         }
     }
 
-    _layoutDockedSingleRenderable(renderable, name, context, dock) {
+
+    _layoutDockedRenderables(dockedRenderables, filledRenderables, context, options) {
+        let dock = new TrueSizedLayoutDockHelper(context, options);
+
+        if (this.decorations.viewMargins) {
+            dock.margins(this.decorations.viewMargins);
+        }
+
+        /* Process Renderables with a non-fill dock */
+        let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
+        for (let renderableName of dockedNames) {
+            let renderable = dockedRenderables.get(renderableName);
+            let {dockSize, translate, innerSize, inUseDockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
+            let {dockMethod, space} = renderable.decorations.dock;
+            if (dock[dockMethod]) {
+                /* If the renderable is unrenderable due to zero height/width...*/
+                if (inUseDockSize[0] === 0 || inUseDockSize[1] === 0) {
+                    /* Don't layout renderable, it will just increase the space and that's not the behaviour we want*/
+                } else {
+                    dock[dockMethod](renderableName, dockSize, space, translate, innerSize);
+                }
+            } else {
+                this._warn(`Arva: ${this._name()}.${renderableName} contains an unknown @dock method '${dockMethod}', and was ignored.`);
+            }
+        }
+
+        /* Process Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
+        let filledNames = filledRenderables ? filledRenderables.keys() : [];
+        for (let renderableName of filledNames) {
+            let renderable = filledRenderables.get(renderableName);
+            let {translate, inUseDockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
+            dock.fill(renderableName, inUseDockSize, translate);
+        }
+    }
+
+    /**
+     * Computes translation, inner size, actual docking size (outer size) and an adjusted docking size for a renderable that is about to be docked
+     * @param renderable
+     * @param {String} renderableName
+     * @param context
+     * @returns {{dockSize: (Array|Object), translate, innerSize: (Array|Number), inUseDockSize: (Array|Number}}
+     * @private
+     */
+    _prepareForDockedRenderable(renderable, renderableName, context) {
         let {decorations} = renderable;
         let {translate = [0, 0, 0]} = decorations;
         translate = this._addTranslations(this.decorations.extraTranslate, translate);
         let {dockMethod, space} = decorations.dock;
         let dockSizeSpecified = !(_.isEqual(decorations.dock.size, [undefined, undefined]));
-        let dockSize = this._resolveDecoratedSize(name, context, dockSizeSpecified ? decorations.dock.size : undefined);
+        let dockSize = this._resolveDecoratedSize(renderableName, context, dockSizeSpecified ? decorations.dock.size : undefined);
         let inUseDockSize = this._resolvedSizesCache.get(renderable);
         let innerSize;
         let {origin, align} = decorations;
         if (decorations.size || origin || align) {
             /* If origin and align is used, we have to add this to the translate of the renderable */
-            this._resolveDecoratedSize(name, context);
+            this._resolveDecoratedSize(renderableName, context);
             innerSize = this._resolvedSizesCache.get(renderable);
             if (innerSize) {
                 let translateWithProportion = (proportion, size, translation, dimension, factor) =>
@@ -622,14 +634,18 @@ export class View extends FamousView {
                     translateWithProportion(origin, innerSize, translate, 1, -1);
                 }
                 if (align) {
-                    /* If no docksize was specified in a certain direction, then use the context size */
+                    /* If no docksize was specified in a certain direction, then use the context size without margins */
                     let outerDockSize = [];
+                    let {viewMargins = [0, 0, 0, 0] } = this.decorations;
+                    let horizontalMargins = viewMargins[1] + viewMargins[3];
+                    let verticalMargins = viewMargins[0] + viewMargins[2];
+                    let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
                     if(dockSizeSpecified) {
                         for (let [index, singleSize] of dockSize.entries()) {
-                            outerDockSize.push(singleSize === undefined ? context.size[index] : singleSize);
+                            outerDockSize.push(singleSize === undefined ? sizeWithoutMargins[index] : singleSize);
                         }
                     } else {
-                        outerDockSize = [...context.size];
+                        outerDockSize = sizeWithoutMargins;
                     }
                     translateWithProportion(align, outerDockSize, translate, 0, 1);
                     translateWithProportion(align, outerDockSize, translate, 1, 1);
@@ -642,17 +658,8 @@ export class View extends FamousView {
                 dockSize[i] = ~inUseDockSize[i];
             }
         }
-        if (dock[dockMethod]) {
-            /* If the renderable is unrenderable due to zero height/width...*/
-            if(inUseDockSize[0] === 0 || inUseDockSize[1] === 0){
-                /* Don't layout renderable, it will just increase the space and that's not the behaviour we want*/
-            } else {
-                dock[dockMethod](name, dockSize, space, translate, innerSize);
-            }
+        return {dockSize, translate, innerSize, inUseDockSize};
 
-        } else {
-            this._warn(`Arva: ${this._name()}.${name} contains an unknown @dock method '${dockMethod}', and was ignored.`);
-        }
     }
 
     /**
@@ -720,7 +727,9 @@ export class View extends FamousView {
                 }
 
                 /* Legacy context.set() based layout functions */
-                if(this.layouts.length) { this._callLegacyLayoutFunctions(context, options); }
+                if (this.layouts.length) {
+                    this._callLegacyLayoutFunctions(context, options);
+                }
             }.bind(this)
         });
 
@@ -864,7 +873,7 @@ export class View extends FamousView {
             totalSize = [(width || width == 0) ? width : undefined, (height || height == 0) ? height : undefined];
         }
         /* If the total size is still [0, 0], there weren't any renderables to do our calculation, so return [undefined, undefined]  */
-        if(totalSize[0] === 0 && totalSize[1] === 0){
+        if (totalSize[0] === 0 && totalSize[1] === 0) {
             return [undefined, undefined];
         }
         return totalSize;
@@ -985,7 +994,7 @@ export class View extends FamousView {
         }
     }
 
-    _addTranslations(translate1, translate2){
+    _addTranslations(translate1, translate2) {
         return [translate1[0] + translate2[0], translate1[1] + translate2[1], translate1[2] + translate2[2]];
     }
 
@@ -1122,7 +1131,7 @@ export class View extends FamousView {
         if (!this.layouts) {
             this.layouts = [];
         }
-        if(!this.decorations.extraTranslate) {
+        if (!this.decorations.extraTranslate) {
             this.decorations.extraTranslate = [0, 0, 10];
         }
         if (!this.decoratedRenderables) {
@@ -1158,18 +1167,24 @@ export class View extends FamousView {
             this._groupedRenderables[groupName].set(renderableName, renderable);
         }
 
-        let {clipSize, animation, viewMargins} = renderable.decorations;
+        let {clip, animation, viewMargins} = renderable.decorations;
 
         /* If we clip, then we need to create a containerSurface */
-        if(clipSize){
+        if (clip) {
+            let clipSize = clip.size;
             /* Resolve clipSize specified as undefined */
-            if(clipSize[0] === undefined || clipSize[1] === undefined){
+            if (clipSize[0] === undefined || clipSize[1] === undefined) {
                 this.layout.once('layoutstart', ({size}) => {
-                    for(let i of [0,1]){clipSize[i] = clipSize[i] || size[i]}
+                    for (let i of [0, 1]) {
+                        clipSize[i] = clipSize[i] || size[i]
+                    }
                 });
             }
-            let containerSurface = new ContainerSurface({size: clipSize, properties: {overflow: 'hidden'}});
+            let containerSurface = new ContainerSurface({size: clipSize, properties: {overflow: 'hidden', ...clip.properties}});
             containerSurface.add(renderable);
+            if (containerSurface.pipe) {
+                containerSurface.pipe(renderable._eventOutput);
+            }
             renderable.containerSurface = containerSurface;
         }
 
@@ -1186,7 +1201,7 @@ export class View extends FamousView {
 
     _processAnimatedRenderable(renderable, renderableName, options) {
         /* If there's already an animationcontroller present, just change the options */
-        if(this.renderables[renderableName] instanceof AnimationController){
+        if (this.renderables[renderableName] instanceof AnimationController) {
             this.renderables[renderableName].setOptions(options);
         } else {
             let animationController = renderable.animationController = new AnimationController(options);

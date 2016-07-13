@@ -8,7 +8,7 @@
  */
 
 import _                        from 'lodash';
-import {Context}                from '../utils/Context.js';
+import {Injection}              from '../utils/Injection.js';
 import {ObjectHelper}           from '../utils/ObjectHelper.js';
 import {PrioritisedObject}      from '../data/PrioritisedObject.js';
 import {DataSource}             from '../data/DataSource.js';
@@ -31,7 +31,7 @@ export class Model extends PrioritisedObject {
     constructor(id, data = null, options = {}) {
 
         /* Retrieve dataSource from the DI context */
-        let dataSource = Context.getContext().get(DataSource);
+        let dataSource = Injection.get(DataSource);
         super();
 
         /* Replace all stub data fields of any subclass of Model with databinding accessors.
@@ -86,6 +86,10 @@ export class Model extends PrioritisedObject {
      */
     _replaceModelAccessorsWithDatabinding() {
         let prototype = Object.getPrototypeOf(this);
+
+        if(~Object.getOwnPropertyNames(prototype).indexOf('id')){
+            console.log(`Don't define an id property to ${prototype.constructor.name}, as this property is internally used by the PrioritisedArray`);
+        }
 
         while (prototype.constructor.name !== 'Model') {
             /* Get all properties except the id and constructor of this model */

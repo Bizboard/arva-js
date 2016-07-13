@@ -13,6 +13,7 @@ import {Injection}           from './Injection.js';
 import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
 
+@layout.scrollable
 class DialogWrapper extends View {
     @layout.size((size) => Math.min(480, size - 32), true)
     @layout.place('center')
@@ -69,7 +70,12 @@ export class DialogManager extends View {
         famousContext.add(this);
 
         this.layout.on('layoutstart', ({size}) => {
-            this.dialog.onNewParentSize(size);
+            if(this.dialog.onNewParentSize){
+                this.dialog.onNewParentSize(size);
+                this._savedParentSize = null;
+            } else {
+                this._savedParentSize = size;
+            }
         });
 
 
@@ -95,7 +101,9 @@ export class DialogManager extends View {
 
         /* Replace whatever non-showing dialog we have right now with the new dialog */
         this.replaceRenderable('dialog', new DialogWrapper({dialog}));
-
+        if(this._savedParentSize){
+            this.dialog.onNewParentSize(this._savedParentSize);
+        }
         this._canCancel = canCancel;
         if (canCancel) {
             /* Disable existing default behavior of backbutton going back to previous route */
@@ -106,7 +114,7 @@ export class DialogManager extends View {
         /* Show the dialog */
         this.showRenderable('dialog');
 
-        this.dialog.on('closedialog', (function () {
+        this.dialog.on('closeDialog', (function () {
             /* Forward the arguments coming from the event emitter when closing */
             this.close(...arguments)
         }).bind(this));

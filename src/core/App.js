@@ -49,12 +49,12 @@ export class App {
         /* Request instances of a Router and a Famous Context. */
         let [router, context] = Injection.getAll(Router, Context);
         
-        /* Load controllers */
-        this.controllers = Injection.getAll(...controllers);
-        
         if(this.constructor.loaded && typeof this.constructor.loaded === 'function') {
             try { this.constructor.loaded(); } catch(error) { console.log('Caught exception in App.loaded():', error); }
         }
+
+        /* Load controllers */
+        this.controllers = Injection.getAll(...controllers);
 
         this.router = router;
         this.context = context;

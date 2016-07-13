@@ -101,7 +101,7 @@ class Injector {
   // This mutates `this._providers`, but it is only called during the constructor.
   _loadFnOrClass(classConstructor, constructionParams = []) {
     var annotations = readAnnotations(classConstructor);
-    var token = this._retrieveToken(annotations.provide.token || classConstructor, hash(constructionParams));
+    var token = this._retrieveToken(annotations.provide.token || classConstructor, constructionParams);
     var provider = createProviderFromFnOrClass(classConstructor, annotations);
 
     this._providers.set(token, provider);
@@ -148,7 +148,7 @@ class Injector {
     var resolvingMsg = '';
     var provider;
     var instance;
-    var token = this._retrieveToken(classConstructor, hash(constructionParams));
+    var token = this._retrieveToken(classConstructor, constructionParams);
 
     if (token === null || token === undefined) {
       resolvingMsg = constructResolvingMessage(resolving, token);
