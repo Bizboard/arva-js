@@ -14,6 +14,7 @@ import FlexScrollView               from 'famous-flex/FlexScrollView.js';
 import {Throttler}                  from '../utils/Throttler.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
+import Timer                        from 'famous/utilities/Timer.js';
 
 export class DataBoundScrollView extends ReflowingScrollView {
 
@@ -39,7 +40,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             },
             dataFilter: ()=> true,
             ensureVisible: null,
-            scrollToNewChild: false
+            chatScrolling: false
         }, OPTIONS));
 
         this._internalDataSource = {};
@@ -48,6 +49,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this.isDescending = this.options.sortingDirection === 'descending';
         this.throttler = new Throttler(this.options.throttleDelay, true, this);
 
+        this._useCustomOrdering = !!this.options.orderBy;
         /* If no orderBy method is set, or it is a string field name, we set our own ordering method. */
         if (!this.options.orderBy || typeof this.options.orderBy === 'string') {
             let fieldName = this.options.orderBy || 'id';
@@ -58,8 +60,6 @@ export class DataBoundScrollView extends ReflowingScrollView {
                     return currentChild[fieldName] < model[fieldName];
                 }
             }.bind(this);
-        } else if(typeof this.options.orderBy !== 'string'){
-            this._useCustomOrdering = true;
         }
 
 
@@ -207,8 +207,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
             /* If we have an orderBy function, find the index we should be inserting at. */
             if ((this._useCustomOrdering && this.options.orderBy && typeof this.options.orderBy === 'function') || this.isGrouped) {
                 let foundOrderedIndex = -1;
-                if(this.isGrouped) {
-                    for (let [groupId, group] of Object.entries(this._internalGroups)) {
+                if (this.isGrouped) {
+
+                    for (let groupId in this._internalGroups) {
+                        let group = this._internalGroups[groupId];
                         /* Check the first and last item of every group (they're sorted) */
                         for (let position of group.itemsCount > 1 ? [group.position + 1, group.position + group.itemsCount - 1] : [group.position + 1]) {
                             let {dataId} = this._viewSequence.findByIndex(position)._value;
@@ -240,13 +242,13 @@ export class DataBoundScrollView extends ReflowingScrollView {
         return insertIndex;
     }
 
-    _insertGroup(insertIndex, groupByValue){
+    _insertGroup(insertIndex, groupByValue) {
         let groupIndex = this._findGroup(groupByValue);
         if (groupByValue) {
             let groupExists = groupIndex !== -1;
             if (!groupExists) {
                 /* No group of this value exists yet, so we'll need to create one. */
-                this._updatePosition(insertIndex,1);
+                this._updatePosition(insertIndex, 1);
                 let newSurface = this._addGroupItem(groupByValue, insertIndex);
                 this._insertId(`group_${groupByValue}`, insertIndex, newSurface, null, {groupId: groupByValue});
                 /*insertIndex++;*/
@@ -272,7 +274,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         if (this.isGrouped) {
             let groupByValue = this._getGroupByValue(child);
 
-            if(this._insertGroup(insertIndex, groupByValue)) {
+            if (this._insertGroup(insertIndex, groupByValue)) {
                 /* If a new group is inserted, then increase the insert index */
                 insertIndex++;
             }
@@ -283,17 +285,28 @@ export class DataBoundScrollView extends ReflowingScrollView {
         let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
         this._subscribeToClicks(newSurface, child);
+
+        /* If we're scrolling as with a chat window, then scroll to last child if we're at the bottom */
+        if(this.options.chatScrolling && insertIndex === this._dataSource.getLength()){
+            let lastVisibleItem = this.getLastVisibleItem();
+            if((lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value) || !this._allChildrenAdded){
+                this._lastChild = child;
+            }
+        }
+
         this.insert(insertIndex, newSurface);
         this._updatePosition(insertIndex);
         this._insertId(child.id, insertIndex, newSurface, child);
 
-        if (this.options.ensureVisible != null || this.options.scrollToNewChild) {
+        if (this.options.ensureVisible != null || this.options.chatScrolling) {
             let shouldEnsureVisibleUndefined = this.options.ensureVisible == null;
             let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
-            if (this.options.scrollToNewChild) {
-                if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) this.ensureVisible(newSurface);
+            if (this.options.chatScrolling) {
+                if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) {
+                    Timer.after(() =>this.ensureVisible(newSurface),1);
+                }
             } else if (shouldEnsureVisible) {
-                this.ensureVisible(newSurface);
+                Timer.after(() =>this.ensureVisible(newSurface),1);
             }
         }
     }
@@ -307,9 +320,6 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._insertId(child.id, index, newSurface, child);
         this.replace(index, newSurface, true);
     }
-
-
-    
 
 
     /**
@@ -329,7 +339,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
     _removeGroupIfNecessary(groupByValue) {
         /* Check if the group corresponding to the child is now empty */
-        if(this._internalGroups[groupByValue].itemsCount === 0){
+        if (this._internalGroups[groupByValue].itemsCount === 0) {
             /* TODO: Maybe remove internalgroups[groupByValue]? (Or not?) */
             let {position} = this._internalGroups[groupByValue];
             this._updatePosition(position, -1);
@@ -351,7 +361,6 @@ export class DataBoundScrollView extends ReflowingScrollView {
         if (this.isGrouped) {
             let groupByValue = this._getGroupByValue(child);
             this._internalGroups[groupByValue].itemsCount--;
-
 
 
             this._removeGroupIfNecessary(groupByValue);
@@ -387,7 +396,6 @@ export class DataBoundScrollView extends ReflowingScrollView {
             this.insert(0, this.header);
         }
     }
-
 
 
     removeHeader() {
@@ -430,12 +438,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
             console.log('Template needs to be a function.');
             return;
         }
-
-        if (this.options.scrollToNewChild) {
-            this.options.dataStore.on('new_child', (child)=> {
-                this._lastChild = child;
-            });
+        if(this.options.chatScrolling){
+            this.options.dataStore.on('ready', () => this._allChildrenAdded = true);
         }
+
 
         this.options.dataStore.on('child_added', this._onChildAdded.bind(this));
         this.options.dataStore.on('child_changed', this._onChildChanged.bind(this));
@@ -583,12 +589,12 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 dataObject.position += change
             }
         }
-        if(this.isGrouped){
+        if (this.isGrouped) {
             this._updateGroupPosition(position, change);
         }
     }
 
-    _updateGroupPosition(position, change = 1){
+    _updateGroupPosition(position, change = 1) {
         for (let element of Object.keys(this._internalGroups)) {
             if (this._internalGroups[element].position >= position) {
                 /* Update the position of groups coming after */
