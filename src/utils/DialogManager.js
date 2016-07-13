@@ -70,7 +70,7 @@ export class DialogManager extends View {
         famousContext.add(this);
 
         this.layout.on('layoutstart', ({size}) => {
-            this.dialog.onNewParentSize(size);
+            if(this.dialog.onNewParentSize) this.dialog.onNewParentSize(size);
         });
 
 
