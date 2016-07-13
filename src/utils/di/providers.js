@@ -103,7 +103,7 @@ class ClassProvider {
           .concat([this._createConstructor(currentConstructorIdx + 1, context, allArguments)])
           .concat(allArguments.slice(nextConstructorInfo[2] + 1, constructorInfo[2] + 1));
     } else {
-      argsForCurrentConstructor = allArguments.slice(constructorInfo[1], constructorInfo[2] + 1);
+      argsForCurrentConstructor = allArguments/*.slice(constructorInfo[1], constructorInfo[2] + 1);*/
     }
 
     return function InjectedAndBoundSuperConstructor() {
