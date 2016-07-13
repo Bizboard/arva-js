@@ -39,7 +39,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             },
             dataFilter: ()=> true,
             ensureVisible: null,
-            scrollToNewChild: false
+            chatScrolling: false
         }, OPTIONS));
 
         this._internalDataSource = {};
@@ -285,14 +285,23 @@ export class DataBoundScrollView extends ReflowingScrollView {
         let newSurface = this.options.itemTemplate(child);
         newSurface.dataId = child.id;
         this._subscribeToClicks(newSurface, child);
+
+        /* If we're scrolling as with a chat window, then scroll to last child if we're at the bottom */
+        if(this.options.chatScrolling && insertIndex === this._dataSource.getLength()){
+            let lastVisibleItem = this.getLastVisibleItem();
+            if((lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value) || !this._allChildrenAdded){
+                this._lastChild = child;
+            }
+        }
+
         this.insert(insertIndex, newSurface);
         this._updatePosition(insertIndex);
         this._insertId(child.id, insertIndex, newSurface, child);
 
-        if (this.options.ensureVisible != null || this.options.scrollToNewChild) {
+        if (this.options.ensureVisible != null || this.options.chatScrolling) {
             let shouldEnsureVisibleUndefined = this.options.ensureVisible == null;
             let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
-            if (this.options.scrollToNewChild) {
+            if (this.options.chatScrolling) {
                 if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) this.ensureVisible(newSurface);
             } else if (shouldEnsureVisible) {
                 this.ensureVisible(newSurface);
@@ -427,13 +436,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
             console.log('Template needs to be a function.');
             return;
         }
-
-        if (this.options.scrollToNewChild) {
-            this.options.dataStore.on('new_child', (child)=> {
-                this._lastChild = child;
-            });
+        if(this.options.chatScrolling){
+            this.options.dataStore.on('ready', () => this._allChildrenAdded = true);
         }
-
         this.options.dataStore.on('child_added', this._onChildAdded.bind(this));
         this.options.dataStore.on('child_changed', this._onChildChanged.bind(this));
         this.options.dataStore.on('child_moved', this._onChildMoved.bind(this));
