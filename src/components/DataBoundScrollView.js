@@ -290,9 +290,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._insertId(child.id, insertIndex, newSurface, child);
 
         if (this.options.ensureVisible != null || this.options.scrollToNewChild) {
-            let shouldEnsureVisible = this.options.ensureVisible != null ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
+            let shouldEnsureVisibleUndefined = this.options.ensureVisible == null;
+            let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
             if (this.options.scrollToNewChild) {
-                if (child === this._lastChild && shouldEnsureVisible) this.ensureVisible(newSurface);
+                if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) this.ensureVisible(newSurface);
             } else if (shouldEnsureVisible) {
                 this.ensureVisible(newSurface);
             }
