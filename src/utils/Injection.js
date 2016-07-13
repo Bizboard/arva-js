@@ -7,7 +7,7 @@ import {Injector}                   from './di/Injector.js';
 export class Injection {
     static injector = new Injector();
 
-    static get(classConstructor, constructionParams = []) {
+    static get(classConstructor, ...constructionParams) {
         return this.injector.get(classConstructor, constructionParams);
     }
 
