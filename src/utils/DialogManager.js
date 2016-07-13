@@ -70,7 +70,12 @@ export class DialogManager extends View {
         famousContext.add(this);
 
         this.layout.on('layoutstart', ({size}) => {
-            this.dialog.onNewParentSize(size);
+            if(this.dialog.onNewParentSize){
+                this.dialog.onNewParentSize(size);
+                this._savedParentSize = null;
+            }   else {
+                this._savedParentSize = size;
+            }
         });
 
 
@@ -96,6 +101,9 @@ export class DialogManager extends View {
 
         /* Replace whatever non-showing dialog we have right now with the new dialog */
         this.replaceRenderable('dialog', new DialogWrapper({dialog}));
+        if(this._savedParentSize){
+            this.dialog.onNewParentSize(this._savedParentSize);
+        }
 
         this._canCancel = canCancel;
         if (canCancel) {
