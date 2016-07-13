@@ -14,6 +14,7 @@ import FlexScrollView               from 'famous-flex/FlexScrollView.js';
 import {Throttler}                  from '../utils/Throttler.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
+import Timer                        from 'famous/utilities/Timer.js';
 
 export class DataBoundScrollView extends ReflowingScrollView {
 
@@ -48,6 +49,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this.isDescending = this.options.sortingDirection === 'descending';
         this.throttler = new Throttler(this.options.throttleDelay, true, this);
 
+        this._useCustomOrdering = !!this.options.orderBy;
         /* If no orderBy method is set, or it is a string field name, we set our own ordering method. */
         if (!this.options.orderBy || typeof this.options.orderBy === 'string') {
             let fieldName = this.options.orderBy || 'id';
@@ -58,8 +60,6 @@ export class DataBoundScrollView extends ReflowingScrollView {
                     return currentChild[fieldName] < model[fieldName];
                 }
             }.bind(this);
-        } else if (typeof this.options.orderBy !== 'string') {
-            this._useCustomOrdering = true;
         }
 
 
@@ -302,9 +302,11 @@ export class DataBoundScrollView extends ReflowingScrollView {
             let shouldEnsureVisibleUndefined = this.options.ensureVisible == null;
             let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
             if (this.options.chatScrolling) {
-                if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) this.ensureVisible(newSurface);
+                if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) {
+                    Timer.after(() =>this.ensureVisible(newSurface),1);
+                }
             } else if (shouldEnsureVisible) {
-                this.ensureVisible(newSurface);
+                Timer.after(() =>this.ensureVisible(newSurface),1);
             }
         }
     }
@@ -439,6 +441,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
         if(this.options.chatScrolling){
             this.options.dataStore.on('ready', () => this._allChildrenAdded = true);
         }
+
+
         this.options.dataStore.on('child_added', this._onChildAdded.bind(this));
         this.options.dataStore.on('child_changed', this._onChildChanged.bind(this));
         this.options.dataStore.on('child_moved', this._onChildMoved.bind(this));
