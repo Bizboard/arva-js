@@ -16,7 +16,7 @@ export class Injection {
      * get(HomeController, param1, param2);
      *
      * @param {Function} classConstructor The class of which an instance is wanted
-     * @param {Array} constructionParams A list of parameters to be passed to the class constructor
+     * @param {*} constructionParams A list of parameters to be passed to the class constructor
      * @returns {Object} Instance of the given class
      */
     static get(classConstructor, ...constructionParams) {
@@ -29,7 +29,7 @@ export class Injection {
      * Example usage:
      * let instances = getAll(ArvaRouter, [HomeController, [param1, param2]], App);
      *
-     * @param {Array} classContructorArray Array of classes to instantiate.
+     * @param {*} classContructorArray Array of classes to instantiate.
      * May also be an array where each item is an array containing the class as
      * its first element, and an array of parameters as its second element.
      *
@@ -50,7 +50,7 @@ export class Injection {
      * Example usage:
      * addProviders(ArvaRouter, FamousContext);
      *
-     * @param {Array} classConstructors
+     * @param {*} classConstructors
      * @returns {void}
      */
     static addProviders(...classConstructors) {
