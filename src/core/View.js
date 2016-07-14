@@ -136,7 +136,8 @@ export class View extends FamousView {
 
     removeRenderable(renderableName) {
         let renderable = this[renderableName];
-        this._setPipes(renderable, false);
+        this._setDecorationPipes(renderable, false);
+        this._unpipeRenderable(this.renderables[renderableName], renderableName);
         this._removeDecoratedRenderable(renderable, renderableName);
         delete this.renderables[renderableName];
         delete this[renderableName];
@@ -305,6 +306,15 @@ export class View extends FamousView {
         }
     }
 
+    _unpipeRenderable(renderable, renderableName) {
+        /* Auto pipe events from the renderable to the view */
+        let renderableNameIndex = this._pipedRenderables.indexOf(renderableNameIndex);
+        if (~renderableNameIndex && renderable.unpipe) {
+            renderable.unpipe(this);
+            renderable.unpipe(this._eventOutput);
+            this._pipedRenderables.splice(renderableNameIndex, 1);
+        }
+    }
 
     _pipeRenderable(renderable, renderableName) {
         /* Auto pipe events from the renderable to the view */
@@ -316,21 +326,22 @@ export class View extends FamousView {
     }
 
     _assignRenderable(renderable, renderableName) {
-        this._pipeRenderable(renderable, renderableName);
+
 
         if (renderable.decorations) {
             this._addDecoratedRenderable(renderable, renderableName)
         }
 
         this._setEventHandlers(renderable);
-        this._setPipes(renderable);
+        this._setDecorationPipes(renderable);
 
-
-        this[renderableName] = renderable;
+        ObjectHelper.addPropertyToObject(this,renderableName,renderable);
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
          * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
          * this.renderables is used in the LayoutController in this.layout to render this view. */
-        this.renderables[renderableName] = renderable.animationController || renderable.containerSurface || renderable;
+        let wrappedRenderable = renderable.animationController || renderable.containerSurface  || renderable;
+        this._pipeRenderable(wrappedRenderable, renderableName);
+        this.renderables[renderableName] = wrappedRenderable;
     }
 
     replaceRenderable(name, newRenderable) {
@@ -360,10 +371,11 @@ export class View extends FamousView {
         }
     }
 
-    _setPipes(renderable, enabled = true) {
-        if (!this._initialised || !renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable)) {
+    _setDecorationPipes(renderable,  enabled = true) {
+        if (!renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable) || (!enabled && !this._pipedRenderables.includes(renderableName))) {
             return;
         }
+
         let pipes = renderable.decorations.pipes;
         for (let pipeToName of pipes) {
             let target = pipeToName ? this[pipeToName] : this;
@@ -375,6 +387,7 @@ export class View extends FamousView {
                 renderable[pipeFn](target._eventOutput);
             }
         }
+        
     }
 
     /**
@@ -651,24 +664,34 @@ export class View extends FamousView {
                 let translateWithProportion = (proportion, size, translation, dimension, factor) =>
                     translation[dimension] += size[dimension] ? factor * size[dimension] * proportion[dimension] : 0;
                 translate = [...translate]; //shallow copy the translation to prevent the translation for happening multiple times
+
+                /* If no docksize was specified in a certain direction, then use the context size without margins */
+                let outerDockSize = [];
+                let {viewMargins = [0, 0, 0, 0]} = this.decorations;
+                let horizontalMargins = viewMargins[1] + viewMargins[3];
+                let verticalMargins = viewMargins[0] + viewMargins[2];
+                let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
+
+                for (let index of [0, 1]) {
+                    if (dockSizeSpecified) {
+                        outerDockSize.push(dockSize[index] === undefined ? sizeWithoutMargins[index] : dockSize[index]);
+                    }
+                    if (innerSize[index] === undefined) {
+                        innerSize[index] = sizeWithoutMargins[index];
+                    }
+                }
+                if (!dockSizeSpecified) {
+                    let dockingDirection = this._getDockType(dockMethod);
+                    outerDockSize[dockingDirection] = innerSize[dockingDirection];
+                    outerDockSize[+!dockingDirection] = sizeWithoutMargins[+!dockingDirection];
+                }
+
                 if (origin) {
                     translateWithProportion(origin, innerSize, translate, 0, -1);
                     translateWithProportion(origin, innerSize, translate, 1, -1);
                 }
                 if (align) {
-                    /* If no docksize was specified in a certain direction, then use the context size without margins */
-                    let outerDockSize = [];
-                    let {viewMargins = [0, 0, 0, 0]} = this.decorations;
-                    let horizontalMargins = viewMargins[1] + viewMargins[3];
-                    let verticalMargins = viewMargins[0] + viewMargins[2];
-                    let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
-                    if (dockSizeSpecified) {
-                        for (let [index, singleSize] of dockSize.entries()) {
-                            outerDockSize.push(singleSize === undefined ? sizeWithoutMargins[index] : singleSize);
-                        }
-                    } else {
-                        outerDockSize = sizeWithoutMargins;
-                    }
+
                     translateWithProportion(align, outerDockSize, translate, 0, 1);
                     translateWithProportion(align, outerDockSize, translate, 1, 1);
                 }
@@ -902,14 +925,16 @@ export class View extends FamousView {
 
     }
 
+    _getDockType(dockMethodToGet){
+        let dockTypes = [['right', 'left'], ['top', 'bottom']];
+        return _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
+    }
+
     _calculateDockedRenderablesBoundingBox() {
         let {docked: dockedRenderables, filled: filledRenderables} = this._groupedRenderables;
-
         let {dockMethod} = dockedRenderables.get(dockedRenderables.keyAt(0)).decorations.dock;
-        let dockTypes = [['right', 'left'], ['top', 'bottom']];
         /* Gets the dock type where, 0 is right or left (horizontal) and 1 is top or bottom (vertical) */
-        let getDockType = (dockMethodToGet) => _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
-        let dockType = getDockType(dockMethod);
+        let dockType = this._getDockType(dockMethod);
         let dockingDirection = dockType;
         let orthogonalDirection = !dockType + 0;
 
@@ -921,7 +946,7 @@ export class View extends FamousView {
             let {decorations} = dockedRenderable;
             let {dockMethod: otherDockMethod} = decorations.dock;
             /* If docking is done orthogonally */
-            if (getDockType(otherDockMethod) !== dockType) {
+            if (this._getDockType(otherDockMethod) !== dockType) {
                 return [NaN, NaN];
             } else {
                 /* Resolve both inner size and outer size */
@@ -1225,15 +1250,17 @@ export class View extends FamousView {
     }
 
     _processAnimatedRenderable(renderable, renderableName, options) {
+
+        let pipeRenderable = () => {if (renderable.pipe) renderable.pipe(renderable.animationController._eventOutput)};
+
         /* If there's already an animationcontroller present, just change the options */
         if (this.renderables[renderableName] instanceof AnimationController) {
+            renderable.animationController = this.renderables[renderableName];
             this.renderables[renderableName].setOptions(options);
+            pipeRenderable();
         } else {
             let animationController = renderable.animationController = new AnimationController(options);
-            if (renderable.pipe) {
-                renderable.pipe(animationController._eventOutput);
-            }
-
+            pipeRenderable();
             let showMethod = this._showWithAnimationController.bind(this, animationController, renderable);
 
             if (options.delay && options.delay > 0 && options.showInitially) {
