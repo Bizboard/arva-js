@@ -127,6 +127,7 @@ export class DialogManager extends View {
                 this.showRenderable('background');
             }
         }, 10);
+        return this.dialogComplete();
     }
 
 
@@ -142,9 +143,14 @@ export class DialogManager extends View {
 
 
     dialogComplete() {
-        return new Promise((resolve) => {
-            this._resolveDialogComplete = resolve
-        });
+        if(!this._resolveDialogComplete){
+            return this._resolveDialogPromise = new Promise((resolve) => {
+                this._resolveDialogComplete = resolve
+            });
+        } else {
+            return this._resolveDialogPromise;
+        }
+
     }
 
     close() {
