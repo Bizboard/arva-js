@@ -183,7 +183,23 @@ export class View extends FamousView {
 
     showRenderable(renderableName, show = true) {
         this._showWithAnimationController(this.renderables[renderableName], this[renderableName], show);
+        let decoratedSize = this[renderableName].decorations.size;
+        if (show && decoratedSize) {
+            /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
+             * new size to take into account.
+             */
+            for (let i of [0, 1]) {
+                if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[i]), NaN)) {
+                    this.layout.reflowLayout();
+                    break;
+                }
+
+            }
+        }
+
+
     }
+
 
     _showWithAnimationController(animationController, renderable, show = true) {
         animationController[show ? 'show' : 'hide'](renderable.containerSurface || renderable, null, () => {
@@ -377,7 +393,7 @@ export class View extends FamousView {
         let cacheResolvedSize = [];
         for (let dim = 0; dim < 2; dim++) {
             size[dim] = this._resolveSingleSize(specifiedSize[dim], context.size[dim]);
-            if (size[dim] < 0 || size[dim] === true) {
+            if (this._isValueTrueSized(size[dim])) {
                 cacheResolvedSize[dim] = this._resolveSingleTrueSizedRenderable(renderable, renderableName, size, dim);
                 if (this._renderableIsSurface(renderable)) {
                     size[dim] = true;
@@ -399,6 +415,11 @@ export class View extends FamousView {
         return (size[0] !== null && size[1] !== null) ? size : null;
     }
 
+    _isValueTrueSized(value) {
+        return value < 0 || value === true
+    }
+
+
     /**
      * Processes a dimension of a truesized renderable. size[dim] must be negative.
      * @param renderable the renderable
@@ -415,6 +436,7 @@ export class View extends FamousView {
                 'using the context size');
         }
         let renderableCounterpart = this.renderables[name];
+        /* If there is an AnimationController without content, display 0 size */
         if (renderableCounterpart instanceof AnimationController && !renderableCounterpart.get()) {
             return 0;
         }
@@ -636,11 +658,11 @@ export class View extends FamousView {
                 if (align) {
                     /* If no docksize was specified in a certain direction, then use the context size without margins */
                     let outerDockSize = [];
-                    let {viewMargins = [0, 0, 0, 0] } = this.decorations;
+                    let {viewMargins = [0, 0, 0, 0]} = this.decorations;
                     let horizontalMargins = viewMargins[1] + viewMargins[3];
                     let verticalMargins = viewMargins[0] + viewMargins[2];
                     let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
-                    if(dockSizeSpecified) {
+                    if (dockSizeSpecified) {
                         for (let [index, singleSize] of dockSize.entries()) {
                             outerDockSize.push(singleSize === undefined ? sizeWithoutMargins[index] : singleSize);
                         }
@@ -1180,7 +1202,10 @@ export class View extends FamousView {
                     }
                 });
             }
-            let containerSurface = new ContainerSurface({size: clipSize, properties: {overflow: 'hidden', ...clip.properties}});
+            let containerSurface = new ContainerSurface({
+                size: clipSize,
+                properties: {overflow: 'hidden', ...clip.properties}
+            });
             containerSurface.add(renderable);
             if (containerSurface.pipe) {
                 containerSurface.pipe(renderable._eventOutput);
