@@ -136,7 +136,8 @@ export class View extends FamousView {
 
     removeRenderable(renderableName) {
         let renderable = this[renderableName];
-        this._setPipes(renderable, false);
+        this._setDecorationPipes(renderable, false);
+        this._unpipeRenderable(this.renderables[renderableName], renderableName);
         this._removeDecoratedRenderable(renderable, renderableName);
         delete this.renderables[renderableName];
         delete this[renderableName];
@@ -305,6 +306,15 @@ export class View extends FamousView {
         }
     }
 
+    _unpipeRenderable(renderable, renderableName) {
+        /* Auto pipe events from the renderable to the view */
+        let renderableNameIndex = this._pipedRenderables.indexOf(renderableNameIndex);
+        if (~renderableNameIndex && renderable.unpipe) {
+            renderable.unpipe(this);
+            renderable.unpipe(this._eventOutput);
+            this._pipedRenderables.splice(renderableNameIndex, 1);
+        }
+    }
 
     _pipeRenderable(renderable, renderableName) {
         /* Auto pipe events from the renderable to the view */
@@ -316,21 +326,22 @@ export class View extends FamousView {
     }
 
     _assignRenderable(renderable, renderableName) {
-        this._pipeRenderable(renderable, renderableName);
+
 
         if (renderable.decorations) {
             this._addDecoratedRenderable(renderable, renderableName)
         }
 
         this._setEventHandlers(renderable);
-        this._setPipes(renderable);
+        this._setDecorationPipes(renderable);
 
-
-        this[renderableName] = renderable;
+        ObjectHelper.addPropertyToObject(this,renderableName,renderable);
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
          * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
          * this.renderables is used in the LayoutController in this.layout to render this view. */
-        this.renderables[renderableName] = renderable.animationController || renderable.containerSurface || renderable;
+        let wrappedRenderable = renderable.animationController || renderable.containerSurface || renderable;
+        this._pipeRenderable(wrappedRenderable, renderableName);
+        this.renderables[renderableName] = wrappedRenderable;
     }
 
     replaceRenderable(name, newRenderable) {
@@ -360,10 +371,11 @@ export class View extends FamousView {
         }
     }
 
-    _setPipes(renderable, enabled = true) {
-        if (!this._initialised || !renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable)) {
+    _setDecorationPipes(renderable,  enabled = true) {
+        if (!renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable) || (!enabled && !this._pipedRenderables.includes(renderableName))) {
             return;
         }
+
         let pipes = renderable.decorations.pipes;
         for (let pipeToName of pipes) {
             let target = pipeToName ? this[pipeToName] : this;
@@ -375,6 +387,7 @@ export class View extends FamousView {
                 renderable[pipeFn](target._eventOutput);
             }
         }
+        
     }
 
     /**
@@ -1237,15 +1250,17 @@ export class View extends FamousView {
     }
 
     _processAnimatedRenderable(renderable, renderableName, options) {
+
+        let pipeRenderable = () => {if (renderable.pipe) renderable.pipe(renderable.animationController._eventOutput)};
+
         /* If there's already an animationcontroller present, just change the options */
         if (this.renderables[renderableName] instanceof AnimationController) {
+            renderable.animationController = this.renderables[renderableName];
             this.renderables[renderableName].setOptions(options);
+            pipeRenderable();
         } else {
             let animationController = renderable.animationController = new AnimationController(options);
-            if (renderable.pipe) {
-                renderable.pipe(animationController._eventOutput);
-            }
-
+            pipeRenderable();
             let showMethod = this._showWithAnimationController.bind(this, animationController, renderable);
 
             if (options.delay && options.delay > 0 && options.showInitially) {
