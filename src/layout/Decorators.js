@@ -235,7 +235,8 @@ export const layout = {
             options = _.merge({
                 showInitially: true,
                 animation: AnimationController.Animation.FadedZoom,
-                transition: {duration: 250, curve: Easing.inQuad}
+                show: {transition: {curve: Easing.outCubic, duration: 250}},
+                hide: {transition: {curve: Easing.inCubic, duration: 250}}
             }, options);
 
             renderableConstructor.decorations.animation = options;
