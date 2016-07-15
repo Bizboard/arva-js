@@ -117,6 +117,13 @@ export const layout = {
         }
     },
 
+    draggable: function (draggableOptions) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.draggableOptions = draggableOptions;
+        }
+    },
+    
     size: function (x, y) {
         return function (view, renderableName, descriptor) {
             if (Array.isArray(x)) {

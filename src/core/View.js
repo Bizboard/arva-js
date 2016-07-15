@@ -12,6 +12,9 @@ import OrderedHashMap               from 'ordered-hashmap';
 import FamousView                   from 'famous/core/View.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
 import Surface                      from 'famous/core/Surface.js';
+import Draggable                from 'famous/modifiers/Draggable';
+import RenderNode               from 'famous/core/RenderNode';
+
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
 import ContainerSurface             from 'famous/Surfaces/ContainerSurface.js';
@@ -339,7 +342,7 @@ export class View extends FamousView {
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
          * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
          * this.renderables is used in the LayoutController in this.layout to render this view. */
-        let wrappedRenderable = renderable.animationController || renderable.containerSurface  || renderable;
+        let wrappedRenderable = renderable.animationController || renderable.containerSurface || renderable.draggable || renderable;
         this._pipeRenderable(wrappedRenderable, renderableName);
         this.renderables[renderableName] = wrappedRenderable;
     }
@@ -1214,7 +1217,7 @@ export class View extends FamousView {
             this._groupedRenderables[groupName].set(renderableName, renderable);
         }
 
-        let {clip, animation, viewMargins} = renderable.decorations;
+        let {draggableOptions, clip, animation, viewMargins} = renderable.decorations;
 
         /* If we clip, then we need to create a containerSurface */
         if (clip) {
@@ -1240,6 +1243,15 @@ export class View extends FamousView {
 
         if (animation) {
             this._processAnimatedRenderable(renderable, renderableName, animation);
+        }
+
+        if (draggableOptions){
+            renderable.draggable = new RenderNode();
+            let draggable = new Draggable(draggableOptions);
+            renderable.draggable.add(draggable).add(renderable);
+            renderable.pipe(draggable);
+            renderable.pipe(this._eventOutput);
+            draggable.pipe(this._eventOutput);
         }
 
 
