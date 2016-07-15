@@ -17,13 +17,16 @@ import {layout}              from '../layout/decorators.js';
 class DialogWrapper extends View {
     @layout.size((size) => Math.min(480, size - 32), true)
     @layout.place('center')
-    dialog = this.options.dialog
+    dialog = this.options.dialog;
 
     onNewParentSize(parentSize) {
         this._parentSize = parentSize;
     }
 
     getSize() {
+        if(!this._parentSize){
+            return [undefined, undefined];
+        }
         let dialogHeight = this.dialog.getSize()[1];
         return this._parentSize[1] > dialogHeight ? [undefined, undefined] : [undefined, dialogHeight];
     }
