@@ -8,9 +8,9 @@
  */
 import _                            from 'lodash';
 import firebase                     from 'firebase';
-import {provide}                    from 'di';
 import {DataSource}                 from '../DataSource.js';
 import {ObjectHelper}               from '../../utils/ObjectHelper.js';
+import {provide}                    from '../../utils/di/Decorators.js';
 
 @provide(DataSource)
 export class FirebaseDataSource extends DataSource {

@@ -8,16 +8,24 @@
  */
 
 import _                            from 'lodash';
-import {provide}                    from 'di';
 import {Router}                     from '../core/Router.js';
+import {provide}                    from '../utils/di/Decorators.js';
 import Easing                       from 'famous/transitions/Easing.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
 
 @provide(Router)
 export class ArvaRouter extends Router {
 
+    routes = {};
+    history = [];
+    decode = decodeURIComponent;
+    defaultController = 'Home';
+    defaultMethod = 'Index';
+    
     constructor() {
         super();
+        if (window == null) { return; }
+        window.addEventListener('hashchange', this.run);
 
         if (window == null) {
             return;
@@ -30,7 +38,6 @@ export class ArvaRouter extends Router {
 
         window.addEventListener('hashchange', this.run);
         this._setupNativeBackButtonListener();
-
     }
 
     /**
@@ -118,10 +125,7 @@ export class ArvaRouter extends Router {
      * @returns {Boolean} Whether the current route was successfully ran.
      */
     run() {
-
-        //if (!url || typeof(url) == 'object')
-        let url = window.location.hash.replace('#', ''); // || '#';
-
+        let url = window.location.hash.replace('#', '');
 
         if (url !== '') {
             url = url.replace('/?', '?');
@@ -337,11 +341,11 @@ export class ArvaRouter extends Router {
             /* Default method-to-method animations, used only if not overridden in app's controllers spec. */
             let defaults = {
                 'previous': {
-                    transition: {duration: 1000, curve: Easing.outBack},
+                    transition: {duration: 400, curve: Easing.outBack},
                     animation: AnimationController.Animation.Slide.Right
                 },
                 'next': {
-                    transition: {duration: 1000, curve: Easing.outBack},
+                    transition: {duration: 400, curve: Easing.outBack},
                     animation: AnimationController.Animation.Slide.Left
                 }
             };

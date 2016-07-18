@@ -9,7 +9,7 @@ import FamousContext         from 'famous/core/Context.js';
 import {View}                from 'arva-js/core/View.js';
 import {ObjectHelper}        from 'arva-js/utils/ObjectHelper';
 
-import {Context}             from './Context.js';
+import {Injection}           from './Injection.js';
 import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
 
@@ -68,15 +68,15 @@ export class DialogManager extends View {
                 }
             });
         }
-        this.router = Context.get(Router);
-        let famousContext = Context.get(FamousContext);
+        this.router = Injection.get(Router);
+        let famousContext = Injection.get(FamousContext);
         famousContext.add(this);
 
         this.layout.on('layoutstart', ({size}) => {
             if(this.dialog.onNewParentSize){
                 this.dialog.onNewParentSize(size);
                 this._savedParentSize = null;
-            }   else {
+            } else {
                 this._savedParentSize = size;
             }
         });
@@ -107,7 +107,6 @@ export class DialogManager extends View {
         if(this._savedParentSize){
             this.dialog.onNewParentSize(this._savedParentSize);
         }
-
         this._canCancel = canCancel;
         if (canCancel) {
             /* Disable existing default behavior of backbutton going back to previous route */

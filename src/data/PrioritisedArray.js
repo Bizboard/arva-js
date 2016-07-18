@@ -10,7 +10,7 @@
 
 import _                            from 'lodash';
 import EventEmitter                 from 'eventemitter3';
-import {Context}                    from '../utils/Context.js';
+import {Injection}                  from '../utils/Injection.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {DataSource}                 from './DataSource.js';
 import {Throttler}                  from '../utils/Throttler.js';
@@ -69,7 +69,7 @@ export class PrioritisedArray extends Array {
         if (!dataSource) {
             let path = Object.getPrototypeOf(this).constructor.name;
             /* Retrieve dataSource from the DI context */
-            dataSource = Context.getContext().get(DataSource);
+            dataSource = Injection.get(DataSource);
 
             if (options) {
                 dataSource = dataSource.child(options.path || path, options);
@@ -317,10 +317,12 @@ export class PrioritisedArray extends Array {
      * @private
      */
     _registerCallbacks(dataSource) {
-        dataSource.on('child_added', this._onChildAdded);
-        dataSource.on('child_moved', this._onChildMoved);
-        dataSource.on('child_changed', this._onChildChanged);
-        dataSource.on('child_removed', this._onChildRemoved);
+        this.once('ready', () => {
+            dataSource.on('child_added', this._onChildAdded);
+            dataSource.on('child_moved', this._onChildMoved);
+            dataSource.on('child_changed', this._onChildChanged);
+            dataSource.on('child_removed', this._onChildRemoved);
+        });
     }
 
     /**

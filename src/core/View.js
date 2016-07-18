@@ -342,6 +342,7 @@ export class View extends FamousView {
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
          * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
          * this.renderables is used in the LayoutController in this.layout to render this view. */
+
         let wrappedRenderable = renderable.animationController || renderable.containerSurface || renderable.draggable || renderable;
         this._pipeRenderable(wrappedRenderable, renderableName);
         this.renderables[renderableName] = wrappedRenderable;

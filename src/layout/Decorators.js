@@ -10,9 +10,9 @@ import _                        from 'lodash';
 import Timer                    from 'famous/utilities/Timer.js';
 import Easing                   from 'famous/transitions/Easing.js';
 import AnimationController      from 'famous-flex/AnimationController.js';
-import LayoutUtility            from 'famous-flex/LayoutUtility.js'
+import LayoutUtility            from 'famous-flex/LayoutUtility.js';
 
-import {View}                   from '../core/View.js'
+import {View}                   from '../core/View.js';
 
 function prepDecoratedRenderable(viewOrRenderable, renderableName, descriptor) {
     /* This function can also be called as prepDecoratedRenderable(renderable) */
@@ -73,6 +73,7 @@ export const layout = {
      * @param {View} view
      * @param {String} renderableName
      * @param {Object} descriptor
+     * @returns {void}
      */
     renderable: function (view, renderableName, descriptor) {
         prepDecoratedRenderable(view, renderableName, descriptor);
@@ -88,7 +89,7 @@ export const layout = {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             // Todo refactor also the z index to the dock
             renderable.decorations.dock = renderable.decorations.dock ? _.extend(renderable.decorations.dock, {space}) : {space};
-        }
+        };
     },
 
     dock: function (dockMethod, size, space = 0, zIndex) {
@@ -114,7 +115,7 @@ export const layout = {
             if (zIndex) {
                 renderable.decorations.translate[2] = zIndex;
             }
-        }
+        };
     },
 
     draggable: function (draggableOptions) {
@@ -127,11 +128,11 @@ export const layout = {
     size: function (x, y) {
         return function (view, renderableName, descriptor) {
             if (Array.isArray(x)) {
-                throw Error("Please specify size as two arguments, and not as an array");
+                throw Error('Please specify size as two arguments, and not as an array');
             }
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.size = [x, y];
-        }
+        };
     },
 
     clip: function (x, y, properties = {}) {
@@ -186,21 +187,21 @@ export const layout = {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.origin = origin;
             renderable.decorations.align = align;
-        }
+        };
     },
 
     origin: function (x, y) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.origin = [x, y];
-        }
+        };
     },
 
     align: function (x, y) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.align = [x, y];
-        }
+        };
     },
 
     /**
@@ -213,7 +214,7 @@ export const layout = {
     translate: function (x, y, z) {
         return function (target, renderableName, descriptor) {
             if (Array.isArray(x)) {
-                throw Error("Please specify translate as three arguments, and not as an array");
+                throw Error('Please specify translate as three arguments, and not as an array');
             }
             let prototypeOrRenderable, propertyName;
             if (typeof target == 'function') {
@@ -224,8 +225,9 @@ export const layout = {
                 propertyName = 'translate';
             }
             prototypeOrRenderable.decorations[propertyName] = [x, y, z];
-        }
+        };
     },
+    
 
     animate: function (options = {}) {
         return function (view, renderableName, descriptor) {
@@ -233,14 +235,15 @@ export const layout = {
             options = _.merge({
                 showInitially: true,
                 animation: AnimationController.Animation.FadedZoom,
-                transition: {duration: 250, curve: Easing.inQuad}
+                show: {transition: {curve: Easing.outCubic, duration: 250}},
+                hide: {transition: {curve: Easing.inCubic, duration: 250}}
             }, options);
 
             renderableConstructor.decorations.animation = options;
 
             constructor.decorations = renderableConstructor.decorations;
 
-        }
+        };
     },
 
     test: function () {
@@ -268,14 +271,14 @@ export const layout = {
                 prototypeOrRenderable = prepDecoratedRenderable(...arguments);
             }
             prototypeOrRenderable.decorations.viewMargins = LayoutUtility.normalizeMargins(margins);
-        }
+        };
     },
 
     custom: function (customLayoutFunction) {
         return function (target) {
             let prototype = prepDecoratedPrototype(target.prototype);
             prototype.decorations.customLayoutFunction = customLayoutFunction;
-        }
+        };
     }
 };
 
@@ -284,12 +287,12 @@ export const options = {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.constructionOptionsMethod = optionMethod;
-        }
+        };
     },
     default: function (view, optionName, descriptor) {
         let prototype = prepDecoratedPrototype(view);
         if (optionName === 'options') {
-            throw new Error("Default options are not allowed to have the name 'options'");
+            throw new Error('Default options are not allowed to have the name \'options\'');
         }
         prototype.decorations.defaultOptions = descriptor.get ? descriptor.get : descriptor.initializer;
     }
@@ -301,32 +304,32 @@ export const event = {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             if (!renderable.decorations.eventSubscriptions) {
-                renderable.decorations.eventSubscriptions = []
+                renderable.decorations.eventSubscriptions = [];
             }
             renderable.decorations.eventSubscriptions.push({
                 subscriptionType: subscriptionType,
                 eventName: eventName,
                 callback: callback
             });
-        }
+        };
     },
 
     on: function (eventName, callback) {
-        return event.subscribe('on', eventName, callback)
+        return event.subscribe('on', eventName, callback);
     },
 
     once: function (eventName, callback) {
-        return event.subscribe('once', eventName, callback)
+        return event.subscribe('once', eventName, callback);
     },
 
     pipe: function (pipeToName) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             if (!renderable.decorations.pipes) {
-                renderable.decorations.pipes = []
+                renderable.decorations.pipes = [];
             }
 
             renderable.decorations.pipes.push(pipeToName);
-        }
+        };
     }
 };
