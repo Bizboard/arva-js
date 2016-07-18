@@ -26,6 +26,7 @@ System.config({
     "famous": "github:bizboard/famous@0.3.7",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
     "famous-flex": "github:bizboard/famous-flex@master",
+    "fastclick": "npm:fastclick@1.0.6",
     "firebase": "github:firebase/firebase-bower@3.0.5",
     "fs": "github:jspm/nodelibs-fs@0.1.2",
     "lodash": "npm:lodash@4.13.1",
