@@ -12,6 +12,7 @@ import {ObjectHelper}        from 'arva-js/utils/ObjectHelper';
 import {Injection}           from './Injection.js';
 import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
+import Easing                from 'famous/transitions/Easing.js';
 
 @layout.scrollable
 class DialogWrapper extends View {
@@ -49,7 +50,8 @@ export class DialogManager extends View {
     @layout.translate(0, 0, 1000)
     @layout.fullscreen
     @layout.animate({
-        animation: AnimationController.Animation.Slide.Up,
+        show: {transition: {curve: Easing.outCubic, duration: 300}, animation: AnimationController.Animation.Slide.Up},
+        hide: {transition: {curve: Easing.inCubic, duration: 300}, animation: AnimationController.Animation.Slide.Down},
         showInitially: false
     })
         /* Empty content until filled */
