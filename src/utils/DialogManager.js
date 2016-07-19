@@ -28,7 +28,7 @@ class DialogWrapper extends View {
             return [undefined, undefined];
         }
         let dialogHeight = this.dialog.getSize()[1];
-        return this._parentSize[1] > dialogHeight ? [undefined, undefined] : [undefined, dialogHeight];
+        return this._parentSize[1] > dialogHeight ? [undefined, this._parentSize[1]] : [undefined, dialogHeight];
     }
 
 }
