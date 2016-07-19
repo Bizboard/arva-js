@@ -52,7 +52,7 @@ export class DialogManager extends View {
         animation: AnimationController.Animation.Slide.Up,
         showInitially: false
     })
-    /* Empty content until filled */
+        /* Empty content until filled */
     dialog = {};
 
 
@@ -89,10 +89,11 @@ export class DialogManager extends View {
     /**
      *
      * @param dialog
-     * @param processingDialog
-     * @param isExplanation used for exaplanation texts
+     * @param canCancel
+     * @param killOldDialog
+     * @returns {*}
      */
-    show({dialog, canCancel = true, killOldDialog = true}) {
+    show({dialog, canCancel = false, killOldDialog = true}) {
         if (this._hasOpenDialog) {
             /* If already open dialog we should either close that one, or just keep the current one, depending on the settings */
             if (!killOldDialog) {
