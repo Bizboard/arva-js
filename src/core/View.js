@@ -1298,10 +1298,10 @@ export class View extends FamousView {
                 endX = limit(velocityOptions.xRange[0], endX, velocityOptions.xRange[1]);
                 position.set([endX, endY], {curve : Easing.outCirc, duration : (750 - Math.abs((data.velocity[0] * 150)))});
 
-                if(endX > velocityOptions.xRange[1]){
+                if(endX >= velocityOptions.xRange[1]/2){
                     renderable._eventOutput.emit('swipeCloseX');
                 }
-                if(endY > velocityOptions.yRange[1]){
+                if(endY >= velocityOptions.yRange[1]/2){
                     renderable._eventOutput.emit('swipeCloseY');
                 }
             });
