@@ -124,7 +124,14 @@ export const layout = {
             renderable.decorations.draggableOptions = draggableOptions;
         }
     },
-    
+
+    draggableVelocity: function (velocityOptions) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.velocityOptions = velocityOptions;
+        }
+    },
+
     size: function (x, y) {
         return function (view, renderableName, descriptor) {
             if (Array.isArray(x)) {
@@ -148,7 +155,7 @@ export const layout = {
             renderable.decorations.rotate = [x, y, z];
         }
     },
-    
+
     place: function (place) {
         return function (view, renderableName, descriptor) {
             let origin = [0, 0], align = [0, 0];
@@ -227,7 +234,7 @@ export const layout = {
             prototypeOrRenderable.decorations[propertyName] = [x, y, z];
         };
     },
-    
+
 
     animate: function (options = {}) {
         return function (view, renderableName, descriptor) {

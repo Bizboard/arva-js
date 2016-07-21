@@ -12,8 +12,10 @@ import OrderedHashMap               from 'ordered-hashmap';
 import FamousView                   from 'famous/core/View.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
 import Surface                      from 'famous/core/Surface.js';
-import Draggable                from 'famous/modifiers/Draggable';
-import RenderNode               from 'famous/core/RenderNode';
+import Draggable                    from 'famous/modifiers/Draggable';
+import RenderNode                   from 'famous/core/RenderNode';
+
+import {limit}                      from 'arva-js/utils/Limiter.js';
 
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
@@ -23,6 +25,14 @@ import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
+
+import MouseSync                    from 'famous/inputs/MouseSync.js';
+import TouchSync                    from 'famous/inputs/TouchSync.js';
+import GenericSync                  from 'famous/inputs/GenericSync.js';
+import Easing                       from 'famous/transitions/Easing.js';
+import Transitionable               from 'famous/transitions/Transitionable.js';
+import Modifier                     from 'famous/core/Modifier.js';
+import Transform                    from 'famous/core/Transform.js';
 
 
 export class View extends FamousView {
@@ -343,7 +353,7 @@ export class View extends FamousView {
          * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
          * this.renderables is used in the LayoutController in this.layout to render this view. */
 
-        let wrappedRenderable = renderable.animationController || renderable.containerSurface || renderable.draggable || renderable;
+        let wrappedRenderable = renderable.animationController || renderable.containerSurface || renderable.node || renderable;
         this._pipeRenderable(wrappedRenderable, renderableName);
         this.renderables[renderableName] = wrappedRenderable;
     }
@@ -391,7 +401,7 @@ export class View extends FamousView {
                 renderable[pipeFn](target._eventOutput);
             }
         }
-        
+
     }
 
     /**
@@ -1218,7 +1228,7 @@ export class View extends FamousView {
             this._groupedRenderables[groupName].set(renderableName, renderable);
         }
 
-        let {draggableOptions, clip, animation, viewMargins} = renderable.decorations;
+        let {draggableOptions, velocityOptions, clip, animation, viewMargins} = renderable.decorations;
 
         /* If we clip, then we need to create a containerSurface */
         if (clip) {
@@ -1246,10 +1256,55 @@ export class View extends FamousView {
             this._processAnimatedRenderable(renderable, renderableName, animation);
         }
 
-        if (draggableOptions){
-            renderable.draggable = new RenderNode();
+        if(velocityOptions){
+            GenericSync.register({
+                "mouse"  : MouseSync,
+                "touch"  : TouchSync
+            });
+
+            let sync = new GenericSync({
+                "mouse"  : {},
+                "touch"  : {}
+            });
+
+            renderable.pipe(sync);
+
+            /* Translation modifier */
+            var positionModifier = new Modifier({
+                transform : function(){
+                    let [x, y] = position.get();
+                    return Transform.translate(x,y,0);
+                }
+            });
+
+            var position = new Transitionable([0,0]);
+
+            sync.on('update', function(data){
+                let [x,y] = position.get();
+                x += !velocityOptions.snapX ? data.delta[0] : 0;
+                y += !velocityOptions.snapY ? data.delta[1] : 0;
+                y = limit(velocityOptions.yRange[0], y, velocityOptions.yRange[1]);
+                x = limit(velocityOptions.xRange[0], x, velocityOptions.xRange[1]);
+                position.set([x,y]);
+            });
+
+            sync.on('end', function(data){
+                let [x,y] = position.get();
+                data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0]*2 : data.velocity[0];
+                let endX = velocityOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175);
+                let endY = velocityOptions.snapY ? 0 : y + data.delta[1] + (data.velocity[1] * 175);
+                endY = limit(velocityOptions.yRange[0], endY, velocityOptions.yRange[1]);
+                endX = limit(velocityOptions.xRange[0], endX, velocityOptions.xRange[1]);
+                position.set([endX, endY], {curve : Easing.outCirc, duration : (750 - Math.abs((data.velocity[0] * 150)))});
+            });
+
+            renderable.node = new RenderNode();
+            renderable.node.add(positionModifier).add(renderable);
+
+        } else if (draggableOptions){
+            renderable.node = new RenderNode();
             let draggable = new Draggable(draggableOptions);
-            renderable.draggable.add(draggable).add(renderable);
+            renderable.node.add(draggable).add(renderable);
             renderable.pipe(draggable);
             renderable.pipe(this._eventOutput);
             draggable.pipe(this._eventOutput);
