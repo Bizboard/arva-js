@@ -38,7 +38,7 @@ export class DialogManager extends View {
 
     @layout.fullscreen
     @layout.animate({showInitially: false, animation: AnimationController.Animation.Fade})
-    @layout.translate(0, 0, 250)
+    @layout.translate(0, 0, 9000)
     background = new Surface({
         properties: {
             /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0.2+0,0.6+100 */
@@ -47,7 +47,7 @@ export class DialogManager extends View {
         }
     });
 
-    @layout.translate(0, 0, 1000)
+    @layout.translate(0, 0, 9500)
     @layout.fullscreen
     @layout.animate({
         show: {transition: {curve: Easing.outCubic, duration: 300}, animation: AnimationController.Animation.Slide.Up},
@@ -95,7 +95,7 @@ export class DialogManager extends View {
      * @param killOldDialog
      * @returns {*}
      */
-    show({dialog, canCancel = false, killOldDialog = true}) {
+    show({dialog, canCancel = true, killOldDialog = true}) {
         if (this._hasOpenDialog) {
             /* If already open dialog we should either close that one, or just keep the current one, depending on the settings */
             if (!killOldDialog) {
