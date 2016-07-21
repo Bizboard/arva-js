@@ -28,6 +28,7 @@ import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 
 import MouseSync                    from 'famous/inputs/MouseSync.js';
 import TouchSync                    from 'famous/inputs/TouchSync.js';
+import ScrollSync                   from 'famous/inputs/ScrollSync.js';
 import GenericSync                  from 'famous/inputs/GenericSync.js';
 import Easing                       from 'famous/transitions/Easing.js';
 import Transitionable               from 'famous/transitions/Transitionable.js';
@@ -1296,10 +1297,16 @@ export class View extends FamousView {
                 endY = limit(velocityOptions.yRange[0], endY, velocityOptions.yRange[1]);
                 endX = limit(velocityOptions.xRange[0], endX, velocityOptions.xRange[1]);
                 position.set([endX, endY], {curve : Easing.outCirc, duration : (750 - Math.abs((data.velocity[0] * 150)))});
+
+                // WIP
+                if(endX > 150){
+                    renderable._eventOutput.emit('swipeClose');
+                }
             });
 
             renderable.node = new RenderNode();
             renderable.node.add(positionModifier).add(renderable);
+            renderable.pipe(this._eventOutput);
 
         } else if (draggableOptions){
             renderable.node = new RenderNode();
