@@ -3,7 +3,7 @@
  */
 import {PrioritisedArray} from "../PrioritisedArray";
 
-export class EventArray extends PrioritisedArray {
+export class LocalPrioritisedArray extends PrioritisedArray {
     constructor(dataType) {
         super(dataType);
         this._dataSource = {ready: true};
