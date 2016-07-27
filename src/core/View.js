@@ -1280,7 +1280,7 @@ export class View extends FamousView {
 
             var position = new Transitionable([0,0]);
 
-            sync.on('update', function(data){
+            sync.on('update', (data)=>{
                 let [x,y] = position.get();
                 x += !velocityOptions.snapX ? data.delta[0] : 0;
                 y += !velocityOptions.snapY ? data.delta[1] : 0;
@@ -1289,7 +1289,7 @@ export class View extends FamousView {
                 position.set([x,y]);
             });
 
-            sync.on('end', function(data){
+            sync.on('end', (data)=>{
                 let [x,y] = position.get();
                 data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0]*2 : data.velocity[0];
                 let endX = velocityOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175);
@@ -1298,12 +1298,8 @@ export class View extends FamousView {
                 endX = limit(velocityOptions.xRange[0], endX, velocityOptions.xRange[1]);
                 position.set([endX, endY], {curve : Easing.outCirc, duration : (750 - Math.abs((data.velocity[0] * 150)))});
 
-                if(endX >= velocityOptions.xRange[1]/4){
-                    renderable._eventOutput.emit('swipeCloseX');
-                }
-                if(endY >= velocityOptions.yRange[1]/4){
-                    renderable._eventOutput.emit('swipeCloseY');
-                }
+                this._determineSwipeEvents(renderable, velocityOptions, endX, endY);
+
             });
 
             renderable.node = new RenderNode();
@@ -1374,6 +1370,42 @@ export class View extends FamousView {
         } else {
             /* This occurs e.g. when a renderable is only marked @renderable, and its parent view has a @layout.custom decorator to define its context. */
             return 'ignored';
+        }
+    }
+
+    _determineSwipeEvents(renderable, velocityOptions = {}, endX = 0, endY = 0){
+
+        if(!renderable || !renderable._eventOutput) return;
+
+        let xThreshold = velocityOptions.xThreshold || [undefined, undefined];
+        let yThreshold = velocityOptions.yThreshold || [undefined, undefined];
+
+        if(xThreshold[1] && endX > xThreshold[1]){
+            renderable._eventOutput.emit('swiped', {
+                direction: 0,
+                displacement: 'right'
+            });
+        }
+
+        if(xThreshold[0] && endX < xThreshold[0]){
+            renderable._eventOutput.emit('swiped', {
+                direction: 0,
+                displacement: 'left'
+            });
+        }
+
+        if(yThreshold[1] && endY > yThreshold[1]){
+            renderable._eventOutput.emit('swiped', {
+                direction: 1,
+                displacement: 'bottom'
+            });
+        }
+
+        if(yThreshold[0] && endY < yThreshold[0]){
+            renderable._eventOutput.emit('swiped', {
+                direction: 1,
+                displacement: 'top'
+            });
         }
     }
 }
