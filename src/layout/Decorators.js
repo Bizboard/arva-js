@@ -125,10 +125,33 @@ export const layout = {
         }
     },
 
-    draggableVelocity: function (velocityOptions) {
+
+    /**
+     * @example
+     * @layout.size(100, 100)
+     * @layout.swipable({xRange: [0, 100}, snapX: true})
+     * //Make a red box that can slide to the right
+     * swipable = new Surface({properties: {backgroundColor: 'red'});
+     *
+     * Makes the renderable swipable with physics-like velocity after the dragging is released. Emits event
+     * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached
+     *
+     * @param {Object} options
+     * @param {Boolean} [options.snapX] Whether to snap to the x axis
+     * @param {Boolean} [options.snapY] Whether to snap to the Y axis
+     * @param {Boolean} [options.enabled] Whether the swipable should be initially enabled
+     * @param {Array.Number} [options.xThreshold] Two values of the thresholds that trigger the thresholdReached event with
+     * argument 'x' and second argument 0 or 1, depending on the direction.
+     * Specify undefined in one of them to disable threshold to that direction.
+     * @param {Array.Number} [options.yThreshold] Two values of the thresholds that trigger the thresholdReached event with
+     * argument 'y'  and second argument 0 or 1, depending on the direction.
+     * Specify undefined in one of them to disable threshold to that direction.
+     * @returns {Function} A decorator function
+     */
+    swipable: function (options) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            renderable.decorations.velocityOptions = velocityOptions;
+            renderable.decorations.swipableOptions = options;
         }
     },
 
