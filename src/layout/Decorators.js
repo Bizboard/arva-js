@@ -29,7 +29,7 @@ function prepDecoratedRenderable(viewOrRenderable, renderableName, descriptor) {
 
     let constructors = view.renderableConstructors;
 
-    /* Because the inherited views share the same prototype, we'll have to split it up depending on which subclass we're talking about */
+    /* Because the inherited views share the same prototype, we'll have to split it up depending on which subclass we're referring out */
     let specificRenderableConstructors = constructors.get(view.constructor);
     if (!specificRenderableConstructors) {
         specificRenderableConstructors = constructors.set(view.constructor, {}).get(view.constructor);
@@ -54,13 +54,30 @@ function prepDecoratedRenderable(viewOrRenderable, renderableName, descriptor) {
     return constructor;
 }
 
-function prepDecoratedPrototype(prototype) {
-    if (!prototype.decorations) {
-        prototype.decorations = {};
+/**
+ * Extracts a decorations object
+ *
+ * @param {View} prototype
+ * @returns {Object} The decorations for the prototype
+ */
+function prepPrototypeDecorations(prototype) {
+
+    /* To prevent inherited classes from taking each others class-level decorators, we need to store these decorations in
+     * a map, similarly to function preparing a decorated renderable
+     */
+    if (!prototype.decorationsMap) {
+        prototype.decorationsMap = new Map();
+    }
+
+    let {decorationsMap} = prototype;
+
+    let decorations = decorationsMap.get(prototype.constructor);
+    if (!decorations) {
+        decorations = decorationsMap.set(prototype.constructor, {}).get(prototype.constructor);
     }
 
     /* Return the class' prototype, so it can be extended by the decorator */
-    return prototype;
+    return decorations;
 }
 
 export const layout = {
@@ -441,15 +458,15 @@ export const layout = {
             if (Array.isArray(x)) {
                 throw Error('Please specify translate as three arguments, and not as an array');
             }
-            let prototypeOrRenderable, propertyName;
+            let propertyName, decorations;
             if (typeof target == 'function') {
-                prototypeOrRenderable = prepDecoratedPrototype(target.prototype);
+                decorations = prepPrototypeDecorations(target.prototype);
                 propertyName = 'extraTranslate';
             } else {
-                prototypeOrRenderable = prepDecoratedRenderable(...arguments);
+                decorations = prepDecoratedRenderable(...arguments).decorations;
                 propertyName = 'translate';
             }
-            prototypeOrRenderable.decorations[propertyName] = [x, y, z];
+            decorations[propertyName] = [x, y, z];
         };
     },
 
@@ -519,8 +536,8 @@ export const layout = {
      * @returns {void}
      */
     scrollable: function (target) {
-        let prototype = prepDecoratedPrototype(target.prototype);
-        prototype.decorations.isScrollable = true;
+        let decorations = prepPrototypeDecorations(target.prototype);
+        decorations.isScrollable = true;
     },
 
     /**
@@ -547,13 +564,16 @@ export const layout = {
      */
     margins: function (margins) {
         return function (target) {
-            let prototypeOrRenderable;
+            let decorations;
             if (typeof target == 'function') {
-                prototypeOrRenderable = prepDecoratedPrototype(target.prototype);
+                decorations = prepPrototypeDecorations(target.prototype);
+                console.log("prepPrototypeDecorations");
+                console.log(`decorations: ${decorations}`);
             } else {
-                prototypeOrRenderable = prepDecoratedRenderable(...arguments);
+                decorations = prepDecoratedRenderable(...arguments).decorations;
             }
-            prototypeOrRenderable.decorations.viewMargins = LayoutUtility.normalizeMargins(margins);
+            decorations.viewMargins = LayoutUtility.normalizeMargins(margins);
+            console.log(decorations);
         };
     },
 
@@ -578,8 +598,8 @@ export const layout = {
      */
     custom: function (customLayoutFunction) {
         return function (target) {
-            let prototype = prepDecoratedPrototype(target.prototype);
-            prototype.decorations.customLayoutFunction = customLayoutFunction;
+            let decorations = prepPrototypeDecorations(target.prototype);
+            decorations.customLayoutFunction = customLayoutFunction;
         };
     }
 };

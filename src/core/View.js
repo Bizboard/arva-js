@@ -50,9 +50,11 @@ export class View extends FamousView {
 
         this._copyPrototypeProperties();
 
-        this._initOptions(options);
-
         this._initDataStructures();
+
+        this._initOwnDecorations();
+
+        this._initOptions(options);
 
         this._combineLayouts();
 
@@ -197,7 +199,7 @@ export class View extends FamousView {
              * new size to take into account.
              */
             for (let i of [0, 1]) {
-                if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[i], NaN))) {
+                if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[i], [NaN, NaN]))) {
                     this.reflowRecursively();
                     break;
                 }
@@ -1112,8 +1114,24 @@ export class View extends FamousView {
         let prototype = Object.getPrototypeOf(this);
 
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
-        for (let name of ['decorations', 'renderableConstructors']) {
-            this[name] = _.cloneDeep(prototype[name]) || {};
+        for (let name of ['decorationsMap', 'renderableConstructors']) {
+            this[name] = _.cloneDeep(prototype[name]) || new Map();
+        }
+    }
+
+    /**
+     * Inits the decorations that is set on a class level
+     * @private
+     */
+    _initOwnDecorations() {
+        for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
+            /* The close the decoration is to this constructor in the prototype chain, the higher the priority */
+            let decorations = this.decorationsMap.get(currentClass.__proto__.constructor);
+            for(let property in decorations){
+                if(!(property in this.decorations)){
+                    this.decorations[property] = decorations[property];
+                }
+            }
         }
     }
 
@@ -1189,15 +1207,18 @@ export class View extends FamousView {
         if (!this.layouts) {
             this.layouts = [];
         }
+
+        if (!this.decorations){
+            this.decorations = {};
+        }
+
         if (!this.decorations.extraTranslate) {
             this.decorations.extraTranslate = [0, 0, 10];
         }
         if (!this.decoratedRenderables) {
             this.decoratedRenderables = {};
         }
-        if (!this.renderableConstructors || _.isEmpty(this.renderableConstructors)) {
-            this.renderableConstructors = new Map();
-        }
+
         if (!this.delayedAnimations) {
             this.delayedAnimations = [];
         }
