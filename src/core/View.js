@@ -693,7 +693,7 @@ export class View extends FamousView {
                 }
                 if (!dockSizeSpecified) {
                     if(dockMethod === 'fill'){
-                        outerDockSize = sizeWithoutMargins;
+                        outerDockSize = [...sizeWithoutMargins];
                     } else {
                         let dockingDirection = this._getDockType(dockMethod);
                         outerDockSize[dockingDirection] = innerSize[dockingDirection];
