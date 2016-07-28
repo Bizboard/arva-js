@@ -585,6 +585,13 @@ export const layout = {
 };
 
 export const event = {
+    /**
+     * Internal function used by the event decorators to generalize the idea of on, once, and off
+     * @param {String} subscriptionType A type of subscription function, e.g. on
+     * @param {String} eventName The event name
+     * @param {Function} callback that is called when event has happened
+     * @returns {Function}
+     */
     subscribe: function (subscriptionType, eventName, callback) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
