@@ -615,14 +615,56 @@ export const event = {
         };
     },
 
+    /**
+     * @example
+     * @layout.on('click', function() {this._handleClick})
+     * thing = new Surface({properties: {backgroundColor: 'red'}});
+     *
+     * _handleClick() { ... }
+     *
+     * Adds an event listener to the renderable when specific event happened
+     *
+     * @param eventName
+     * @param callback
+     * @returns {Function} A decorator function
+     */
     on: function (eventName, callback) {
         return event.subscribe('on', eventName, callback);
     },
 
+
+    /**
+     * @example
+     * @layout.size(100,100)
+     * @layout.place('center')
+     * @layout.once('click', function() {this._handleClick})
+     * thing = new Surface({properties: {backgroundColor: 'red'}});
+     *
+     * _handleClick() { ... }
+     *
+     * Adds an event listener to the renderable when specific event happened once
+     *
+     * @param eventName
+     * @param callback
+     * @returns {Function} A decorator function
+     */
     once: function (eventName, callback) {
         return event.subscribe('once', eventName, callback);
     },
 
+    /**
+     * @example
+     * @layout.fullscreen
+     * @layout.pipe('dbsv')
+     * //Pipe events to another renderable declared above, called 'dbsv'
+     * scrollableSurface = new Surface();
+     *
+     * Pipes events from one renderable to another. The other renderable has to be declared above the one that is doing
+     * the piping, otherwise an exception will be thrown.
+     *
+     * @param pipeToName
+     * @returns {Function}
+     */
     pipe: function (pipeToName) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
