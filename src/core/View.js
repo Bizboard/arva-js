@@ -348,11 +348,12 @@ export class View extends FamousView {
 
 
         if (renderable.decorations) {
-            this._addDecoratedRenderable(renderable, renderableName)
+            this._addDecoratedRenderable(renderable, renderableName);
+            this._setDecorationEvents(renderable);
+            this._setDecorationPipes(renderable);
         }
 
-        this._setEventHandlers(renderable);
-        this._setDecorationPipes(renderable);
+
 
         ObjectHelper.addPropertyToObject(this,renderableName,renderable);
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
@@ -375,8 +376,8 @@ export class View extends FamousView {
     }
 
 
-    _setEventHandlers(renderable) {
-        if (!renderable.decorations || !renderable.decorations.eventSubscriptions) {
+    _setDecorationEvents(renderable) {
+        if (!renderable.decorations.eventSubscriptions) {
             return;
         }
 
@@ -386,7 +387,7 @@ export class View extends FamousView {
             let eventName = subscription.eventName;
             let callback = subscription.callback;
             if (subscriptionType in renderable) {
-                renderable[subscriptionType](eventName, callback);
+                renderable[subscriptionType](eventName, callback.bind(this));
             }
         }
     }
