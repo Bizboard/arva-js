@@ -119,18 +119,6 @@ export class View extends FamousView {
         return false;
     }
 
-
-    setOptions(options) {
-        super.setOptions(options);
-        /* If no renderables are constructed, it makes no sense to call this function (this is done automatically by the
-         base class in construction time)
-         */
-        if (!this.renderables) {
-            return;
-        }
-        this._initOptions(combineOptions(this._customOptions, options));
-    }
-
     /**
      * Adds a renderable to the layout.
      * @param {Renderable} renderable The renderable to be added
@@ -197,15 +185,20 @@ export class View extends FamousView {
     }
 
     showRenderable(renderableName, show = true) {
-        this._showWithAnimationController(this.renderables[renderableName], this[renderableName], show);
-        let decoratedSize = this[renderableName].decorations.size;
+        let renderable = this[renderableName];
+        if(!renderable.animationController){
+            this._warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
+            return;
+        }
+        this._showWithAnimationController(this.renderables[renderableName], renderable, show);
+        let decoratedSize = this[renderableName].decorations.size || this[renderableName].decorations.size;
         if (show && decoratedSize) {
             /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
              * new size to take into account.
              */
             for (let i of [0, 1]) {
-                if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[i]), NaN)) {
-                    this.layout.reflowLayout();
+                if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[i], NaN))) {
+                    this.reflowRecursively();
                     break;
                 }
 
@@ -343,11 +336,12 @@ export class View extends FamousView {
 
 
         if (renderable.decorations) {
-            this._addDecoratedRenderable(renderable, renderableName)
+            this._addDecoratedRenderable(renderable, renderableName);
+            this._setDecorationEvents(renderable);
+            this._setDecorationPipes(renderable);
         }
 
-        this._setEventHandlers(renderable);
-        this._setDecorationPipes(renderable);
+
 
         ObjectHelper.addPropertyToObject(this,renderableName,renderable);
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
@@ -370,8 +364,8 @@ export class View extends FamousView {
     }
 
 
-    _setEventHandlers(renderable) {
-        if (!renderable.decorations || !renderable.decorations.eventSubscriptions) {
+    _setDecorationEvents(renderable) {
+        if (!renderable.decorations.eventSubscriptions) {
             return;
         }
 
@@ -381,7 +375,7 @@ export class View extends FamousView {
             let eventName = subscription.eventName;
             let callback = subscription.callback;
             if (subscriptionType in renderable) {
-                renderable[subscriptionType](eventName, callback);
+                renderable[subscriptionType](eventName, callback.bind(this));
             }
         }
     }
@@ -696,9 +690,14 @@ export class View extends FamousView {
                     }
                 }
                 if (!dockSizeSpecified) {
-                    let dockingDirection = this._getDockType(dockMethod);
-                    outerDockSize[dockingDirection] = innerSize[dockingDirection];
-                    outerDockSize[+!dockingDirection] = sizeWithoutMargins[+!dockingDirection];
+                    if(dockMethod === 'fill'){
+                        outerDockSize = sizeWithoutMargins;
+                    } else {
+                        let dockingDirection = this._getDockType(dockMethod);
+                        outerDockSize[dockingDirection] = innerSize[dockingDirection];
+                        outerDockSize[+!dockingDirection] = sizeWithoutMargins[+!dockingDirection];
+                    }
+
                 }
 
                 if (origin) {
@@ -1142,13 +1141,10 @@ export class View extends FamousView {
 
 
     _initOptions(options) {
-        let {defaultOptions: defaultOptionsFunction} = this.decorations;
-        this._customOptions = this.options = options;
-        let defaultOptions = defaultOptionsFunction ? defaultOptionsFunction.call(this) : {};
-        this.options = !_.isEmpty(defaultOptions) ? combineOptions(defaultOptions, options) : options;
-        if (!this._isPlainObject(options) || !this._isPlainObject(defaultOptions)) {
+        if (!this._isPlainObject(options)) {
             this._warn(`View ${this._name()} initialized with invalid non-object arguments`);
         }
+        this.options = options;
     }
 
     _tryCalculateTrueSizedSurface(renderable) {
