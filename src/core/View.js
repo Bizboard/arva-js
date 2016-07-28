@@ -197,7 +197,12 @@ export class View extends FamousView {
     }
 
     showRenderable(renderableName, show = true) {
-        this._showWithAnimationController(this.renderables[renderableName], this[renderableName], show);
+        let renderable = this[renderableName];
+        if(!renderable.animationController){
+            this._warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
+            return;
+        }
+        this._showWithAnimationController(this.renderables[renderableName], renderable, show);
         let decoratedSize = this[renderableName].decorations.size || this[renderableName].decorations.size;
         if (show && decoratedSize) {
             /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
