@@ -696,9 +696,14 @@ export class View extends FamousView {
                     }
                 }
                 if (!dockSizeSpecified) {
-                    let dockingDirection = this._getDockType(dockMethod);
-                    outerDockSize[dockingDirection] = innerSize[dockingDirection];
-                    outerDockSize[+!dockingDirection] = sizeWithoutMargins[+!dockingDirection];
+                    if(dockMethod === 'fill'){
+                        outerDockSize = sizeWithoutMargins;
+                    } else {
+                        let dockingDirection = this._getDockType(dockMethod);
+                        outerDockSize[dockingDirection] = innerSize[dockingDirection];
+                        outerDockSize[+!dockingDirection] = sizeWithoutMargins[+!dockingDirection];
+                    }
+
                 }
 
                 if (origin) {
