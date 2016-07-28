@@ -198,14 +198,14 @@ export class View extends FamousView {
 
     showRenderable(renderableName, show = true) {
         this._showWithAnimationController(this.renderables[renderableName], this[renderableName], show);
-        let decoratedSize = this[renderableName].decorations.size;
+        let decoratedSize = this[renderableName].decorations.size || this[renderableName].decorations.size;
         if (show && decoratedSize) {
             /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
              * new size to take into account.
              */
             for (let i of [0, 1]) {
-                if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[i]), NaN)) {
-                    this.layout.reflowLayout();
+                if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[i], NaN))) {
+                    this.reflowRecursively();
                     break;
                 }
 
