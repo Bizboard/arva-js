@@ -584,22 +584,6 @@ export const layout = {
     }
 };
 
-export const options = {
-    set: function (optionMethod) {
-        return function (view, renderableName, descriptor) {
-            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            renderable.decorations.constructionOptionsMethod = optionMethod;
-        };
-    },
-    default: function (view, optionName, descriptor) {
-        let prototype = prepDecoratedPrototype(view);
-        if (optionName === 'options') {
-            throw new Error('Default options are not allowed to have the name \'options\'');
-        }
-        prototype.decorations.defaultOptions = descriptor.get ? descriptor.get : descriptor.initializer;
-    }
-};
-
 export const event = {
     subscribe: function (subscriptionType, eventName, callback) {
         return function (view, renderableName, descriptor) {
