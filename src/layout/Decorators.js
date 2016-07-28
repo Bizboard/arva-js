@@ -75,9 +75,9 @@ export const layout = {
      * Use this in combination with a @layout.custom decorator on the view in which this renderable resides.
      * This decorator works directly on the object so you shouldn't pass any arguments nor use parentheses.
      *
-     * @param {View} [view]
-     * @param {String} [renderableName]
-     * @param {Object} [descriptor]
+     * @param {View} [view] Automatically set by decorator
+     * @param {String} [renderableName] Automatically set by decorator
+     * @param {Object} [descriptor] Automatically set by decorator
      *
      * @returns {void}
      */
@@ -88,7 +88,7 @@ export const layout = {
     /**
      * @example:
      * @layout.fullscreen
-     * // Has a red background
+     * // View will have a red background
      * background = new Surface({properties: {backgroundColor: 'red'}});
      *
      * Marks the renderable to cover the entire screen. Translate can also be specified on such a renderable.
@@ -131,15 +131,17 @@ export const layout = {
     /**
      * @example:
      * @layout.dock('left', 30, 0, 10)
+     * @layout.size(15, undefined)
      * @layout.origin(0.5, 0)
      * @layout.align(0.5, 0)
      * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
      *
      * Docks the renderable to a certain position.
-     * When using both a docked size and the layout.size decorator, then that decorator size becomes the inner size.
-     * The renderable can then be placed within the docking area with origin and align.
-     * When using layout.size without specifying a docked size, it.
-     * When combined with align, treats the context size the docking size.
+     * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
+     * The renderable can then be placed within the docking area with origin and align. When combined with align, treats
+     * the context size the docking size.
+     * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
+     * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
      *
      * @param {String} dockMethod. Can be either of 'left', 'right', 'bottom', 'top'
      * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
@@ -164,8 +166,6 @@ export const layout = {
             // Todo refactor also the z index to the dock, probably
             renderable.decorations.dock = {space, dockMethod, size: twoDimensionalSize};
 
-
-
             if (!renderable.decorations.translate) {
                 renderable.decorations.translate = [0, 0, 0];
             }
@@ -182,7 +182,8 @@ export const layout = {
      * // Makes a draggable square that is red
      * draggableRenderable = new Surface({properties: {backgroundColor: 'red'});
      *
-     * Makes the renderable allowed to be dragged around.
+     * Makes the renderable allowed to be dragged around. this.renderables[name] refers to a RenderNode containing this
+     * draggable along with the renderable itself.
      *
      * @param {Object} draggableOptions. Same options that can be passed to a Famous Draggable.
      * @param {Number} [options.snapX] grid width for snapping during drag
@@ -210,7 +211,8 @@ export const layout = {
      * swipable = new Surface({properties: {backgroundColor: 'red'});
      *
      * Makes the renderable swipable with physics-like velocity after the dragging is released. Emits event
-     * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached
+     * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached. this.renderables[name]
+     * now refers to a a RenderNode containing a positionModifier along with the renderable itself.
      *
      * @param {Object} options
      * @param {Boolean} [options.snapX] Whether to snap to the x axis
@@ -246,9 +248,9 @@ export const layout = {
      * decorator, since the scope will be the global scope.
      *
      * If true is specified or a tilde with a size (e.g. ~300), then the renderable will be automatically sized.
-     * If a tilde is used to indicate the size, then the size after the tildde will be used when/if the
-     * renderable doesn't have a size, or turn into true if the size can be determined. This is useful when wanting to
-     * reduce the flickering of surfaces who's size cannot be determined the first render tick.
+     * If a tilde is used to indicate the size, then the size after the tilde will be used when/if the
+     * renderable doesn't have a size, or turn into the actual size if it can be determined. This is useful when wanting
+     * to reduce the flickering of surfaces who's size cannot be determined the first render tick.
      * Beware that true sizing of surfaces or other raw dom elements (input surfaces, image surfaces, text boxes etc)
      * often comes with a perfomance penalty and should only be used when necessary.
      * Also beware that any negative size will be interpreted as a tilde, since ~x = 1 - x
@@ -256,7 +258,8 @@ export const layout = {
      * If undefined is specified, then the size of that dimension will equal the entire context size.
      *
      * If a size between 0 and 1 is specified, then that will be interpreted as a proportion of the context size. For
-     * example if 0.5 is specified, then the size will be half of the context size (the parent's size).
+     * example if 0.5 is specified, then the size will be half of the context size (the parent's size). Instead of
+     * specifying 1 to cover the entire context size, use undefined instead.
      *
      * @param {Number|Function} x
      * @param {Number|Function} y
@@ -303,11 +306,11 @@ export const layout = {
      * // Writes text upside down
      * renderable = new Surface({content: 'upside down text'});
      *
-     * Rotates the renderable around any of the three axes
+     * Rotates the renderable around any of the three axes (in radians)
      *
-     * @param {Number} x The rotation around the x axis (flips things vertically)
-     * @param {Number} y The rotation around the y axis (flips things horizontally)
-     * @param {Number} z The rotation around the z axis (rotates them in the more intuitive sense)
+     * @param {Number} x The rotation around the x axis (flips vertically)
+     * @param {Number} y The rotation around the y axis (flips horizontally)
+     * @param {Number} z The rotation around the z axis (rotatesin in the more intuitive sense)
      * @returns {Function}
      */
     rotate: function (x, y, z) {
@@ -323,7 +326,7 @@ export const layout = {
      * @layout.place('center')
      * renderable = new Surface({content: 'centered text'});
      *
-     * Places the renderable by settings origin/align. If no origin/align is set, it will default to topleft.
+     * Places the renderable by settings origin/align. If nothing is set, it will default to topleft.
      *
      * @param {String} place. Can be either of 'center', 'left', 'right', 'bottom', 'top', 'bottomleft', 'bottomright',
      * 'topright', 'topleft'
@@ -384,7 +387,7 @@ export const layout = {
      *
      * @param {Number} x. The x of the origin.
      * @param {Number} y. The y of the origin.
-     * @returns {Function} A decorator function
+     * @returns {Function} A decorator function.
      */
     origin: function (x, y) {
         return function (view, renderableName, descriptor) {
@@ -402,9 +405,9 @@ export const layout = {
      *
      * Translates the renderable by a proportion of the context size.
      *
-     * @param {Number} x. The proportion of the context width that is going to be translated
-     * @param {Number} y. The proportion of the context height that is going to be translated
-     * @returns {Function} A decorator function
+     * @param {Number} x. The proportion of the context width that is going to be translated.
+     * @param {Number} y. The proportion of the context height that is going to be translated.
+     * @returns {Function} A decorator function.
      */
     align: function (x, y) {
         return function (view, renderableName, descriptor) {
@@ -424,14 +427,14 @@ export const layout = {
      * }
      *
      * Specifies a translation of a renderable. Can be applied to every kind of renderable (docked, fullscreen,
-     * and normal)
+     * and normal).
      *
      * Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
      * to [0, 0, 10] in order to always increase the z space of every level of the Famous rendering tree.
-     * @param {Number} x Moves the renderable along the x axis
-     * @param {Number} y Moves the renderable along the y axis
-     * @param {Number} z Moves the renderable along the z axis
-     * @returns {Function} A decorator function
+     * @param {Number} x Moves the renderable along the x axis.
+     * @param {Number} y Moves the renderable along the y axis.
+     * @param {Number} z Moves the renderable along the z axis.
+     * @returns {Function} A decorator function.
      */
     translate: function (x, y, z) {
         return function (target, renderableName, descriptor) {
@@ -462,7 +465,7 @@ export const layout = {
      * this.showRenderable(renderableName) and hidden using this.hideRenderable(renderableName) or
      * this.showRenderable(renderableName, false). When a renderable has been shown, it will emit the event 'shown'.
      *
-     * @param {Object} [options] The same as famous-flex Animation Controller, plus a few more.
+     * @param {Object} [options] The same as famous-flex Animation Controller, plus 2 more:
      * @param {Boolean} [options.showInitially] Whether to show the renderable when the view is created. (Default: true).
      * @param {String} [options.waitFor] If specified, it will wait for the renderable with the specified name to show
      * before showing the renderable
@@ -507,9 +510,10 @@ export const layout = {
      * ...
      * }
      *
-     * Makes the view as scrollable. This will put the entire content in a ReflowingScrollView that calls getSize on the
-     * View. If the size cannot be determined, you might consider declaring your own getSize() on the View.
-     * This decorator works directly on the object so you shouldn't pass any arguments nor use parentheses.
+     * Makes the view as scrollable. This will put the entire content in a ReflowingScrollView that uses getSize on the
+     * view to determine scrolling size. If the size cannot be determined, you might consider declaring your own
+     * getSize() on the View. This decorator works directly on the object so you shouldn't pass any arguments nor use
+     * parentheses.
      *
      * @param [target]
      * @returns {void}
@@ -522,7 +526,7 @@ export const layout = {
     /**
      * @example
      * @layout.margins([15])
-     * //Creates a class with 15px on all sides for docked renderables
+     * //Creates a class with 15px margin on all sides for docked renderables
      * class myView extends View{
      *
      *  //Will be displayed with margin
@@ -554,6 +558,7 @@ export const layout = {
     },
 
     /**
+     * @example
      * @layout.custom((context) => {
      *  context.set('myRenderable', {
      *  size: [100, 100]
@@ -564,8 +569,8 @@ export const layout = {
      *      this.renderables.myRenderable = new Surface({properties: {backgroundColor: 'red'}});
      *  }
      * }
-     * Adds a custom layout function to the view
      *
+     * Adds a custom layout function to the view.
      * This decorator works directly on the object so you shouldn't pass any arguments nor use parentheses.
      *
      * @param customLayoutFunction
@@ -596,7 +601,6 @@ export const options = {
 };
 
 export const event = {
-
     subscribe: function (subscriptionType, eventName, callback) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
