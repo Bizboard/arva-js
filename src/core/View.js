@@ -119,18 +119,6 @@ export class View extends FamousView {
         return false;
     }
 
-
-    setOptions(options) {
-        super.setOptions(options);
-        /* If no renderables are constructed, it makes no sense to call this function (this is done automatically by the
-         base class in construction time)
-         */
-        if (!this.renderables) {
-            return;
-        }
-        this._initOptions(combineOptions(this._customOptions, options));
-    }
-
     /**
      * Adds a renderable to the layout.
      * @param {Renderable} renderable The renderable to be added
@@ -1153,13 +1141,10 @@ export class View extends FamousView {
 
 
     _initOptions(options) {
-        let {defaultOptions: defaultOptionsFunction} = this.decorations;
-        this._customOptions = this.options = options;
-        let defaultOptions = defaultOptionsFunction ? defaultOptionsFunction.call(this) : {};
-        this.options = !_.isEmpty(defaultOptions) ? combineOptions(defaultOptions, options) : options;
-        if (!this._isPlainObject(options) || !this._isPlainObject(defaultOptions)) {
+        if (!this._isPlainObject(options)) {
             this._warn(`View ${this._name()} initialized with invalid non-object arguments`);
         }
+        this.options = options;
     }
 
     _tryCalculateTrueSizedSurface(renderable) {
