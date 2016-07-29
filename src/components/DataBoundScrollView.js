@@ -22,7 +22,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         return this._internalDataSource;
     }
 
-    constructor(OPTIONS = {}) {
+    constructor(options = {}) {
         super(combineOptions({
             autoPipeEvents: true,
             throttleDelay: 0, /* If set to 0, no delay is added in between adding items to the DataBoundScrollView. */
@@ -40,8 +40,13 @@ export class DataBoundScrollView extends ReflowingScrollView {
             },
             dataFilter: ()=> true,
             ensureVisible: null,
+            layoutOptions: {
+                isSectionCallback: options.stickyHeaders ? function(renderNode) {
+                    return renderNode.groupId !== undefined;
+                } : undefined,
+            },
             chatScrolling: false
-        }, OPTIONS));
+        }, options));
 
         this._internalDataSource = {};
         this._internalGroups = {};
