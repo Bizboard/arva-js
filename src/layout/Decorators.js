@@ -567,13 +567,10 @@ export const layout = {
             let decorations;
             if (typeof target == 'function') {
                 decorations = prepPrototypeDecorations(target.prototype);
-                console.log("prepPrototypeDecorations");
-                console.log(`decorations: ${decorations}`);
             } else {
                 decorations = prepDecoratedRenderable(...arguments).decorations;
             }
             decorations.viewMargins = LayoutUtility.normalizeMargins(margins);
-            console.log(decorations);
         };
     },
 
