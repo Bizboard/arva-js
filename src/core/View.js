@@ -198,8 +198,8 @@ export class View extends FamousView {
             /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
              * new size to take into account.
              */
-            for (let i of [0, 1]) {
-                if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[i], [NaN, NaN]))) {
+            for (let dimension of [0, 1]) {
+                if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[dimension], [NaN, NaN], dimension))) {
                     this.reflowRecursively();
                     break;
                 }
@@ -415,17 +415,17 @@ export class View extends FamousView {
 
         let size = [];
         let cacheResolvedSize = [];
-        for (let dim = 0; dim < 2; dim++) {
-            size[dim] = this._resolveSingleSize(specifiedSize[dim], context.size[dim]);
-            if (this._isValueTrueSized(size[dim])) {
-                cacheResolvedSize[dim] = this._resolveSingleTrueSizedRenderable(renderable, renderableName, size, dim);
+        for (let dimension = 0; dimension < 2; dimension++) {
+            size[dimension] = this._resolveSingleSize(specifiedSize[dimension], context.size, dimension);
+            if (this._isValueTrueSized(size[dimension])) {
+                cacheResolvedSize[dimension] = this._resolveSingleTrueSizedRenderable(renderable, renderableName, size, dimension);
                 if (this._renderableIsSurface(renderable)) {
-                    size[dim] = true;
+                    size[dimension] = true;
                 } else {
-                    size[dim] = cacheResolvedSize[dim];
+                    size[dimension] = cacheResolvedSize[dimension];
                 }
             } else {
-                cacheResolvedSize[dim] = size[dim];
+                cacheResolvedSize[dimension] = size[dimension];
             }
         }
 
@@ -517,17 +517,17 @@ export class View extends FamousView {
     /**
      * Resolves a single dimension (i.e. x or y) size of a renderable.
      * @param {Number|Boolean|Object|Undefined|Function} renderableSize Renderable's single dimension size.
-     * @param {Number} contextSize Single dimension size value of the Famous-flex context in which the renderable is rendered.
-     * @returns {Number|Boolean|Object|Undefined} Size value, which can be a numeric value, true, null, or undefined.
+     * @param {Array.Number} contextSize The context size
+     * @returns {Number} dimension The dimension of the size that is being evaluated (e.g. 1 or 0)
      * @private
      */
-    _resolveSingleSize(renderableSize, contextSize) {
+    _resolveSingleSize(renderableSize, contextSize, dimension) {
         switch (typeof renderableSize) {
             case 'function':
-                return this._resolveSingleSize(renderableSize.call(this, contextSize), contextSize);
+                return this._resolveSingleSize(renderableSize.call(this, ...contextSize), contextSize, dimension);
             case 'number':
                 /* If 0 < renderableSize < 1, we interpret renderableSize as a fraction of the contextSize */
-                return renderableSize < 1 && renderableSize > 0 ? renderableSize * Math.max(contextSize, 0) : renderableSize;
+                return renderableSize < 1 && renderableSize > 0 ? renderableSize * Math.max(contextSize[dimension], 0) : renderableSize;
             default:
                 /* renderableSize can be true/false, undefined, or 'auto' for example. */
                 return renderableSize;
