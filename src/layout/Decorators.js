@@ -485,15 +485,15 @@ export const layout = {
      * @returns {Function} A decorator function
      */
     stick: {
-        center: function() {layout._stickTo('center');},
-        left: function() {layout._stickTo('left');},
-        right: function() {layout._stickTo('right');},
-        top: function() {layout._stickTo('top');},
-        bottom: function() {layout._stickTo('bottom');},
-        bottomLeft: function() {layout._stickTo('bottomLeft');},
-        bottomRight: function() {layout._stickTo('bottomRight');},
-        topLeft: function() {layout._stickTo('topLeft');},
-        topRight: function() {layout._stickTo('topRight');}
+        center: function()              { return layout._stickTo('center');},
+        left: function()                { return layout._stickTo('left');},
+        right: function()               { return layout._stickTo('right');},
+        top: function()                 { return layout._stickTo('top');},
+        bottom: function()              { return layout._stickTo('bottom');},
+        bottomLeft: function()          { return layout._stickTo('bottomLeft');},
+        bottomRight: function()         { return layout._stickTo('bottomRight');},
+        topLeft: function()             { return layout._stickTo('topLeft');},
+        topRight: function()            { return layout._stickTo('topRight');}
     },
 
     /**
