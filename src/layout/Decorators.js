@@ -648,7 +648,7 @@ export const layout = {
 
     /**
      * @example
-     * @layout.dockPadding([15])
+     * @layout.dockPadding(15)
      * //Creates a class with 15px margin on all sides for docked renderables
      * class myView extends View{
      *
