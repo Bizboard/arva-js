@@ -90,16 +90,13 @@ export const layout = {
      *
      * Merely marks a view property as a decorated renderable, which allows it to be rendered.
      * Use this in combination with a @layout.custom decorator on the view in which this renderable resides.
-     * This decorator works directly on the object so you shouldn't pass any arguments nor use parentheses.
      *
-     * @param {View} [view] Automatically set by decorator
-     * @param {String} [renderableName] Automatically set by decorator
-     * @param {Object} [descriptor] Automatically set by decorator
-     *
-     * @returns {void}
+     * @returns {Function} A decorator function
      */
-    renderable: function (view, renderableName, descriptor) {
-        prepDecoratedRenderable(view, renderableName, descriptor);
+    renderable: function () {
+        return function (view, renderableName, descriptor) {
+            prepDecoratedRenderable(view, renderableName, descriptor);
+        }
     },
 
     /**
@@ -109,17 +106,14 @@ export const layout = {
      * background = new Surface({properties: {backgroundColor: 'red'}});
      *
      * Marks the renderable to cover the entire screen. Translate can also be specified on such a renderable.
-     * This decorator works directly on the object so you shouldn't pass any arguments nor use parentheses.
      *
-     * @param [view] Automatically set by decorator
-     * @param [renderableName] Automatically set by decorator
-     * @param [descriptor] Automatically set by decorator
-     *
-     * @returns {void}
+     * @returns {Function} A decorator function
      */
-    fullscreen: function (view, renderableName, descriptor) {
-        let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-        renderable.decorations.fullscreen = true;
+    fullSize: function () {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.fullscreen = true;
+        }
     },
 
     /**
@@ -146,29 +140,14 @@ export const layout = {
     },
 
     /**
-     * @example:
-     * @layout.dock('left', 30, 0, 10)
-     * @layout.size(15, undefined)
-     * @layout.origin(0.5, 0)
-     * @layout.align(0.5, 0)
-     * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
-     *
-     * Docks the renderable to a certain position.
-     * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
-     * The renderable can then be placed within the docking area with origin and align. When combined with align, treats
-     * the context size the docking size.
-     * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
-     * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
-     *
-     * @param {String} dockMethod. Can be either of 'left', 'right', 'bottom', 'top'
-     * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
-     * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
-     * different variations, see layout.size.
-     * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
-     * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
-     * @returns {Function} A decorator function
+     * Internal function to do docking
+     * @param dockMethod
+     * @param size
+     * @param space
+     * @param zIndex
+     * @returns {Function}
      */
-    dock: function (dockMethod, size, space = 0, zIndex) {
+    dockWith: function (dockMethod, size, space = 0, zIndex) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
 
@@ -190,6 +169,120 @@ export const layout = {
                 renderable.decorations.translate[2] = zIndex;
             }
         };
+    },
+
+
+    dock: {
+        /**
+         * @example:
+         * @layout.dock.left(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
+         * Docks the renderable to the left.
+         * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
+         * The renderable can then be stickd within the docking area with origin and align. When combined with align, treats
+         * the context size the docking size.
+         * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
+         * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
+         *
+         * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+         * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
+         * different variations, see layout.size.
+         * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
+         * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
+         * @returns {Function} A decorator function
+         */
+        left: function() { return layout.dockWith('left', ...arguments)},
+
+        /**
+         * @example:
+         * @layout.dock.right(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
+         * Docks the renderable to the right.
+         * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
+         * The renderable can then be stickd within the docking area with origin and align. When combined with align, treats
+         * the context size the docking size.
+         * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
+         * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
+         *
+         * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+         * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
+         * different variations, see layout.size.
+         * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
+         * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
+         * @returns {Function} A decorator function
+         */
+        right: function() { return layout.dockWith('right', ...arguments)},
+
+        /**
+         * @example:
+         * @layout.dock.top(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
+         * Docks the renderable to the top.
+         * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
+         * The renderable can then be stickd within the docking area with origin and align. When combined with align, treats
+         * the context size the docking size.
+         * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
+         * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
+         *
+         * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+         * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
+         * different variations, see layout.size.
+         * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
+         * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
+         * @returns {Function} A decorator function
+         */
+        top: function() { return layout.dockWith('top', ...arguments)},
+
+        /**
+         * @example:
+         * @layout.dock.bottom(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
+         * Docks the renderable to the bottom.
+         * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
+         * The renderable can then be stickd within the docking area with origin and align. When combined with align, treats
+         * the context size the docking size.
+         * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
+         * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
+         *
+         * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+         * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
+         * different variations, see layout.size.
+         * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
+         * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
+         * @returns {Function} A decorator function
+         */
+        bottom: function() { return layout.dockWith('bottom', ...arguments)},
+
+        /**
+         * @example:
+         * @layout.dock.fill()
+         * filledRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
+         * Fills the space that is left after the docking with this renderable.
+         *
+         * When using layout.size, it will use that size as an inner size. This works similarly to other docking, from
+         * where translate, size, origin, align, etc can be specified.
+         *
+         * @returns {Function} A decorator function
+         */
+        fill: function() { return layout.dockWith('fill', ...arguments)}
+
     },
 
     /**
@@ -218,7 +311,6 @@ export const layout = {
             renderable.decorations.draggableOptions = draggableOptions;
         }
     },
-
 
     /**
      * @example
@@ -306,7 +398,7 @@ export const layout = {
      * @param {Number} width The width of the ContainerSurface
      * @param {Number} heigh The height of the ContainerSurface
      * @param {Object} [properties]. Properties that will be passed to the newly created parent DOM-element.
-     * Defaults to {overflow: 'hidden'}
+     * If specified, merged with {overflow: 'hidden'}
      * @returns {Function} A decorator function
      */
     clip: function (width, height, properties = {}) {
@@ -340,29 +432,29 @@ export const layout = {
     /**
      * @example
      * @layout.size(100,~300)
-     * @layout.place('center')
+     * @layout.stick('center')
      * renderable = new Surface({content: 'centered text'});
      *
      * Places the renderable by settings origin/align. If nothing is set, it will default to topleft.
      *
-     * @param {String} place. Can be either of 'center', 'left', 'right', 'bottom', 'top', 'bottomleft', 'bottomright',
+     * @param {String} stick. Can be either of 'center', 'left', 'right', 'bottom', 'top', 'bottomleft', 'bottomright',
      * 'topright', 'topleft'
      * @returns {Function} A decorator function
      */
-    place: function (place) {
+    stick: function (stick) {
         return function (view, renderableName, descriptor) {
             let origin = [0, 0], align = [0, 0];
-            switch (place) {
+            switch (stick) {
                 case 'center':
                     origin = align = [0.5, 0.5];
                     break;
-                case 'bottomright':
+                case 'bottomRight':
                     origin = align = [1, 1];
                     break;
-                case 'bottomleft':
+                case 'bottomLeft':
                     origin = align = [0, 1];
                     break;
-                case 'topright':
+                case 'topRight':
                     origin = align = [1, 0];
                     break;
                 case 'left':
@@ -378,7 +470,7 @@ export const layout = {
                     origin = align = [0.5, 1];
                     break;
                 default:
-                case 'topleft':
+                case 'topLeft':
                     origin = align = [0, 0];
                     break;
 
@@ -472,7 +564,7 @@ export const layout = {
 
     /**
      * @example
-     * @layout.place('center')
+     * @layout.stick('center')
      * @layout.size(100,100)
      * @layout.animate({transition: {duration: 350}})
      * renderable = new Surface({properties: {backgroundColor: 'red'}});
@@ -529,15 +621,15 @@ export const layout = {
      *
      * Makes the view as scrollable. This will put the entire content in a ReflowingScrollView that uses getSize on the
      * view to determine scrolling size. If the size cannot be determined, you might consider declaring your own
-     * getSize() on the View. This decorator works directly on the object so you shouldn't pass any arguments nor use
-     * parentheses.
+     * getSize() on the View.
      *
-     * @param [target]
-     * @returns {void}
+     * @returns {Function} A decorator function
      */
-    scrollable: function (target) {
-        let decorations = prepPrototypeDecorations(target.prototype);
-        decorations.isScrollable = true;
+    scrollable: function () {
+        return function (target) {
+            let decorations = prepPrototypeDecorations(target.prototype);
+            decorations.isScrollable = true;
+        }
     },
 
     /**
@@ -550,30 +642,31 @@ export const layout = {
      *  @layout.dock('top', 20)
      *  onTop = new Surface({content: "hello world"});
      *
-     *  //Will be displayed without margin since we're using @layout.place
-     *  @layout.place('bottom')
+     *  //Will be displayed without margin since we're using @layout.stick
+     *  @layout.stick('bottom')
      *  onButtom = new Surface({content: "hey hey"});
      * }
      *
      * Sets the margins for the docked content. This can be applied both to a child and a class. When in conflict,
      * the parent will override the child's setting. If the margin is set on a Surface, then CSS padding will be set.
-     *
-     * @param {Array.Number} margins Can be 1, 2, or 4, parameters, which can be specified as shorthand in the same way
+     * margins can be 1, 2, or 4, parameters, which can be specified as shorthand in the same way
      * as CSS does it.
+     *
+     * @param {Number} firstMargin
+     * @param {Number} [secondMargin]
+     * @param {Number} [thirdMargin]
+     * @param {Number} [fourthMargin]
      * @returns {Function} A decorator function
      */
-    margins: function (margins) {
+    dockPadding: function (...margins) {
         return function (target) {
             let decorations;
             if (typeof target == 'function') {
                 decorations = prepPrototypeDecorations(target.prototype);
-                console.log("prepPrototypeDecorations");
-                console.log(`decorations: ${decorations}`);
             } else {
                 decorations = prepDecoratedRenderable(...arguments).decorations;
             }
             decorations.viewMargins = LayoutUtility.normalizeMargins(margins);
-            console.log(decorations);
         };
     },
 
@@ -647,7 +740,7 @@ export const event = {
     /**
      * @example
      * @layout.size(100,100)
-     * @layout.place('center')
+     * @layout.stick('center')
      * @layout.once('click', function() {this._handleClick})
      * thing = new Surface({properties: {backgroundColor: 'red'}});
      *

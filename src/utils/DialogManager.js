@@ -14,10 +14,10 @@ import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
 import Easing                from 'famous/transitions/Easing.js';
 
-@layout.scrollable
+@layout.scrollable()
 class DialogWrapper extends View {
-    @layout.size((size) => Math.min(480, size - 32), true)
-    @layout.place('center')
+    @layout.size((width) => Math.min(480, width - 32), true)
+    @layout.stick('center')
     dialog = this.options.dialog;
 
     onNewParentSize(parentSize) {
@@ -36,7 +36,7 @@ class DialogWrapper extends View {
 
 export class DialogManager extends View {
 
-    @layout.fullscreen
+    @layout.fullSize()
     @layout.animate({showInitially: false, animation: AnimationController.Animation.Fade})
     @layout.translate(0, 0, 9000)
     background = new Surface({
@@ -48,7 +48,7 @@ export class DialogManager extends View {
     });
 
     @layout.translate(0, 0, 9500)
-    @layout.fullscreen
+    @layout.fullSize()
     @layout.animate({
         show: {transition: {curve: Easing.outCubic, duration: 300}, animation: AnimationController.Animation.Slide.Up},
         hide: {transition: {curve: Easing.inCubic, duration: 300}, animation: AnimationController.Animation.Slide.Down},
