@@ -101,7 +101,7 @@ export const layout = {
 
     /**
      * @example:
-     * @layout.fullscreen
+     * @layout.fullSize()
      * // View will have a red background
      * background = new Surface({properties: {backgroundColor: 'red'}});
      *
@@ -121,7 +121,7 @@ export const layout = {
      * // there's a 20px space before this box
      * @layout.dockSpace(20)
      * @layout.size(100, 100)
-     * @layout.dock('left')
+     * @layout.dock.left()
      * box = new Surface({properties: {backgroundColor: 'red'}});
      *
      * Specifies the space that should come before the docked renderable. Useful when not specifying the size in the
@@ -147,7 +147,7 @@ export const layout = {
      * @param zIndex
      * @returns {Function}
      */
-    dockWith: function (dockMethod, size, space = 0, zIndex) {
+    _dockTo: function (dockMethod, size, space = 0, zIndex) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
 
@@ -195,7 +195,7 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        left: function() { return layout.dockWith('left', ...arguments)},
+        left: function() { return layout._dockTo('left', ...arguments)},
 
         /**
          * @example:
@@ -219,7 +219,7 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        right: function() { return layout.dockWith('right', ...arguments)},
+        right: function() { return layout._dockTo('right', ...arguments)},
 
         /**
          * @example:
@@ -243,7 +243,7 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        top: function() { return layout.dockWith('top', ...arguments)},
+        top: function() { return layout._dockTo('top', ...arguments)},
 
         /**
          * @example:
@@ -267,7 +267,7 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        bottom: function() { return layout.dockWith('bottom', ...arguments)},
+        bottom: function() { return layout._dockTo('bottom', ...arguments)},
 
         /**
          * @example:
@@ -281,7 +281,7 @@ export const layout = {
          *
          * @returns {Function} A decorator function
          */
-        fill: function() { return layout.dockWith('fill', ...arguments)}
+        fill: function() { return layout._dockTo('fill', ...arguments)}
 
     },
 
@@ -429,19 +429,10 @@ export const layout = {
         }
     },
 
-    /**
-     * @example
-     * @layout.size(100,~300)
-     * @layout.stick('center')
-     * renderable = new Surface({content: 'centered text'});
-     *
-     * Places the renderable by settings origin/align. If nothing is set, it will default to topleft.
-     *
-     * @param {String} stick. Can be either of 'center', 'left', 'right', 'bottom', 'top', 'bottomleft', 'bottomright',
-     * 'topright', 'topleft'
-     * @returns {Function} A decorator function
-     */
-    stick: function (stick) {
+
+
+
+    _stickTo: function (stick) {
         return function (view, renderableName, descriptor) {
             let origin = [0, 0], align = [0, 0];
             switch (stick) {
@@ -480,6 +471,29 @@ export const layout = {
             renderable.decorations.origin = origin;
             renderable.decorations.align = align;
         };
+    },
+    /**
+     * @example
+     * @layout.size(100,~300)
+     * @layout.stick.center()
+     * renderable = new Surface({content: 'centered text'});
+     *
+     * Places the renderable by settings origin/align. If nothing is set, it will default to topleft.
+     *
+     * @param {String} stick. Can be either of 'center', 'left', 'right', 'bottom', 'top', 'bottomleft', 'bottomright',
+     * 'topright', 'topleft'
+     * @returns {Function} A decorator function
+     */
+    stick: {
+        center: function() {layout._stickTo('center');},
+        left: function() {layout._stickTo('left');},
+        right: function() {layout._stickTo('right');},
+        top: function() {layout._stickTo('top');},
+        bottom: function() {layout._stickTo('bottom');},
+        bottomLeft: function() {layout._stickTo('bottomLeft');},
+        bottomRight: function() {layout._stickTo('bottomRight');},
+        topLeft: function() {layout._stickTo('topLeft');},
+        topRight: function() {layout._stickTo('topRight');}
     },
 
     /**
@@ -564,7 +578,7 @@ export const layout = {
 
     /**
      * @example
-     * @layout.stick('center')
+     * @layout.stick.center()
      * @layout.size(100,100)
      * @layout.animate({transition: {duration: 350}})
      * renderable = new Surface({properties: {backgroundColor: 'red'}});
@@ -614,7 +628,7 @@ export const layout = {
 
     /**
      * @example
-     * @layout.scrollable
+     * @layout.scrollable()
      * class myView extends View{
      * ...
      * }
@@ -634,16 +648,16 @@ export const layout = {
 
     /**
      * @example
-     * @layout.margins([15])
+     * @layout.dockPadding([15])
      * //Creates a class with 15px margin on all sides for docked renderables
      * class myView extends View{
      *
      *  //Will be displayed with margin
-     *  @layout.dock('top', 20)
+     *  @layout.dock.top(20)
      *  onTop = new Surface({content: "hello world"});
      *
      *  //Will be displayed without margin since we're using @layout.stick
-     *  @layout.stick('bottom')
+     *  @layout.stick.bottom
      *  onButtom = new Surface({content: "hey hey"});
      * }
      *
@@ -705,7 +719,7 @@ export const event = {
      * @param {Function} callback that is called when event has happened
      * @returns {Function}
      */
-    subscribe: function (subscriptionType, eventName, callback) {
+    _subscribe: function (subscriptionType, eventName, callback) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             if (!renderable.decorations.eventSubscriptions) {
@@ -733,14 +747,14 @@ export const event = {
      * @returns {Function} A decorator function
      */
     on: function (eventName, callback) {
-        return event.subscribe('on', eventName, callback);
+        return event._subscribe('on', eventName, callback);
     },
 
 
     /**
      * @example
      * @layout.size(100,100)
-     * @layout.stick('center')
+     * @layout.stick.center()
      * @layout.once('click', function() {this._handleClick})
      * thing = new Surface({properties: {backgroundColor: 'red'}});
      *
@@ -753,7 +767,7 @@ export const event = {
      * @returns {Function} A decorator function
      */
     once: function (eventName, callback) {
-        return event.subscribe('once', eventName, callback);
+        return event._subscribe('once', eventName, callback);
     },
 
     /**

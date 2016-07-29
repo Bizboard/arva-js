@@ -17,7 +17,7 @@ import Easing                from 'famous/transitions/Easing.js';
 @layout.scrollable()
 class DialogWrapper extends View {
     @layout.size((width) => Math.min(480, width - 32), true)
-    @layout.stick('center')
+    @layout.stick.center()
     dialog = this.options.dialog;
 
     onNewParentSize(parentSize) {
