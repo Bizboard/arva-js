@@ -214,8 +214,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 let foundOrderedIndex = -1;
                 if (this.isGrouped) {
 
-                    for (let groupId in this._internalGroups) {
-                        let group = this._internalGroups[groupId];
+                    for (let group of _.sortBy(this._internalGroups, 'position')) {
                         /* Check the first and last item of every group (they're sorted) */
                         for (let position of group.itemsCount > 1 ? [group.position + 1, group.position + group.itemsCount - 1] : [group.position + 1]) {
                             let {dataId} = this._viewSequence.findByIndex(position)._value;
@@ -224,6 +223,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                                 break;
                             }
                         }
+                        if(foundOrderedIndex > -1) { break; }
                     }
                 } else {
                     foundOrderedIndex = this.orderBy(child, this.options.orderBy);
@@ -350,6 +350,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             this._updatePosition(position, -1);
             this.remove(position);
             delete this._internalGroups[groupByValue];
+            delete this._internalDataSource[groupByValue];
         }
 
     }
@@ -560,14 +561,14 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 let nextIndex = this._findData(nextModel.id).position;
                 if (nextIndex > -1) {
                     return this.isDescending ? nextIndex === 0 ? 0 : nextIndex - 1 :
-                        this._dataSource.getLength() === nextIndex + 1 ? nextIndex : nextIndex + 1;
+                           this._dataSource.getLength() === nextIndex + 1 ? nextIndex : nextIndex + 1;
                 } else {
                     return this._getNextVisibleIndex(nextModel.id);
                 }
             }
         } else {
             return this.isDescending ? viewIndex === 0 ? 0 : viewIndex - 1 :
-                this._dataSource.getLength() === viewIndex + 1 ? viewIndex : viewIndex + 1;
+                   this._dataSource.getLength() === viewIndex + 1 ? viewIndex : viewIndex + 1;
         }
     }
 
