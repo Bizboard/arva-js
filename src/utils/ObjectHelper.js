@@ -156,7 +156,7 @@ export class ObjectHelper {
                 propertyDescriptor.get = propertyDescriptor.get.bind(bindTarget);
             } else if (propertyDescriptor.set) {
                 propertyDescriptor.set = propertyDescriptor.set.bind(bindTarget);
-            } else if(propertyDescriptor.writable){
+            } else if (propertyDescriptor.writable) {
                 propertyDescriptor.value = propertyDescriptor.value.bind(bindTarget);
             }
             Object.defineProperty(object, methodName, propertyDescriptor);

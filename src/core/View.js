@@ -188,7 +188,7 @@ export class View extends FamousView {
 
     showRenderable(renderableName, show = true) {
         let renderable = this[renderableName];
-        if(!renderable.animationController){
+        if (!renderable.animationController) {
             this._warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
             return;
         }
@@ -344,8 +344,7 @@ export class View extends FamousView {
         }
 
 
-
-        ObjectHelper.addPropertyToObject(this,renderableName,renderable);
+        ObjectHelper.addPropertyToObject(this, renderableName, renderable);
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
          * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
          * this.renderables is used in the LayoutController in this.layout to render this view. */
@@ -382,7 +381,7 @@ export class View extends FamousView {
         }
     }
 
-    _setDecorationPipes(renderable,  enabled = true) {
+    _setDecorationPipes(renderable, enabled = true) {
         if (!renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable) || (!enabled && !this._pipedRenderables.includes(renderableName))) {
             return;
         }
@@ -692,7 +691,7 @@ export class View extends FamousView {
                     }
                 }
                 if (!dockSizeSpecified) {
-                    if(dockMethod === 'fill'){
+                    if (dockMethod === 'fill') {
                         outerDockSize = [...sizeWithoutMargins];
                     } else {
                         let dockingDirection = this._getDockType(dockMethod);
@@ -941,7 +940,7 @@ export class View extends FamousView {
 
     }
 
-    _getDockType(dockMethodToGet){
+    _getDockType(dockMethodToGet) {
         let dockTypes = [['right', 'left'], ['top', 'bottom']];
         return _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
     }
@@ -1127,8 +1126,8 @@ export class View extends FamousView {
         for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
             /* The close the decoration is to this constructor in the prototype chain, the higher the priority */
             let decorations = this.decorationsMap.get(currentClass.__proto__.constructor);
-            for(let property in decorations){
-                if(!(property in this.decorations)){
+            for (let property in decorations) {
+                if (!(property in this.decorations)) {
                     this.decorations[property] = decorations[property];
                 }
             }
@@ -1208,7 +1207,7 @@ export class View extends FamousView {
             this.layouts = [];
         }
 
-        if (!this.decorations){
+        if (!this.decorations) {
             this.decorations = {};
         }
 
@@ -1274,46 +1273,49 @@ export class View extends FamousView {
             this._processAnimatedRenderable(renderable, renderableName, animation);
         }
 
-        if(velocityOptions){
+        if (velocityOptions) {
             GenericSync.register({
-                "mouse"  : MouseSync,
-                "touch"  : TouchSync
+                "mouse": MouseSync,
+                "touch": TouchSync
             });
 
             let sync = new GenericSync({
-                "mouse"  : {},
-                "touch"  : {}
+                "mouse": {},
+                "touch": {}
             });
 
             renderable.pipe(sync);
 
             /* Translation modifier */
             var positionModifier = new Modifier({
-                transform : function(){
+                transform: function () {
                     let [x, y] = position.get();
-                    return Transform.translate(x,y,0);
+                    return Transform.translate(x, y, 0);
                 }
             });
 
-            var position = new Transitionable([0,0]);
+            var position = new Transitionable([0, 0]);
 
-            sync.on('update', (data)=>{
+            sync.on('update', (data)=> {
                 let [x,y] = position.get();
                 x += !velocityOptions.snapX ? data.delta[0] : 0;
                 y += !velocityOptions.snapY ? data.delta[1] : 0;
                 y = limit(velocityOptions.yRange[0], y, velocityOptions.yRange[1]);
                 x = limit(velocityOptions.xRange[0], x, velocityOptions.xRange[1]);
-                position.set([x,y]);
+                position.set([x, y]);
             });
 
-            sync.on('end', (data)=>{
+            sync.on('end', (data)=> {
                 let [x,y] = position.get();
-                data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0]*2 : data.velocity[0];
+                data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0] * 2 : data.velocity[0];
                 let endX = velocityOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175);
                 let endY = velocityOptions.snapY ? 0 : y + data.delta[1] + (data.velocity[1] * 175);
                 endY = limit(velocityOptions.yRange[0], endY, velocityOptions.yRange[1]);
                 endX = limit(velocityOptions.xRange[0], endX, velocityOptions.xRange[1]);
-                position.set([endX, endY], {curve : Easing.outCirc, duration : (750 - Math.abs((data.velocity[0] * 150)))});
+                position.set([endX, endY], {
+                    curve: Easing.outCirc,
+                    duration: (750 - Math.abs((data.velocity[0] * 150)))
+                });
 
                 this._determineSwipeEvents(renderable, velocityOptions, endX, endY);
 
@@ -1323,7 +1325,7 @@ export class View extends FamousView {
             renderable.node.add(positionModifier).add(renderable);
             renderable.pipe(this._eventOutput);
 
-        } else if (draggableOptions){
+        } else if (draggableOptions) {
             renderable.node = new RenderNode();
             let draggable = new Draggable(draggableOptions);
             renderable.node.add(draggable).add(renderable);
@@ -1341,7 +1343,9 @@ export class View extends FamousView {
 
     _processAnimatedRenderable(renderable, renderableName, options) {
 
-        let pipeRenderable = () => {if (renderable.pipe) renderable.pipe(renderable.animationController._eventOutput)};
+        let pipeRenderable = () => {
+            if (renderable.pipe) renderable.pipe(renderable.animationController._eventOutput)
+        };
 
         /* If there's already an animationcontroller present, just change the options */
         if (this.renderables[renderableName] instanceof AnimationController) {
@@ -1390,35 +1394,35 @@ export class View extends FamousView {
         }
     }
 
-    _determineSwipeEvents(renderable, velocityOptions = {}, endX = 0, endY = 0){
+    _determineSwipeEvents(renderable, velocityOptions = {}, endX = 0, endY = 0) {
 
-        if(!renderable || !renderable._eventOutput) return;
+        if (!renderable || !renderable._eventOutput) return;
 
         let xThreshold = velocityOptions.xThreshold || [undefined, undefined];
         let yThreshold = velocityOptions.yThreshold || [undefined, undefined];
 
-        if(xThreshold[1] && endX > xThreshold[1]){
+        if (xThreshold[1] && endX > xThreshold[1]) {
             renderable._eventOutput.emit('swiped', {
                 direction: 0,
                 displacement: 'right'
             });
         }
 
-        if(xThreshold[0] && endX < xThreshold[0]){
+        if (xThreshold[0] && endX < xThreshold[0]) {
             renderable._eventOutput.emit('swiped', {
                 direction: 0,
                 displacement: 'left'
             });
         }
 
-        if(yThreshold[1] && endY > yThreshold[1]){
+        if (yThreshold[1] && endY > yThreshold[1]) {
             renderable._eventOutput.emit('swiped', {
                 direction: 1,
                 displacement: 'bottom'
             });
         }
 
-        if(yThreshold[0] && endY < yThreshold[0]){
+        if (yThreshold[0] && endY < yThreshold[0]) {
             renderable._eventOutput.emit('swiped', {
                 direction: 1,
                 displacement: 'top'

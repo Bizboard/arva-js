@@ -223,7 +223,12 @@ export class FirebaseDataSource extends DataSource {
      */
     authWithOAuthToken(provider, credentials, onComplete) {
         credentials.provider = provider;
-        return firebase.auth().signInWithCredential(credentials).then((user) => { if(onComplete) { onComplete(user); } return user; });
+        return firebase.auth().signInWithCredential(credentials).then((user) => {
+            if (onComplete) {
+                onComplete(user);
+            }
+            return user;
+        });
     }
 
     /**
@@ -235,7 +240,12 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithCustomToken(authToken, onComplete) {
-        return firebase.auth().signInWithCustomToken(authToken).then((user) => { if(onComplete) { onComplete(user); } return user; });
+        return firebase.auth().signInWithCustomToken(authToken).then((user) => {
+            if (onComplete) {
+                onComplete(user);
+            }
+            return user;
+        });
     }
 
     /**
@@ -247,7 +257,12 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithPassword(credentials, onComplete) {
-        return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password).then((user) => { if(onComplete) { onComplete(user); } return user; });
+        return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password).then((user) => {
+            if (onComplete) {
+                onComplete(user);
+            }
+            return user;
+        });
     }
 
     /**
@@ -271,8 +286,8 @@ export class FirebaseDataSource extends DataSource {
     getAuth() {
         let firebaseAuth = firebase.auth();
         let {currentUser} = firebaseAuth;
-        if(!this._authDataPresent){
-            if(currentUser){
+        if (!this._authDataPresent) {
+            if (currentUser) {
                 this._authDataPresent = true;
                 return Promise.resolve(currentUser);
             } else {

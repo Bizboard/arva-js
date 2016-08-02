@@ -14,9 +14,13 @@ import {ObjectHelper}   from '../utils/ObjectHelper.js';
 
 export class PrioritisedObject extends EventEmitter {
 
-    get id() { return this._id; }
+    get id() {
+        return this._id;
+    }
 
-    set id(value) { this._id = value; }
+    set id(value) {
+        this._id = value;
+    }
 
     /** Priority (positioning) of the object in the dataSource */
     get priority() {
@@ -119,27 +123,35 @@ export class PrioritisedObject extends EventEmitter {
         switch (event) {
             case 'ready':
                 /* If we're already ready, fire immediately */
-                if (this._dataSource && this._dataSource.ready) { handler.call(context, this); }
+                if (this._dataSource && this._dataSource.ready) {
+                    handler.call(context, this);
+                }
                 break;
             case 'value':
                 if (!haveListeners) {
                     /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
                     this._dataSource.setValueChangedCallback(this._onChildValue);
                 } else {
-                    if(this._dataSource.ready){
+                    if (this._dataSource.ready) {
                         /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
                         handler.call(context, this);
                     }
                 }
                 break;
             case 'added':
-                if (!haveListeners) { this._dataSource.setChildAddedCallback(this._onChildAdded); }
+                if (!haveListeners) {
+                    this._dataSource.setChildAddedCallback(this._onChildAdded);
+                }
                 break;
             case 'moved':
-                if (!haveListeners) { this._dataSource.setChildMovedCallback(this._onChildMoved); }
+                if (!haveListeners) {
+                    this._dataSource.setChildMovedCallback(this._onChildMoved);
+                }
                 break;
             case 'removed':
-                if (!haveListeners) { this._dataSource.setChildRemovedCallback(this._onChildRemoved); }
+                if (!haveListeners) {
+                    this._dataSource.setChildRemovedCallback(this._onChildRemoved);
+                }
                 break;
             default:
                 break;
@@ -233,8 +245,8 @@ export class PrioritisedObject extends EventEmitter {
         if (!this._id) {
             this._id = dataSnapshot.key;
         }
-        
-        if(!this._dataSource) {
+
+        if (!this._dataSource) {
             this._dataSource = dataSnapshot.ref;
         }
 
@@ -268,7 +280,9 @@ export class PrioritisedObject extends EventEmitter {
      * @private
      */
     _buildFromDataSource(dataSource) {
-        if (!dataSource) { return; }
+        if (!dataSource) {
+            return;
+        }
         dataSource.once('value', this._buildFromSnapshot);
     }
 
@@ -312,9 +326,15 @@ export class PrioritisedObject extends EventEmitter {
     }
 
     /* TODO: implement partial updates of model */
-    _onChildAdded(dataSnapshot, previousSiblingID) { this.emit('added', this, previousSiblingID); }
+    _onChildAdded(dataSnapshot, previousSiblingID) {
+        this.emit('added', this, previousSiblingID);
+    }
 
-    _onChildMoved(dataSnapshot, previousSiblingID) { this.emit('moved', this, previousSiblingID); }
+    _onChildMoved(dataSnapshot, previousSiblingID) {
+        this.emit('moved', this, previousSiblingID);
+    }
 
-    _onChildRemoved(dataSnapshot, previousSiblingID) { this.emit('removed', this, previousSiblingID); }
+    _onChildRemoved(dataSnapshot, previousSiblingID) {
+        this.emit('removed', this, previousSiblingID);
+    }
 }

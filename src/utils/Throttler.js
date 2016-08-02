@@ -41,11 +41,13 @@ export class Throttler {
      */
     add(action) {
         /* If we're not queueing, clear the previous action if present. The new action will replace the old one. */
-        if(!this.shouldQueue) { this.queue.pop(); }
+        if (!this.shouldQueue) {
+            this.queue.pop();
+        }
 
         this.queue.push(action);
-        if(!this.timer){
-            this.timer =  this._timerFunction(this._executeTopAction, this.delay);
+        if (!this.timer) {
+            this.timer = this._timerFunction(this._executeTopAction, this.delay);
         }
     }
 
@@ -66,10 +68,10 @@ export class Throttler {
      */
     _executeTopAction() {
         let action = this.queue.shift();
-        if(action && typeof action === 'function'){
+        if (action && typeof action === 'function') {
             action.call(this.actionContext);
         }
-        if(!this.queue.length) {
+        if (!this.queue.length) {
             this._clearTimer();
         }
     }

@@ -15,7 +15,7 @@ export class BrandingEngineSingleton {
      * Get a singleton global instance of the BrandingEngine.
      * @returns {BrandingEngine} BrandingEngine instance.
      */
-    static getInstance(){
+    static getInstance() {
         return Injection.get(BrandingEngine);
     }
 }

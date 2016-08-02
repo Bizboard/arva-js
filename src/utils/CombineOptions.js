@@ -1,8 +1,8 @@
 /**
-  @author: Karl Lundfall (lundfall)
-  @license NPOSL-3.0
-  @copyright Bizboard, 2015
-*/
+ @author: Karl Lundfall (lundfall)
+ @license NPOSL-3.0
+ @copyright Bizboard, 2015
+ */
 
 import camelCase from 'camelcase';
 import _         from 'lodash';
@@ -44,16 +44,14 @@ function famousMerge(defaultParam, specifiedParam) {
                  * Make sure that we don't merge instances of classes. You _could_ trick this system by specifying an object
                  * with the parameter constructor {name: 'Object'} or specifying a class named Object (don't)
                  */
-                if(param.constructor.name !== 'Object'){
+                if (param.constructor.name !== 'Object') {
                     return specifiedParam;
                 }
 
 
-                if(_.isEmpty(param)){
+                if (_.isEmpty(param)) {
                     return param === specifiedParam ? defaultParam : specifiedParam;
                 }
-
-
 
 
             }
@@ -63,7 +61,7 @@ function famousMerge(defaultParam, specifiedParam) {
     /*
      * Style parameters can be specified with dash-case or camelCase, which we correct here
      */
-    let shallowParamCopies = [{},{}]
+    let shallowParamCopies = [{}, {}]
     for (let [param, shallowCopy] of [[specifiedParam, shallowParamCopies[0]], [defaultParam, shallowParamCopies[1]]]) {
         for (let key in param) {
             let value = param[key];
@@ -74,7 +72,7 @@ function famousMerge(defaultParam, specifiedParam) {
             shallowCopy[key] = value;
         }
     }
-    if(hasDashProperty){
+    if (hasDashProperty) {
         return _.mergeWith(shallowParamCopies[1], shallowParamCopies[0], famousMerge);
     } else {
         return undefined;

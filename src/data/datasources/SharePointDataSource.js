@@ -19,8 +19,13 @@ let _currentUser;
 @provide(DataSource)
 export class SharePointDataSource extends DataSource {
 
-    static get currentUser(){ return _currentUser; }
-    static set currentUser(value){ _currentUser = value; }
+    static get currentUser() {
+        return _currentUser;
+    }
+
+    static set currentUser(value) {
+        _currentUser = value;
+    }
 
     /**
      * @param {String} path Full path to resource in remote data storage.
@@ -50,7 +55,7 @@ export class SharePointDataSource extends DataSource {
                 listName: this.key()
             };
 
-            let sharePointOptions = _.extend({},this.options, configuration);
+            let sharePointOptions = _.extend({}, this.options, configuration);
 
             /* Bind the soap adapter against the datasource with given configuration */
             this._dataReference = new SharePoint(sharePointOptions);
@@ -88,7 +93,7 @@ export class SharePointDataSource extends DataSource {
         return SharePointDataSource.createFromChild(this._originalPath, childName, options);
     }
 
-    static createFromChild(path, childName, options = {}){
+    static createFromChild(path, childName, options = {}) {
         let childPath = '';
         if (childName.indexOf('http') !== -1) {
             childPath = childName.substring(1);
@@ -112,9 +117,13 @@ export class SharePointDataSource extends DataSource {
      */
     key() {
         var url = UrlParser(this._originalPath);
-        if (!url) { console.log('Invalid datasource path provided!'); }
+        if (!url) {
+            console.log('Invalid datasource path provided!');
+        }
 
-        if (url.path.length === 0) { return ''; }
+        if (url.path.length === 0) {
+            return '';
+        }
         var pathElements = url.path.split('/');
         if (pathElements.length === 1) {
             return url.path;
@@ -174,21 +183,27 @@ export class SharePointDataSource extends DataSource {
      * @param {String|Number} newPriority New priority value to order data by.
      * @returns {void}
      */
-    setPriority(newPriority) { throw new Error('Not implemented'); }
+    setPriority(newPriority) {
+        throw new Error('Not implemented');
+    }
 
     /**
      * Returns a new dataSource reference that will limit the subscription to only the first given amount items.
      * @param {Number} amount Amount of items to limit the dataSource to.
      * @returns {DataSource} New dataSource instance.
      */
-    limitToFirst(amount) { throw new Error('Not implemented'); }
+    limitToFirst(amount) {
+        throw new Error('Not implemented');
+    }
 
     /**
      * Returns a new dataSource reference that will limit the subscription to only the last given amount items.
      * @param {Number} amount Amount of items to limit the dataSource to.
      * @returns {DataSource} New dataSource instance.
      */
-    limitToLast(amount) { throw new Error('Not implemented'); }
+    limitToLast(amount) {
+        throw new Error('Not implemented');
+    }
 
     /**
      * Authenticates all instances of this DataSource with the given OAuth provider and credentials.
@@ -200,7 +215,9 @@ export class SharePointDataSource extends DataSource {
      * @param {Object} options Optional, additional client arguments, such as configuring session persistence.
      * @returns {void}
      */
-    authWithOAuthToken(provider, credentials, onComplete, options) { throw new Error('Not implemented'); }
+    authWithOAuthToken(provider, credentials, onComplete, options) {
+        throw new Error('Not implemented');
+    }
 
     /**
      * Authenticates all instances of this DataSource with a custom auth token or secret.
@@ -211,7 +228,9 @@ export class SharePointDataSource extends DataSource {
      * @param {Object} options Optional, additional client arguments, such as configuring session persistence.
      * @returns {void}
      */
-    authWithCustomToken(authToken, onComplete, options) { throw new Error('Not implemented'); }
+    authWithCustomToken(authToken, onComplete, options) {
+        throw new Error('Not implemented');
+    }
 
     /**
      * Authenticates all instances of this DataSource with the given email/password credentials.
@@ -222,7 +241,9 @@ export class SharePointDataSource extends DataSource {
      * @param {Object} options Optional, additional client arguments, such as configuring session persistence.
      * @returns {void}
      */
-    authWithPassword(credentials, onComplete, options) { throw new Error('Not implemented'); }
+    authWithPassword(credentials, onComplete, options) {
+        throw new Error('Not implemented');
+    }
 
     /**
      * Authenticates all instances of this DataSource as an anonymous user.
@@ -232,7 +253,9 @@ export class SharePointDataSource extends DataSource {
      * @param {Object} options Optional, additional client arguments, such as configuring session persistence.
      * @returns {void}
      */
-    authAnonymously(onComplete, options) { throw new Error('Not implemented'); }
+    authAnonymously(onComplete, options) {
+        throw new Error('Not implemented');
+    }
 
     /**
      * Fetches the current user's authentication state.
@@ -241,7 +264,7 @@ export class SharePointDataSource extends DataSource {
      * @returns {Object|null} User auth object.
      */
     getAuth() {
-        return new Promise((resolve)=>{
+        return new Promise((resolve)=> {
             if (!SharePointDataSource.currentUser) {
                 this._dataReference.getAuth((authData) => {
                     SharePointDataSource.currentUser = authData;
@@ -257,7 +280,9 @@ export class SharePointDataSource extends DataSource {
      * Logs out from the datasource, allowing to re-authenticate at a later time.
      * @returns {void}
      */
-    unauth() { throw new Error('Not implemented'); }
+    unauth() {
+        throw new Error('Not implemented');
+    }
 
     /**
      * Subscribe to an event emitted by the DataSource.
@@ -434,7 +459,9 @@ export class SharePointDataSource extends DataSource {
     _ParsePath(path, endPoint) {
 
         var url = UrlParser(path);
-        if (!url) { console.log('Invalid datasource path provided!'); }
+        if (!url) {
+            console.log('Invalid datasource path provided!');
+        }
 
         var pathParts = url.path.split('/');
         var newPath = url.protocol + '://' + url.host + '/';

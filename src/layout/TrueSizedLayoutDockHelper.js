@@ -7,7 +7,6 @@
  */
 
 
-
 import LayoutUtility from 'famous-flex/LayoutUtility';
 
 /**
@@ -95,11 +94,12 @@ TrueSizedLayoutDockHelper.prototype.parse = function (data) {
  * @param extraTranslation
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.top = function (node, size, space =0, extraTranslation = [0,0,0], innerSize) {
+TrueSizedLayoutDockHelper.prototype.top = function (node, size, space = 0, extraTranslation = [0, 0, 0], innerSize) {
     let [width, height] = this._setupAccordingToDimension(size, 1);
-    if(this._data.top !== this._initialData.top){
+    if (this._data.top !== this._initialData.top) {
         this._data.top += space;
-    };
+    }
+    ;
     this._context.set(node, {
         size: innerSize || ([width || (this._data.right - this._data.left), this._ensureTrueSize(height)]),
         translate: this._addTranslations([this._data.left, this._data.top, this._data.z], extraTranslation)
@@ -121,7 +121,7 @@ TrueSizedLayoutDockHelper.prototype.top = function (node, size, space =0, extraT
  */
 TrueSizedLayoutDockHelper.prototype.left = function (node, size, space = 0, extraTranslation = [0, 0, 0], innerSize) {
     let [width, height] = this._setupAccordingToDimension(size, 0);
-    if(this._data.left !== this._initialData.left) {
+    if (this._data.left !== this._initialData.left) {
         this._data.left += space;
     }
     this._context.set(node, {
@@ -142,9 +142,9 @@ TrueSizedLayoutDockHelper.prototype.left = function (node, size, space = 0, extr
  * @param extraTranslation
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.bottom = function (node, size,space = 0, extraTranslation = [0,0,0], innerSize) {
+TrueSizedLayoutDockHelper.prototype.bottom = function (node, size, space = 0, extraTranslation = [0, 0, 0], innerSize) {
     let [width, height] = this._setupAccordingToDimension(size, 1);
-    if(this._data.bottom !== this._initialData.bottom) {
+    if (this._data.bottom !== this._initialData.bottom) {
         this._data.bottom -= space;
     }
     this._data.bottom -= this._resolveSingleSize(height);
@@ -167,7 +167,7 @@ TrueSizedLayoutDockHelper.prototype.bottom = function (node, size,space = 0, ext
  */
 TrueSizedLayoutDockHelper.prototype.right = function (node, size, space = 0, extraTranslation = [0, 0, 0], innerSize) {
     let [width, height] = this._setupAccordingToDimension(size, 0);
-    if(this._data.right !== this._initialData.right) {
+    if (this._data.right !== this._initialData.right) {
         this._data.right -= space;
     }
     this._data.right -= this._resolveSingleSize(width);
@@ -229,7 +229,7 @@ TrueSizedLayoutDockHelper.prototype._setupAccordingToDimension = function (size,
     if (size instanceof Array) {
         let orthogonalDimension = dim ? 0 : 1;
         let adjustedSize = [size[0], size[1]];
-        if(size[orthogonalDimension] < 0){
+        if (size[orthogonalDimension] < 0) {
             /* If a true size was specified as an orhtogonal dimension, we just set it to true, as we don't need to save the value anywhere here */
             adjustedSize[orthogonalDimension] = true;
         }

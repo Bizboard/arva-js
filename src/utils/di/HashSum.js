@@ -1,14 +1,14 @@
 /* https://github.com/bevacqua/hash-sum */
 'use strict';
 
-function pad (hash, len) {
+function pad(hash, len) {
     while (hash.length < len) {
         hash = '0' + hash;
     }
     return hash;
 }
 
-function fold (hash, text) {
+function fold(hash, text) {
     var i;
     var chr;
     var len;
@@ -23,14 +23,14 @@ function fold (hash, text) {
     return hash < 0 ? hash * -2 : hash;
 }
 
-function foldObject (hash, o, seen) {
+function foldObject(hash, o, seen) {
     return Object.keys(o).sort().reduce(foldKey, hash);
-    function foldKey (hash, key) {
+    function foldKey(hash, key) {
         return foldValue(hash, o[key], key, seen);
     }
 }
 
-function foldValue (input, value, key, seen) {
+function foldValue(input, value, key, seen) {
     var hash = fold(fold(fold(input, key), toString(value)), typeof value);
     if (value === null) {
         return fold(hash, 'null');
@@ -48,11 +48,11 @@ function foldValue (input, value, key, seen) {
     return fold(hash, value.toString());
 }
 
-function toString (o) {
+function toString(o) {
     return Object.prototype.toString.call(o);
 }
 
-function sum (o) {
+function sum(o) {
     return pad(foldValue(0, o, '', []).toString(16), 8);
 }
 

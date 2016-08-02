@@ -264,7 +264,7 @@ export class PrioritisedArray extends Array {
             this._eventEmitter.emit('value', this);
         }
 
-        dataSnapshot.forEach(function(child) {
+        dataSnapshot.forEach(function (child) {
             this._childAddedThrottler.add(function (child) {
                 /* Create a new instance of the given data type and prefill it with the snapshot data. */
                 let options = {dataSnapshot: child};

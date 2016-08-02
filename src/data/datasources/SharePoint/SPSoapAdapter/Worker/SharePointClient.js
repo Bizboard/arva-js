@@ -523,7 +523,7 @@ export class SharePointClient extends EventEmitter {
         this.retriever.params.changeToken = lastChangeToken;
     }
 
-    _setNextPage(nextPaginationToken){
+    _setNextPage(nextPaginationToken) {
         this.retriever.params.queryOptions.QueryOptions.Paging = {_ListItemCollectionPositionNext: nextPaginationToken};
     }
 
