@@ -61,7 +61,7 @@ function famousMerge(defaultParam, specifiedParam) {
     /*
      * Style parameters can be specified with dash-case or camelCase, which we correct here
      */
-    let shallowParamCopies = [{}, {}]
+    let shallowParamCopies = [{}, {}];
     for (let [param, shallowCopy] of [[specifiedParam, shallowParamCopies[0]], [defaultParam, shallowParamCopies[1]]]) {
         for (let key in param) {
             let value = param[key];
@@ -80,11 +80,23 @@ function famousMerge(defaultParam, specifiedParam) {
 }
 
 /**
+ * Helper function used to clone without cloning class instances
+ * @param value
+ * @returns {*}
+ */
+function dontCloneClassInstances(value) {
+    if (typeof value === 'object' && !!value && !Array.isArray(value) && value.constructor.name !== 'Object') {
+        return value;
+    }
+}
+
+/**
  *
  * @param defaultOptions
  * @param options
  * @returns {*}
  */
 export function combineOptions(defaultOptions, options) {
-    return _.mergeWith({}, {root: defaultOptions}, {root: options}, famousMerge).root;
+    let clonedDefaultOptions = _.cloneDeepWith(defaultOptions, dontCloneClassInstances);
+    return _.mergeWith({root: clonedDefaultOptions}, {root: options}, famousMerge).root;
 }
