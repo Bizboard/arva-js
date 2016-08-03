@@ -16,7 +16,19 @@ import Easing                from 'famous/transitions/Easing.js';
 
 @layout.scrollable()
 class DialogWrapper extends View {
-    @layout.size((width) => Math.min(480, width - 32), true)
+
+    /**
+     * Defines the size that is appropriate for the dialog. The dialog can return undefined on its getSize function for
+     * full-blown sizing instead of true sizing, and it can define a maxSize to specify a maximum that causes the margins
+     * to get larger.
+     * @param size
+     */
+    determineSizeWithMargins (size, maxSize, dimension) {
+        return ~Math.min(maxSize ? maxSize[dimension] : 480, size[dimension] - 32);
+    }
+
+    @layout.size(function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)},
+        function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)})
     @layout.stick.center()
     dialog = this.options.dialog;
 
