@@ -472,7 +472,7 @@ export class View extends FamousView {
                 return this._specifyUndeterminedSingleHeight(renderable, size, dim);
             } else {
                 let renderableIsView = renderable instanceof View;
-                if (twoDimensionalSize[dim] === undefined &&
+                if (size[dim] === true && twoDimensionalSize[dim] === undefined &&
                     ((renderableIsView && (renderable._initialised && !renderable.constainsUncalculatedSurfaces())) || !renderableIsView)) {
                     this._warn(`True sized renderable '${name}' is taking up the entire context size. Caused in ${this._name()}`);
                     return twoDimensionalSize[dim];
