@@ -539,7 +539,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
     };
 
     _getDataSourceIndex(id) {
-        return this._findData(id).position;
+        let data = this._findData(id);
+        return data ? data.position : -1;
     }
 
     _getNextVisibleIndex(id) {
