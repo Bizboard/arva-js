@@ -11,6 +11,7 @@ import firebase                     from 'firebase';
 import {DataSource}                 from '../DataSource.js';
 import {ObjectHelper}               from '../../utils/ObjectHelper.js';
 import {provide}                    from '../../utils/di/Decorators.js';
+import {combineOptions}             from '../../utils/CombineOptions.js';
 
 @provide(DataSource)
 export class FirebaseDataSource extends DataSource {
@@ -31,6 +32,7 @@ export class FirebaseDataSource extends DataSource {
      *                                   Options are: '.priority', '.value', or a string containing the child key to order by (e.g. 'MyModelProperty')
      * @param {Number} [options.limitToFirst] Optional, only subscribe to the first amount of entries.
      * @param {Number} [options.limitToLast] Optional, only subscribe to the last amount of entries.
+     * @param {Promise} [options.synced] Optional, a promise to tell the data source that it is only synchronized after this promise is resolved
      **/
     constructor(path, options = {orderBy: '.priority'}) {
         super(path);
@@ -41,7 +43,8 @@ export class FirebaseDataSource extends DataSource {
         this._onRemoveCallback = null;
         this._dataReference = firebase.database().ref(path);
         this.handlers = {};
-        this.options = options;
+        this.options = combineOptions({synced: Promise.resolve()},options);
+        this._synced = this.options.synced;
 
         /* Populate the orderedReference, which is the standard Firebase reference with an optional ordering
          * defined. This needs to be saved seperately, because methods like child() and key() can't be called
@@ -76,6 +79,13 @@ export class FirebaseDataSource extends DataSource {
         return this._dataReference.toString();
     }
 
+    /**
+     * Resolves when the DataSource is synchronized to the server
+     * @returns {Promise} Resolves when the DataSource is synchronized
+     */
+    synced() {
+        return this._synced;
+    }
 
     /**
      * Returns a dataSource reference to the given child branch of the current datasource.
@@ -126,10 +136,13 @@ export class FirebaseDataSource extends DataSource {
     /**
      * Writes newData to the path this dataSource was constructed with.
      * @param {Object} newData Data to write to dataSource.
-     * @returns {void}
+     * @returns {Promise} Resolves when write to server is complete.
      */
     set(newData) {
-        return this._dataReference.set(newData);
+        let completionPromise = this._dataReference.set(newData);
+        /* Append another promise to the chain to keep track of whether it's still synchronized */
+        this._synced = this._synced.then(() => completionPromise);
+        return completionPromise
     }
 
     /**
@@ -147,17 +160,21 @@ export class FirebaseDataSource extends DataSource {
      * @returns {FirebaseDataSource} A new FirebaseDataSource pointing to the injected data.
      */
     push(newData) {
-        return new FirebaseDataSource(`${this.path()}/${this._dataReference.push(newData).key}`);
+        let pushResult = this._dataReference.push(newData);
+        return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {synced: pushResult});
     }
 
     /**
      * Writes newData with given priority (ordering) to the path this dataSource was constructed with.
      * @param {Object} newData New data to set.
      * @param {String|Number} priority Priority value by which the data should be ordered.
-     * @returns {void}
+     * @returns {Promise} Resolves when write to server is complete.
      */
     setWithPriority(newData, priority) {
-        return this._dataReference.setWithPriority(newData, priority);
+        let completionPromise = this.dataReference.setWithPriority(newData, priority);
+        /* Append another promise to the chain to keep track of whether it's still synchronized */
+        this._synced = this._synced.then(() => completionPromise);
+        return completionPromise;
     }
 
     /**
@@ -166,7 +183,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {void}
      */
     setPriority(newPriority) {
-        return this._dataReference.setPriority(newPriority);
+        return this.dataReference.setPriority(newPriority);
     }
 
     /**

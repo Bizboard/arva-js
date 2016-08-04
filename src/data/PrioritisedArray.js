@@ -120,11 +120,14 @@ export class PrioritisedArray extends Array {
     /**
      * Subscribes to the given event type exactly once; it automatically unsubscribes after the first time it is triggered.
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
-     * @param {Function} handler Function that is called when the given event type is emitted.
-     * @param {Object} context Optional: context of 'this' inside the handler function when it is called.
-     * @returns {void}
+     * @param {Function} [handler] Function that is called when the given event type is emitted.
+     * @param {Object} [context] context of 'this' inside the handler function when it is called.
+     * @returns {Promise} If no callback function provided, a promise that resolves once the event has happened
      */
     once(event, handler, context = this) {
+        if(!handler){
+            return new Promise((resolve) => this.once(event, resolve, context));
+        }
         return this.on(event, function onceWrapper() {
             this.off(event, onceWrapper, context);
             handler.call(context, ...arguments);
@@ -178,8 +181,17 @@ export class PrioritisedArray extends Array {
         } else if (model instanceof Object) {
             /* Let's try to parse the object using property reflection */
             var options = {dataSource: this._dataSource};
+            /* Prevent child_added from being fired immediately when the model is created by creating a promise that resolves
+             * the ID that shouldn't be synced twice
+             */
+
+            this._overrideChildAddedForId = this.once('local_child_added');
             let newModel = new this._dataType(null, model, _.extend({}, this._modelOptions, options));
+
             this.add(newModel);
+            /* Remove lock */
+            this._eventEmitter.emit('local_child_added', newModel);
+            this._overrideChildAddedForId = null;
             return newModel;
         } else {
             /* TODO: change to throw exception */
@@ -334,6 +346,16 @@ export class PrioritisedArray extends Array {
      */
     _onChildAdded(snapshot, prevSiblingId) {
         let id = snapshot.key;
+        if(this._overrideChildAddedForId){
+            this._overrideChildAddedForId.then((newModel) => {
+                /* If the block is concerning another id, then go ahead and make the _onChildAdded */
+                if(newModel.id !== id){
+                    this._onChildAdded(snapshot, prevSiblingId)
+                }
+                /* Otherwise, don't recreate the same model twice */
+            });
+            return;
+        }
 
         /* Skip addition if an item with identical ID already exists. */
         let previousPosition = this.findIndexById(id);
@@ -342,8 +364,7 @@ export class PrioritisedArray extends Array {
         }
 
         let model = new this._dataType(id, null, _.extend({}, this._modelOptions, {
-            dataSnapshot: snapshot,
-            dataSource: this._dataSource.child(id)
+            dataSnapshot: snapshot
         }));
         this.add(model, prevSiblingId);
 

@@ -47,18 +47,21 @@ export class Model extends PrioritisedObject {
         let modelName = this._name || Object.getPrototypeOf(this).constructor.name;
         let pathRoot = modelName + 's';
 
-        if(options.dataSource && id) {
+        let dataIsSynced = new Promise((resolve) => this._dataIsSynced = resolve);
+        let dataSourceOptions = {synced: dataIsSynced};
+
+        if (options.dataSource && id) {
             this._dataSource = options.dataSource;
-        } else if(options.dataSource) {
+        } else if (options.dataSource) {
             /* No id is present, generate a random one by pushing a new entry to the dataSource. */
             this._dataSource = options.dataSource.push(data);
-        } else if(options.path && id) {
-            this._dataSource = dataSource.child(options.path + '/' + id || '');
-        } else if(options.dataSnapshot){
-            this._dataSource = dataSource.child(options.dataSnapshot.ref().path.toString());
+        } else if (options.path && id) {
+            this._dataSource = dataSource.child(options.path + '/' + id || '', dataSourceOptions);
+        } else if (options.dataSnapshot) {
+            this._dataSource = dataSource.child(options.dataSnapshot.ref.path.toString(), dataSourceOptions);
         } else if (id) {
             /* If an id is present, use it to locate our model. */
-            this._dataSource = dataSource.child(pathRoot).child(id);
+            this._dataSource = dataSource.child(pathRoot + '/' + id, dataSourceOptions);
         } else {
             /* No id is present, generate a random one by pushing a new entry to the dataSource. */
             if (options.path) {
@@ -76,7 +79,15 @@ export class Model extends PrioritisedObject {
         }
 
         /* Write local data to model, if any data is present. */
-        this._writeLocalDataToModel(data);
+        this._writeLocalDataToModel(data).then(this._dataIsSynced);
+    }
+
+    /**
+     * Check if the model has been synchonized with the database
+     * @returns {Promise} Resolves when the model has been synchonized with the database
+     */
+    synced() {
+        return this._dataSource.synced();
     }
 
     /**
@@ -87,7 +98,7 @@ export class Model extends PrioritisedObject {
     _replaceModelAccessorsWithDatabinding() {
         let prototype = Object.getPrototypeOf(this);
 
-        if(~Object.getOwnPropertyNames(prototype).indexOf('id')){
+        if (~Object.getOwnPropertyNames(prototype).indexOf('id')) {
             console.log(`Don't define an id property to ${prototype.constructor.name}, as this property is internally used by the PrioritisedArray`);
         }
 
@@ -100,7 +111,9 @@ export class Model extends PrioritisedObject {
                 if (descriptor && descriptor.get) {
                     let value = this[name];
                     delete this[name];
-                    ObjectHelper.addPropertyToObject(this, name, value, true, true, () => { this._onSetterTriggered(); });
+                    ObjectHelper.addPropertyToObject(this, name, value, true, true, () => {
+                        this._onSetterTriggered();
+                    });
                 }
             }
 
@@ -112,7 +125,7 @@ export class Model extends PrioritisedObject {
      * Writes data, if present, to the Model's dataSource. Uses a transaction, meaning that only one update is triggered to the dataSource,
      * even though multiple fields change.
      * @param {Object} data Data to write, can be null.
-     * @returns {void}
+     * @returns {Promise} Resolves when the transaction is complete and synced
      * @private
      */
     _writeLocalDataToModel(data) {
@@ -126,7 +139,7 @@ export class Model extends PrioritisedObject {
             }
 
             if (isDataDifferent) {
-                this.transaction(function () {
+                return this.transaction(function () {
                     for (let name in data) {
 
                         // only map properties that exists on our model
@@ -138,5 +151,6 @@ export class Model extends PrioritisedObject {
                 }.bind(this));
             }
         }
+        return Promise.resolve();
     }
 }

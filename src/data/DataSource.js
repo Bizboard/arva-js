@@ -306,4 +306,11 @@ export class DataSource {
     removeChildRemovedCallback() {
     }
 
+
+    /**
+     * Resolves when the DataSource is synchronized to the server
+     * @returns {Promise} Resolves when the DataSource is synchronized
+     */
+    synced() {
+    }
 }

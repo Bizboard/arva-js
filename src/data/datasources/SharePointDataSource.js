@@ -414,6 +414,14 @@ export class SharePointDataSource extends DataSource {
     }
 
     /**
+     * Resolves when the DataSource is synchronized to the server
+     * @returns {Promise} Resolves when the DataSource is synchronized
+     */
+    synced() {
+        console.warn('Not implemented.');
+    }
+
+    /**
      * Set the callback triggered when dataSource removes a data element.
      * @param {Function} callback Callback function to call when a child is removed.
      * @returns {void}

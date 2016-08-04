@@ -206,7 +206,7 @@ export class PrioritisedObject extends EventEmitter {
         this.disableChangeListener();
         method();
         this.enableChangeListener();
-        this._onSetterTriggered();
+        return this._onSetterTriggered();
     }
 
     /**
@@ -258,7 +258,6 @@ export class PrioritisedObject extends EventEmitter {
         }
 
         for (let key in data) {
-
             /* Only map properties that exists on our model */
             let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
             if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
@@ -295,7 +294,7 @@ export class PrioritisedObject extends EventEmitter {
      */
     _onSetterTriggered() {
         if (!this._isBeingWrittenByDatasource) {
-            this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this), this._priority);
+            return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this), this._priority);
         }
     }
 
