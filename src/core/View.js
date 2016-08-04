@@ -129,6 +129,10 @@ export class View extends FamousView {
      * @returns {Renderable} The renderable that was assigned
      */
     addRenderable(renderable, renderableName, ...decorators) {
+        /* Due to common mistake, we check if renderableName is a string */
+        if(typeof renderableName !== 'string'){
+            this._warn(`The second argument of addRenderable(...) was not a string. Please pass the renderable name in ${this._name()}`);
+        }
         for (let decorator of decorators) {
             /* The decorator(s) provided in the last argument needed to decorate the renderable */
             decorator(renderable);
