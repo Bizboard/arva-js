@@ -101,10 +101,12 @@ export class ArvaRouter extends Router {
     /**
      * Registers a single controller.
      * @param {String} route Route to trigger handler on.
-     * @param {Function} handler Method to call on given route.
+     * @param {Object} handlers
+     * @param {Function} handler.enter Method to call on entering a route.
+     * @param {Function} handler.leave Method to call on when leaving a route.
      * @returns {void}
      */
-    add(route, handler, controller) {
+    add(route, {enter, leave}, controller) {
         let pieces = route.split('/'),
             rules = this.routes;
 
@@ -119,7 +121,8 @@ export class ArvaRouter extends Router {
             }
         }
 
-        rules['@'] = handler;
+        rules['enter'] = enter;
+        rules['leave'] = leave;
         rules['controller'] = controller;
 
     }
@@ -189,7 +192,7 @@ export class ArvaRouter extends Router {
             }
         }).call(this, querySplit.length > 1 ? querySplit[1] : '');
 
-        if (rule && rule['@']) {
+        if (rule && rule['enter']) {
 
             /* Push current route to the history stack for later use */
             let previousRoute = this.history.length ? this.history[this.history.length - 1] : undefined;
@@ -201,6 +204,12 @@ export class ArvaRouter extends Router {
                 keys: keys,
                 values: values
             };
+
+            if(previousRoute){
+                if(currentRoute.controllerObject !== previousRoute.controllerObject){
+                    this.routes[previousRoute.controller][':']['leave'](currentRoute);
+                }
+            }
             currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : (this._initialSpec || {});
             this._setHistory(currentRoute);
 
@@ -262,7 +271,7 @@ export class ArvaRouter extends Router {
      */
     _executeRoute(rule, route) {
         /* Make the controller active for current scope */
-        if (rule['@'](route)) {
+        if (rule['enter'](route)) {
             this.emit('routechange', route);
         }
     }

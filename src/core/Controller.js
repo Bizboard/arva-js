@@ -41,7 +41,15 @@ export class Controller extends EventEmitter {
         routeName += '/:method';
 
         /* handle router url changes and execute the appropiate controller method. */
-        this.router.add(routeName, this.onRouteCalled, this);
+        this.router.add(routeName, {enter: this.onRouteCalled, leave: this.onLeave}, this);
+    }
+
+    /**
+     * Called to notify the Controller that the route is changed
+     * @param newRoute
+     */
+    onLeave(newRoute) {
+        this.isActive = false;
     }
 
     /**
@@ -52,6 +60,7 @@ export class Controller extends EventEmitter {
      * @returns {Boolean} success Whether the controller method was fully executed, and the Router should emit a routechange event.
      */
     onRouteCalled(route) {
+        this.isActive = true;
         if (typeof this[route.method] === 'function') {
             let result = this[route.method].apply(this, route.values);
 
