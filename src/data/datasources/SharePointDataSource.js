@@ -135,11 +135,12 @@ export class SharePointDataSource extends DataSource {
     /**
      * Writes newData to the path this dataSource was constructed with.
      * @param {Object} newData Data to write to dataSource.
-     * @returns {void}
+     * @returns {Promise} Resolves when write to server is complete.
      */
     set(newData) {
         this._dataReference.set(newData);
-        return this;
+        /* For now, we return a resolved promise in lack of better knowledge of when the data is synchronized */
+        return Promise.resolve();
     }
 
     /**
@@ -171,11 +172,13 @@ export class SharePointDataSource extends DataSource {
      * Writes newData with given priority (ordering) to the path this dataSource was constructed with.
      * @param {Object} newData New data to set.
      * @param {String|Number} priority Priority value by which the data should be ordered.
-     * @returns {void}
+     * @returns {Promise} Resolves when write to server is complete.
      */
     setWithPriority(newData, priority) {
         newData.priority = priority;
         this.set(newData);
+        /* For now, we return a resolved promise in lack of better knowledge of when the data is synchronized */
+        return Promise.resolve();
     }
 
     /**
