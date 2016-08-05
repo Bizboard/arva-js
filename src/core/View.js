@@ -139,6 +139,7 @@ export class View extends FamousView {
         }
 
         this._assignRenderable(renderable, renderableName);
+        this.layout.reflowLayout();
         return renderable;
     }
 
