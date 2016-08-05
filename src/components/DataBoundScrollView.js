@@ -10,7 +10,6 @@
  */
 
 import _                            from 'lodash';
-import FlexScrollView               from 'famous-flex/FlexScrollView.js';
 import {Throttler}                  from '../utils/Throttler.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
@@ -24,6 +23,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
     constructor(options = {}) {
         super(combineOptions({
+            scrollFriction: {
+                strength: 0.0015
+            },
             autoPipeEvents: true,
             throttleDelay: 0, /* If set to 0, no delay is added in between adding items to the DataBoundScrollView. */
             dataSource: [],
