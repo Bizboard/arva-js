@@ -430,12 +430,32 @@ export const layout = {
      * @param {Number} x The rotation around the x axis (flips vertically)
      * @param {Number} y The rotation around the y axis (flips horizontally)
      * @param {Number} z The rotation around the z axis (rotatesin in the more intuitive sense)
-     * @returns {Function}
+     * @returns {Function} A decorator function
      */
     rotate: function (x, y, z) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.rotate = [x, y, z];
+        }
+    },
+
+    /**
+     * @example
+     * @layout.opacity(0.5)
+     * @layout.size(100, 10)
+     * @layout.place.center()
+     * // Writes text that is half invisible
+     * renderable = new Surface({content: 'Half invisible'});
+     *
+     * Sets te opacity of a renderable
+     *
+     * @param {Number} The opacity, between 0 and 1
+     * @returns {Function} A decorator function
+     */
+    opacity: function (opacity) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.opacity = opacity;
         }
     },
 

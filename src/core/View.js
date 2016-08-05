@@ -596,7 +596,7 @@ export class View extends FamousView {
         for (let name of names) {
             let renderable = fullScreenRenderables.get(name);
             let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
-            context.set(name, {translate, size: context.size});
+            context.set(name, {translate, size: context.size, opacity: renderable.decorations.opacity || 1});
         }
     }
 
@@ -605,7 +605,7 @@ export class View extends FamousView {
         for (let renderableName of names) {
             let renderable = traditionalRenderables.get(renderableName);
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
-            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0]} = renderable.decorations;
+            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0], opacity = 1} = renderable.decorations;
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             context.set(renderableName, {
@@ -613,17 +613,18 @@ export class View extends FamousView {
                 translate: adjustedTranslation,
                 origin,
                 align,
-                rotate
+                rotate,
+                opacity
             });
         }
     }
 
 
     _layoutDockedRenderables(dockedRenderables, filledRenderables, context, options) {
-        let dock = new TrueSizedLayoutDockHelper(context, options);
+        let dockHelper = new TrueSizedLayoutDockHelper(context, options);
 
         if (this.decorations.viewMargins) {
-            dock.margins(this.decorations.viewMargins);
+            dockHelper.margins(this.decorations.viewMargins);
         }
 
         /* Process Renderables with a non-fill dock */
@@ -631,13 +632,14 @@ export class View extends FamousView {
         for (let renderableName of dockedNames) {
             let renderable = dockedRenderables.get(renderableName);
             let {dockSize, translate, innerSize, inUseDockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
-            let {dockMethod, space} = renderable.decorations.dock;
-            if (dock[dockMethod]) {
+            let {dock, rotate, opacity} = renderable.decorations;
+            let {dockMethod, space} = dock;
+            if (dockHelper[dockMethod]) {
                 /* If the renderable is unrenderable due to zero height/width...*/
                 if (inUseDockSize[0] === 0 || inUseDockSize[1] === 0) {
                     /* Don't layout renderable, it will just increase the space and that's not the behaviour we want*/
                 } else {
-                    dock[dockMethod](renderableName, dockSize, space, translate, innerSize);
+                    dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {rotate, opacity});
                 }
             } else {
                 this._warn(`Arva: ${this._name()}.${renderableName} contains an unknown @dock method '${dockMethod}', and was ignored.`);
@@ -648,8 +650,9 @@ export class View extends FamousView {
         let filledNames = filledRenderables ? filledRenderables.keys() : [];
         for (let renderableName of filledNames) {
             let renderable = filledRenderables.get(renderableName);
+            let {rotate, opacity} = renderable.decorations;
             let {translate, inUseDockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
-            dock.fill(renderableName, inUseDockSize, translate);
+            dockHelper.fill(renderableName, inUseDockSize, translate, {rotate, opacity});
         }
     }
 
