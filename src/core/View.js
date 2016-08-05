@@ -1250,7 +1250,7 @@ export class View extends FamousView {
             this._groupedRenderables[groupName].set(renderableName, renderable);
         }
 
-        let {draggableOptions, velocityOptions, clip, animation, viewMargins} = renderable.decorations;
+        let {draggableOptions, swipableOptions, clip, animation, viewMargins} = renderable.decorations;
 
         /* If we clip, then we need to create a containerSurface */
         if (clip) {
@@ -1278,7 +1278,7 @@ export class View extends FamousView {
             this._processAnimatedRenderable(renderable, renderableName, animation);
         }
 
-        if (velocityOptions) {
+        if (swipableOptions) {
             GenericSync.register({
                 "mouse": MouseSync,
                 "touch": TouchSync
@@ -1303,26 +1303,26 @@ export class View extends FamousView {
 
             sync.on('update', (data)=> {
                 let [x,y] = position.get();
-                x += !velocityOptions.snapX ? data.delta[0] : 0;
-                y += !velocityOptions.snapY ? data.delta[1] : 0;
-                y = limit(velocityOptions.yRange[0], y, velocityOptions.yRange[1]);
-                x = limit(velocityOptions.xRange[0], x, velocityOptions.xRange[1]);
+                x += !swipableOptions.snapX ? data.delta[0] : 0;
+                y += !swipableOptions.snapY ? data.delta[1] : 0;
+                y = limit(swipableOptions.yRange[0], y, swipableOptions.yRange[1]);
+                x = limit(swipableOptions.xRange[0], x, swipableOptions.xRange[1]);
                 position.set([x, y]);
             });
 
             sync.on('end', (data)=> {
                 let [x,y] = position.get();
                 data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0] * 2 : data.velocity[0];
-                let endX = velocityOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175);
-                let endY = velocityOptions.snapY ? 0 : y + data.delta[1] + (data.velocity[1] * 175);
-                endY = limit(velocityOptions.yRange[0], endY, velocityOptions.yRange[1]);
-                endX = limit(velocityOptions.xRange[0], endX, velocityOptions.xRange[1]);
+                let endX = swipableOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175);
+                let endY = swipableOptions.snapY ? 0 : y + data.delta[1] + (data.velocity[1] * 175);
+                endY = limit(swipableOptions.yRange[0], endY, swipableOptions.yRange[1]);
+                endX = limit(swipableOptions.xRange[0], endX, swipableOptions.xRange[1]);
                 position.set([endX, endY], {
                     curve: Easing.outCirc,
                     duration: (750 - Math.abs((data.velocity[0] * 150)))
                 });
 
-                this._determineSwipeEvents(renderable, velocityOptions, endX, endY);
+                this._determineSwipeEvents(renderable, swipableOptions, endX, endY);
 
             });
 
@@ -1399,12 +1399,12 @@ export class View extends FamousView {
         }
     }
 
-    _determineSwipeEvents(renderable, velocityOptions = {}, endX = 0, endY = 0) {
+    _determineSwipeEvents(renderable, swipableOptions = {}, endX = 0, endY = 0) {
 
         if (!renderable || !renderable._eventOutput) return;
 
-        let xThreshold = velocityOptions.xThreshold || [undefined, undefined];
-        let yThreshold = velocityOptions.yThreshold || [undefined, undefined];
+        let xThreshold = swipableOptions.xThreshold || [undefined, undefined];
+        let yThreshold = swipableOptions.yThreshold || [undefined, undefined];
 
         if (xThreshold[1] && endX > xThreshold[1]) {
             renderable._eventOutput.emit('swiped', {
