@@ -66,6 +66,7 @@ export class DataSource {
      * @returns {Promise} Resolves when write to server is complete.
      */
     set(newData) {
+        return Promise.resolve();
     }
 
     /**
@@ -91,6 +92,7 @@ export class DataSource {
      * @returns {Promise} Resolves when write to server is complete.
      */
     setWithPriority(newData, priority) {
+        return Promise.resolve();
     }
 
     /**
