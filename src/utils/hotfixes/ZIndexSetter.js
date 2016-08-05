@@ -32,12 +32,12 @@ import Bowser                           from 'bowser';
     function removeSurfacePreserve3D() {
         debugger;
         let styleSheets = window.document.styleSheets;
-        for(let sheetIndex in styleSheets) {
+        for (let sheetIndex in styleSheets) {
             let sheet = styleSheets[sheetIndex];
-            if(sheet && sheet.href && sheet.href.indexOf('famous.css') !== -1) {
-                for(let ruleIndex in sheet.cssRules) {
+            if (sheet && sheet.href && sheet.href.indexOf('famous.css') !== -1) {
+                for (let ruleIndex in sheet.cssRules) {
                     let rule = sheet.cssRules[ruleIndex];
-                    if(rule && rule.selectorText === '.famous-surface') {
+                    if (rule && rule.selectorText === '.famous-surface') {
                         rule.style.removeProperty('transform-style');
                         rule.style.removeProperty('-moz-transform-style');
                         rule.style.removeProperty('-webkit-transform-style');

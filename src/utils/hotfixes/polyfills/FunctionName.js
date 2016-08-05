@@ -9,7 +9,8 @@
                 var results = (funcNameRegex).exec((this).toString());
                 return (results && results.length > 1) ? results[1].trim() : '';
             },
-            set: function (value) {}
+            set: function (value) {
+            }
         });
     }
 }());

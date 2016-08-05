@@ -13,10 +13,15 @@ import {ObjectHelper}   from '../../../utils/ObjectHelper.js';
 
 @inject(DataSource)
 export class BrandingEngine {
-    get options(){ return this._options; }
-    set options(value){ this._options = value; }
+    get options() {
+        return this._options;
+    }
 
-    constructor(dataSource = null){
+    set options(value) {
+        this._options = value;
+    }
+
+    constructor(dataSource = null) {
         if (dataSource) {
             this._dataSource = dataSource.child('Branding');
         }
@@ -35,26 +40,30 @@ export class BrandingEngine {
      * @returns {Promise} A promise that is resolved when the branding options have been fetched from cache or remote storage.
      */
     setOptionsFromDataSource() {
-        return new Promise(function(resolve) {
+        return new Promise(function (resolve) {
             let isResolved = false;
 
             /* If there is a local cached version available, use it. */
-            if(Storage && localStorage.getItem('Branding')){
+            if (Storage && localStorage.getItem('Branding')) {
                 this.options = JSON.parse(localStorage.getItem('Branding'));
                 isResolved = true;
                 resolve();
             }
 
             /* If we didn't get a dataSource injected into this class, don't try to use it. */
-            if(!this._dataSource) { resolve(); }
+            if (!this._dataSource) {
+                resolve();
+            }
 
             /* Use the dataSource to populate our branding options if no cache is available,
              * or save the latest options to cache so they are available on the next app launch. */
             let dataReference = this._dataSource;
-            dataReference.setValueChangedCallback(function(dataSnapshot) {
+            dataReference.setValueChangedCallback(function (dataSnapshot) {
                 dataReference.removeValueChangedCallback();
                 this.setOptions(dataSnapshot.val());
-                if(!isResolved) { resolve(); }
+                if (!isResolved) {
+                    resolve();
+                }
             }.bind(this));
         }.bind(this));
     }
@@ -67,7 +76,9 @@ export class BrandingEngine {
     setOptions(options) {
         this.options = options || {};
 
-        if(Storage) { localStorage.setItem('Branding', JSON.stringify(this.options)); }
+        if (Storage) {
+            localStorage.setItem('Branding', JSON.stringify(this.options));
+        }
     }
 
     /**
@@ -77,7 +88,9 @@ export class BrandingEngine {
      * @returns {void}
      */
     setOption(optionName, value) {
-        if(!this.options) { this.options = {}; }
+        if (!this.options) {
+            this.options = {};
+        }
 
         this.options[optionName] = value;
     }

@@ -14,7 +14,6 @@ if(!isWebsite) {
 
     /* Append style element to head */
     document.head.appendChild(styleElement);
-    console.log("Appending");
 
     /* Grab style sheet */
     styleSheet = styleElement.sheet;

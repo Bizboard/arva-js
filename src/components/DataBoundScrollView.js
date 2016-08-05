@@ -43,7 +43,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             dataFilter: ()=> true,
             ensureVisible: null,
             layoutOptions: {
-                isSectionCallback: options.stickyHeaders ? function(renderNode) {
+                isSectionCallback: options.stickyHeaders ? function (renderNode) {
                     return renderNode.groupId !== undefined;
                 } : undefined,
             },
@@ -216,8 +216,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 let foundOrderedIndex = -1;
                 if (this.isGrouped) {
 
-                    for (let groupId in this._internalGroups) {
-                        let group = this._internalGroups[groupId];
+                    for (let group of _.sortBy(this._internalGroups, 'position')) {
                         /* Check the first and last item of every group (they're sorted) */
                         for (let position of group.itemsCount > 1 ? [group.position + 1, group.position + group.itemsCount - 1] : [group.position + 1]) {
                             let {dataId} = this._viewSequence.findByIndex(position)._value;
@@ -225,6 +224,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
                                 foundOrderedIndex = group.position;
                                 break;
                             }
+                        }
+                        if (foundOrderedIndex > -1) {
+                            break;
                         }
                     }
                 } else {
@@ -294,9 +296,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._subscribeToClicks(newSurface, child);
 
         /* If we're scrolling as with a chat window, then scroll to last child if we're at the bottom */
-        if(this.options.chatScrolling && insertIndex === this._dataSource.getLength()){
+        if (this.options.chatScrolling && insertIndex === this._dataSource.getLength()) {
             let lastVisibleItem = this.getLastVisibleItem();
-            if((lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value) || !this._allChildrenAdded){
+            if ((lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value) || !this._allChildrenAdded) {
                 this._lastChild = child;
             }
         }
@@ -310,10 +312,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
             let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
             if (this.options.chatScrolling) {
                 if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) {
-                    Timer.after(() =>this.ensureVisible(newSurface),1);
+                    Timer.after(() =>this.ensureVisible(newSurface), 1);
                 }
             } else if (shouldEnsureVisible) {
-                Timer.after(() =>this.ensureVisible(newSurface),1);
+                Timer.after(() =>this.ensureVisible(newSurface), 1);
             }
         }
     }
@@ -352,6 +354,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             this._updatePosition(position, -1);
             this.remove(position);
             delete this._internalGroups[groupByValue];
+            delete this._internalDataSource[groupByValue];
         }
 
     }
@@ -445,7 +448,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             console.log('Template needs to be a function.');
             return;
         }
-        if(this.options.chatScrolling){
+        if (this.options.chatScrolling) {
             this.options.dataStore.on('ready', () => this._allChildrenAdded = true);
         }
 
@@ -538,7 +541,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
     };
 
     _getDataSourceIndex(id) {
-        return this._findData(id).position;
+        let data = this._findData(id);
+        return data ? data.position : -1;
     }
 
     _getNextVisibleIndex(id) {

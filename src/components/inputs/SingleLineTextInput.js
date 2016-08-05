@@ -1,8 +1,8 @@
 /**
-  @author: Tom Clement (tjclement)
-  @license NPOSL-3.0
-  @copyright Bizboard, 2015
-*/
+ @author: Tom Clement (tjclement)
+ @license NPOSL-3.0
+ @copyright Bizboard, 2015
+ */
 
 import _                            from 'lodash';
 import InputSurface                 from 'famous/surfaces/InputSurface.js';
@@ -36,7 +36,7 @@ export class SingleLineTextInput extends InputSurface {
             this._onMessageComplete();
 
             // Hide keyboard after input
-            if(cordova.plugins && cordova.plugins.Keyboard){
+            if (cordova.plugins && cordova.plugins.Keyboard) {
                 cordova.plugins.Keyboard.close();
             }
         }
@@ -44,7 +44,9 @@ export class SingleLineTextInput extends InputSurface {
 
     _onMessageComplete() {
         let message = this.getValue();
-        if(message === ''){ return; }
+        if (message === '') {
+            return;
+        }
 
         if (this.options.clearOnEnter) {
             this.setValue('');

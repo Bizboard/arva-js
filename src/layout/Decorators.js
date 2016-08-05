@@ -195,7 +195,9 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        left: function() { return layout._dockTo('left', ...arguments)},
+        left: function () {
+            return layout._dockTo('left', ...arguments)
+        },
 
         /**
          * @example:
@@ -219,7 +221,9 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        right: function() { return layout._dockTo('right', ...arguments)},
+        right: function () {
+            return layout._dockTo('right', ...arguments)
+        },
 
         /**
          * @example:
@@ -243,7 +247,9 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        top: function() { return layout._dockTo('top', ...arguments)},
+        top: function () {
+            return layout._dockTo('top', ...arguments)
+        },
 
         /**
          * @example:
@@ -267,7 +273,9 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        bottom: function() { return layout._dockTo('bottom', ...arguments)},
+        bottom: function () {
+            return layout._dockTo('bottom', ...arguments)
+        },
 
         /**
          * @example:
@@ -281,7 +289,9 @@ export const layout = {
          *
          * @returns {Function} A decorator function
          */
-        fill: function() { return layout._dockTo('fill', ...arguments)}
+        fill: function () {
+            return layout._dockTo('fill', ...arguments)
+        }
 
     },
 
@@ -430,8 +440,6 @@ export const layout = {
     },
 
 
-
-
     _stickTo: function (stick) {
         return function (view, renderableName, descriptor) {
             let origin = [0, 0], align = [0, 0];
@@ -485,15 +493,33 @@ export const layout = {
      * @returns {Function} A decorator function
      */
     stick: {
-        center: function()              { return layout._stickTo('center');},
-        left: function()                { return layout._stickTo('left');},
-        right: function()               { return layout._stickTo('right');},
-        top: function()                 { return layout._stickTo('top');},
-        bottom: function()              { return layout._stickTo('bottom');},
-        bottomLeft: function()          { return layout._stickTo('bottomLeft');},
-        bottomRight: function()         { return layout._stickTo('bottomRight');},
-        topLeft: function()             { return layout._stickTo('topLeft');},
-        topRight: function()            { return layout._stickTo('topRight');}
+        center: function () {
+            return layout._stickTo('center');
+        },
+        left: function () {
+            return layout._stickTo('left');
+        },
+        right: function () {
+            return layout._stickTo('right');
+        },
+        top: function () {
+            return layout._stickTo('top');
+        },
+        bottom: function () {
+            return layout._stickTo('bottom');
+        },
+        bottomLeft: function () {
+            return layout._stickTo('bottomLeft');
+        },
+        bottomRight: function () {
+            return layout._stickTo('bottomRight');
+        },
+        topLeft: function () {
+            return layout._stickTo('topLeft');
+        },
+        topRight: function () {
+            return layout._stickTo('topRight');
+        }
     },
 
     /**
