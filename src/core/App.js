@@ -65,7 +65,7 @@ export class App {
 
         let {done} = this.constructor;
         if(done && typeof done === 'function') {
-            try { done(); } catch(error) { console.log('Caught exception in App.done():', error); }
+            try { done.call(this.constructor); } catch(error) { console.log('Caught exception in App.done():', error); }
         }
     }
     
