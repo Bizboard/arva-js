@@ -151,6 +151,10 @@ export class ObjectHelper {
         /* Bind all current object's methods to bindTarget. */
         let methodDescriptors = ObjectHelper.getMethodDescriptors(object);
         for (let methodName in methodDescriptors) {
+            /* Skip the constructor as it serves as no purpose and it breaks the minification */
+            if(methodName === 'constructor'){
+                continue;
+            }
             let propertyDescriptor = methodDescriptors[methodName];
             if (propertyDescriptor && propertyDescriptor.get) {
                 propertyDescriptor.get = propertyDescriptor.get.bind(bindTarget);

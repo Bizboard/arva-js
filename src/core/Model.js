@@ -44,7 +44,8 @@ export class Model extends PrioritisedObject {
          * The this._name property can be set by Arva's babel-plugin-transform-runtime-constructor-name plugin.
          * This allows Arva code to be minified and mangled without losing automated route creation.
          * If the plugin is not set up to run, which is done e.g. when not minifying your code, we default back to the runtime constructor name.*/
-        let modelName = this._name || Object.getPrototypeOf(this).constructor.name;
+        let modelName = this.constructor._name || Object.getPrototypeOf(this).constructor.name;
+
         let pathRoot = modelName + 's';
 
         let dataIsSynced = new Promise((resolve) => this._dataIsSynced = resolve);
@@ -102,7 +103,8 @@ export class Model extends PrioritisedObject {
             console.log(`Don't define an id property to ${prototype.constructor.name}, as this property is internally used by the PrioritisedArray`);
         }
 
-        while (prototype.constructor.name !== 'Model') {
+        /* If the code is minified, then this.constructor._name is defined, in that case that also goes for the inheriting classes */
+        while (prototype.constructor._name || (!this.constructor._name && prototype.constructor.name !== 'Model')) {
             /* Get all properties except the id and constructor of this model */
             let propNames = _.difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
 
