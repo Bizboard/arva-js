@@ -146,6 +146,15 @@ export class DataBoundScrollView extends ReflowingScrollView {
         }
     }
 
+    /**
+     * Determines whether the last element showing is the actual last element
+     * @returns {boolean} True if the last element showing is the actual last element
+     */
+    isAtBottom() {
+        let lastVisibleItem = this.getLastVisibleItem();
+        return (lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value);
+    }
+
     _handleNewFilterResult(shouldShow, alreadyExists, entry) {
         if (shouldShow) {
             /* This entry should be in the view, add it if it doesn't exist yet. */
@@ -297,8 +306,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         /* If we're scrolling as with a chat window, then scroll to last child if we're at the bottom */
         if (this.options.chatScrolling && insertIndex === this._dataSource.getLength()) {
-            let lastVisibleItem = this.getLastVisibleItem();
-            if ((lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value) || !this._allChildrenAdded) {
+            if (this.isAtBottom() || !this._allChildrenAdded) {
                 this._lastChild = child;
             }
         }
