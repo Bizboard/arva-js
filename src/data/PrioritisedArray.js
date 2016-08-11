@@ -125,7 +125,7 @@ export class PrioritisedArray extends Array {
      * @returns {Promise} If no callback function provided, a promise that resolves once the event has happened
      */
     once(event, handler, context = this) {
-        if(!handler){
+        if (!handler) {
             return new Promise((resolve) => this.once(event, resolve, context));
         }
         return this.on(event, function onceWrapper() {
@@ -329,12 +329,22 @@ export class PrioritisedArray extends Array {
      * @private
      */
     _registerCallbacks(dataSource) {
-        this.once('ready', () => {
-            dataSource.on('child_added', this._onChildAdded);
-            dataSource.on('child_moved', this._onChildMoved);
-            dataSource.on('child_changed', this._onChildChanged);
-            dataSource.on('child_removed', this._onChildRemoved);
-        });
+        dataSource.on('child_added', this._doOnceReady(this._onChildAdded));
+        dataSource.on('child_moved', this._doOnceReady(this._onChildMoved));
+        dataSource.on('child_changed', this._doOnceReady(this._onChildChanged));
+        dataSource.on('child_removed', this._doOnceReady(this._onChildRemoved));
+    }
+
+    _doOnceReady(callback) {
+        return (...otherArgs) => {
+            if (!this._dataSource.ready) {
+                this.once('ready', () => {
+                    return callback(...otherArgs)
+                });
+            } else {
+                return callback(...otherArgs)
+            }
+        }
     }
 
     /**
@@ -346,10 +356,10 @@ export class PrioritisedArray extends Array {
      */
     _onChildAdded(snapshot, prevSiblingId) {
         let id = snapshot.key;
-        if(this._overrideChildAddedForId){
+        if (this._overrideChildAddedForId) {
             this._overrideChildAddedForId.then((newModel) => {
-                /* If the block is concerning another id, then go ahead and make the _onChildAdded */
-                if(newModel.id !== id){
+                /* If the override is concerning another id, then go ahead and make the _onChildAdded */
+                if (newModel.id !== id) {
                     this._onChildAdded(snapshot, prevSiblingId)
                 }
                 /* Otherwise, don't recreate the same model twice */
