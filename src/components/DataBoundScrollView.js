@@ -45,7 +45,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             layoutOptions: {
                 isSectionCallback: options.stickyHeaders ? function (renderNode) {
                     return renderNode.groupId !== undefined;
-                } : undefined,
+                } : undefined
             },
             chatScrolling: false
         }, options));
