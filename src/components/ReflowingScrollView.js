@@ -22,16 +22,9 @@ export class ReflowingScrollView extends FlexScrollView {
 
     _reflowWhenPossible() {
         if ((!this.isScrolling() && !this._nodes._reevalTrueSize) || !this._didReflowOnce) {
-            this._reflowWithoutAnimation();
+            this.reLayout();
             this._didReflowOnce = true;
         }
     }
-
-    /**
-     * Resets the scroll controller without causing a resetting of the FlowLayoutNodes, which causes an unwanted animation
-     * @private
-     */
-    _reflowWithoutAnimation() {
-        this._scroll.scrollDirty = true;
-    }
+    
 }
