@@ -674,6 +674,25 @@ export const layout = {
 
     /**
      * @example
+     * @layout.flow()
+     * class myView extends View{
+     * ...
+     * }
+     *
+     * Makes the view flow.
+     *
+     * @returns {Function} A decorator function
+     */
+    flow: function () {
+        return function (target) {
+            let decorations = prepPrototypeDecorations(target.prototype);
+            decorations.useFlow = true;
+        }
+    },
+
+
+    /**
+     * @example
      * @layout.scrollable()
      * class myView extends View{
      * ...
