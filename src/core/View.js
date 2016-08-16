@@ -112,7 +112,7 @@ export class View extends FamousView {
         return size;
     }
 
-    constainsUncalculatedSurfaces() {
+    containsUncalculatedSurfaces() {
         for (let [surface, {isUncalculated}] of this._trueSizedSurfaceInfo) {
             if (isUncalculated) {
                 return true;
@@ -478,14 +478,14 @@ export class View extends FamousView {
             } else {
                 let renderableIsView = renderable instanceof View;
                 if (size[dim] === true && twoDimensionalSize[dim] === undefined &&
-                    ((renderableIsView && (renderable._initialised && !renderable.constainsUncalculatedSurfaces())) || !renderableIsView)) {
+                    ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView)) {
                     this._warn(`True sized renderable '${name}' is taking up the entire context size. Caused in ${this._name()}`);
                     return twoDimensionalSize[dim];
                 } else {
                     let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
                     let resultingSize = twoDimensionalSize[dim] !== undefined ? twoDimensionalSize[dim] : approximatedSize;
                     if (renderableIsView) {
-                        resultingSize = (!renderable.constainsUncalculatedSurfaces() && renderable._initialised) ? resultingSize : approximatedSize;
+                        resultingSize = (!renderable.containsUncalculatedSurfaces() && renderable._initialised) ? resultingSize : approximatedSize;
                     }
                     return resultingSize;
                 }
