@@ -238,6 +238,7 @@ export class View extends FamousView {
 
         docked.remove(renderableName);
         docked.insert(index, renderableName, renderableToRearrange);
+        this.reflowRecursively();
         return true;
 
     }
