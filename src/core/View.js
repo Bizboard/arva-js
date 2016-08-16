@@ -228,6 +228,13 @@ export class View extends FamousView {
         this.showRenderable(renderableName, false);
     }
 
+    /**
+     * Helper function used by prioritiseDockBefore and prioritiseDockAfter to change order of docked renderables
+     * @param renderableName
+     * @param index
+     * @returns {boolean}
+     * @private
+     */
     _prioritiseDockAtIndex(renderableName, index) {
         let docked = this._groupedRenderables.docked;
         let renderableToRearrange = docked.get(renderableName);
