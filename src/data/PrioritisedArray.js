@@ -53,6 +53,7 @@ export class PrioritisedArray extends Array {
         /* Flag to determine when we're reordering so we don't listen to move updates */
         this._eventEmitter = new EventEmitter();
         this._childAddedThrottler = new Throttler(1, true, this, true);
+        this._overrideChildAddedForId = null;
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
@@ -162,11 +163,9 @@ export class PrioritisedArray extends Array {
 
                 if (prevSiblingId) {
                     let newPosition = this.findIndexById(prevSiblingId) + 1;
-                    this._ids[model._id] = newPosition;
                     this.insertAt(model, newPosition);
                 } else {
                     this.push(model);
-                    this._ids[model._id] = this.length - 1;
                 }
 
                 /* If we've already received an on('value') result, this child addition is
@@ -227,19 +226,8 @@ export class PrioritisedArray extends Array {
         return model;
     }
 
-    /**
-     * Moves a model instance from one position to another.
-     * @param {Number} fromPosition Zero-based index of original position
-     * @param {Number} toPosition Zero-based index of target position
-     * @returns {void}
-     */
-    move(fromPosition, toPosition) {
-        let model = this[fromPosition];
-        this._ids[model._id] = toPosition;
-        this._ids[fromPosition] = null;
-        this.splice(fromPosition, 1);
-        this.splice(toPosition, 0, model);
-
+    push(model){
+        return this.insertAt(model, this.length);
     }
 
     /**
@@ -249,9 +237,20 @@ export class PrioritisedArray extends Array {
      * @returns {void}
      */
     remove(position) {
-        for (let i = position; i < this.length; i++) {
-            /* Decrease the index of items further on in the prio array */
-            this._ids[this[i].id]--;
+        /*
+        * TODO: Beware, there might be hard to reproduce prone to errors going on sometimes when deleting many things at once
+        * Sometimes, there is an inconsistent state, but I haven't been able to figure out how that happens. /Karl
+         */
+        if(this.length === 1){
+            this._ids = {};
+        } else {
+            for (let i = position; i < this.length; i++) {
+                /* Decrease the index of items further on in the prio array */
+                if(!this._ids[this[i].id] && this._ids[this[i].id] !== 0){
+                    console.log("Internal error, decreasing index of non-existing id. For ID: " + this[i].id);
+                }
+                this._ids[this[i].id]--;
+            }
         }
         this.splice(position, 1);
     }
@@ -437,9 +436,12 @@ export class PrioritisedArray extends Array {
 
     _moveItem(previousPosition, newPosition, modelToMove) {
         this._ids[modelToMove._id] = newPosition;
-        for (let i = previousPosition; i < newPosition; i++) {
-            /* Update the positions of things coming inbetween */
-            this._ids[this[i].id]--;
+        /* Update the positions of things coming inbetween */
+        for (let positionAhead = previousPosition; positionAhead < newPosition; positionAhead++) {
+            this._ids[this[positionAhead].id]--;
+        }
+        for (let positionBefore = newPosition; positionBefore < previousPosition; positionBefore++) {
+            this._ids[this[positionBefore].id]++;
         }
 
         if (previousPosition === newPosition) {
@@ -463,8 +465,8 @@ export class PrioritisedArray extends Array {
         let model = this[position];
 
         if (position !== -1) {
-            this._ids[id] = null;
             this.remove(position);
+            delete this._ids[id];
 
             this._eventEmitter.emit('child_removed', model);
             this._eventEmitter.emit('value', this);
