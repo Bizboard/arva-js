@@ -769,6 +769,7 @@ export class View extends FamousView {
 
         this.layout = new LayoutController({
             flow: !!this.decorations.useFlow,
+            flowOptions: this.decorations.flowOptions,
             layout: function (context, options) {
 
                 /* Because views that extend this View class first call super() and then define their renderables,

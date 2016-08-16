@@ -674,19 +674,25 @@ export const layout = {
 
     /**
      * @example
-     * @layout.flow()
+     * @layout.flow({spring: {dampingRatio: 0.8, period: 1000}})
      * class myView extends View{
      * ...
      * }
      *
      * Makes the view flow.
-     *
+     * @param {Object} Options to pass as flowOptions to the LayoutController
+     * @param {Bool} [flowOptions.reflowOnResize] Smoothly reflows renderables on resize (only used when flow = true) (default: `true`).
+     * @param {Object} [flowOptions.spring] Spring options used by nodes when reflowing (default: `{dampingRatio: 0.8, period: 300}`).
+     * @param {Object} [flowOptions.properties] Properties which should be enabled or disabled for flowing.
+     * @param {Spec} [flowOptions.insertSpec] Size, transform, opacity... to use when inserting new renderables into the scene (default: `{}`).
+     * @param {Spec} [flowOptions.removeSpec] Size, transform, opacity... to use when removing renderables from the scene (default: undefined).
      * @returns {Function} A decorator function
      */
-    flow: function () {
+    flow: function (flowOptions) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
             decorations.useFlow = true;
+            decorations.flowOptions = flowOptions || {};
         }
     },
 
