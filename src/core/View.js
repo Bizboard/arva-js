@@ -1164,6 +1164,17 @@ export class View extends FamousView {
     }
 
     _initTrueSizedBookkeeping() {
+        this.layout.on('layoutstart', ({oldSize, size}) => {
+            if(size[0] !== oldSize[0] ||
+            size[1] !== oldSize[1]){
+                for (let [surface] of this._trueSizedSurfaceInfo) {
+                    /* Encourage the surfaces to check if they have been resized, which could trigger the resize event */
+                    surface._trueSizeCheck = true;
+                }
+                this._eventOutput.emit('newSize', size);
+            }
+        });
+
         this._resolvedSizesCache = new Map();
         this._trueSizedSurfaceInfo = new Map();
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
