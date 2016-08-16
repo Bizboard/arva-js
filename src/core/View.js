@@ -766,7 +766,7 @@ export class View extends FamousView {
 
                 /* Because views that extend this View class first call super() and then define their renderables,
                  * we wait until the first engine render tick to add our renderables to the layout, when the view will have declared them all.
-                 * layout.setDataSource() will automatically pipe events from the renderables to this View, since autoPipeEvents = true.       */
+                 * layout.setDataSource() will automatically pipe events from the renderables to this View. */
                 if (!this._initialised) {
                     this._addRenderables();
                     this._initializeAnimations();
