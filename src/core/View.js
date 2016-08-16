@@ -441,11 +441,6 @@ export class View extends FamousView {
             }
         }
 
-        if (this._renderableIsSurface(renderable) && !Number.isNaN(size[0]) && !Number.isNaN(size[1])) {
-            /* Need to set the size in order to get resize notifications */
-            renderable.size = [...size];
-        }
-
         this._resolvedSizesCache.set(renderable, [cacheResolvedSize[0], cacheResolvedSize[1]]);
 
         return (size[0] !== null && size[1] !== null) ? size : null;
@@ -518,6 +513,8 @@ export class View extends FamousView {
                     trueSizedSurfaceInfo = this._configureTrueSizedSurface(renderable, name);
                 }
                 trueSizedSurfaceInfo.trueSizedDimensions[dim] = true;
+                renderable.size[dim] = true;
+                /* Need to set the size in order to get resize notifications */
                 return ~size[dim];
             }
         } else {
@@ -578,7 +575,8 @@ export class View extends FamousView {
 
         /* We assume both dimensions not to be truesized, they are set in this._resolveDecoratedSize */
         this._trueSizedSurfaceInfo.set(renderable, trueSizedSurfaceInfo);
-
+        /* Need to set the size in order to get resize notifications */
+        renderable.size = [undefined, undefined];
 
         renderable.on('resize', () => {
             this._tryCalculateTrueSizedSurface(renderable);
