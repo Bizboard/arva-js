@@ -213,7 +213,76 @@ export class View extends FamousView {
             }
         }
     }
-    
+
+    /**
+     * @example
+     * decorateRenderable('myRenderable',layout.size(100, 100));
+     *
+     * Decorates a renderable with other decorators. Using the same decorators as used previously will override the old ones.
+     * @param {String} renderableName The name of the renderable
+     * @param ...decorators The decorators that should be applied
+     */
+    decorateRenderable(renderableName, ...decorators) {
+        let renderable = this[renderableName];
+        let fakeRenderable = {};
+        if (!decorators.length) {
+            this._warn('No decorators specified to decorateRenderable(renderableName, ...decorators)');
+        }
+        for (let decorator of decorators) {
+            /* There can be existing decorators already, which are preserved. We are extending the decorators object,
+             * by first creating a fake renderable that gets decorators */
+            decorator(fakeRenderable);
+        }
+        let {decorations} = fakeRenderable;
+        let renderableOrEquivalent = this._getPipeableRenderableFromName(renderableName);
+        /* We might need to do extra piping */
+        this._setDecorationPipes(renderableOrEquivalent, decorations.pipes);
+        this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions);
+        let sizesToCheck = [];
+        /* If the renderable is surface, we need to do some special things if there is a true size being used */
+        if (this._renderableIsSurface(renderable) && sizeToCheck) {
+            let {size, dock} = decorations;
+            if (size) {
+                sizesToCheck.push(size);
+            }
+            if (dock) {
+                sizesToCheck.push(dock.size);
+            }
+            let renderableSize = [undefined, undefined];
+            for (let sizeToCheck of sizesToCheck) {
+                for (let dimension of [0, 1]) {
+                    let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
+                    if (this._isValueTrueSized(sizeToCheck[dimension])) {
+                        if (!trueSizedInfo) {
+                            trueSizedInfo = this._configureTrueSizedSurface(renderable);
+                        }
+                        trueSizedInfo.trueSizedDimensions[dimension] = true;
+                        renderableSize[dimension] = true;
+                    } else {
+                        if (trueSizedInfo) {
+                            trueSizedInfo.trueSizedDimensions[dimension] = false;
+                        }
+                    }
+                }
+            }
+            if (sizesToCheck.length) {
+                renderable.setSize(renderableSize);
+            }
+        }
+        let oldRenderableGroupName = this._getGroupName(renderable);
+        /* Extend the object */
+        Object.assign(renderable.decorations, fakeRenderable.decorations);
+        /* See if we have to redo the grouping */
+        let needToChangeDecoratorGroup = oldRenderableGroupName !== this._getGroupName(renderable);
+        /* Process new renderable equivalent, if that applies */
+        this.renderables[renderableName] = this._processRenderableEquivalent(renderable, renderableName);
+        if (needToChangeDecoratorGroup) {
+            this._removeRenderableFromGroupWithName(renderableName, oldRenderableGroupName);
+            this._addRenderableToDecoratorGroup(renderable, renderableName);
+        }
+        this.reflowRecursively();
+    }
+
     _showWithAnimationController(animationController, renderable, show = true) {
         animationController._showingRenderable = show;
         animationController[show ? 'show' : 'hide'](renderable.containerSurface || renderable, null, () => {
@@ -1424,6 +1493,10 @@ export class View extends FamousView {
 
     _removeRenderableFromDecoratorGroup(renderable, renderableName) {
         let groupName = this._getGroupName(renderable);
+        this._removeRenderableFromGroupWithName(renderableName, groupName);
+    }
+
+    _removeRenderableFromGroupWithName(renderableName, groupName) {
         let group = this._groupedRenderables[groupName];
         group.remove(renderableName);
         if (!group.count()) {
