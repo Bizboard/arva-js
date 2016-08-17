@@ -305,7 +305,7 @@ export const layout = {
      * Makes the renderable allowed to be dragged around. this.renderables[name] refers to a RenderNode containing this
      * draggable along with the renderable itself.
      *
-     * @param {Object} draggableOptions. Same options that can be passed to a Famous Draggable.
+     * @param {Object} [draggableOptions]. Same options that can be passed to a Famous Draggable.
      * @param {Number} [options.snapX] grid width for snapping during drag
      * @param {Number} [options.snapY] grid height for snapping during drag
      * @param {Array.Number} [options.xRange] maxmimum [negative, positive] x displacement from start of drag
@@ -315,7 +315,7 @@ export const layout = {
      *    Draggable._direction.y to constrain to one axis.
      * @returns {Function}
      */
-    draggable: function (draggableOptions) {
+    draggable: function (draggableOptions = {}) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.draggableOptions = draggableOptions;
