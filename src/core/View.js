@@ -238,9 +238,10 @@ export class View extends FamousView {
         /* We might need to do extra piping */
         this._setDecorationPipes(renderableOrEquivalent, decorations.pipes);
         this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions);
-        let sizesToCheck = [];
+
         /* If the renderable is surface, we need to do some special things if there is a true size being used */
-        if (this._renderableIsSurface(renderable) && sizeToCheck) {
+        if (this._renderableIsSurface(renderable)) {
+            let sizesToCheck = [];
             let {size, dock} = decorations;
             if (size) {
                 sizesToCheck.push(size);
