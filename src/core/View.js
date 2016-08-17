@@ -130,7 +130,7 @@ export class View extends FamousView {
      */
     addRenderable(renderable, renderableName, ...decorators) {
         /* Due to common mistake, we check if renderableName is a string */
-        if(typeof renderableName !== 'string'){
+        if (typeof renderableName !== 'string') {
             this._warn(`The second argument of addRenderable(...) was not a string. Please pass the renderable name in ${this._name()}`);
         }
         for (let decorator of decorators) {
@@ -145,9 +145,10 @@ export class View extends FamousView {
 
     removeRenderable(renderableName) {
         let renderable = this[renderableName];
-        this._setDecorationPipes(renderable, false);
-        this._unpipeRenderable(this.renderables[renderableName], renderableName);
-        this._removeDecoratedRenderable(renderable, renderableName);
+        this._setDecorationPipes(renderableName, false);
+        this._setDecorationEvents(renderableName, false);
+        this._unpipeRenderable(renderableName, renderableName);
+        this._removeRenderableFromDecoratorGroup(renderable, renderableName);
         delete this.renderables[renderableName];
         delete this[renderableName];
         this.layout.reflowLayout();
@@ -198,8 +199,8 @@ export class View extends FamousView {
             return;
         }
         this._showWithAnimationController(this.renderables[renderableName], renderable, show);
-        let decoratedSize = this[renderableName].decorations.size || this[renderableName].decorations.size;
-        if (show && decoratedSize) {
+        let decoratedSize = this[renderableName].decorations.size || (this[renderableName].decorations.dock ? this[renderableName].decorations.dock.size : undefined);
+        if (decoratedSize) {
             /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
              * new size to take into account.
              */
@@ -211,12 +212,10 @@ export class View extends FamousView {
 
             }
         }
-
-
     }
-
-
+    
     _showWithAnimationController(animationController, renderable, show = true) {
+        animationController._showingRenderable = show;
         animationController[show ? 'show' : 'hide'](renderable.containerSurface || renderable, null, () => {
             if (renderable.emit) {
                 renderable.emit('shown');
@@ -328,13 +327,13 @@ export class View extends FamousView {
         }
     }
 
-    _unpipeRenderable(renderable, renderableName) {
+    _unpipeRenderable(renderableName) {
+        let renderable = this._pipedRenderables[renderableName];
         /* Auto pipe events from the renderable to the view */
-        let renderableNameIndex = this._pipedRenderables.indexOf(renderableNameIndex);
-        if (~renderableNameIndex && renderable.unpipe) {
+        if (renderable && renderable.unpipe) {
             renderable.unpipe(this);
             renderable.unpipe(this._eventOutput);
-            this._pipedRenderables.splice(renderableNameIndex, 1);
+            delete this._pipedRenderables[renderableName];
         }
     }
 
@@ -343,66 +342,39 @@ export class View extends FamousView {
         if (renderable.pipe) {
             renderable.pipe(this);
             renderable.pipe(this._eventOutput);
-            this._pipedRenderables.push(renderableName);
+            this._pipedRenderables[renderableName] = renderable;
         }
     }
 
-    _assignRenderable(renderable, renderableName) {
-
-
-        if (renderable.decorations) {
-            this._addDecoratedRenderable(renderable, renderableName);
-            this._setDecorationEvents(renderable);
-            this._setDecorationPipes(renderable);
-        }
-
-
-        ObjectHelper.addPropertyToObject(this, renderableName, renderable);
-        /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
-         * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
-         * this.renderables is used in the LayoutController in this.layout to render this view. */
-
-        let wrappedRenderable = renderable.animationController || renderable.containerSurface || renderable.node || renderable;
-        this._pipeRenderable(wrappedRenderable, renderableName);
-        this.renderables[renderableName] = wrappedRenderable;
-    }
-
-    replaceRenderable(name, newRenderable) {
-        let {decorations} = this[name];
-        if (decorations) {
-            newRenderable.decorations = {...newRenderable.decorations, ...decorations};
-            this._removeDecoratedRenderable(this[name], name);
-            this._addDecoratedRenderable(newRenderable, name);
-            this[name] = newRenderable;
-        }
-    }
-
-
-    _setDecorationEvents(renderable) {
-        if (!renderable.decorations.eventSubscriptions) {
-            return;
-        }
-
-        let subscriptions = renderable.decorations.eventSubscriptions;
-        for (let subscription of subscriptions) {
+    /**
+     * Sets the decoration events that are specified with (among potential others) @layout.on and @layout.once
+     * @param {String} renderableName
+     * @param enable. If false, removes the events.
+     * @private
+     */
+    _setDecorationEvents(renderable, subscriptions, enable = true) {
+        for (let subscription of subscriptions || []) {
             let subscriptionType = subscription.type || 'on';
+            if (!enable) {
+                /* In famous, you remove a listener by calling removeListener, but some classes might have another event
+                 * listener that is called off
+                 */
+                subscriptionType = renderable.removeListener ? 'removeListener' : 'off';
+            }
             let eventName = subscription.eventName;
             let callback = subscription.callback;
             if (subscriptionType in renderable) {
+                /* Always pipe the this.renderables thing, not the renderable itself */
                 renderable[subscriptionType](eventName, callback.bind(this));
             }
         }
     }
 
-    _setDecorationPipes(renderable, enabled = true) {
-        if (!renderable.decorations || !renderable.decorations.pipes || !('pipe' in renderable || '_eventOutput' in renderable) || (!enabled && !this._pipedRenderables.includes(renderableName))) {
-            return;
-        }
-
-        let pipes = renderable.decorations.pipes;
-        for (let pipeToName of pipes) {
+    _setDecorationPipes(renderable, pipes, enabled = true) {
+        for (let pipeToName of pipes || []) {
             let target = pipeToName ? this[pipeToName] : this;
             let pipeFn = (enabled ? '' : 'un') + 'pipe';
+            /* In order to keep things consistent and easier to use, we pipe from the renderable equivalent */
             if (renderable[pipeFn]) {
                 renderable[pipeFn](target);
             }
@@ -412,6 +384,52 @@ export class View extends FamousView {
         }
 
     }
+
+    _setupAllRenderableListeners(renderableName, enabled = true) {
+        /* If the this.renderables equivalent doesn't have the pipe function as is the case with the draggable, then use the regular renderable */
+        let renderableOrEquivalent = this._getPipeableRenderableFromName(renderableName);
+        if (enabled) {
+            this._pipeRenderable(renderableOrEquivalent, renderableName);
+        } else {
+            this._unpipeRenderable(renderableOrEquivalent, renderableName);
+        }
+        let {decorations} = this[renderableName];
+        if (decorations) {
+            this._setDecorationPipes(renderableOrEquivalent, decorations.pipes, enabled);
+            this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions, enabled);
+        }
+
+    }
+
+    _getPipeableRenderableFromName(renderableName) {
+        return this.renderables[renderableName].pipe ? this.renderables[renderableName] : this[renderableName];
+    }
+
+    _assignRenderable(renderable, renderableName) {
+        let renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName);
+        this.renderables[renderableName] = renderableEquivalent;
+        ObjectHelper.addPropertyToObject(this, renderableName, renderable);
+        this._setupAllRenderableListeners(renderableName);
+    }
+
+    replaceRenderable(renderableName, newRenderable) {
+        let renderable = this[renderableName];
+        let renderableHasAnimationController = (this.renderables[renderableName] instanceof AnimationController);
+        /* If there isn't a renderable equivalent animationController that does the piping, then we need to redo the event piping */
+        if (!renderableHasAnimationController) {
+            this._setupAllRenderableListeners(renderableName, false);
+        }
+        newRenderable.decorations = {...newRenderable.decorations, ...renderable.decorations};
+        let newRenderableEquivalent = this._processRenderableEquivalent(newRenderable, renderableName);
+        this._groupedRenderables[this._getGroupName(renderable)].set(renderableName, newRenderable);
+        if (!renderableHasAnimationController) {
+            this.renderables[renderableName] = newRenderableEquivalent;
+            this._setupAllRenderableListeners(renderableName, true);
+        }
+        this.reflowRecursively();
+        this[renderableName] = newRenderable;
+    }
+
 
     /**
      * Resolves a decorated renderable's size (both width and height)
@@ -468,7 +486,7 @@ export class View extends FamousView {
         }
         let renderableCounterpart = this.renderables[name];
         /* If there is an AnimationController without content, display 0 size */
-        if (renderableCounterpart instanceof AnimationController && !renderableCounterpart.get()) {
+        if (renderableCounterpart instanceof AnimationController && !renderableCounterpart._showingRenderable) {
             return 0;
         }
         /* True sized element. This has been specified as ~100 where 100 is the initial size
@@ -637,16 +655,11 @@ export class View extends FamousView {
         let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
         for (let renderableName of dockedNames) {
             let renderable = dockedRenderables.get(renderableName);
-            let {dockSize, translate, innerSize, inUseDockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
+            let {dockSize, translate, innerSize, inUseDockSize, space} = this._prepareForDockedRenderable(renderable, renderableName, context);
             let {dock, rotate, opacity} = renderable.decorations;
-            let {dockMethod, space} = dock;
+            let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
-                /* If the renderable is unrenderable due to zero height/width...*/
-                if (inUseDockSize[0] === 0 || inUseDockSize[1] === 0) {
-                    /* Don't layout renderable, it will just increase the space and that's not the behaviour we want*/
-                } else {
-                    dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {rotate, opacity});
-                }
+                dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {rotate, opacity});
             } else {
                 this._warn(`Arva: ${this._name()}.${renderableName} contains an unknown @dock method '${dockMethod}', and was ignored.`);
             }
@@ -732,7 +745,12 @@ export class View extends FamousView {
                 dockSize[i] = ~inUseDockSize[i];
             }
         }
-        return {dockSize, translate, innerSize, inUseDockSize};
+        /* If the renderable is unrenderable due to zero height/width...*/
+        if (inUseDockSize[0] === 0 || inUseDockSize[1] === 0) {
+            /* Don't display the space if the size is 0*/
+            space = 0;
+        }
+        return {dockSize, translate, innerSize, inUseDockSize, space};
 
     }
 
@@ -1094,9 +1112,8 @@ export class View extends FamousView {
         this.layout.setDataSource(this.renderables);
 
         for (let renderableName in this.renderables) {
-            let renderable = this.renderables[renderableName];
-            if (!~this._pipedRenderables.indexOf(renderableName)) {
-                this._pipeRenderable(renderable, renderableName);
+            if (!this._pipedRenderables[renderableName]) {
+                this._pipeRenderable(this._getPipeableRenderableFromName(renderableName), renderableName);
             }
         }
     }
@@ -1118,10 +1135,7 @@ export class View extends FamousView {
                 this._warn(`Attempted to delay showing renderable ${this._name()}.${animation.waitFor}, which does not exist or contain an on() method.`);
             }
         }
-        /*
-         for (let animation of (this.delayedAnimations || [])) {
-         Timer.setTimeout(() => animation.showMethod, animation.delay)
-         }*/
+
 
     }
 
@@ -1165,8 +1179,8 @@ export class View extends FamousView {
 
     _initTrueSizedBookkeeping() {
         this.layout.on('layoutstart', ({oldSize, size}) => {
-            if(size[0] !== oldSize[0] ||
-            size[1] !== oldSize[1]){
+            if (size[0] !== oldSize[0] ||
+                size[1] !== oldSize[1]) {
                 for (let [surface] of this._trueSizedSurfaceInfo) {
                     /* Encourage the surfaces to check if they have been resized, which could trigger the resize event */
                     surface._trueSizeCheck = true;
@@ -1255,24 +1269,25 @@ export class View extends FamousView {
             this.immediateAnimations = [];
         }
         /* Keeping track of piped renderables */
-        this._pipedRenderables = [];
+        this._pipedRenderables = {};
         this._groupedRenderables = {};
     }
 
+    /**
+     * Adds a decorated renderable to the bookkeeping of the view
+     * @param renderable
+     * @param renderableName
+     * @returns {Renderable} newRenderable The renderable that should be stored in this.renderables[renderableName]
+     * @private
+     */
     _addDecoratedRenderable(renderable, renderableName) {
         this.decoratedRenderables[renderableName] = renderable;
+        this._addRenderableToDecoratorGroup(renderable, renderableName);
+        return this._processRenderableEquivalent(renderable, renderableName);
+    }
 
-        /* Group the renderable */
-        let groupName = this._getGroupName(renderable);
-
-        if (groupName) {
-            if (!(groupName in this._groupedRenderables)) {
-                this._groupedRenderables[groupName] = new OrderedHashMap();
-            }
-            this._groupedRenderables[groupName].set(renderableName, renderable);
-        }
-
-        let {draggableOptions, swipableOptions, clip, animation, viewMargins} = renderable.decorations;
+    _processRenderableEquivalent(renderable, renderableName) {
+        let {draggableOptions, swipableOptions, clip, animation} = renderable.decorations;
 
         /* If we clip, then we need to create a containerSurface */
         if (clip) {
@@ -1361,11 +1376,10 @@ export class View extends FamousView {
             draggable.pipe(this._eventOutput);
         }
 
-
-        /* The margin decorator is treated specially when the renderable is a surface */
-        if (this._renderableIsSurface(renderable) && viewMargins) {
-            renderable.setProperties({padding: viewMargins.map((margin) => `${margin}px`).join(' ')});
-        }
+        /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
+         * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
+         * this.renderables is used in the LayoutController in this.layout to render this view. */
+        return renderable.animationController || renderable.containerSurface || renderable.node || renderable;
     }
 
     _processAnimatedRenderable(renderable, renderableName, options) {
@@ -1396,7 +1410,19 @@ export class View extends FamousView {
         }
     }
 
-    _removeDecoratedRenderable(renderable, renderableName) {
+    _addRenderableToDecoratorGroup(renderable, renderableName) {
+        /* Group the renderable */
+        let groupName = this._getGroupName(renderable);
+
+        if (groupName) {
+            if (!(groupName in this._groupedRenderables)) {
+                this._groupedRenderables[groupName] = new OrderedHashMap();
+            }
+            this._groupedRenderables[groupName].set(renderableName, renderable);
+        }
+    }
+
+    _removeRenderableFromDecoratorGroup(renderable, renderableName) {
         let groupName = this._getGroupName(renderable);
         let group = this._groupedRenderables[groupName];
         group.remove(renderableName);
