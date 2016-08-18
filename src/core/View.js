@@ -857,7 +857,7 @@ export class View extends FamousView {
 
         this.layout = new LayoutController({
             flow: !!this.decorations.useFlow,
-            flowOptions: this.decorations.flowOptions,
+            flowOptions: this.decorations.flowOptions || {},
             layout: function (context, options) {
 
                 /* Because views that extend this View class first call super() and then define their renderables,
@@ -1412,8 +1412,9 @@ export class View extends FamousView {
                 let [x,y] = position.get();
                 x += !swipableOptions.snapX ? data.delta[0] : 0;
                 y += !swipableOptions.snapY ? data.delta[1] : 0;
-                y = limit(swipableOptions.yRange[0], y, swipableOptions.yRange[1]);
-                x = limit(swipableOptions.xRange[0], x, swipableOptions.xRange[1]);
+                let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions;
+                y = limit(yRange[0], y, yRange[1]);
+                x = limit(xRange[0], x, xRange[1]);
                 position.set([x, y]);
             });
 
@@ -1422,8 +1423,9 @@ export class View extends FamousView {
                 data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0] * 2 : data.velocity[0];
                 let endX = swipableOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175);
                 let endY = swipableOptions.snapY ? 0 : y + data.delta[1] + (data.velocity[1] * 175);
-                endY = limit(swipableOptions.yRange[0], endY, swipableOptions.yRange[1]);
-                endX = limit(swipableOptions.xRange[0], endX, swipableOptions.xRange[1]);
+                let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions;
+                endY = limit(yRange[0], endY, yRange[1]);
+                endX = limit(xRange[0], endX, xRange[1]);
                 position.set([endX, endY], {
                     curve: Easing.outCirc,
                     duration: (750 - Math.abs((data.velocity[0] * 150)))
