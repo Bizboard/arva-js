@@ -16,7 +16,19 @@ import Easing                from 'famous/transitions/Easing.js';
 
 @layout.scrollable()
 class DialogWrapper extends View {
-    @layout.size((width) => Math.min(480, width - 32), true)
+
+    /**
+     * Defines the size that is appropriate for the dialog. The dialog can return undefined on its getSize function for
+     * full-blown sizing instead of true sizing, and it can define a maxSize to specify a maximum that causes the margins
+     * to get larger.
+     * @param size
+     */
+    determineSizeWithMargins (size, maxSize, dimension) {
+        return ~Math.min(maxSize ? maxSize[dimension] : 480, size[dimension] - 32);
+    }
+
+    @layout.size(function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)},
+        function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)})
     @layout.stick.center()
     dialog = this.options.dialog;
 
@@ -25,7 +37,7 @@ class DialogWrapper extends View {
     }
 
     getSize() {
-        if(!this._parentSize){
+        if (!this._parentSize) {
             return [undefined, undefined];
         }
         let dialogHeight = this.dialog.getSize()[1];
@@ -54,7 +66,7 @@ export class DialogManager extends View {
         hide: {transition: {curve: Easing.inCubic, duration: 300}, animation: AnimationController.Animation.Slide.Down},
         showInitially: false
     })
-        /* Empty content until filled */
+    /* Empty content until filled */
     dialog = {};
 
 
@@ -75,7 +87,7 @@ export class DialogManager extends View {
         famousContext.add(this);
 
         this.layout.on('layoutstart', ({size}) => {
-            if(this.dialog.onNewParentSize){
+            if (this.dialog.onNewParentSize) {
                 this.dialog.onNewParentSize(size);
                 this._savedParentSize = null;
             } else {
@@ -107,7 +119,7 @@ export class DialogManager extends View {
 
         /* Replace whatever non-showing dialog we have right now with the new dialog */
         this.replaceRenderable('dialog', new DialogWrapper({dialog}));
-        if(this._savedParentSize){
+        if (this._savedParentSize) {
             this.dialog.onNewParentSize(this._savedParentSize);
         }
         this._canCancel = canCancel;
@@ -148,7 +160,7 @@ export class DialogManager extends View {
 
 
     dialogComplete() {
-        if(!this._resolveDialogComplete){
+        if (!this._resolveDialogComplete) {
             return this._resolveDialogPromise = new Promise((resolve) => {
                 this._resolveDialogComplete = resolve
             });

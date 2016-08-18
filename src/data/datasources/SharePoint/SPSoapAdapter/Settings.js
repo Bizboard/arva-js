@@ -3,5 +3,7 @@
  */
 
 export class Settings {
-    static get localKeyPrefix(){ return '_local_'; }
+    static get localKeyPrefix() {
+        return '_local_';
+    }
 }

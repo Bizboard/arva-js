@@ -10,7 +10,6 @@
  */
 
 import _                            from 'lodash';
-import FlexScrollView               from 'famous-flex/FlexScrollView.js';
 import {Throttler}                  from '../utils/Throttler.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
@@ -24,6 +23,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
     constructor(options = {}) {
         super(combineOptions({
+            scrollFriction: {
+                strength: 0.0015
+            },
             autoPipeEvents: true,
             throttleDelay: 0, /* If set to 0, no delay is added in between adding items to the DataBoundScrollView. */
             dataSource: [],
@@ -41,9 +43,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
             dataFilter: ()=> true,
             ensureVisible: null,
             layoutOptions: {
-                isSectionCallback: options.stickyHeaders ? function(renderNode) {
+                isSectionCallback: options.stickyHeaders ? function (renderNode) {
                     return renderNode.groupId !== undefined;
-                } : undefined,
+                } : undefined
             },
             chatScrolling: false
         }, options));
@@ -144,6 +146,15 @@ export class DataBoundScrollView extends ReflowingScrollView {
         }
     }
 
+    /**
+     * Determines whether the last element showing is the actual last element
+     * @returns {boolean} True if the last element showing is the actual last element
+     */
+    isAtBottom() {
+        let lastVisibleItem = this.getLastVisibleItem();
+        return (lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value);
+    }
+
     _handleNewFilterResult(shouldShow, alreadyExists, entry) {
         if (shouldShow) {
             /* This entry should be in the view, add it if it doesn't exist yet. */
@@ -214,8 +225,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 let foundOrderedIndex = -1;
                 if (this.isGrouped) {
 
-                    for (let groupId in this._internalGroups) {
-                        let group = this._internalGroups[groupId];
+                    for (let group of _.sortBy(this._internalGroups, 'position')) {
                         /* Check the first and last item of every group (they're sorted) */
                         for (let position of group.itemsCount > 1 ? [group.position + 1, group.position + group.itemsCount - 1] : [group.position + 1]) {
                             let {dataId} = this._viewSequence.findByIndex(position)._value;
@@ -223,6 +233,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
                                 foundOrderedIndex = group.position;
                                 break;
                             }
+                        }
+                        if (foundOrderedIndex > -1) {
+                            break;
                         }
                     }
                 } else {
@@ -292,14 +305,17 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._subscribeToClicks(newSurface, child);
 
         /* If we're scrolling as with a chat window, then scroll to last child if we're at the bottom */
-        if(this.options.chatScrolling && insertIndex === this._dataSource.getLength()){
-            let lastVisibleItem = this.getLastVisibleItem();
-            if((lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value) || !this._allChildrenAdded){
+        if (this.options.chatScrolling && insertIndex === this._dataSource.getLength()) {
+            if (this.isAtBottom() || !this._allChildrenAdded) {
                 this._lastChild = child;
             }
         }
+        let insertSpec;
+        if(this.options.customInsertSpec){
+            insertSpec = this.options.customInsertSpec(child);
+        }
 
-        this.insert(insertIndex, newSurface);
+        this.insert(insertIndex, newSurface, insertSpec);
         this._updatePosition(insertIndex);
         this._insertId(child.id, insertIndex, newSurface, child);
 
@@ -308,10 +324,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
             let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
             if (this.options.chatScrolling) {
                 if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) {
-                    Timer.after(() =>this.ensureVisible(newSurface),1);
+                    this.ensureVisible(newSurface)
                 }
             } else if (shouldEnsureVisible) {
-                Timer.after(() =>this.ensureVisible(newSurface),1);
+                this.ensureVisible(newSurface);
             }
         }
     }
@@ -350,6 +366,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             this._updatePosition(position, -1);
             this.remove(position);
             delete this._internalGroups[groupByValue];
+            delete this._internalDataSource[groupByValue];
         }
 
     }
@@ -443,7 +460,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             console.log('Template needs to be a function.');
             return;
         }
-        if(this.options.chatScrolling){
+        if (this.options.chatScrolling) {
             this.options.dataStore.on('ready', () => this._allChildrenAdded = true);
         }
 
@@ -536,7 +553,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
     };
 
     _getDataSourceIndex(id) {
-        return this._findData(id).position;
+        let data = this._findData(id);
+        return data ? data.position : -1;
     }
 
     _getNextVisibleIndex(id) {

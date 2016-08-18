@@ -21,10 +21,12 @@ export class ArvaRouter extends Router {
     decode = decodeURIComponent;
     defaultController = 'Home';
     defaultMethod = 'Index';
-    
+
     constructor() {
         super();
-        if (window == null) { return; }
+        if (window == null) {
+            return;
+        }
         window.addEventListener('hashchange', this.run);
 
         if (window == null) {
@@ -50,7 +52,9 @@ export class ArvaRouter extends Router {
 
         this.defaultController = this._getControllerName(controller);
 
-        if (method != null) { this.defaultMethod = method; }
+        if (method != null) {
+            this.defaultMethod = method;
+        }
     }
 
     /**
@@ -97,10 +101,12 @@ export class ArvaRouter extends Router {
     /**
      * Registers a single controller.
      * @param {String} route Route to trigger handler on.
-     * @param {Function} handler Method to call on given route.
+     * @param {Object} handlers
+     * @param {Function} handler.enter Method to call on entering a route.
+     * @param {Function} handler.leave Method to call on when leaving a route.
      * @returns {void}
      */
-    add(route, handler,controller) {
+    add(route, {enter, leave}, controller) {
         let pieces = route.split('/'),
             rules = this.routes;
 
@@ -115,7 +121,8 @@ export class ArvaRouter extends Router {
             }
         }
 
-        rules['@'] = handler;
+        rules['enter'] = enter;
+        rules['leave'] = leave;
         rules['controller'] = controller;
 
     }
@@ -140,7 +147,7 @@ export class ArvaRouter extends Router {
             keys = [],
             method = '';
         for (let piece in pieces) {
-            if (pieces[piece].indexOf('=')>-1) {
+            if (pieces[piece].indexOf('=') > -1) {
                 let splitted = pieces[piece].split('=');
                 pieces[piece] = splitted[0];
                 querySplit.push(pieces[piece] + '=' + splitted[1]);
@@ -185,7 +192,7 @@ export class ArvaRouter extends Router {
             }
         }).call(this, querySplit.length > 1 ? querySplit[1] : '');
 
-        if (rule && rule['@']) {
+        if (rule && rule['enter']) {
 
             /* Push current route to the history stack for later use */
             let previousRoute = this.history.length ? this.history[this.history.length - 1] : undefined;
@@ -197,6 +204,12 @@ export class ArvaRouter extends Router {
                 keys: keys,
                 values: values
             };
+
+            if(previousRoute){
+                if(currentRoute.controllerObject !== previousRoute.controllerObject){
+                    this.routes[previousRoute.controller][':']['leave'](currentRoute);
+                }
+            }
             currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : (this._initialSpec || {});
             this._setHistory(currentRoute);
 
@@ -218,15 +231,15 @@ export class ArvaRouter extends Router {
         this._backButtonEnabled = enabled;
     }
 
-    isBackButtonEnabled(){
+    isBackButtonEnabled() {
         return this._backButtonEnabled;
     }
 
     goBackInHistory() {
         /* Default behaviour: go back in history in the arva router */
         let {history} = this;
-        if(history.length > 1){
-            let {controller,method,keys,values} = history[history.length-2];
+        if (history.length > 1) {
+            let {controller, method, keys, values} = history[history.length - 2];
             let inputObject = {};
             for (let i = 0; i < keys.length; i++) {
                 inputObject[keys[i]] = values[i];
@@ -240,14 +253,13 @@ export class ArvaRouter extends Router {
     _setupNativeBackButtonListener() {
         this._backButtonEnabled = true;
         document.addEventListener("backbutton", (e) => {
-            if(!this._backButtonEnabled){
+            if (!this._backButtonEnabled) {
                 e.preventDefault();
             } else {
                 this.goBackInHistory();
             }
         }, false);
     }
-
 
 
     /**
@@ -259,7 +271,7 @@ export class ArvaRouter extends Router {
      */
     _executeRoute(rule, route) {
         /* Make the controller active for current scope */
-        if(rule['@'](route)) {
+        if (rule['enter'](route)) {
             this.emit('routechange', route);
         }
     }
@@ -374,11 +386,11 @@ export class ArvaRouter extends Router {
      * @private
      */
     _getControllerName(controller) {
-        if(typeof controller === 'string') {
+        if (typeof controller === 'string') {
             return controller.replace('Controller', '');
-        } else if (typeof controller === 'function' && Object.getPrototypeOf(controller).constructor.name == 'Function'){
+        } else if (typeof controller === 'function' && Object.getPrototypeOf(controller).constructor.name == 'Function') {
             return controller.name.replace('Controller', '');
-        } else{
+        } else {
             return typeof controller === 'object' ?
                 Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
         }

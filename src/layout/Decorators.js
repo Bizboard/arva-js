@@ -195,7 +195,9 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        left: function() { return layout._dockTo('left', ...arguments)},
+        left: function () {
+            return layout._dockTo('left', ...arguments)
+        },
 
         /**
          * @example:
@@ -219,7 +221,9 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        right: function() { return layout._dockTo('right', ...arguments)},
+        right: function () {
+            return layout._dockTo('right', ...arguments)
+        },
 
         /**
          * @example:
@@ -243,7 +247,9 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        top: function() { return layout._dockTo('top', ...arguments)},
+        top: function () {
+            return layout._dockTo('top', ...arguments)
+        },
 
         /**
          * @example:
@@ -267,7 +273,9 @@ export const layout = {
          * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
-        bottom: function() { return layout._dockTo('bottom', ...arguments)},
+        bottom: function () {
+            return layout._dockTo('bottom', ...arguments)
+        },
 
         /**
          * @example:
@@ -281,7 +289,9 @@ export const layout = {
          *
          * @returns {Function} A decorator function
          */
-        fill: function() { return layout._dockTo('fill', ...arguments)}
+        fill: function () {
+            return layout._dockTo('fill', ...arguments)
+        }
 
     },
 
@@ -295,7 +305,7 @@ export const layout = {
      * Makes the renderable allowed to be dragged around. this.renderables[name] refers to a RenderNode containing this
      * draggable along with the renderable itself.
      *
-     * @param {Object} draggableOptions. Same options that can be passed to a Famous Draggable.
+     * @param {Object} [draggableOptions]. Same options that can be passed to a Famous Draggable.
      * @param {Number} [options.snapX] grid width for snapping during drag
      * @param {Number} [options.snapY] grid height for snapping during drag
      * @param {Array.Number} [options.xRange] maxmimum [negative, positive] x displacement from start of drag
@@ -305,7 +315,7 @@ export const layout = {
      *    Draggable._direction.y to constrain to one axis.
      * @returns {Function}
      */
-    draggable: function (draggableOptions) {
+    draggable: function (draggableOptions = {}) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             renderable.decorations.draggableOptions = draggableOptions;
@@ -420,7 +430,7 @@ export const layout = {
      * @param {Number} x The rotation around the x axis (flips vertically)
      * @param {Number} y The rotation around the y axis (flips horizontally)
      * @param {Number} z The rotation around the z axis (rotatesin in the more intuitive sense)
-     * @returns {Function}
+     * @returns {Function} A decorator function
      */
     rotate: function (x, y, z) {
         return function (view, renderableName, descriptor) {
@@ -429,7 +439,25 @@ export const layout = {
         }
     },
 
-
+    /**
+     * @example
+     * @layout.opacity(0.5)
+     * @layout.size(100, 10)
+     * @layout.place.center()
+     * // Writes text that is half invisible
+     * renderable = new Surface({content: 'Half invisible'});
+     *
+     * Sets te opacity of a renderable
+     *
+     * @param {Number} The opacity, between 0 and 1
+     * @returns {Function} A decorator function
+     */
+    opacity: function (opacity) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.opacity = opacity;
+        }
+    },
 
 
     _stickTo: function (stick) {
@@ -485,15 +513,33 @@ export const layout = {
      * @returns {Function} A decorator function
      */
     stick: {
-        center: function()              { return layout._stickTo('center');},
-        left: function()                { return layout._stickTo('left');},
-        right: function()               { return layout._stickTo('right');},
-        top: function()                 { return layout._stickTo('top');},
-        bottom: function()              { return layout._stickTo('bottom');},
-        bottomLeft: function()          { return layout._stickTo('bottomLeft');},
-        bottomRight: function()         { return layout._stickTo('bottomRight');},
-        topLeft: function()             { return layout._stickTo('topLeft');},
-        topRight: function()            { return layout._stickTo('topRight');}
+        center: function () {
+            return layout._stickTo('center');
+        },
+        left: function () {
+            return layout._stickTo('left');
+        },
+        right: function () {
+            return layout._stickTo('right');
+        },
+        top: function () {
+            return layout._stickTo('top');
+        },
+        bottom: function () {
+            return layout._stickTo('bottom');
+        },
+        bottomLeft: function () {
+            return layout._stickTo('bottomLeft');
+        },
+        bottomRight: function () {
+            return layout._stickTo('bottomRight');
+        },
+        topLeft: function () {
+            return layout._stickTo('topLeft');
+        },
+        topRight: function () {
+            return layout._stickTo('topRight');
+        }
     },
 
     /**
@@ -625,6 +671,31 @@ export const layout = {
 
         };
     },
+
+    /**
+     * @example
+     * @layout.flow({spring: {dampingRatio: 0.8, period: 1000}})
+     * class myView extends View{
+     * ...
+     * }
+     *
+     * Makes the view flow.
+     * @param {Object} Options to pass as flowOptions to the LayoutController
+     * @param {Bool} [flowOptions.reflowOnResize] Smoothly reflows renderables on resize (only used when flow = true) (default: `true`).
+     * @param {Object} [flowOptions.spring] Spring options used by nodes when reflowing (default: `{dampingRatio: 0.8, period: 300}`).
+     * @param {Object} [flowOptions.properties] Properties which should be enabled or disabled for flowing.
+     * @param {Spec} [flowOptions.insertSpec] Size, transform, opacity... to use when inserting new renderables into the scene (default: `{}`).
+     * @param {Spec} [flowOptions.removeSpec] Size, transform, opacity... to use when removing renderables from the scene (default: undefined).
+     * @returns {Function} A decorator function
+     */
+    flow: function (flowOptions) {
+        return function (target) {
+            let decorations = prepPrototypeDecorations(target.prototype);
+            decorations.useFlow = true;
+            decorations.flowOptions = flowOptions || {};
+        }
+    },
+
 
     /**
      * @example
