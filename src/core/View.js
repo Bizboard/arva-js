@@ -202,8 +202,7 @@ export class View extends FamousView {
         let decoratedSize = this[renderableName].decorations.size || (this[renderableName].decorations.dock ? this[renderableName].decorations.dock.size : undefined);
         if (decoratedSize) {
             /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
-             * new size to take into account.
-             */
+             * new size to take into account. */
             for (let dimension of [0, 1]) {
                 if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[dimension], [NaN, NaN], dimension))) {
                     this.reflowRecursively();
@@ -286,11 +285,13 @@ export class View extends FamousView {
 
     _showWithAnimationController(animationController, renderable, show = true) {
         animationController._showingRenderable = show;
-        animationController[show ? 'show' : 'hide'](renderable.containerSurface || renderable, null, () => {
-            if (renderable.emit) {
-                renderable.emit('shown');
-            }
-        });
+        let callback = () => { if (renderable.emit) { renderable.emit(show ? 'shown' : 'hidden'); } };
+
+        if(show){
+            animationController.show(renderable.containerSurface || renderable, null, callback);
+        } else {
+            animationController.hide(null, callback);
+        }
     }
 
     hideRenderable(renderableName) {
