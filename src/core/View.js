@@ -1395,58 +1395,7 @@ export class View extends FamousView {
         }
 
         if (swipableOptions) {
-            GenericSync.register({
-                "mouse": MouseSync,
-                "touch": TouchSync
-            });
-
-            let sync = new GenericSync({
-                "mouse": {},
-                "touch": {}
-            });
-
-            renderable.pipe(sync);
-
-            /* Translation modifier */
-            var positionModifier = new Modifier({
-                transform: function () {
-                    let [x, y] = position.get();
-                    return Transform.translate(x, y, 0);
-                }
-            });
-
-            var position = new Transitionable([0, 0]);
-
-            sync.on('update', (data)=> {
-                let [x,y] = position.get();
-                x += !swipableOptions.snapX ? data.delta[0] : 0;
-                y += !swipableOptions.snapY ? data.delta[1] : 0;
-                let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions;
-                y = limit(yRange[0], y, yRange[1]);
-                x = limit(xRange[0], x, xRange[1]);
-                position.set([x, y]);
-            });
-
-            sync.on('end', (data)=> {
-                let [x,y] = position.get();
-                data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0] * 2 : data.velocity[0];
-                let endX = swipableOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175);
-                let endY = swipableOptions.snapY ? 0 : y + data.delta[1] + (data.velocity[1] * 175);
-                let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions;
-                endY = limit(yRange[0], endY, yRange[1]);
-                endX = limit(xRange[0], endX, xRange[1]);
-                position.set([endX, endY], {
-                    curve: Easing.outCirc,
-                    duration: (750 - Math.abs((data.velocity[0] * 150)))
-                });
-
-                this._determineSwipeEvents(renderable, swipableOptions, endX, endY);
-
-            });
-
-            renderable.node = new RenderNode();
-            renderable.node.add(positionModifier).add(renderable);
-            renderable.pipe(this._eventOutput);
+            renderable = this._initSwipable(swipableOptions, renderable);
 
         } else if (draggableOptions) {
             renderable.node = new RenderNode();
@@ -1530,6 +1479,68 @@ export class View extends FamousView {
             /* This occurs e.g. when a renderable is only marked @renderable, and its parent view has a @layout.custom decorator to define its context. */
             return 'ignored';
         }
+    }
+
+    /**
+     * Create the swipable and register all the event logic for a swipable renderable
+     * @private
+     */
+    _initSwipable(swipableOptions = {}, renderable = {}){
+        GenericSync.register({
+            "mouse": MouseSync,
+            "touch": TouchSync
+        });
+
+        let sync = new GenericSync({
+            "mouse": {},
+            "touch": {}
+        });
+
+        renderable.pipe(sync);
+
+        /* Translation modifier */
+        var positionModifier = new Modifier({
+            transform: function () {
+                let [x, y] = position.get();
+                return Transform.translate(x, y, 0);
+            }
+        });
+
+        var position = new Transitionable([0, 0]);
+
+        sync.on('update', (data)=> {
+            let [x,y] = position.get();
+            x += !swipableOptions.snapX ? data.delta[0] : 0;
+            y += !swipableOptions.snapY ? data.delta[1] : 0;
+            let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions;
+            y = limit(yRange[0], y, yRange[1]);
+            x = limit(xRange[0], x, xRange[1]);
+            position.set([x, y]);
+        });
+
+        sync.on('end', (data)=> {
+            let [x,y] = position.get();
+            data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0] * 2 : data.velocity[0];
+            let endX = swipableOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175);
+            let endY = swipableOptions.snapY ? 0 : y + data.delta[1] + (data.velocity[1] * 175);
+            let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions;
+            endY = limit(yRange[0], endY, yRange[1]);
+            endX = limit(xRange[0], endX, xRange[1]);
+            position.set([endX, endY], {
+                curve: Easing.outCirc,
+                duration: (750 - Math.abs((data.velocity[0] * 150)))
+            });
+
+            this._determineSwipeEvents(renderable, swipableOptions, endX, endY);
+
+        });
+
+        renderable.node = new RenderNode();
+        renderable.node.add(positionModifier).add(renderable);
+        renderable.pipe(this._eventOutput);
+
+        return renderable;
+
     }
 
     _determineSwipeEvents(renderable, swipableOptions = {}, endX = 0, endY = 0) {
