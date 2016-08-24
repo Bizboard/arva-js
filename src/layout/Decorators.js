@@ -325,7 +325,7 @@ export const layout = {
     /**
      * @example
      * @layout.size(100, 100)
-     * @layout.swipable({xRange: [0, 100}, snapX: true})
+     * @layout.swipable({xRange: [0, 100], snapX: true})
      * //Make a red box that can slide to the right
      * swipable = new Surface({properties: {backgroundColor: 'red'});
      *
@@ -690,11 +690,23 @@ export const layout = {
      */
     flow: function (flowOptions) {
         return function (target) {
+            console.log('flowOptions: ',flowOptions);
             let decorations = prepPrototypeDecorations(target.prototype);
             decorations.useFlow = true;
             decorations.flowOptions = flowOptions || {};
+            decorations.curve = flowOptions.curve || undefined;
         }
     },
+
+    flowRenderable: function (flowOptions) {
+        return function (target, renderableName, descriptor) {
+            let decorations = prepDecoratedRenderable(...arguments).decorations;
+            decorations.useFlow = true;
+            decorations.flowOptions = flowOptions || {};
+            decorations.curve = flowOptions.curve || undefined;
+        }
+    },
+
 
 
     /**

@@ -700,13 +700,14 @@ export class View extends FamousView {
         for (let renderableName of names) {
             let renderable = traditionalRenderables.get(renderableName);
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
-            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0], opacity = 1} = renderable.decorations;
+            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0], opacity = 1, curve = {curve: Easing.inOutBounce, duration: 1000}} = renderable.decorations;
             //TODO: CHeck if the renderable has flows that need to pass curves and durations and springs
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             context.set(renderableName, {
                 size: renderableSize,
                 translate: adjustedTranslation,
+                curve: curve,
                 origin,
                 align,
                 rotate,
