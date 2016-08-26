@@ -34,7 +34,8 @@ import Easing                       from 'famous/transitions/Easing.js';
 import Transitionable               from 'famous/transitions/Transitionable.js';
 import Modifier                     from 'famous/core/Modifier.js';
 import Transform                    from 'famous/core/Transform.js';
-import {callbackToPromise}          from '../utils/CallbackHelpers.js';
+import {callbackToPromise,
+        waitMilliseconds}           from '../utils/CallbackHelpers.js';
 
 
 export class View extends FamousView {
@@ -286,13 +287,18 @@ export class View extends FamousView {
 
     async setRenderableFlowState(renderableName = '', stateName = ''){
         let renderable = this[renderableName];
+        let flowOptions = renderable.decorations.flow;
+        flowOptions.currentState = stateName;
 
-        // todo set curve;
+        for(let {transformations, options} of flowOptions.states[stateName].steps){
+            flowOptions.currentCurve = options.curve || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
 
-        for(let {transformations, options} of renderable.decorations.flow.states[stateName].steps){
             this.decorateRenderable(renderableName, ...transformations);
             await callbackToPromise(renderable.on.bind(renderable), 'flowDone');
-            // todo make optional delay possible
+
+            /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
+            if(options.delay) { await waitMilliseconds(options.delay); }
+
             console.log('flow done: ', transformations);
         }
 
@@ -731,14 +737,15 @@ export class View extends FamousView {
         for (let renderableName of names) {
             let renderable = traditionalRenderables.get(renderableName);
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
-            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0], opacity = 1, curve = {curve: 'linear', duration: 300}} = renderable.decorations;
+            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
+                opacity = 1, curve = {curve: 'linear', duration: 300}} = renderable.decorations;
             //TODO: CHeck if the renderable has flows that need to pass curves and durations and springs
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             context.set(renderableName, {
                 size: renderableSize,
                 translate: adjustedTranslation,
-                curve: curve,
+                curve: renderable.decorations.flow.currentCurve || curve,
                 origin,
                 align,
                 rotate,
