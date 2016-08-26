@@ -906,5 +906,13 @@ export const flow = {
         }
     },
 
-
+    viewStates: function (states = {}) {
+        return function (target) {
+            let decorations = prepPrototypeDecorations(target.prototype);
+            if (!decorations.flow) {
+                decorations.flow = {};
+            }
+            decorations.flow.viewStates = states;
+        }
+    }
 };

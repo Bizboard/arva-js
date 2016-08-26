@@ -299,6 +299,21 @@ export class View extends FamousView {
         return true;
     }
 
+    async setViewFlowState(stateName = '') {
+        let steps = this.decorations.flow.viewStates[stateName];
+
+        for(let step of steps) {
+            let waitQueue = [];
+            for(let renderableName in step) {
+                let state = step[renderableName];
+                waitQueue.push(this.setRenderableFlowState(renderableName, state));
+            }
+            await Promise.all(waitQueue);
+        }
+
+        return true;
+    }
+
     _showWithAnimationController(animationController, renderable, show = true) {
         animationController._showingRenderable = show;
         let callback = () => { if (renderable.emit) { renderable.emit(show ? 'shown' : 'hidden'); } };
@@ -716,7 +731,7 @@ export class View extends FamousView {
         for (let renderableName of names) {
             let renderable = traditionalRenderables.get(renderableName);
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
-            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0], opacity = 1, curve = {curve: 'linear', duration: 10000}} = renderable.decorations;
+            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0], opacity = 1, curve = {curve: 'linear', duration: 300}} = renderable.decorations;
             //TODO: CHeck if the renderable has flows that need to pass curves and durations and springs
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
