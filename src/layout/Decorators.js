@@ -690,24 +690,12 @@ export const layout = {
      */
     flow: function (flowOptions) {
         return function (target) {
-            console.log('flowOptions: ',flowOptions);
             let decorations = prepPrototypeDecorations(target.prototype);
             decorations.useFlow = true;
             decorations.flowOptions = flowOptions || {};
             decorations.curve = flowOptions.curve || undefined;
         }
     },
-
-    flowRenderable: function (flowOptions) {
-        return function (target, renderableName, descriptor) {
-            let decorations = prepDecoratedRenderable(...arguments).decorations;
-            decorations.useFlow = true;
-            decorations.flowOptions = flowOptions || {};
-            decorations.curve = flowOptions.curve || undefined;
-        }
-    },
-
-
 
     /**
      * @example
@@ -876,4 +864,47 @@ export const event = {
             renderable.decorations.pipes.push(pipeToName);
         };
     }
+};
+
+export const flow = {
+    state: function (stateName = '', animations = [], curve = {}) {
+        return function (target, renderableName, descriptor) {
+            let decorations = prepDecoratedRenderable(...arguments).decorations;
+
+            if (!decorations.flow) {
+                decorations.flow = {states: {}};
+            }
+            decorations.flow.states[stateName] = {animations, curve};
+            decorations.useFlow = true;
+            decorations.flowOptions = {flow: true}; // todo refactor to flow.flowOptions;
+            // decorations.curve = flowOptions.curve || undefined; //todo refactor to defaultcurve
+        }
+    },
+    defaults: function (flowOptions = {}) {
+        return function (target, renderableName, descriptor) {
+            let decorations = prepDecoratedRenderable(...arguments).decorations;
+
+            decorations.flowOptions = {flow: true};
+            decorations.flow.flowOptions = {flow: true, ...flowOptions};
+            // decorations.curve = flowOptions.curve || undefined; //todo refactor to defaultcurve
+        }
+    },
+
+    stateStep: function (stateName = '', stateOptions = {}, ...transformations) {
+        return function (target, renderableName, descriptor) {
+            console.log(stateOptions);
+            let decorations = prepDecoratedRenderable(...arguments).decorations;
+            if (!decorations.flow) {
+                decorations.flow = {states: {}};
+                decorations.useFlow = true; // todo remove
+                decorations.flowOptions = {flow: true}; // todo remove
+            }
+            if (!decorations.flow.states[stateName]) {
+                decorations.flow.states[stateName] = {steps: []};
+            }
+            decorations.flow.states[stateName].steps.unshift({transformations, options: stateOptions});
+        }
+    },
+
+
 };

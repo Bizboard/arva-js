@@ -34,6 +34,7 @@ import Easing                       from 'famous/transitions/Easing.js';
 import Transitionable               from 'famous/transitions/Transitionable.js';
 import Modifier                     from 'famous/core/Modifier.js';
 import Transform                    from 'famous/core/Transform.js';
+import {callbackToPromise}          from '../utils/CallbackHelpers.js';
 
 
 export class View extends FamousView {
@@ -43,7 +44,7 @@ export class View extends FamousView {
         super(options);
 
 
-        /* Bind all local methods to the current object instance, so we can refer to "this"
+        /* Bind all local methods to the current object instance, so we can refer to 'this'
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
 
@@ -281,6 +282,21 @@ export class View extends FamousView {
             this._addRenderableToDecoratorGroup(renderable, renderableName);
         }
         this.reflowRecursively();
+    }
+
+    async setRenderableFlowState(renderableName = '', stateName = ''){
+        let renderable = this[renderableName];
+
+        // todo set curve;
+
+        for(let {transformations, options} of renderable.decorations.flow.states[stateName].steps){
+            this.decorateRenderable(renderableName, ...transformations);
+            await callbackToPromise(renderable.on.bind(renderable), 'flowDone');
+            // todo make optional delay possible
+            console.log('flow done: ', transformations);
+        }
+
+        return true;
     }
 
     _showWithAnimationController(animationController, renderable, show = true) {
@@ -700,7 +716,7 @@ export class View extends FamousView {
         for (let renderableName of names) {
             let renderable = traditionalRenderables.get(renderableName);
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
-            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0], opacity = 1, curve = {curve: Easing.inOutBounce, duration: 1000}} = renderable.decorations;
+            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0], opacity = 1, curve = {curve: 'linear', duration: 10000}} = renderable.decorations;
             //TODO: CHeck if the renderable has flows that need to pass curves and durations and springs
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
@@ -1481,13 +1497,13 @@ export class View extends FamousView {
      */
     _initSwipable(swipableOptions = {}, renderable = {}){
         GenericSync.register({
-            "mouse": MouseSync,
-            "touch": TouchSync
+            'mouse': MouseSync,
+            'touch': TouchSync
         });
 
         let sync = new GenericSync({
-            "mouse": {},
-            "touch": {}
+            'mouse': {},
+            'touch': {}
         });
 
         renderable.pipe(sync);
