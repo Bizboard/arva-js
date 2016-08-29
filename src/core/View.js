@@ -288,6 +288,8 @@ export class View extends FamousView {
     async setRenderableFlowState(renderableName = '', stateName = ''){
         let renderable = this[renderableName];
         let flowOptions = renderable.decorations.flow;
+
+        /* This is intended to be overwritten by other asynchronous calls to this method, see the stateName check below. */
         flowOptions.currentState = stateName;
 
         for(let {transformations, options} of flowOptions.states[stateName].steps){
@@ -311,6 +313,8 @@ export class View extends FamousView {
     async setViewFlowState(stateName = '') {
         let flowOptions = this.decorations.flow;
         let steps = flowOptions.viewStates[stateName];
+
+        /* This is intended to be overwritten by other asynchronous calls to this method, see the stateName check below. */
         flowOptions.currentState = stateName;
 
         for(let step of steps) {
