@@ -299,14 +299,19 @@ export class View extends FamousView {
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if(options.delay) { await waitMilliseconds(options.delay); }
 
-            console.log('flow done: ', transformations);
+            /* If another state has been set since the invocation of this method, skip any remaining transformations. */
+            if(flowOptions.currentState !== stateName) { break; }
+
+            (renderable.emit || renderable._eventOutput.emit)('flowStep', {state: stateName});
         }
 
         return true;
     }
 
     async setViewFlowState(stateName = '') {
-        let steps = this.decorations.flow.viewStates[stateName];
+        let flowOptions = this.decorations.flow;
+        let steps = flowOptions.viewStates[stateName];
+        flowOptions.currentState = stateName;
 
         for(let step of steps) {
             let waitQueue = [];
@@ -315,6 +320,9 @@ export class View extends FamousView {
                 waitQueue.push(this.setRenderableFlowState(renderableName, state));
             }
             await Promise.all(waitQueue);
+
+            /* If another state has been set since the invocation of this method, skip any remaining transformations. */
+            if(flowOptions.currentState !== stateName) { break; }
         }
 
         return true;
@@ -742,10 +750,11 @@ export class View extends FamousView {
             //TODO: CHeck if the renderable has flows that need to pass curves and durations and springs
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
+            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentCurve
             context.set(renderableName, {
                 size: renderableSize,
                 translate: adjustedTranslation,
-                curve: renderable.decorations.flow.currentCurve || curve,
+                curve: renderableCurve || curve,
                 origin,
                 align,
                 rotate,
