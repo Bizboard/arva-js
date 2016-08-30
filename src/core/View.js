@@ -304,7 +304,8 @@ export class View extends FamousView {
             /* If another state has been set since the invocation of this method, skip any remaining transformations. */
             if(flowOptions.currentState !== stateName) { break; }
 
-            (renderable.emit || renderable._eventOutput.emit)('flowStep', {state: stateName});
+            let emit = (renderable.emit || renderable._eventOutput.emit).bind(renderable);
+            emit('flowStep', {state: stateName});
         }
 
         return true;

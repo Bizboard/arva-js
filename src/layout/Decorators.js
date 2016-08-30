@@ -867,20 +867,7 @@ export const event = {
 };
 
 export const flow = {
-    state: function (stateName = '', animations = [], curve = {}) {
-        return function (target, renderableName, descriptor) {
-            let decorations = prepDecoratedRenderable(...arguments).decorations;
-
-            if (!decorations.flow) {
-                decorations.flow = {states: {}};
-            }
-            decorations.flow.states[stateName] = {animations, curve};
-            decorations.useFlow = true;
-            decorations.flowOptions = {flow: true}; // todo refactor to flow.flowOptions;
-            // decorations.curve = flowOptions.curve || undefined; //todo refactor to defaultcurve
-        }
-    },
-    defaults: function (flowOptions = {}) {
+    defaultOptions: function (flowOptions = {}) {
         return function (target, renderableName, descriptor) {
             let decorations = prepDecoratedRenderable(...arguments).decorations;
 
@@ -891,9 +878,9 @@ export const flow = {
         }
     },
 
+    //?
     stateStep: function (stateName = '', stateOptions = {}, ...transformations) {
         return function (target, renderableName, descriptor) {
-            console.log(stateOptions);
             let decorations = prepDecoratedRenderable(...arguments).decorations;
             if (!decorations.flow) {
                 decorations.flow = {states: {}};
