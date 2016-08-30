@@ -301,7 +301,7 @@ export class View extends FamousView {
             flowOptions.currentCurve = options.curve || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
 
             this.decorateRenderable(renderableName, ...transformations);
-            await callbackToPromise(renderable.on.bind(renderable), 'flowDone');
+            await callbackToPromise(renderable.on.bind(renderable), 'flowEnd');
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if(options.delay) { await waitMilliseconds(options.delay); }
