@@ -224,7 +224,12 @@ export class View extends FamousView {
      */
     decorateRenderable(renderableName, ...decorators) {
         let renderable = this[renderableName];
-        let fakeRenderable = {};
+        let fakeRenderable = {
+            decorations: {
+                translate: renderable.decorations.translate || [0, 0, 0],
+                rotate: renderable.decorations.rotate || [0, 0, 0]
+            }
+        };
         if (!decorators.length) {
             this._warn('No decorators specified to decorateRenderable(renderableName, ...decorators)');
         }
