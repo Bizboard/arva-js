@@ -276,10 +276,14 @@ export class View extends FamousView {
             }
         }
         let oldRenderableGroupName = this._getGroupName(renderable);
+        let shouldDisableDock = (fakeRenderable.decorations.disableDock && renderable.decorations.dock);
+        if(shouldDisableDock){
+            delete renderable.decorations.dock;
+        }
         /* Extend the object */
         Object.assign(renderable.decorations, fakeRenderable.decorations);
         /* See if we have to redo the grouping */
-        let needToChangeDecoratorGroup = oldRenderableGroupName !== this._getGroupName(renderable);
+        let needToChangeDecoratorGroup = (oldRenderableGroupName !== this._getGroupName(renderable)) || shouldDisableDock;
         /* Process new renderable equivalent, if that applies */
         this.renderables[renderableName] = this._processRenderableEquivalent(renderable, renderableName);
         if (needToChangeDecoratorGroup) {
@@ -671,11 +675,14 @@ export class View extends FamousView {
      * Resolves a single dimension (i.e. x or y) size of a renderable.
      * @param {Number|Boolean|Object|Undefined|Function} renderableSize Renderable's single dimension size.
      * @param {Array.Number} contextSize The context size
-     * @returns {Number} dimension The dimension of the size that is being evaluated (e.g. 1 or 0)
+     * @param {Number} dimension The dimension of the size that is being evaluated (e.g. 1 or 0)
+     * @returns {Number} The resulting size
      * @private
      */
     _resolveSingleSize(renderableSize, contextSize, dimension) {
         switch (typeof renderableSize) {
+            case 'undefined':
+                return contextSize[dimension];
             case 'function':
                 return this._resolveSingleSize(renderableSize.call(this, ...contextSize), contextSize, dimension);
             case 'number':

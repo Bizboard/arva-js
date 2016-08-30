@@ -291,6 +291,23 @@ export const layout = {
          */
         fill: function () {
             return layout._dockTo('fill', ...arguments)
+        },
+        /**
+         * @example:
+         * @layout.dock.fill()
+         * @flow.stateStep('nonFilled', layout.dock.none(), layout.size(100, 100))
+         * filledRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
+         * Marks the renderable as not being docked anymore. Useful when dynamically changing decorations through
+         * this.decorateRenderable or this.setRenderableFlowState
+         *
+         * @returns {Function} A decorator function
+         */
+        none: function () {
+            return function (view, renderableName, descriptor) {
+                let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+                renderable.decorations.disableDock = true;
+            }
         }
 
     },
