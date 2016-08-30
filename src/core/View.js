@@ -225,7 +225,12 @@ export class View extends FamousView {
      */
     decorateRenderable(renderableName, ...decorators) {
         let renderable = this[renderableName];
-        let fakeRenderable = {};
+        let fakeRenderable = {
+            decorations: {
+                translate: renderable.decorations.translate || [0, 0, 0],
+                rotate: renderable.decorations.rotate || [0, 0, 0]
+            }
+        };
         if (!decorators.length) {
             this._warn('No decorators specified to decorateRenderable(renderableName, ...decorators)');
         }
@@ -304,7 +309,8 @@ export class View extends FamousView {
             /* If another state has been set since the invocation of this method, skip any remaining transformations. */
             if(flowOptions.currentState !== stateName) { break; }
 
-            (renderable.emit || renderable._eventOutput.emit)('flowStep', {state: stateName});
+            let emit = (renderable.emit || renderable._eventOutput.emit).bind(renderable);
+            emit('flowStep', {state: stateName});
         }
 
         return true;

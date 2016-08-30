@@ -441,6 +441,29 @@ export const layout = {
 
     /**
      * @example
+     * @layout.size(100,100)
+     * @layout.rotate(0, 0, Math.PI)
+     * // Writes text upside down
+     * renderable = new Surface({content: 'upside down text'});
+     *
+     * Rotates the renderable around any of the three axes (in radians) relatively to the current rotation
+     *
+     * @param {Number} x The rotation around the x axis (flips vertically)
+     * @param {Number} y The rotation around the y axis (flips horizontally)
+     * @param {Number} z The rotation around the z axis (rotatesin in the more intuitive sense)
+     * @returns {Function} A decorator function
+     */
+    rotateFrom: function (x, y, z) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            let propertyName = 'rotate';
+            let properties = renderable.decorations[propertyName] || [0,0,0];
+            renderable.decorations[propertyName] = [properties[0]+x, properties[1]+y, properties[2]+z];
+        }
+    },
+
+    /**
+     * @example
      * @layout.opacity(0.5)
      * @layout.size(100, 10)
      * @layout.place.center()
@@ -619,6 +642,44 @@ export const layout = {
                 propertyName = 'translate';
             }
             decorations[propertyName] = [x, y, z];
+        };
+    },
+
+    /**
+     * @example
+     * @layout.translateFrom(0, 0, 20)
+     * class myView extends View{
+     *  @layout.translateFrom(0, 0, -20)
+     *  @layout.fullscreen
+     *  // Will display relatively at z level 0 (20 minus 20)
+     *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
+     * }
+     *
+     * Specifies a relative translation of a renderable. Can be applied to every kind of renderable (docked, fullscreen,
+     * and normal).
+     *
+     * Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
+     * to [0, 0, 10] in order to always increase the z space of every level of the Famous rendering tree.
+     * @param {Number} x Moves the renderable along the x axis.
+     * @param {Number} y Moves the renderable along the y axis.
+     * @param {Number} z Moves the renderable along the z axis.
+     * @returns {Function} A decorator function.
+     */
+    translateFrom: function (x, y, z) {
+        return function (target, renderableName, descriptor) {
+            if (Array.isArray(x)) {
+                throw Error('Please specify translate as three arguments, and not as an array');
+            }
+            let propertyName, decorations;
+            if (typeof target == 'function') {
+                decorations = prepPrototypeDecorations(target.prototype);
+                propertyName = 'extraTranslate';
+            } else {
+                decorations = prepDecoratedRenderable(...arguments).decorations;
+                propertyName = 'translate';
+            }
+            let properties = decorations[propertyName] || [0,0,0];
+            decorations[propertyName] = [properties[0]+x, properties[1]+y, properties[2]+z];
         };
     },
 
