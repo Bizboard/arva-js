@@ -22,13 +22,12 @@ import AnimationController          from 'famous-flex/AnimationController.js';
 import ContainerSurface             from 'famous/Surfaces/ContainerSurface.js';
 
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
-import {combineOptions}             from '../utils/CombineOptions.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 
 import MouseSync                    from 'famous/inputs/MouseSync.js';
 import TouchSync                    from 'famous/inputs/TouchSync.js';
-import ScrollSync                   from 'famous/inputs/ScrollSync.js';
+import EventHandler                 from 'famous/core/EventHandler.js';
 import GenericSync                  from 'famous/inputs/GenericSync.js';
 import Easing                       from 'famous/transitions/Easing.js';
 import Transitionable               from 'famous/transitions/Transitionable.js';
@@ -58,9 +57,9 @@ export class View extends FamousView {
 
         this._initOptions(options);
 
-        this._combineLayouts();
-
         this._constructDecoratedRenderables();
+
+        this._combineLayouts();
         this._initTrueSizedBookkeeping();
 
     }
@@ -303,7 +302,7 @@ export class View extends FamousView {
             flowOptions.currentCurve = options.curve || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
 
             this.decorateRenderable(renderableName, ...transformations);
-            await callbackToPromise(renderable.on.bind(renderable), 'flowDone');
+            await callbackToPromise(renderable.on.bind(renderable), 'flowEnd');
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if(options.delay) { await waitMilliseconds(options.delay); }
@@ -449,6 +448,7 @@ export class View extends FamousView {
                         }
                     }
                 }
+
 
                 this._assignRenderable(renderable, renderableName);
             }
@@ -920,7 +920,8 @@ export class View extends FamousView {
     _combineLayouts() {
 
         this.layout = new LayoutController({
-            flow: !!this.decorations.useFlow,
+            flow: !!this.decorations.useFlow || this._usesPartialFlow,
+            partialFlow: this._usesPartialFlow,
             flowOptions: this.decorations.flowOptions || {},
             layout: function (context, options) {
 
@@ -1416,6 +1417,12 @@ export class View extends FamousView {
      */
     _addDecoratedRenderable(renderable, renderableName) {
         this.decoratedRenderables[renderableName] = renderable;
+        if(renderable.decorations.flow){
+            if(!this.decorations.useFlow){
+                this._usesPartialFlow = true;
+            }
+            renderable.isFlowy = true;
+        }
         this._addRenderableToDecoratorGroup(renderable, renderableName);
         return this._processRenderableEquivalent(renderable, renderableName);
     }
@@ -1461,6 +1468,10 @@ export class View extends FamousView {
             draggable.pipe(this._eventOutput);
         }
 
+        if(renderable.node){
+            /* Assign output handler */
+            renderable.node._eventOutput = renderable._eventOutput;
+        }
         /* If a renderable has an AnimationController used to animate it, add that to this.renderables.
          * If a renderable has an ContainerSurface used to clip it, add that to this.renderables.
          * this.renderables is used in the LayoutController in this.layout to render this view. */
