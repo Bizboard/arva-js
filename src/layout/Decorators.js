@@ -112,7 +112,7 @@ export const layout = {
     fullSize: function () {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            renderable.decorations.fullscreen = true;
+            renderable.decorations.fullSize = true;
         }
     },
 

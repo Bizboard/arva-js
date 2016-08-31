@@ -277,13 +277,17 @@ export class View extends FamousView {
         }
         let oldRenderableGroupName = this._getGroupName(renderable);
         let shouldDisableDock = (fakeRenderable.decorations.disableDock && renderable.decorations.dock);
+        let shouldDisableFullSize = (fakeRenderable.decorations.size && renderable.decorations.fullSize);
         if(shouldDisableDock){
             delete renderable.decorations.dock;
+        }
+        if(shouldDisableFullSize){
+            delete renderable.decorations.fullSize;
         }
         /* Extend the object */
         Object.assign(renderable.decorations, fakeRenderable.decorations);
         /* See if we have to redo the grouping */
-        let needToChangeDecoratorGroup = (oldRenderableGroupName !== this._getGroupName(renderable)) || shouldDisableDock;
+        let needToChangeDecoratorGroup = (oldRenderableGroupName !== this._getGroupName(renderable)) || shouldDisableDock || shouldDisableFullSize;
         /* Process new renderable equivalent, if that applies */
         this.renderables[renderableName] = this._processRenderableEquivalent(renderable, renderableName);
         if (needToChangeDecoratorGroup) {
@@ -744,7 +748,7 @@ export class View extends FamousView {
 
     _layoutDecoratedRenderables(context, options) {
         this._layoutDockedRenderables(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, options);
-        this._layoutFullScreenRenderables(this._groupedRenderables['fullscreen'], context, options);
+        this._layoutFullScreenRenderables(this._groupedRenderables['fullSize'], context, options);
         this._layoutTraditionalRenderables(this._groupedRenderables['traditional'], context, options);
     }
 
@@ -1540,8 +1544,8 @@ export class View extends FamousView {
         if (!!decorations.dock) {
             /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
             return decorations.dock.dockMethod === 'fill' ? 'filled' : 'docked';
-        } else if (!!decorations.fullscreen) {
-            return 'fullscreen';
+        } else if (!!decorations.fullSize) {
+            return 'fullSize';
         } else if (decorations.size || decorations.origin || decorations.align || decorations.translate) {
             return 'traditional';
         } else {
