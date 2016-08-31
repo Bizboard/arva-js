@@ -298,6 +298,23 @@ export class View extends FamousView {
     }
 
     async setRenderableFlowState(renderableName = '', stateName = ''){
+
+        /* Keep track of which flow state changes are running. We only allow one at a time per renderable.
+         * The latest one is always the valid one.
+         */
+        let currentFlow = {};
+        let runningFlowStates = this._runningFlowStates[renderableName];
+        if(!runningFlowStates){
+            this._runningFlowStates[renderableName] = runningFlowStates = [];
+        }
+        let flowWasInterrupted = false;
+        runningFlowStates.push(currentFlow);
+
+        runningFlowStates.forEach((flowState) => {
+            flowState.shouldInterrupt = (flowState !== currentFlow);
+        });
+
+
         let renderable = this[renderableName];
         if(!renderable) {
             return this._warn(`setRenderableFlowState called on non-existing renderable '${renderableName}'`);
@@ -305,26 +322,34 @@ export class View extends FamousView {
 
         let flowOptions = renderable.decorations.flow;
 
-        /* This is intended to be overwritten by other asynchronous calls to this method, see the stateName check below. */
         flowOptions.currentState = stateName;
-
         for(let {transformations, options} of flowOptions.states[stateName].steps){
+
+
             flowOptions.currentCurve = options.curve || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
 
             this.decorateRenderable(renderableName, ...transformations);
-            await callbackToPromise(renderable.on.bind(renderable), 'flowEnd');
+
+            let renderableOn = renderable.on.bind(renderable);
+            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'),callbackToPromise(renderableOn, 'flowInterrupted')]);
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if(options.delay) { await waitMilliseconds(options.delay); }
 
-            /* If another state has been set since the invocation of this method, skip any remaining transformations. */
-            if(flowOptions.currentState !== stateName) { break; }
+            /* If the flow has been interrupted */
+            if(currentFlow.shouldInterrupt){
+                flowWasInterrupted = true;
+                break;
+            }
+
 
             let emit = (renderable._eventOutput && renderable._eventOutput.emit || renderable.emit).bind(renderable._eventOutput || renderable);
             emit('flowStep', {state: stateName});
         }
+        runningFlowStates.splice(runningFlowStates.indexOf(currentFlow), 1);
 
-        return true;
+
+        return !flowWasInterrupted;
     }
 
     async setViewFlowState(stateName = '') {
@@ -760,7 +785,7 @@ export class View extends FamousView {
         for (let name of names) {
             let renderable = fullScreenRenderables.get(name);
             let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
-            context.set(name, {translate, size: context.size, opacity: renderable.decorations.opacity || 1});
+            context.set(name, {translate, size: context.size, opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity});
         }
     }
 
@@ -1411,6 +1436,8 @@ export class View extends FamousView {
         /* Keeping track of piped renderables */
         this._pipedRenderables = {};
         this._groupedRenderables = {};
+
+        this._runningFlowStates = {};
     }
 
     /**
