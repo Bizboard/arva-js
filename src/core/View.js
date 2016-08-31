@@ -785,7 +785,7 @@ export class View extends FamousView {
         for (let name of names) {
             let renderable = fullScreenRenderables.get(name);
             let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
-            context.set(name, {translate, size: context.size, opacity: renderable.decorations.opacity || 1});
+            context.set(name, {translate, size: context.size, opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity});
         }
     }
 
