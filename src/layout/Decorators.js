@@ -685,6 +685,54 @@ export const layout = {
 
     /**
      * @example
+     *  class myView extends View{
+     *  @layout.scale(2, 2, 2)
+     *  @layout.fullscreen
+     *  // Will scale the renderable by 2 in the x,y,z dimension
+     *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
+     * }
+     *
+     * Specifies the scale of a renderable. Can be applied to every kind of renderable
+     *
+     * @param {Number} x Scales the renderable along the x axis.
+     * @param {Number} y Scales the renderable along the y axis.
+     * @param {Number} z Scales the renderable along the z axis.
+     * @returns {Function} A decorator function.
+     */
+    scale: function (x, y, z) {
+        return function (target, renderableName, descriptor) {
+            let decorations = prepDecoratedRenderable(...arguments).decorations;
+            let propertyName = 'scale';
+            decorations[propertyName] = [x, y, z];
+        };
+    },
+
+    /**
+     * @example
+     *  class myView extends View{
+     *  @layout.skew(2, 2, 2)
+     *  @layout.fullscreen
+     *  // Will skew the renderable by 2 in the x,y,z dimension
+     *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
+     * }
+     *
+     * Specifies the skew of a renderable. Can be applied to every kind of renderable
+     *
+     * @param {Number} x Skews the renderable along the x axis.
+     * @param {Number} y Skews the renderable along the y axis.
+     * @param {Number} z Skews the renderable along the z axis.
+     * @returns {Function} A decorator function.
+     */
+    skew: function (x, y, z) {
+        return function (target, renderableName, descriptor) {
+            let decorations = prepDecoratedRenderable(...arguments).decorations;
+            let propertyName = 'skew';
+            decorations[propertyName] = [x, y, z];
+        };
+    },
+
+    /**
+     * @example
      * @layout.stick.center()
      * @layout.size(100,100)
      * @layout.animate({transition: {duration: 350}})
