@@ -591,6 +591,7 @@ export class View extends FamousView {
                     size[dimension] = cacheResolvedSize[dimension];
                 }
             } else {
+                size[dimension] = size[dimension] === undefined ? (context.size[dimension] || size[dimension]) : size[dimension];
                 cacheResolvedSize[dimension] = size[dimension];
             }
         }
@@ -687,8 +688,6 @@ export class View extends FamousView {
      */
     _resolveSingleSize(renderableSize, contextSize, dimension) {
         switch (typeof renderableSize) {
-            case 'undefined':
-                return contextSize[dimension];
             case 'function':
                 return this._resolveSingleSize(renderableSize.call(this, ...contextSize), contextSize, dimension);
             case 'number':
@@ -800,7 +799,7 @@ export class View extends FamousView {
         let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
         for (let renderableName of dockedNames) {
             let renderable = dockedRenderables.get(renderableName);
-            let {dockSize, translate, innerSize, inUseDockSize, space} = this._prepareForDockedRenderable(renderable, renderableName, context);
+            let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableName, context);
             let {dock, rotate, opacity} = renderable.decorations;
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
@@ -815,8 +814,8 @@ export class View extends FamousView {
         for (let renderableName of filledNames) {
             let renderable = filledRenderables.get(renderableName);
             let {rotate, opacity} = renderable.decorations;
-            let {translate, inUseDockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
-            dockHelper.fill(renderableName, inUseDockSize, translate, {rotate, opacity});
+            let {translate, dockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
+            dockHelper.fill(renderableName, dockSize, translate, {rotate, opacity});
         }
     }
 
@@ -833,14 +832,18 @@ export class View extends FamousView {
         let {translate = [0, 0, 0]} = decorations;
         translate = this._addTranslations(this.decorations.extraTranslate, translate);
         let {dockMethod, space} = decorations.dock;
+        let {viewMargins = [0, 0, 0, 0]} = this.decorations;
+        let horizontalMargins = viewMargins[1] + viewMargins[3];
+        let verticalMargins = viewMargins[0] + viewMargins[2];
+        let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
         let dockSizeSpecified = !(_.isEqual(decorations.dock.size, [undefined, undefined]));
-        let dockSize = this._resolveDecoratedSize(renderableName, context, dockSizeSpecified ? decorations.dock.size : undefined);
+        let dockSize = this._resolveDecoratedSize(renderableName, {size: sizeWithoutMargins}, dockSizeSpecified ? decorations.dock.size : undefined);
         let inUseDockSize = this._resolvedSizesCache.get(renderable);
         let innerSize;
         let {origin, align} = decorations;
         if (decorations.size || origin || align) {
             /* If origin and align is used, we have to add this to the translate of the renderable */
-            this._resolveDecoratedSize(renderableName, context);
+            this._resolveDecoratedSize(renderableName, {size: sizeWithoutMargins});
             innerSize = this._resolvedSizesCache.get(renderable);
             if (innerSize) {
                 let translateWithProportion = (proportion, size, translation, dimension, factor) =>
@@ -848,20 +851,9 @@ export class View extends FamousView {
                 translate = [...translate]; //shallow copy the translation to prevent the translation for happening multiple times
 
                 /* If no docksize was specified in a certain direction, then use the context size without margins */
-                let outerDockSize = [];
-                let {viewMargins = [0, 0, 0, 0]} = this.decorations;
-                let horizontalMargins = viewMargins[1] + viewMargins[3];
-                let verticalMargins = viewMargins[0] + viewMargins[2];
-                let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
+                let outerDockSize = dockSize;
 
-                for (let index of [0, 1]) {
-                    if (dockSizeSpecified) {
-                        outerDockSize.push(dockSize[index] === undefined ? sizeWithoutMargins[index] : dockSize[index]);
-                    }
-                    if (innerSize[index] === undefined) {
-                        innerSize[index] = sizeWithoutMargins[index];
-                    }
-                }
+
                 if (!dockSizeSpecified) {
                     if (dockMethod === 'fill') {
                         outerDockSize = [...sizeWithoutMargins];
