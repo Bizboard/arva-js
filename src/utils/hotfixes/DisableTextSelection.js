@@ -5,8 +5,6 @@
 var currentLocation = window.location;
 var isWebsite = currentLocation.protocol.indexOf('http') !== -1 && currentLocation.host.indexOf('localhost') === -1;
 
-
-
 if(!isWebsite) {
     /* Source: https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleSheet/insertRule */
     var styleElement = document.createElement('style'),
@@ -14,9 +12,8 @@ if(!isWebsite) {
 
     /* Append style element to head */
     document.head.appendChild(styleElement);
-    console.log("Appending");
 
     /* Grab style sheet */
     styleSheet = styleElement.sheet;
-    styleSheet.insertRule('*{-webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;}', 0);
+    styleSheet.insertRule('*:not(input):not(textarea){-webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; -o-user-select: none; user-select: none;}', 0);
 }
