@@ -630,12 +630,12 @@ export const layout = {
      * @layout.translate(0, 0, 20)
      * class myView extends View{
      *  @layout.translate(0, 0, -20)
-     *  @layout.fullscreen
+     *  @layout.fullSize()
      *  // Will display relatively at z level 0 (20 minus 20)
      *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
      * }
      *
-     * Specifies a translation of a renderable. Can be applied to every kind of renderable (docked, fullscreen,
+     * Specifies a translation of a renderable. Can be applied to every kind of renderable (docked, fullSize,
      * and normal).
      *
      * Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
@@ -667,12 +667,12 @@ export const layout = {
      * @layout.translateFrom(0, 0, 20)
      * class myView extends View{
      *  @layout.translateFrom(0, 0, -20)
-     *  @layout.fullscreen
+     *  @layout.fullSize()
      *  // Will display relatively at z level 0 (20 minus 20)
      *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
      * }
      *
-     * Specifies a relative translation of a renderable. Can be applied to every kind of renderable (docked, fullscreen,
+     * Specifies a relative translation of a renderable. Can be applied to every kind of renderable (docked, fullSize,
      * and normal).
      *
      * Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
@@ -921,7 +921,7 @@ export const event = {
 
     /**
      * @example
-     * @layout.fullscreen
+     * @layout.fullSize()
      * @layout.pipe('dbsv')
      * //Pipe events to another renderable declared above, called 'dbsv'
      * scrollableSurface = new Surface();
