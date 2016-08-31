@@ -299,7 +299,9 @@ export class View extends FamousView {
 
     async setRenderableFlowState(renderableName = '', stateName = ''){
         let renderable = this[renderableName];
-        if(!renderable) return;
+        if(!renderable) {
+            return this._warn(`setRenderableFlowState called on non-existing renderable '${renderableName}'`);
+        }
 
         let flowOptions = renderable.decorations.flow;
 
