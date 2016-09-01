@@ -11,32 +11,29 @@ import _                            from 'lodash';
 import OrderedHashMap               from 'ordered-hashmap';
 import FamousView                   from 'famous/core/View.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
-import Surface                      from 'famous/core/Surface.js';
 import Draggable                    from 'famous/modifiers/Draggable';
 import RenderNode                   from 'famous/core/RenderNode';
-
-import {limit}                      from 'arva-js/utils/Limiter.js';
-
-import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
+import MouseSync                    from 'famous/inputs/MouseSync.js';
+import TouchSync                    from 'famous/inputs/TouchSync.js';
+import GenericSync                  from 'famous/inputs/GenericSync.js';
+import Easing                       from 'famous/transitions/Easing.js';
+import Transitionable               from 'famous/transitions/Transitionable.js';
+import Modifier                     from 'famous/core/Modifier.js';
+import Transform                    from 'famous/core/Transform.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
 import ContainerSurface             from 'famous/Surfaces/ContainerSurface.js';
+
+import {limit}                      from 'arva-js/utils/Limiter.js';
 
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {SizeResolver}               from '../utils/view/SizeResolver.js';
 import {Helpers}                    from '../utils/view/Helpers.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
-
-import MouseSync                    from 'famous/inputs/MouseSync.js';
-import TouchSync                    from 'famous/inputs/TouchSync.js';
-import EventHandler                 from 'famous/core/EventHandler.js';
-import GenericSync                  from 'famous/inputs/GenericSync.js';
-import Easing                       from 'famous/transitions/Easing.js';
-import Transitionable               from 'famous/transitions/Transitionable.js';
-import Modifier                     from 'famous/core/Modifier.js';
-import Transform                    from 'famous/core/Transform.js';
-import {callbackToPromise,
-        waitMilliseconds}           from '../utils/CallbackHelpers.js';
+import {
+    callbackToPromise,
+    waitMilliseconds
+}                                   from '../utils/CallbackHelpers.js';
 
 
 export class View extends FamousView {
@@ -273,10 +270,10 @@ export class View extends FamousView {
         let oldRenderableGroupName = this._getGroupName(renderable);
         let shouldDisableDock = (fakeRenderable.decorations.disableDock && renderable.decorations.dock);
         let shouldDisableFullSize = (fakeRenderable.decorations.size && renderable.decorations.fullSize);
-        if(shouldDisableDock){
+        if (shouldDisableDock) {
             delete renderable.decorations.dock;
         }
-        if(shouldDisableFullSize){
+        if (shouldDisableFullSize) {
             delete renderable.decorations.fullSize;
         }
         /* Extend the object */
@@ -299,10 +296,10 @@ export class View extends FamousView {
      * @param stateName
      * @private
      */
-    _registerNewFlowState(renderableName){
+    _registerNewFlowState(renderableName) {
         let currentFlow = {};
         let runningFlowStates = this._runningFlowStates[renderableName];
-        if(!runningFlowStates){
+        if (!runningFlowStates) {
             this._runningFlowStates[renderableName] = runningFlowStates = [];
         }
         let flowWasInterrupted = false;
@@ -314,15 +311,15 @@ export class View extends FamousView {
         return currentFlow;
     }
 
-    _removeFinishedFlowState(renderableName, flowState){
+    _removeFinishedFlowState(renderableName, flowState) {
         let runningFlowStates = this._runningFlowStates[renderableName];
         runningFlowStates.splice(runningFlowStates.indexOf(flowState), 1);
     }
 
-    async setRenderableFlowState(renderableName = '', stateName = ''){
+    async setRenderableFlowState(renderableName = '', stateName = '') {
 
         let renderable = this[renderableName];
-        if(!renderable || !renderable.decorations || !renderable.decorations.flow) {
+        if (!renderable || !renderable.decorations || !renderable.decorations.flow) {
             return this._warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
         }
         let flowOptions = renderable.decorations.flow;
@@ -335,19 +332,24 @@ export class View extends FamousView {
         let flowWasInterrupted = false;
 
         flowOptions.currentState = stateName;
-        for(let {transformations, options} of flowOptions.states[stateName].steps){
-            flowOptions.currentTransition = options.transition || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
+        for (let {transformations, options} of flowOptions.states[stateName].steps) {
+            flowOptions.currentTransition = options.transition || flowOptions.defaults.curve || {
+                    curve: Easing.outCubic,
+                    duration: 300
+                };
 
             this.decorateRenderable(renderableName, ...transformations);
 
             let renderableOn = renderable.on.bind(renderable);
-            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'),callbackToPromise(renderableOn, 'flowInterrupted').then(() => console.log("INterrupted"))]);
+            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'), callbackToPromise(renderableOn, 'flowInterrupted').then(() => console.log("INterrupted"))]);
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
-            if(options.delay) { await waitMilliseconds(options.delay); }
+            if (options.delay) {
+                await waitMilliseconds(options.delay);
+            }
 
             /* If the flow has been interrupted */
-            if(currentFlow.shouldInterrupt){
+            if (currentFlow.shouldInterrupt) {
                 flowWasInterrupted = true;
                 break;
             }
@@ -368,16 +370,18 @@ export class View extends FamousView {
         /* This is intended to be overwritten by other asynchronous calls to this method, see the stateName check below. */
         flowOptions.currentState = stateName;
 
-        for(let step of steps) {
+        for (let step of steps) {
             let waitQueue = [];
-            for(let renderableName in step) {
+            for (let renderableName in step) {
                 let state = step[renderableName];
                 waitQueue.push(this.setRenderableFlowState(renderableName, state));
             }
             await Promise.all(waitQueue);
 
             /* If another state has been set since the invocation of this method, skip any remaining transformations. */
-            if(flowOptions.currentState !== stateName) { break; }
+            if (flowOptions.currentState !== stateName) {
+                break;
+            }
         }
 
         return true;
@@ -414,9 +418,13 @@ export class View extends FamousView {
 
     _showWithAnimationController(animationController, renderable, show = true) {
         animationController._showingRenderable = show;
-        let callback = () => { if (renderable.emit) { renderable.emit(show ? 'shown' : 'hidden'); } };
+        let callback = () => {
+            if (renderable.emit) {
+                renderable.emit(show ? 'shown' : 'hidden');
+            }
+        };
 
-        if(show){
+        if (show) {
             animationController.show(renderable.containerSurface || renderable, null, callback);
         } else {
             animationController.hide(null, callback);
@@ -608,7 +616,7 @@ export class View extends FamousView {
         this._setupAllRenderableListeners(renderableName);
     }
 
-    
+
     _layoutDecoratedRenderables(context, options) {
         this._layoutDockedRenderables(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, options);
         this._layoutFullScreenRenderables(this._groupedRenderables['fullSize'], context, options);
@@ -621,8 +629,10 @@ export class View extends FamousView {
             let renderable = fullScreenRenderables.get(name);
             let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
-            context.set(name, {translate, size: context.size, transition: renderableCurve,
-                opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity});
+            context.set(name, {
+                translate, size: context.size, transition: renderableCurve,
+                opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity
+            });
         }
     }
 
@@ -632,8 +642,10 @@ export class View extends FamousView {
             let renderable = traditionalRenderables.get(renderableName);
 
             let renderableSize = this._sizeResolver.settleDecoratedSize(renderable, this.renderables[renderableName], context, renderable.decorations.size) || [undefined, undefined];
-            let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
-                opacity = 1, transition, scale = [1,1,1], skew = [0,0,0]} = renderable.decorations;
+            let {
+                translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
+                opacity = 1, transition, scale = [1, 1, 1], skew = [0, 0, 0]
+            } = renderable.decorations;
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
@@ -667,7 +679,11 @@ export class View extends FamousView {
             let {dock, rotate, opacity, origin} = renderable.decorations;
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
-                dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {rotate, opacity, origin});
+                dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {
+                    rotate,
+                    opacity,
+                    origin
+                });
             } else {
                 this._warn(`Arva: ${this._name()}.${renderableName} contains an unknown @dock method '${dockMethod}', and was ignored.`);
             }
@@ -736,7 +752,7 @@ export class View extends FamousView {
 
                 if (origin) {
                     renderable.decorations.size.forEach((size, dimension) => {
-                        if(this._sizeResolver.isValueTrueSized(size)){
+                        if (this._sizeResolver.isValueTrueSized(size)) {
                             /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
                              *  to make up for this.
                              */
@@ -1176,7 +1192,7 @@ export class View extends FamousView {
             }
         }
     }
-    
+
 
     _doTrueSizedSurfacesBookkeeping() {
         this._nodes._trueSizeRequested = false;
@@ -1249,25 +1265,25 @@ export class View extends FamousView {
     _addDecoratedRenderable(renderable, renderableName) {
         this.decoratedRenderables[renderableName] = renderable;
         let {flow, size, dock} = renderable.decorations;
-        if(flow){
-            if(!this.decorations.useFlow){
+        if (flow) {
+            if (!this.decorations.useFlow) {
                 this._usesPartialFlow = true;
             }
             renderable.isFlowy = true;
         }
-        if(size){
+        if (size) {
             this._bindSizeFunctions(size);
         }
-        if(dock && dock.size){
+        if (dock && dock.size) {
             this._bindSizeFunctions(dock.size);
         }
         this._addRenderableToDecoratorGroup(renderable, renderableName);
         return this._processDecoratedRenderableEquivalent(renderable, renderableName);
     }
 
-    _bindSizeFunctions(size){
-        for(let index=0; index < 2; index++){
-            if(typeof size[index] === 'function'){
+    _bindSizeFunctions(size) {
+        for (let index = 0; index < 2; index++) {
+            if (typeof size[index] === 'function') {
                 size[index] = size[index].bind(this);
             }
         }
@@ -1315,7 +1331,7 @@ export class View extends FamousView {
             draggable.pipe(this._eventOutput);
         }
 
-        if(renderable.node){
+        if (renderable.node) {
             /* Assign output handler */
             renderable.node._eventOutput = renderable._eventOutput;
         }
@@ -1398,7 +1414,7 @@ export class View extends FamousView {
      * Create the swipable and register all the event logic for a swipable renderable
      * @private
      */
-    _initSwipable(swipableOptions = {}, renderable = {}){
+    _initSwipable(swipableOptions = {}, renderable = {}) {
         GenericSync.register({
             'mouse': MouseSync,
             'touch': TouchSync

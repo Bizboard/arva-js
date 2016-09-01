@@ -3,7 +3,6 @@
  */
 
 
-
 import {limit}                      from 'arva-js/utils/Limiter.js';
 
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
@@ -18,7 +17,7 @@ import EventEmitter                 from 'eventemitter3';
  * Used by the view to keep track of sizes. Emits events to communicate with the view to do certain actions
  */
 export class SizeResolver extends EventEmitter {
-    
+
     constructor() {
         super();
         this._resolvedSizesCache = new Map();
@@ -34,7 +33,7 @@ export class SizeResolver extends EventEmitter {
      * @param {Array} specifiedSize. The size to use which is specified as a decorator
      * @returns {*}
      */
-    settleDecoratedSize(renderable, renderableCounterpart, context , specifiedSize = [undefined, undefined]) {
+    settleDecoratedSize(renderable, renderableCounterpart, context, specifiedSize = [undefined, undefined]) {
         let size = [];
         let cacheResolvedSize = [];
         for (let dimension = 0; dimension < 2; dimension++) {
@@ -164,7 +163,7 @@ export class SizeResolver extends EventEmitter {
         Helpers.warn(`Cannot determine size of ${renderable.constructor.name}, falling back to default size or ${resultingSize}px.`);
         return resultingSize;
     }
-x
+
     containsUncalculatedSurfaces() {
         for (let [surface, {isUncalculated}] of this._trueSizedSurfaceInfo) {
             if (isUncalculated) {
