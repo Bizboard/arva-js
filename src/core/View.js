@@ -297,11 +297,14 @@ export class View extends FamousView {
         this.reflowRecursively();
     }
 
-    async setRenderableFlowState(renderableName = '', stateName = ''){
-
-        /* Keep track of which flow state changes are running. We only allow one at a time per renderable.
-         * The latest one is always the valid one.
-         */
+    /**
+     * Does bookkeeping for a new flow state
+     *
+     * @param renderableName
+     * @param stateName
+     * @private
+     */
+    _registerNewFlowState(renderableName){
         let currentFlow = {};
         let runningFlowStates = this._runningFlowStates[renderableName];
         if(!runningFlowStates){
@@ -313,19 +316,31 @@ export class View extends FamousView {
         runningFlowStates.forEach((flowState) => {
             flowState.shouldInterrupt = (flowState !== currentFlow);
         });
+        return currentFlow;
+    }
 
+    _removeFinishedFlowState(renderableName, flowState){
+        let runningFlowStates = this._runningFlowStates[renderableName];
+        runningFlowStates.splice(runningFlowStates.indexOf(flowState), 1);
+    }
+
+    async setRenderableFlowState(renderableName = '', stateName = ''){
 
         let renderable = this[renderableName];
-        if(!renderable) {
-            return this._warn(`setRenderableFlowState called on non-existing renderable '${renderableName}'`);
+        if(!renderable || !renderable.decorations || !renderable.decorations.flow) {
+            return this._warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
         }
-
         let flowOptions = renderable.decorations.flow;
+
+
+        /* Keep track of which flow state changes are running. We only allow one at a time per renderable.
+         * The latest one is always the valid one.
+         */
+        let currentFlow = this._registerNewFlowState(renderableName);
+        let flowWasInterrupted = false;
 
         flowOptions.currentState = stateName;
         for(let {transformations, options} of flowOptions.states[stateName].steps){
-
-
             flowOptions.currentCurve = options.curve || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
 
             this.decorateRenderable(renderableName, ...transformations);
@@ -342,11 +357,10 @@ export class View extends FamousView {
                 break;
             }
 
-
             let emit = (renderable._eventOutput && renderable._eventOutput.emit || renderable.emit).bind(renderable._eventOutput || renderable);
             emit('flowStep', {state: stateName});
         }
-        runningFlowStates.splice(runningFlowStates.indexOf(currentFlow), 1);
+        this._removeFinishedFlowState(renderableName, currentFlow);
 
 
         return !flowWasInterrupted;
@@ -772,9 +786,10 @@ export class View extends FamousView {
 
         return trueSizedSurfaceInfo;
     }
+    
 
+_layoutDecoratedRenderables(context, options) {
 
-    _layoutDecoratedRenderables(context, options) {
         this._layoutDockedRenderables(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, options);
         this._layoutFullScreenRenderables(this._groupedRenderables['fullSize'], context, options);
         this._layoutTraditionalRenderables(this._groupedRenderables['traditional'], context, options);
@@ -796,7 +811,7 @@ export class View extends FamousView {
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
                 opacity = 1, curve = {curve: Easing.outCubic, duration: 300}, scale = [1,1,1], skew = [0,0,0]} = renderable.decorations;
-            //TODO: CHeck if the renderable has flows that need to pass curves and durations and springs
+            //TODO: Check if the renderable has flows that need to pass curves and durations and springs
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentCurve;
@@ -1677,3 +1692,5 @@ export class View extends FamousView {
         }
     }
 }
+
+
