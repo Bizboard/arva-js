@@ -1496,6 +1496,7 @@ export class View extends FamousView {
         } else if (draggableOptions) {
             renderable.node = new RenderNode();
             let draggable = new Draggable(draggableOptions);
+            renderable.draggable = draggable;
             renderable.node.add(draggable).add(renderable);
             renderable.pipe(draggable);
             renderable.pipe(this._eventOutput);
