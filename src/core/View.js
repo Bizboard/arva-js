@@ -23,6 +23,8 @@ import ContainerSurface             from 'famous/Surfaces/ContainerSurface.js';
 
 import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
+import {SizeResolver}               from '../utils/view/SizeResolver.js';
+import {Helpers}                    from '../utils/view/Helpers.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 
 import MouseSync                    from 'famous/inputs/MouseSync.js';
@@ -58,6 +60,7 @@ export class View extends FamousView {
         this._initOptions(options);
 
         this._constructDecoratedRenderables();
+        this._initUtils();
 
         this._combineLayouts();
         this._initTrueSizedBookkeeping();
@@ -75,7 +78,7 @@ export class View extends FamousView {
      * @returns {void}
      */
     build() {
-        this._warn(`Arva: calling build() from within views is no longer necessary, any existing calls can safely be removed. Called from ${this._name()}`);
+        Helpers.warn(`Arva: calling build() from within views is no longer necessary, any existing calls can safely be removed. Called from ${this._name()}`);
     }
 
     /**
@@ -86,7 +89,6 @@ export class View extends FamousView {
         this._eventOutput.emit('recursiveReflow');
     }
 
-
     /**
      * Gets the size used when displaying a renderable on the screen the last tick
      * @param {Renderable/Name} renderableOrName The renderable or the name of the renderable of which you need the size
@@ -96,7 +98,7 @@ export class View extends FamousView {
         if (typeof renderableOrName === 'string') {
             renderable = this.renderables[renderableOrName];
         }
-        let size = this._resolvedSizesCache.get(renderable);
+        let size = this._sizeResolver.getResolvedSize(renderable);
 
         /* Backup: If size can't be resolved, then see if there's a size specified on the decorator */
         if (!size && renderable.decorations) {
@@ -110,13 +112,9 @@ export class View extends FamousView {
         return size || [undefined, undefined];
     }
 
+
     containsUncalculatedSurfaces() {
-        for (let [surface, {isUncalculated}] of this._trueSizedSurfaceInfo) {
-            if (isUncalculated) {
-                return true;
-            }
-        }
-        return false;
+        return this._sizeResolver.containsUncalculatedSurfaces();
     }
 
     /**
@@ -129,7 +127,7 @@ export class View extends FamousView {
     addRenderable(renderable, renderableName, ...decorators) {
         /* Due to common mistake, we check if renderableName is a string */
         if (typeof renderableName !== 'string') {
-            this._warn(`The second argument of addRenderable(...) was not a string. Please pass the renderable name in ${this._name()}`);
+            Helpers.warn(`The second argument of addRenderable(...) was not a string. Please pass the renderable name in ${this._name()}`);
         }
         for (let decorator of decorators) {
             /* The decorator(s) provided in the last argument needed to decorate the renderable */
@@ -161,12 +159,12 @@ export class View extends FamousView {
     prioritiseDockBefore(renderableName, nextRenderableName) {
         let docked = this._groupedRenderables.docked;
         if (!docked) {
-            this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': no docked renderables present.`);
+            Helpers.warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': no docked renderables present.`);
             return false;
         }
         let result = this._prioritiseDockAtIndex(renderableName, docked.indexOf(nextRenderableName));
         if (!result) {
-            this._warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': could not find one of the renderables by name.
+            Helpers.warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': could not find one of the renderables by name.
                         The following docked renderables are present: ${docked.keys()}`);
         }
         return result;
@@ -202,7 +200,7 @@ export class View extends FamousView {
             /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
              * new size to take into account. */
             for (let dimension of [0, 1]) {
-                if (this._isValueTrueSized(this._resolveSingleSize(decoratedSize[dimension], [NaN, NaN], dimension))) {
+                if (this._sizeResolver.isValueTrueSized(this._sizeResolver.resolveSingleSize(decoratedSize[dimension], [NaN, NaN], dimension))) {
                     this.reflowRecursively();
                     break;
                 }
@@ -242,7 +240,7 @@ export class View extends FamousView {
         this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions);
 
         /* If the renderable is surface, we need to do some special things if there is a true size being used */
-        if (this._renderableIsSurface(renderable)) {
+        if (Helpers.renderableIsSurface(renderable)) {
             let sizesToCheck = [];
             let {size, dock} = decorations;
             if (size) {
@@ -254,10 +252,10 @@ export class View extends FamousView {
             let renderableSize = [undefined, undefined];
             for (let sizeToCheck of sizesToCheck) {
                 for (let dimension of [0, 1]) {
-                    let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
-                    if (this._isValueTrueSized(sizeToCheck[dimension])) {
+                    let trueSizedInfo = this._sizeResolver.getSurfaceTrueSizedInfo(renderable);
+                    if (this._sizeResolver.isValueTrueSized(sizeToCheck[dimension])) {
                         if (!trueSizedInfo) {
-                            trueSizedInfo = this._configureTrueSizedSurface(renderable);
+                            trueSizedInfo = this._sizeResolver.configureTrueSizedSurface(renderable);
                         }
                         trueSizedInfo.trueSizedDimensions[dimension] = true;
                         renderableSize[dimension] = true;
@@ -286,7 +284,7 @@ export class View extends FamousView {
         /* See if we have to redo the grouping */
         let needToChangeDecoratorGroup = (oldRenderableGroupName !== this._getGroupName(renderable)) || shouldDisableDock || shouldDisableFullSize;
         /* Process new renderable equivalent, if that applies */
-        this.renderables[renderableName] = this._processRenderableEquivalent(renderable, renderableName);
+        this.renderables[renderableName] = this._processDecoratedRenderableEquivalent(renderable, renderableName);
         if (needToChangeDecoratorGroup) {
             this._removeRenderableFromGroupWithName(renderableName, oldRenderableGroupName);
             this._addRenderableToDecoratorGroup(renderable, renderableName);
@@ -339,7 +337,7 @@ export class View extends FamousView {
         flowOptions.currentState = stateName;
         for(let {transformations, options} of flowOptions.states[stateName].steps){
             flowOptions.currentTransition = options.transition || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
-            
+
             this.decorateRenderable(renderableName, ...transformations);
 
             let renderableOn = renderable.on.bind(renderable);
@@ -385,6 +383,35 @@ export class View extends FamousView {
         return true;
     }
 
+    replaceRenderable(renderableName, newRenderable) {
+        let renderable = this[renderableName];
+        let renderableHasAnimationController = (this.renderables[renderableName] instanceof AnimationController);
+        /* If there isn't a renderable equivalent animationController that does the piping, then we need to redo the event piping */
+        if (!renderableHasAnimationController) {
+            this._setupAllRenderableListeners(renderableName, false);
+        }
+        newRenderable.decorations = {...newRenderable.decorations, ...renderable.decorations};
+        let newRenderableEquivalent = this._processDecoratedRenderableEquivalent(newRenderable, renderableName);
+        this._groupedRenderables[this._getGroupName(renderable)].set(renderableName, newRenderable);
+        if (!renderableHasAnimationController) {
+            this.renderables[renderableName] = newRenderableEquivalent;
+            this._setupAllRenderableListeners(renderableName, true);
+        }
+        this.reflowRecursively();
+        this[renderableName] = newRenderable;
+    }
+
+    hideRenderable(renderableName) {
+        this.showRenderable(renderableName, false);
+    }
+
+    _initUtils() {
+        this._sizeResolver = new SizeResolver();
+        this._sizeResolver.on('layoutControllerReflow', this._requestLayoutControllerReflow);
+        this._sizeResolver.on('reflow', () => this.layout.reflowLayout());
+        this._sizeResolver.on('reflowRecursively', this.reflowRecursively);
+    }
+
     _showWithAnimationController(animationController, renderable, show = true) {
         animationController._showingRenderable = show;
         let callback = () => { if (renderable.emit) { renderable.emit(show ? 'shown' : 'hidden'); } };
@@ -394,10 +421,6 @@ export class View extends FamousView {
         } else {
             animationController.hide(null, callback);
         }
-    }
-
-    hideRenderable(renderableName) {
-        this.showRenderable(renderableName, false);
     }
 
     /**
@@ -441,7 +464,6 @@ export class View extends FamousView {
         }
         return decoratorOptions;
     }
-
 
     _constructDecoratedRenderables() {
 
@@ -586,205 +608,7 @@ export class View extends FamousView {
         this._setupAllRenderableListeners(renderableName);
     }
 
-    replaceRenderable(renderableName, newRenderable) {
-        let renderable = this[renderableName];
-        let renderableHasAnimationController = (this.renderables[renderableName] instanceof AnimationController);
-        /* If there isn't a renderable equivalent animationController that does the piping, then we need to redo the event piping */
-        if (!renderableHasAnimationController) {
-            this._setupAllRenderableListeners(renderableName, false);
-        }
-        newRenderable.decorations = {...newRenderable.decorations, ...renderable.decorations};
-        let newRenderableEquivalent = this._processRenderableEquivalent(newRenderable, renderableName);
-        this._groupedRenderables[this._getGroupName(renderable)].set(renderableName, newRenderable);
-        if (!renderableHasAnimationController) {
-            this.renderables[renderableName] = newRenderableEquivalent;
-            this._setupAllRenderableListeners(renderableName, true);
-        }
-        this.reflowRecursively();
-        this[renderableName] = newRenderable;
-    }
-
-
-    /**
-     * Resolves a decorated renderable's size (both width and height)
-     * @name {String} name The name of the renderable such that this[name] = renderable
-     * @param renderableName
-     * @param {Object} context Famous-flex context in which the renderable is rendered.
-     * @param specifiedSize
-     * @returns {Array|Object} Array of [x, y] sizes, or null if resolving is not possible.
-     * @private
-     */
-    _resolveDecoratedSize(renderableName, context, specifiedSize = this[renderableName].decorations.size || [undefined, undefined]) {
-        let renderable = this[renderableName];
-
-        let size = [];
-        let cacheResolvedSize = [];
-        for (let dimension = 0; dimension < 2; dimension++) {
-            size[dimension] = this._resolveSingleSize(specifiedSize[dimension], context.size, dimension);
-            if (this._isValueTrueSized(size[dimension])) {
-                cacheResolvedSize[dimension] = this._resolveSingleTrueSizedRenderable(renderable, renderableName, size, dimension);
-                if (this._renderableIsSurface(renderable)) {
-                    size[dimension] = true;
-                } else {
-                    size[dimension] = cacheResolvedSize[dimension];
-                }
-            } else {
-                size[dimension] = size[dimension] === undefined ? (context.size[dimension] || size[dimension]) : size[dimension];
-                cacheResolvedSize[dimension] = size[dimension];
-            }
-        }
-
-        this._resolvedSizesCache.set(renderable, [cacheResolvedSize[0], cacheResolvedSize[1]]);
-
-        return (size[0] !== null && size[1] !== null) ? size : null;
-    }
-
-    _isValueTrueSized(value) {
-        return value < 0 || value === true
-    }
-
-
-    /**
-     * Processes a dimension of a truesized renderable. size[dim] must be negative.
-     * @param renderable the renderable
-     * @param name the index so that this.renderables[name] = renderable
-     * @param size the size array. The function will modify size[dim]
-     * @param dim the dimensions e.g. 0,1 that should be processed
-     * @returns {Number} size[dim] will be returned with a non-truesized value
-     * @private
-     */
-    _resolveSingleTrueSizedRenderable(renderable, name, size, dim) {
-        if (size[dim] === -1) {
-            this._warn('-1 detected as set size. If you want a true sized element to take ' +
-                'up a proportion of your view, please define a function doing so by ' +
-                'using the context size');
-        }
-        let renderableCounterpart = this.renderables[name];
-        /* If there is an AnimationController without content, display 0 size */
-        if (renderableCounterpart instanceof AnimationController && !renderableCounterpart._showingRenderable) {
-            return 0;
-        }
-        /* True sized element. This has been specified as ~100 where 100 is the initial size
-         * applying this operator again (e.g. ~~100) gives us the value 100 back
-         * */
-        if (this._renderableIsComposite(renderable)) {
-            let twoDimensionalSize = renderable.getSize();
-            if (!twoDimensionalSize) {
-                return this._specifyUndeterminedSingleHeight(renderable, size, dim);
-            } else {
-                let renderableIsView = renderable instanceof View;
-                if (size[dim] === true && twoDimensionalSize[dim] === undefined &&
-                    ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView)) {
-                    this._warn(`True sized renderable '${name}' is taking up the entire context size. Caused in ${this._name()}`);
-                    return twoDimensionalSize[dim];
-                } else {
-                    let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
-                    let resultingSize = twoDimensionalSize[dim] !== undefined ? twoDimensionalSize[dim] : approximatedSize;
-                    if (renderableIsView) {
-                        resultingSize = (!renderable.containsUncalculatedSurfaces() && renderable._initialised) ? resultingSize : approximatedSize;
-                    }
-                    return resultingSize;
-                }
-            }
-        } else if (this._renderableIsSurface(renderable)) {
-            let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable) || {};
-            if (trueSizedSurfaceInfo.calculateOnNext) {
-                trueSizedSurfaceInfo.calculateOnNext = false;
-                this._tryCalculateTrueSizedSurface(renderable);
-            }
-            let {isUncalculated} = trueSizedSurfaceInfo;
-            if (isUncalculated === false) {
-                return trueSizedSurfaceInfo.size[dim];
-            } else {
-                if (size[dim] === true) {
-                    let defaultSize = 5;
-                    this._warn(`No initial size set for surface, will default to ${defaultSize}px`);
-                    size[dim] = ~5;
-                }
-                if (isUncalculated !== true) {
-                    /* Seems like the surface isn't properly configured, let's get that going */
-                    trueSizedSurfaceInfo = this._configureTrueSizedSurface(renderable, name);
-                }
-                trueSizedSurfaceInfo.trueSizedDimensions[dim] = true;
-                renderable.size[dim] = true;
-                /* Need to set the size in order to get resize notifications */
-                return ~size[dim];
-            }
-        } else {
-            return this._specifyUndeterminedSingleHeight(renderable, size, dim);
-        }
-    }
-
-
-    /**
-     * Resolves a single dimension (i.e. x or y) size of a renderable.
-     * @param {Number|Boolean|Object|Undefined|Function} renderableSize Renderable's single dimension size.
-     * @param {Array.Number} contextSize The context size
-     * @param {Number} dimension The dimension of the size that is being evaluated (e.g. 1 or 0)
-     * @returns {Number} The resulting size
-     * @private
-     */
-    _resolveSingleSize(renderableSize, contextSize, dimension) {
-        switch (typeof renderableSize) {
-            case 'function':
-                return this._resolveSingleSize(renderableSize.call(this, ...contextSize), contextSize, dimension);
-            case 'number':
-                /* If 0 < renderableSize < 1, we interpret renderableSize as a fraction of the contextSize */
-                return renderableSize < 1 && renderableSize > 0 ? renderableSize * Math.max(contextSize[dimension], 0) : renderableSize;
-            default:
-                /* renderableSize can be true/false, undefined, or 'auto' for example. */
-                return renderableSize;
-        }
-    }
-
-    _specifyUndeterminedSingleHeight(renderable, size, dim) {
-        let resultingSize = size[dim] < 0 ? ~size[dim] : 5;
-        this._warn(`Cannot determine size of ${renderable.constructor.name}, falling back to default size or ${resultingSize}px. Called from ${this._name()}`);
-        return resultingSize;
-    }
-
-    /**
-     * Returns true if the renderable is complex and its size can be determined. Returns false if it is a surface
-     * or something else that doesn't have a getSize function specified
-     * @param renderable
-     * @private
-     */
-    _renderableIsComposite(renderable) {
-        return renderable.getSize && !(this._renderableIsSurface(renderable));
-    }
-
-    _renderableIsSurface(renderable) {
-        return renderable instanceof Surface || renderable instanceof ImageSurface;
-    }
-
-    /**
-     * Sets up a true sized surface
-     * @param renderable
-     * @param name Needs to match so that this.renderables[name] === renderable
-     * @returns {{isUncalculated: boolean, trueSizedDimensions: boolean[], name: *}} an entry in this._trueSizedSurfaceInfo
-     * @private
-     */
-    _configureTrueSizedSurface(renderable, name) {
-        let trueSizedSurfaceInfo = {isUncalculated: true, trueSizedDimensions: [false, false], name};
-
-        /* We assume both dimensions not to be truesized, they are set in this._resolveDecoratedSize */
-        this._trueSizedSurfaceInfo.set(renderable, trueSizedSurfaceInfo);
-        /* Need to set the size in order to get resize notifications */
-        renderable.size = [undefined, undefined];
-
-        renderable.on('resize', () => {
-            this._tryCalculateTrueSizedSurface(renderable);
-        });
-        renderable.on('deploy', () => {
-            if (!this._trueSizedSurfaceInfo.get(renderable).isUncalculated) {
-                this._tryCalculateTrueSizedSurface(renderable);
-            }
-        });
-
-        return trueSizedSurfaceInfo;
-    }
-
-
+    
     _layoutDecoratedRenderables(context, options) {
         this._layoutDockedRenderables(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, options);
         this._layoutFullScreenRenderables(this._groupedRenderables['fullSize'], context, options);
@@ -795,10 +619,9 @@ export class View extends FamousView {
         let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
         for (let name of names) {
             let renderable = fullScreenRenderables.get(name);
-            let defaultCurve = {transition: Easing.outCubic, duration: 300};
             let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
-            context.set(name, {translate, size: context.size, transition: renderableCurve || defaultCurve,
+            context.set(name, {translate, size: context.size, transition: renderableCurve,
                 opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity});
         }
     }
@@ -807,9 +630,10 @@ export class View extends FamousView {
         let names = traditionalRenderables ? traditionalRenderables.keys() : [];
         for (let renderableName of names) {
             let renderable = traditionalRenderables.get(renderableName);
-            let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
+
+            let renderableSize = this._sizeResolver.settleDecoratedSize(renderable, this.renderables[renderableName], context, renderable.decorations.size) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
-                opacity = 1, transition = {transition: Easing.outCubic, duration: 300}, scale = [1,1,1], skew = [0,0,0]} = renderable.decorations;
+                opacity = 1, transition, scale = [1,1,1], skew = [0,0,0]} = renderable.decorations;
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
@@ -881,14 +705,15 @@ export class View extends FamousView {
         let verticalMargins = viewMargins[0] + viewMargins[2];
         let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
         let dockSizeSpecified = !(_.isEqual(decorations.dock.size, [undefined, undefined]));
-        let dockSize = this._resolveDecoratedSize(renderableName, {size: sizeWithoutMargins}, dockSizeSpecified ? decorations.dock.size : undefined);
-        let inUseDockSize = this._resolvedSizesCache.get(renderable);
+        let renderableEquivalent = this.renderables[renderableName];
+        let dockSize = this._sizeResolver.settleDecoratedSize(renderable, renderableEquivalent, {size: sizeWithoutMargins}, dockSizeSpecified ? decorations.dock.size : undefined);
+        let inUseDockSize = this._sizeResolver.getResolvedSize(renderable);
         let innerSize;
         let {origin, align} = decorations;
         if (decorations.size || origin || align) {
             /* If origin and align is used, we have to add this to the translate of the renderable */
-            this._resolveDecoratedSize(renderableName, {size: sizeWithoutMargins});
-            innerSize = this._resolvedSizesCache.get(renderable);
+            this._sizeResolver.settleDecoratedSize(renderable, renderableEquivalent, {size: sizeWithoutMargins}, decorations.size);
+            innerSize = this._sizeResolver.getResolvedSize(renderable);
             if (innerSize) {
                 let translateWithProportion = (proportion, size, translation, dimension, factor) =>
                     translation[dimension] += size[dimension] ? factor * size[dimension] * proportion[dimension] : 0;
@@ -911,7 +736,7 @@ export class View extends FamousView {
 
                 if (origin) {
                     renderable.decorations.size.forEach((size, dimension) => {
-                        if(this._isValueTrueSized(size)){
+                        if(this._sizeResolver.isValueTrueSized(size)){
                             /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
                              *  to make up for this.
                              */
@@ -958,7 +783,7 @@ export class View extends FamousView {
                 /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
                  *  to make up for this.
                  */
-                newTranslation[i] -= (this._resolvedSizesCache.get(renderable)[i] * origin[i] - 1);
+                newTranslation[i] -= (this._sizeResolver.getResolvedSize(renderable)[i] * origin[i] - 1);
             }
         }
         return newTranslation;
@@ -982,7 +807,7 @@ export class View extends FamousView {
                  * we wait until the first engine render tick to add our renderables to the layout, when the view will have declared them all.
                  * layout.setDataSource() will automatically pipe events from the renderables to this View. */
                 if (!this._initialised) {
-                    this._addRenderables();
+                    this._addAllRenderables();
                     this._initializeAnimations();
                     this._initialised = true;
                     this.layout.reflowLayout();
@@ -1004,9 +829,8 @@ export class View extends FamousView {
                     }
                 }
 
-                if (this._hasTrueSizedSurfaces()) {
-                    this._doTrueSizedSurfacesBookkeeping();
-                }
+
+                this._doTrueSizedSurfacesBookkeeping();
 
                 /* Legacy context.set() based layout functions */
                 if (this.layouts.length) {
@@ -1187,13 +1011,14 @@ export class View extends FamousView {
                 return [NaN, NaN];
             } else {
                 /* Resolve both inner size and outer size */
-                this._resolveDecoratedSize(name, {size: [NaN, NaN]}, dockedRenderable.decorations.dock.size);
-                let resolvedOuterSize = this._resolvedSizesCache.get(dockedRenderable);
+                let renderableEquivalent = this.renderables[name];
+                this._sizeResolver.settleDecoratedSize(dockedRenderable, renderableEquivalent, {size: [NaN, NaN]}, decorations.dock.size);
+                let resolvedOuterSize = this._sizeResolver.getResolvedSize(dockedRenderable);
 
                 let resolvedInnerSize = [undefined, undefined];
                 if (dockedRenderable.decorations.size) {
-                    this._resolveDecoratedSize(name, {size: [NaN, NaN]});
-                    resolvedInnerSize = this._resolvedSizesCache.get(dockedRenderable);
+                    this._sizeResolver.settleDecoratedSize(dockedRenderable, renderableEquivalent, {size: [NaN, NaN]}, decorations.size);
+                    resolvedInnerSize = this._sizeResolver.getResolvedSize(dockedRenderable);
                 }
 
                 if (!resolvedOuterSize || !resolvedInnerSize) {
@@ -1232,8 +1057,9 @@ export class View extends FamousView {
             dockSize[dockingDirection] = undefined;
             /* We currently support multiple fills, but that might change in the future */
             let orthogonalSizes = filledRenderables.reduce((result, filledRenderable, renderableName) => {
-                this._resolveDecoratedSize(renderableName, {size: [NaN, NaN]});
-                let resolvedSize = this._resolvedSizesCache.get(filledRenderable);
+                let renderable = this[renderableName];
+                this._sizeResolver.settleDecoratedSize(renderable, this.renderables[renderableName], {size: [NaN, NaN]}, renderable.decorations.dock.size);
+                let resolvedSize = this._sizeResolver.getResolvedSize(filledRenderable);
                 if (resolvedSize) {
                     let orthogonalSize = resolvedSize[orthogonalDirection];
                     if (orthogonalSize || orthogonalSize == 0) {
@@ -1296,9 +1122,8 @@ export class View extends FamousView {
      * @returns {void}
      * @private
      */
-    _addRenderables() {
+    _addAllRenderables() {
         this.layout.setDataSource(this.renderables);
-
         for (let renderableName in this.renderables) {
             if (!this._pipedRenderables[renderableName]) {
                 this._pipeRenderable(this._getPipeableRenderableFromName(renderableName), renderableName);
@@ -1320,7 +1145,7 @@ export class View extends FamousView {
                     }
                 });
             } else {
-                this._warn(`Attempted to delay showing renderable ${this._name()}.${animation.waitFor}, which does not exist or contain an on() method.`);
+                Helpers.warn(`Attempted to delay showing renderable ${this._name()}.${animation.waitFor}, which does not exist or contain an on() method.`);
             }
         }
 
@@ -1351,34 +1176,20 @@ export class View extends FamousView {
             }
         }
     }
-
-    _hasTrueSizedSurfaces() {
-        return !![...this._trueSizedSurfaceInfo.keys()].length;
-    }
-
+    
 
     _doTrueSizedSurfacesBookkeeping() {
         this._nodes._trueSizeRequested = false;
-        if (this._delayedRecursiveReflowEvent) {
-            this._eventOutput.emit('recursiveReflow');
-            this._delayedRecursiveReflowEvent = false;
-        }
     }
 
     _initTrueSizedBookkeeping() {
         this.layout.on('layoutstart', ({oldSize, size}) => {
             if (size[0] !== oldSize[0] ||
                 size[1] !== oldSize[1]) {
-                for (let [surface] of this._trueSizedSurfaceInfo) {
-                    /* Encourage the surfaces to check if they have been resized, which could trigger the resize event */
-                    surface._trueSizeCheck = true;
-                }
+                this._sizeResolver.doTrueSizedBookkeeping();
                 this._eventOutput.emit('newSize', size);
             }
         });
-
-        this._resolvedSizesCache = new Map();
-        this._trueSizedSurfaceInfo = new Map();
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
         this._nodes = {_trueSizedRequested: false};
         /* This needs to be set in order for the LayoutNodeManager to be happy */
@@ -1388,44 +1199,9 @@ export class View extends FamousView {
 
     _initOptions(options) {
         if (!this._isPlainObject(options)) {
-            this._warn(`View ${this._name()} initialized with invalid non-object arguments`);
+            Helpers.warn(`View ${this._name()} initialized with invalid non-object arguments`);
         }
         this.options = options;
-    }
-
-    _tryCalculateTrueSizedSurface(renderable) {
-        let renderableHtmlElement = renderable._element;
-        let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
-        let {trueSizedDimensions} = trueSizedInfo;
-
-        if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!renderable.getContent() && !(renderable instanceof ImageSurface))) && renderableHtmlElement.innerHTML === renderable.getContent() &&
-            (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
-            let newSize;
-
-
-            newSize = [renderableHtmlElement.offsetWidth, renderableHtmlElement.offsetHeight];
-
-            let oldSize = trueSizedInfo.size;
-            let sizeChange = false;
-            if (oldSize) {
-                for (let i = 0; i < 2; i++) {
-                    if (trueSizedDimensions[i] && oldSize[i] !== newSize[i]) {
-                        sizeChange = true;
-                    }
-                }
-            } else {
-                sizeChange = true;
-            }
-
-            if (sizeChange) {
-                trueSizedInfo.size = newSize;
-                trueSizedInfo.isUncalculated = false;
-            }
-            this.reflowRecursively();
-        } else {
-            this.layout.reflowLayout();
-            this._requestLayoutControllerReflow();
-        }
     }
 
     _initDataStructures() {
@@ -1472,17 +1248,32 @@ export class View extends FamousView {
      */
     _addDecoratedRenderable(renderable, renderableName) {
         this.decoratedRenderables[renderableName] = renderable;
-        if(renderable.decorations.flow){
+        let {flow, size, dock} = renderable.decorations;
+        if(flow){
             if(!this.decorations.useFlow){
                 this._usesPartialFlow = true;
             }
             renderable.isFlowy = true;
         }
+        if(size){
+            this._bindSizeFunctions(size);
+        }
+        if(dock && dock.size){
+            this._bindSizeFunctions(dock.size);
+        }
         this._addRenderableToDecoratorGroup(renderable, renderableName);
-        return this._processRenderableEquivalent(renderable, renderableName);
+        return this._processDecoratedRenderableEquivalent(renderable, renderableName);
     }
 
-    _processRenderableEquivalent(renderable, renderableName) {
+    _bindSizeFunctions(size){
+        for(let index=0; index < 2; index++){
+            if(typeof size[index] === 'function'){
+                size[index] = size[index].bind(this);
+            }
+        }
+    }
+
+    _processDecoratedRenderableEquivalent(renderable, renderableName) {
         let {draggableOptions, swipableOptions, clip, animation} = renderable.decorations;
 
         /* If we clip, then we need to create a containerSurface */
