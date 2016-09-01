@@ -98,19 +98,16 @@ export class View extends FamousView {
         }
         let size = this._resolvedSizesCache.get(renderable);
 
-
-        if (size && (size[0] === true || size[1] === true)) {
-            return renderable.getSize();
-        }
+        /* Backup: If size can't be resolved, then see if there's a size specified on the decorator */
         if (!size && renderable.decorations) {
             let decoratedSize = renderable.decorations.size;
             let isValidSize = (inputSize) => typeof inputSize == 'number' && inputSize > 0;
-            if (decoratedSize && isValidSize(decoratedSize[0]) && isValidSize(decoratedSize[1])) {
+            if (decoratedSize && decoratedSize.every(isValidSize)) {
                 size = decoratedSize;
             }
         }
 
-        return size;
+        return size || [undefined, undefined];
     }
 
     containsUncalculatedSurfaces() {
