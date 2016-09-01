@@ -341,12 +341,12 @@ export class View extends FamousView {
 
         flowOptions.currentState = stateName;
         for(let {transformations, options} of flowOptions.states[stateName].steps){
-            flowOptions.currentCurve = options.curve || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
-
+            flowOptions.currentTransition = options.transition || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
+            
             this.decorateRenderable(renderableName, ...transformations);
 
             let renderableOn = renderable.on.bind(renderable);
-            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'),callbackToPromise(renderableOn, 'flowInterrupted')]);
+            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'),callbackToPromise(renderableOn, 'flowInterrupted').then(() => console.log("INterrupted"))]);
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if(options.delay) { await waitMilliseconds(options.delay); }
@@ -798,10 +798,10 @@ export class View extends FamousView {
         let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
         for (let name of names) {
             let renderable = fullScreenRenderables.get(name);
-            let defaultCurve = {curve: Easing.outCubic, duration: 300};
-            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentCurve;
+            let defaultCurve = {transition: Easing.outCubic, duration: 300};
+            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
-            context.set(name, {translate, size: context.size, curve: renderableCurve || defaultCurve,
+            context.set(name, {translate, size: context.size, transition: renderableCurve || defaultCurve,
                 opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity});
         }
     }
@@ -812,14 +812,14 @@ export class View extends FamousView {
             let renderable = traditionalRenderables.get(renderableName);
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
-                opacity = 1, curve = {curve: Easing.outCubic, duration: 300}, scale = [1,1,1], skew = [0,0,0]} = renderable.decorations;
+                opacity = 1, transition = {transition: Easing.outCubic, duration: 300}, scale = [1,1,1], skew = [0,0,0]} = renderable.decorations;
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
-            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentCurve;
+            let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             context.set(renderableName, {
                 size: renderableSize,
                 translate: adjustedTranslation,
-                curve: renderableCurve || curve,
+                transition: renderableTransition || transition,
                 origin,
                 scale,
                 skew,
