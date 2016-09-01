@@ -786,10 +786,9 @@ export class View extends FamousView {
 
         return trueSizedSurfaceInfo;
     }
-    
 
-_layoutDecoratedRenderables(context, options) {
 
+    _layoutDecoratedRenderables(context, options) {
         this._layoutDockedRenderables(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, options);
         this._layoutFullScreenRenderables(this._groupedRenderables['fullSize'], context, options);
         this._layoutTraditionalRenderables(this._groupedRenderables['traditional'], context, options);
@@ -799,8 +798,11 @@ _layoutDecoratedRenderables(context, options) {
         let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
         for (let name of names) {
             let renderable = fullScreenRenderables.get(name);
+            let defaultCurve = {curve: Easing.outCubic, duration: 300};
+            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentCurve;
             let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
-            context.set(name, {translate, size: context.size, opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity});
+            context.set(name, {translate, size: context.size, curve: renderableCurve || defaultCurve,
+                opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity});
         }
     }
 
@@ -811,7 +813,6 @@ _layoutDecoratedRenderables(context, options) {
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
                 opacity = 1, curve = {curve: Easing.outCubic, duration: 300}, scale = [1,1,1], skew = [0,0,0]} = renderable.decorations;
-            //TODO: Check if the renderable has flows that need to pass curves and durations and springs
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentCurve;
@@ -1513,6 +1514,7 @@ _layoutDecoratedRenderables(context, options) {
         } else if (draggableOptions) {
             renderable.node = new RenderNode();
             let draggable = new Draggable(draggableOptions);
+            renderable.draggable = draggable;
             renderable.node.add(draggable).add(renderable);
             renderable.pipe(draggable);
             renderable.pipe(this._eventOutput);
@@ -1696,5 +1698,3 @@ _layoutDecoratedRenderables(context, options) {
         }
     }
 }
-
-

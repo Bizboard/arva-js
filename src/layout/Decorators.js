@@ -1004,6 +1004,15 @@ export const flow = {
         }
     },
 
+    defaultState: function (stateName = '', stateOptions = {}, ...transformations) {
+        return function (target, renderableName, descriptor) {
+            flow.stateStep(stateName, stateOptions, ...transformations)(target, renderableName, descriptor);
+            for(let transformation of transformations) {
+                transformation(target, renderableName, descriptor);
+            }
+        }
+    },
+
     //?
     stateStep: function (stateName = '', stateOptions = {}, ...transformations) {
         return function (target, renderableName, descriptor) {
