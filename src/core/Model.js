@@ -42,8 +42,8 @@ export class Model extends PrioritisedObject {
         /* Calculate path to model in dataSource, used if no dataSource or path are given.
          *
          * The this._name property can be set by Arva's babel-plugin-transform-runtime-constructor-name plugin.
-         * This allows Arva code to be minified and mangled without losing automated route creation.
-         * If the plugin is not set up to run, which is done e.g. when not minifying your code, we default back to the runtime constructor name.*/
+         * This allows Arva code to be minified and mangled without losing automated model name resolving.
+         * If the plugin is not set up to run, which is done e.g. when not minifying your code, we default back to the runtime constructor name. */
         let modelName = this.constructor._name || Object.getPrototypeOf(this).constructor.name;
 
         let pathRoot = modelName + 's';
