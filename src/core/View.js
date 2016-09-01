@@ -843,10 +843,10 @@ export class View extends FamousView {
         for (let renderableName of dockedNames) {
             let renderable = dockedRenderables.get(renderableName);
             let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableName, context);
-            let {dock, rotate, opacity} = renderable.decorations;
+            let {dock, rotate, opacity, origin} = renderable.decorations;
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
-                dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {rotate, opacity});
+                dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {rotate, opacity, origin});
             } else {
                 this._warn(`Arva: ${this._name()}.${renderableName} contains an unknown @dock method '${dockMethod}', and was ignored.`);
             }
@@ -857,7 +857,7 @@ export class View extends FamousView {
         for (let renderableName of filledNames) {
             let renderable = filledRenderables.get(renderableName);
             let {decorations} = renderable;
-            let {rotate, opacity} = decorations;
+            let {rotate, opacity, origin} = decorations;
             let {translate, dockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
             /* Special case for undefined size, since it's treated differently by the dockhelper, and should be kept to undefined if specified */
             let dimensionHasUndefinedSize = (dimension) => ![decorations.dock.size, decorations.size].every((size) => size && size[dimension] !== undefined);
@@ -913,8 +913,14 @@ export class View extends FamousView {
                 }
 
                 if (origin) {
-                    translateWithProportion(origin, innerSize, translate, 0, -1);
-                    translateWithProportion(origin, innerSize, translate, 1, -1);
+                    renderable.decorations.size.forEach((size, dimension) => {
+                        if(this._isValueTrueSized(size)){
+                            /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
+                             *  to make up for this.
+                             */
+                            translate[dimension] += 1;
+                        }
+                    });
                 }
                 if (align) {
 
