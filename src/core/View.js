@@ -855,8 +855,12 @@ _layoutDecoratedRenderables(context, options) {
         let filledNames = filledRenderables ? filledRenderables.keys() : [];
         for (let renderableName of filledNames) {
             let renderable = filledRenderables.get(renderableName);
-            let {rotate, opacity} = renderable.decorations;
+            let {decorations} = renderable;
+            let {rotate, opacity} = decorations;
             let {translate, dockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
+            /* Special case for undefined size, since it's treated differently by the dockhelper, and should be kept to undefined if specified */
+            let dimensionHasUndefinedSize = (dimension) => ![decorations.dock.size, decorations.size].every((size) => size && size[dimension] !== undefined);
+            dockSize = dockSize.map((fallbackSize, dimension) => dimensionHasUndefinedSize(dimension) ? undefined : fallbackSize);
             dockHelper.fill(renderableName, dockSize, translate, {rotate, opacity});
         }
     }
