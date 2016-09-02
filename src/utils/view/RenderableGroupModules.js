@@ -309,4 +309,47 @@ export class TraditionalRenderables extends BasicGroupRenderables {
             });
         }
     }   
+    
+    boundingBoxSize(traditionalRenderables){
+        let renderableNames = traditionalRenderables ? traditionalRenderables.keys() : [];
+        let totalSize = [undefined, undefined];
+        for (let renderableName of renderableNames) {
+            let [renderable, renderableCounterpart] = traditionalRenderables.get(renderableName);
+            let size = this._sizeResolver.getResolvedSize(renderable);
+
+            /* Backup: If size can't be resolved, then see if there's a size specified on the decorator */
+            if (!size && renderable.decorations) {
+                let decoratedSize = renderable.decorations.size;
+                let isValidSize = (inputSize) => typeof inputSize == 'number' && inputSize > 0;
+                if (decoratedSize && decoratedSize.every(isValidSize)) {
+                    size = decoratedSize;
+                }
+            }
+            if (!size) {
+                continue;
+            }
+            let renderableSpec;
+            renderableSpec = renderable.decorations;
+            let {align = [0, 0]} = renderableSpec;
+            let translate = Helpers.adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0], renderableSpec.translate || [0, 0, 0]);
+
+            /* If there has been an align specified, then nothing can be calculated */
+            if (!renderableSpec || !renderableSpec.size || (align[0] && align[1])) {
+                continue;
+            }
+
+            /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
+            for (let i = 0; i < 2; i++) {
+                /* Undefined is the same as context size */
+                if (size[i] !== undefined && !(align && align[i])) {
+                    let newPotentialOuterSize = translate[i] + size[i];
+                    if(newPotentialOuterSize > totalSize[i] || totalSize[i] === undefined){
+                        totalSize[i] = newPotentialOuterSize;
+                    }
+                }
+
+            }
+        }
+        return totalSize;
+    }
 }

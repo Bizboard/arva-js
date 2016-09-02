@@ -160,7 +160,7 @@ export class SizeResolver extends EventEmitter {
 
     _specifyUndeterminedSingleHeight(renderable, size, dim) {
         let resultingSize = size[dim] < 0 ? ~size[dim] : 5;
-        Helpers.warn(`Cannot determine size of ${renderable.constructor.name}, falling back to default size or ${resultingSize}px.`);
+        Helpers.warn(`Cannot determine size of ${renderable.constructor.name}, falling back to default size or ${resultingSize}px. If the renderable is using legacy declaration this.renderables = ... this isn't supported for true sizing.`);
         return resultingSize;
     }
 
@@ -253,30 +253,9 @@ export class SizeResolver extends EventEmitter {
     }
 
     /**
-     * Gets the size used when displaying a renderable on the screen the last tick
+     * Gets the size used when displaying a renderable on the screen the last time the calculation was done.
      * @param {Renderable/Name} renderableOrName The renderable or the name of the renderable of which you need the size
      */
-    getResolvedSize(renderableOrName) {
-        let renderable = renderableOrName;
-        if (typeof renderableOrName === 'string') {
-            renderable = this.renderables[renderableOrName];
-        }
-        let size = this._resolvedSizesCache.get(renderable);
-
-        if (size && (size[0] === true || size[1] === true)) {
-            return renderable.getSize();
-        }
-        if (!size && renderable.decorations) {
-            let decoratedSize = renderable.decorations.size;
-            let isValidSize = (inputSize) => typeof inputSize == 'number' && inputSize > 0;
-            if (decoratedSize && isValidSize(decoratedSize[0]) && isValidSize(decoratedSize[1])) {
-                size = decoratedSize;
-            }
-        }
-
-        return size;
-    }
-
     getResolvedSize(renderable) {
         return this._resolvedSizesCache.get(renderable);
     }

@@ -743,81 +743,37 @@ export class View extends FamousView {
      * Calculates the total height of the View's layout when it's embedded inside a FlexScrollView (i.e. @scrollable is set on the View),
      * by iterating over each renderable inside the View, and finding the minimum and maximum y values at which they are drawn.
      *
-     * The total layout height is the difference between the lowest y coordinate drawn, and the largest one.
+     *
      * @returns {*[]}
      * @private
      */
     _getLayoutSize() {
         let {
             docked: dockedRenderables,
-            traditional: traditionalRenderables, ignored: ignoredRenderables
+            traditional: traditionalRenderables, filled: filledRenderables
         } = this._groupedRenderables;
-        if (!traditionalRenderables && !ignoredRenderables && !dockedRenderables) {
+        if (!traditionalRenderables && !dockedRenderables) {
             return [undefined, undefined];
         }
         let totalSize = [0, 0];
         if (dockedRenderables) {
 
             // totalSize = this._calculateDockedRenderablesBoundingBox();
-            totalSize = this._dockedRenderables.boundingBoxSize(this._groupedRenderables['docked'], this._groupedRenderables['filled'], this.decorations);
+            totalSize = this._dockedRenderables.boundingBoxSize(dockedRenderables, filledRenderables, this.decorations);
             if (totalSize[0] === undefined && totalSize[1] === undefined) {
                 /* We can return here because it isn't necessary to check further */
                 return [undefined, undefined];
             }
         }
 
-        if (traditionalRenderables || ignoredRenderables) {
-            let traditionalNames = traditionalRenderables ? traditionalRenderables.keys() : [];
-            let ignoredNames = ignoredRenderables ? ignoredRenderables.keys() : [];
-            let combinedNames = traditionalNames.concat(ignoredNames);
-
-            for (let renderableName of combinedNames) {
-                let renderable = this.renderables[renderableName];
-                let size = this.getResolvedSize(renderable);
-                if (!size) {
-                    continue;
-                }
-                let renderableSpec;
-                /* If the renderable is included in the ignored renderables */
-                if (ignoredRenderables && ignoredRenderables.indexOf(renderableName) !== -1) {
-                    /* We rather not want to do this, because this function makes a loop that means quadratic complexity */
-                    renderableSpec = this.layout.getSpec(renderableName);
-                    renderableSpec.translate = renderableSpec.transform.slice(-4, -1);
-                } else {
-                    renderableSpec = renderable.decorations;
-                    renderableSpec.align = renderableSpec.align || [0, 0];
-                    renderableSpec.translate = renderableSpec.translate || [0, 0, 0];
-
-                    if (renderableSpec.translate) {
-                        renderableSpec.translate = Helpers.adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0]
-                            , renderableSpec.translate);
-                    } else {
-                        renderableSpec.translate = [0, 0, 0];
-                    }
-                }
-
-
-                /* If there has been an align specified, then nothing can be calculated */
-                if (!renderableSpec || !renderableSpec.size || (renderableSpec.align[0] && renderableSpec.align[1])) {
-                    continue;
-                }
-
-                let {translate, align} = renderableSpec;
-                /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
-                for (let i = 0; i < 2; i++) {
-                    /* Undefined is the same as context size */
-                    if (size[i] !== undefined && !(align && align[i]) && totalSize[i] !== undefined) {
-                        totalSize[i] = Math.max(totalSize[i], translate[i] + size[i]);
-                    }
-
+        if (traditionalRenderables) {
+            let traditionalRenderablesBoundingBox = this._traditionalRenderables.boundingBoxSize(traditionalRenderables);
+            for(let [dimension, singleSize] of totalSize.entries()){
+                let traditionalSingleSize = traditionalRenderablesBoundingBox[dimension];
+                if(singleSize === undefined || singleSize < traditionalSingleSize){
+                    totalSize[dimension] = traditionalSingleSize;
                 }
             }
-            let width = totalSize[0], height = totalSize[1];
-            totalSize = [(width || width == 0) ? width : undefined, (height || height == 0) ? height : undefined];
-        }
-        /* If the total size is still [0, 0], there weren't any renderables to do our calculation, so return [undefined, undefined]  */
-        if (totalSize[0] === 0 && totalSize[1] === 0) {
-            return [undefined, undefined];
         }
         return totalSize;
 
@@ -863,8 +819,6 @@ export class View extends FamousView {
                 Helpers.warn(`Attempted to delay showing renderable ${this._name()}.${animation.waitFor}, which does not exist or contain an on() method.`);
             }
         }
-
-
     }
 
     _copyPrototypeProperties() {
