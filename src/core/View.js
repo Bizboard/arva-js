@@ -29,6 +29,8 @@ import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {SizeResolver}               from '../utils/view/SizeResolver.js';
 import {Helpers}                    from '../utils/view/Helpers.js';
+import {DockedRenderablesLayout}                    
+                                    from '../utils/view/LayoutModules.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 import {
     callbackToPromise,
@@ -414,6 +416,7 @@ export class View extends FamousView {
         this._sizeResolver.on('layoutControllerReflow', this._requestLayoutControllerReflow);
         this._sizeResolver.on('reflow', () => this.layout.reflowLayout());
         this._sizeResolver.on('reflowRecursively', this.reflowRecursively);
+        this._dockedRenderablesLayout = new DockedRenderablesLayout(this._sizeResolver);
     }
 
     _showWithAnimationController(animationController, renderable, show = true) {
@@ -618,7 +621,7 @@ export class View extends FamousView {
 
 
     _layoutDecoratedRenderables(context, options) {
-        this._layoutDockedRenderables(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, options);
+        this._dockedRenderablesLayout.run(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, this.decorations);
         this._layoutFullScreenRenderables(this._groupedRenderables['fullSize'], context, options);
         this._layoutTraditionalRenderables(this._groupedRenderables['traditional'], context, options);
     }
@@ -628,7 +631,7 @@ export class View extends FamousView {
         for (let name of names) {
             let renderable = fullScreenRenderables.get(name);
             let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
-            let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
+            let translate = Helpers.addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
             context.set(name, {
                 translate, size: context.size, transition: renderableCurve,
                 opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity
@@ -646,7 +649,7 @@ export class View extends FamousView {
                 translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
                 opacity = 1, transition, scale = [1, 1, 1], skew = [0, 0, 0]
             } = renderable.decorations;
-            translate = this._addTranslations(this.decorations.extraTranslate, translate);
+            translate = Helpers.addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             context.set(renderableName, {
@@ -663,125 +666,7 @@ export class View extends FamousView {
         }
     }
 
-
-    _layoutDockedRenderables(dockedRenderables, filledRenderables, context, options) {
-        let dockHelper = new TrueSizedLayoutDockHelper(context, options);
-
-        if (this.decorations.viewMargins) {
-            dockHelper.margins(this.decorations.viewMargins);
-        }
-
-        /* Process Renderables with a non-fill dock */
-        let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
-        for (let renderableName of dockedNames) {
-            let renderable = dockedRenderables.get(renderableName);
-            let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableName, context);
-            let {dock, rotate, opacity, origin} = renderable.decorations;
-            let {dockMethod} = dock;
-            if (dockHelper[dockMethod]) {
-                dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {
-                    rotate,
-                    opacity,
-                    origin
-                });
-            } else {
-                this._warn(`Arva: ${this._name()}.${renderableName} contains an unknown @dock method '${dockMethod}', and was ignored.`);
-            }
-        }
-
-        /* Process Renderables with a fill dock (this needs to be done after non-fill docks, since order matters in LayoutDockHelper) */
-        let filledNames = filledRenderables ? filledRenderables.keys() : [];
-        for (let renderableName of filledNames) {
-            let renderable = filledRenderables.get(renderableName);
-            let {decorations} = renderable;
-            let {rotate, opacity, origin} = decorations;
-            let {translate, dockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
-            /* Special case for undefined size, since it's treated differently by the dockhelper, and should be kept to undefined if specified */
-            let dimensionHasUndefinedSize = (dimension) => ![decorations.dock.size, decorations.size].every((size) => size && size[dimension] !== undefined);
-            dockSize = dockSize.map((fallbackSize, dimension) => dimensionHasUndefinedSize(dimension) ? undefined : fallbackSize);
-            dockHelper.fill(renderableName, dockSize, translate, {rotate, opacity});
-        }
-    }
-
-    /**
-     * Computes translation, inner size, actual docking size (outer size) and an adjusted docking size for a renderable that is about to be docked
-     * @param renderable
-     * @param {String} renderableName
-     * @param context
-     * @returns {{dockSize: (Array|Object), translate, innerSize: (Array|Number), inUseDockSize: (Array|Number}}
-     * @private
-     */
-    _prepareForDockedRenderable(renderable, renderableName, context) {
-        let {decorations} = renderable;
-        let {translate = [0, 0, 0]} = decorations;
-        translate = this._addTranslations(this.decorations.extraTranslate, translate);
-        let {dockMethod, space} = decorations.dock;
-        let {viewMargins = [0, 0, 0, 0]} = this.decorations;
-        let horizontalMargins = viewMargins[1] + viewMargins[3];
-        let verticalMargins = viewMargins[0] + viewMargins[2];
-        let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
-        let dockSizeSpecified = !(_.isEqual(decorations.dock.size, [undefined, undefined]));
-        let renderableEquivalent = this.renderables[renderableName];
-        let dockSize = this._sizeResolver.settleDecoratedSize(renderable, renderableEquivalent, {size: sizeWithoutMargins}, dockSizeSpecified ? decorations.dock.size : undefined);
-        let inUseDockSize = this._sizeResolver.getResolvedSize(renderable);
-        let innerSize;
-        let {origin, align} = decorations;
-        if (decorations.size || origin || align) {
-            /* If origin and align is used, we have to add this to the translate of the renderable */
-            this._sizeResolver.settleDecoratedSize(renderable, renderableEquivalent, {size: sizeWithoutMargins}, decorations.size);
-            innerSize = this._sizeResolver.getResolvedSize(renderable);
-            if (innerSize) {
-                let translateWithProportion = (proportion, size, translation, dimension, factor) =>
-                    translation[dimension] += size[dimension] ? factor * size[dimension] * proportion[dimension] : 0;
-                translate = [...translate]; //shallow copy the translation to prevent the translation for happening multiple times
-
-                /* If no docksize was specified in a certain direction, then use the context size without margins */
-                let outerDockSize = dockSize;
-
-
-                if (!dockSizeSpecified) {
-                    if (dockMethod === 'fill') {
-                        outerDockSize = [...sizeWithoutMargins];
-                    } else {
-                        let dockingDirection = this._getDockType(dockMethod);
-                        outerDockSize[dockingDirection] = innerSize[dockingDirection];
-                        outerDockSize[+!dockingDirection] = sizeWithoutMargins[+!dockingDirection];
-                    }
-
-                }
-
-                if (origin) {
-                    renderable.decorations.size.forEach((size, dimension) => {
-                        if (this._sizeResolver.isValueTrueSized(size)) {
-                            /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
-                             *  to make up for this.
-                             */
-                            translate[dimension] += 1;
-                        }
-                    });
-                }
-                if (align) {
-
-                    translateWithProportion(align, outerDockSize, translate, 0, 1);
-                    translateWithProportion(align, outerDockSize, translate, 1, 1);
-                }
-            }
-        }
-        for (let i = 0; i < 2; i++) {
-            if (dockSize[i] == true) {
-                /* If a true size is used, do a tilde on it in order for the dockhelper to recognize it as true-sized */
-                dockSize[i] = ~inUseDockSize[i];
-            }
-        }
-        /* If the renderable is unrenderable due to zero height/width...*/
-        if (inUseDockSize[0] === 0 || inUseDockSize[1] === 0) {
-            /* Don't display the space if the size is 0*/
-            space = 0;
-        }
-        return {dockSize, translate, innerSize, inUseDockSize, space};
-
-    }
-
+    
     /**
      * Specifying origin for true sized renderables doesn't work. Therefore we do a quick fix to adjust the
      * translation according to the current faulty behaviour of famous.
@@ -1002,16 +887,12 @@ export class View extends FamousView {
 
     }
 
-    _getDockType(dockMethodToGet) {
-        let dockTypes = [['right', 'left'], ['top', 'bottom']];
-        return _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
-    }
 
     _calculateDockedRenderablesBoundingBox() {
         let {docked: dockedRenderables, filled: filledRenderables} = this._groupedRenderables;
-        let {dockMethod} = dockedRenderables.get(dockedRenderables.keyAt(0)).decorations.dock;
+        let {dockMethod} = dockedRenderables.get(dockedRenderables.keyAt(0))[0].decorations.dock;
         /* Gets the dock type where, 0 is right or left (horizontal) and 1 is top or bottom (vertical) */
-        let dockType = this._getDockType(dockMethod);
+        let dockType = this._dockedRenderablesLayout.getDockType(dockMethod);
         let dockingDirection = dockType;
         let orthogonalDirection = !dockType + 0;
 
@@ -1019,11 +900,11 @@ export class View extends FamousView {
         /* Previously countered dock size for docking direction and opposite docking direction */
         let previousDockSize = 0;
         /* Add up the different sizes to if they are docked all in the same direction */
-        let dockSize = dockedRenderables.reduce((result, dockedRenderable, name) => {
+        let dockSize = dockedRenderables.reduce((result, [dockedRenderable], name) => {
             let {decorations} = dockedRenderable;
             let {dockMethod: otherDockMethod} = decorations.dock;
             /* If docking is done orthogonally */
-            if (this._getDockType(otherDockMethod) !== dockType) {
+            if (this._dockedRenderablesLayout.getDockType(otherDockMethod) !== dockType) {
                 return [NaN, NaN];
             } else {
                 /* Resolve both inner size and outer size */
@@ -1072,7 +953,7 @@ export class View extends FamousView {
         if (filledRenderables) {
             dockSize[dockingDirection] = undefined;
             /* We currently support multiple fills, but that might change in the future */
-            let orthogonalSizes = filledRenderables.reduce((result, filledRenderable, renderableName) => {
+            let orthogonalSizes = filledRenderables.reduce((result, [filledRenderable], renderableName) => {
                 let renderable = this[renderableName];
                 this._sizeResolver.settleDecoratedSize(renderable, this.renderables[renderableName], {size: [NaN, NaN]}, renderable.decorations.dock.size);
                 let resolvedSize = this._sizeResolver.getResolvedSize(filledRenderable);
@@ -1118,10 +999,6 @@ export class View extends FamousView {
         } else {
             console.log(message);
         }
-    }
-
-    _addTranslations(translate1, translate2) {
-        return [translate1[0] + translate2[0], translate1[1] + translate2[1], translate1[2] + translate2[2]];
     }
 
     /**
@@ -1377,7 +1254,13 @@ export class View extends FamousView {
             if (!(groupName in this._groupedRenderables)) {
                 this._groupedRenderables[groupName] = new OrderedHashMap();
             }
-            this._groupedRenderables[groupName].set(renderableName, renderable);
+            //TODO: Refactor
+            if(groupName === 'filled' || groupName === 'docked'){
+                this._groupedRenderables[groupName].set(renderableName, [renderable, this.renderables[renderableName]]);
+            } else {
+                this._groupedRenderables[groupName].set(renderableName, renderable);
+            }
+
         }
     }
 
