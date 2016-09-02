@@ -12,7 +12,7 @@ export class KeyboardHelper {
         disableScroll: true
     }) {
 
-        this.hasKeyboard = cordova && cordova.plugins.Keyboard;
+        this.hasKeyboard = cordova && cordova.plugins && cordova.plugins.Keyboard;
 
         if (this.hasKeyboard && options.disableScroll) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar && cordova.plugins.Keyboard.hideKeyboardAccessoryBar(options.hideKeyboardAccessoryBar);

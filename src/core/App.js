@@ -35,6 +35,7 @@ export class App {
      */
     constructor() {
         /* Options are defined as a static property on the class that extends this App */
+        let options = this.constructor.options || {};
         let controllers = this.constructor.controllers || [];
         let defaultRouter = this.constructor.router || ArvaRouter;
         let defaultDataSource = this.constructor.defaultDataSource;
@@ -61,7 +62,7 @@ export class App {
         this.router.run();
 
         /* Hide splash screen */
-        if(navigator && navigator.splashscreen) { navigator.splashscreen.hide(); }
+        if(navigator && navigator.splashscreen && !options.keepSplashScreen) { navigator.splashscreen.hide(); }
 
         let {done} = this.constructor;
         if(done && typeof done === 'function') {

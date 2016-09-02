@@ -376,7 +376,14 @@ export class View extends FamousView {
 
     _showWithAnimationController(animationController, renderable, show = true) {
         animationController._showingRenderable = show;
-        let callback = () => { if (renderable.emit) { renderable.emit(show ? 'shown' : 'hidden'); } };
+        let callback = () => {
+            let event = show ? 'shown' : 'hidden';
+            if (renderable.emit) {
+                renderable.emit(event);
+            } else if (renderable._eventOutput && renderable._eventOutput.emit) {
+                renderable._eventOutput.emit(show ? 'shown' : 'hidden');
+            }
+        };
 
         if(show){
             animationController.show(renderable.containerSurface || renderable, null, callback);

@@ -68,7 +68,10 @@ export class PrioritisedArray extends Array {
 
         /* If no dataSource is given, create own one with guessed path */
         if (!dataSource) {
-            let path = Object.getPrototypeOf(this).constructor.name;
+            /* The this._name property can be set by Arva's babel-plugin-transform-runtime-constructor-name plugin.
+             * This allows Arva code to be minified and mangled without losing automated model name resolving.
+             * If the plugin is not set up to run, which is done e.g. when not minifying your code, we default back to the runtime constructor name. */
+            let path = this.constructor._name || Object.getPrototypeOf(this).constructor.name;
             /* Retrieve dataSource from the DI context */
             dataSource = Injection.get(DataSource);
 
@@ -238,8 +241,8 @@ export class PrioritisedArray extends Array {
      */
     remove(position) {
         /*
-        * TODO: Beware, there might be hard to reproduce prone to errors going on sometimes when deleting many things at once
-        * Sometimes, there is an inconsistent state, but I haven't been able to figure out how that happens. /Karl
+         * TODO: Beware, there might be hard to reproduce prone to errors going on sometimes when deleting many things at once
+         * Sometimes, there is an inconsistent state, but I haven't been able to figure out how that happens. /Karl
          */
         if(this.length === 1){
             this._ids = {};

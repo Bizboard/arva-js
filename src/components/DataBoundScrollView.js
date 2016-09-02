@@ -277,7 +277,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
 
-    _addItem(child, previousSiblingID = undefined) {
+    async _addItem(child, previousSiblingID = undefined) {
 
         if (this._findData(child.id)) {
             console.log('Child already exists ', child.id);
@@ -301,6 +301,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
         }
 
         let newSurface = this.options.itemTemplate(child);
+        if(newSurface instanceof Promise) {
+            newSurface = await newSurface;
+        }
+
         newSurface.dataId = child.id;
         this._subscribeToClicks(newSurface, child);
 

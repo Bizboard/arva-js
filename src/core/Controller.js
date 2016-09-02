@@ -32,7 +32,7 @@ export class Controller extends EventEmitter {
         /* The this._name property can be set by Arva's babel-plugin-transform-runtime-constructor-name plugin.
          * This allows Arva code to be minified and mangled without losing automated route creation.
          * If the plugin is not set up to run, which is done e.g. when not minifying your code, we default back to the runtime constructor name.*/
-        let controllerName = this._name || Object.getPrototypeOf(this).constructor.name;
+        let controllerName = this.constructor._name || Object.getPrototypeOf(this).constructor.name;
 
         ObjectHelper.bindAllMethods(this, this);
 
