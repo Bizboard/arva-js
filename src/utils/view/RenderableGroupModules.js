@@ -6,19 +6,22 @@ import {TrueSizedLayoutDockHelper}  from '../../layout/TrueSizedLayoutDockHelper
 import _                            from 'lodash';
 
 
-class BasicLayout {
-    run() {
+class BasicGroupRenderables {
+    constructor(sizeResolver){
+        this._sizeResolver = sizeResolver;
+    }
+
+    layout() {
+        throw Error("Not implemented")
+    }
+
+    boundingBoxSize() {
         throw Error("Not implemented")
     }
 }
 
 
-export class DockedRenderablesLayout extends BasicLayout {
-
-    constructor(sizeResolver) {
-        super();
-        this._sizeResolver = sizeResolver;
-    }
+export class DockedRenderables extends BasicGroupRenderables {
 
     /**
      * Computes translation, inner size, actual docking size (outer size) and an adjusted docking size for a renderable that is about to be docked.
@@ -31,7 +34,7 @@ export class DockedRenderablesLayout extends BasicLayout {
      * @returns {undefined}
      * @private
      */
-    run(dockedRenderables, filledRenderables, context, ownDecorations) {
+    layout(dockedRenderables, filledRenderables, context, ownDecorations) {
         let {extraTranslate, viewMargins: margins} = ownDecorations;
         let dockHelper = new TrueSizedLayoutDockHelper(context);
 
@@ -148,16 +151,121 @@ export class DockedRenderablesLayout extends BasicLayout {
         let dockTypes = [['right', 'left'], ['top', 'bottom']];
         return _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
     }
+
+    /**
+     * Calculates the bounding box size for all the renderables passed to the function
+     * @param {OrderedHashMap} dockedRenderables A map containing Array-pairs of [renderable, renderableCounterpart] containing the things that are attached to the sides.
+     * @param {OrderedHashMap} filledRenderables A map containing Array-pairs of [renderable, renderableCounterpart] containing the things that are filled.
+     * @param {Object} ownDecorators The decorators that are applied to the view.
+     * @returns {Array|Number} The bounding box size of all the renderables
+     */
+    boundingBoxSize(dockedRenderables, filledRenderables, ownDecorations) {
+        let {dockMethod} = dockedRenderables.get(dockedRenderables.keyAt(0))[0].decorations.dock;
+        /* Gets the dock type where, 0 is right or left (horizontal) and 1 is top or bottom (vertical) */
+        let dockType = this.getDockType(dockMethod);
+        let dockingDirection = dockType;
+        let orthogonalDirection = !dockType + 0;
+
+
+        /* Previously countered dock size for docking direction and opposite docking direction */
+        let previousDockSize = 0;
+        /* Add up the different sizes to if they are docked all in the same direction */
+        let dockSize = dockedRenderables.reduce((result, [dockedRenderable, renderableCounterpart], name) => {
+            let {decorations} = dockedRenderable;
+            let {dockMethod: otherDockMethod} = decorations.dock;
+            /* If docking is done orthogonally */
+            if (this.getDockType(otherDockMethod) !== dockType) {
+                return [NaN, NaN];
+            } else {
+                /* Resolve both inner size and outer size */
+                this._sizeResolver.settleDecoratedSize(dockedRenderable, renderableCounterpart, {size: [NaN, NaN]}, decorations.dock.size);
+                let resolvedOuterSize = this._sizeResolver.getResolvedSize(dockedRenderable);
+
+                let resolvedInnerSize = [undefined, undefined];
+                if (dockedRenderable.decorations.size) {
+                    this._sizeResolver.settleDecoratedSize(dockedRenderable, renderableCounterpart, {size: [NaN, NaN]}, decorations.size);
+                    resolvedInnerSize = this._sizeResolver.getResolvedSize(dockedRenderable);
+                }
+
+                if (!resolvedOuterSize || !resolvedInnerSize) {
+                    return [NaN, NaN];
+                }
+                let resolvedSize = [resolvedOuterSize[0] === undefined ? resolvedInnerSize[0] : resolvedOuterSize[0],
+                    resolvedOuterSize[1] === undefined ? resolvedInnerSize[1] : resolvedOuterSize[1]];
+                let newResult = new Array(2);
+                /* If docking is done from opposite directions */
+                let dockingFromOpposite = dockMethod !== otherDockMethod;
+                if (dockingFromOpposite) {
+                    newResult[dockingDirection] = NaN;
+                } else {
+                    /* If this or the previous renderable size is 0, don't add the space */
+                    let spaceSize = (resolvedSize[dockingDirection] === 0 || previousDockSize === 0) ? 0 : decorations.dock.space;
+                    newResult[dockingDirection] = resolvedSize[dockingDirection] + spaceSize + result[dockingDirection];
+                    previousDockSize = resolvedSize[dockingDirection];
+                }
+                /* If a size in the orthogonalDirection has been set... */
+                if (resolvedSize[orthogonalDirection] !== undefined && !Number.isNaN(resolvedSize[orthogonalDirection])) {
+                    /* If there is no result in the orthogonal direction specified yet... */
+                    if (result[orthogonalDirection] === undefined) {
+                        newResult[orthogonalDirection] = resolvedSize[orthogonalDirection];
+                    } else {
+                        /* get the max bounding box for the specified orthogonal direction */
+                        newResult[orthogonalDirection] = Math.max(result[orthogonalDirection], resolvedSize[orthogonalDirection]);
+                    }
+                } else {
+                    newResult[orthogonalDirection] = result[orthogonalDirection];
+                }
+                return newResult;
+            }
+        }, dockingDirection ? [undefined, 0] : [0, undefined]);
+
+        if (filledRenderables) {
+            dockSize[dockingDirection] = undefined;
+            /* We currently support multiple fills, but that might change in the future */
+            let orthogonalSizes = filledRenderables.reduce((result, [filledRenderable, renderableCounterpart], renderableName) => {
+                let renderable = this[renderableName];
+                this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: [NaN, NaN]}, renderable.decorations.dock.size);
+                let resolvedSize = this._sizeResolver.getResolvedSize(filledRenderable);
+                if (resolvedSize) {
+                    let orthogonalSize = resolvedSize[orthogonalDirection];
+                    if (orthogonalSize || orthogonalSize == 0) {
+                        return result.concat(orthogonalSize);
+                    }
+                }
+            }, []);
+
+            if (orthogonalSizes) {
+                let originalOrthogonalSize = dockSize[orthogonalDirection];
+                if (originalOrthogonalSize || originalOrthogonalSize === 0) {
+                    orthogonalSizes.push(originalOrthogonalSize)
+                }
+                dockSize[orthogonalDirection] = Math.max(...orthogonalSizes);
+            }
+        }
+
+        for (let i = 0; i < 2; i++) {
+            if (Number.isNaN(dockSize[i])) {
+                dockSize[i] = undefined;
+            }
+            if (dockSize[i] !== undefined && ownDecorations.viewMargins) {
+                let {viewMargins} = ownDecorations;
+                /* if i==0 we want margin left and right, if i==1 we want margin top and bottom */
+                dockSize[i] += viewMargins[(i + 1) % 4] + viewMargins[(i + 3) % 4];
+            }
+        }
+        return dockSize;
+    }
 }
 
-export class FullSizeRenderablesLayout extends BasicLayout {
+export class FullSizeRenderables extends BasicGroupRenderables {
+
     /**
      * Layouts full size renderables
      * @param {OrderedHashMap} A map containing Array-pairs of [renderable, renderableCounterpart] containing the full size renderables.
      * @param {Object} context The famous-flex context with a valid size property
      * @param {Object} ownDecorations. The decorators that are applied to the view.
      */
-    run(fullScreenRenderables, context, ownDecorations) {
+    layout(fullScreenRenderables, context, ownDecorations) {
         let {extraTranslate} = ownDecorations;
         let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
         for (let renderableName of names) {
@@ -173,14 +281,9 @@ export class FullSizeRenderablesLayout extends BasicLayout {
 
 }
 
-export class TraditionalRenderablesLayout extends BasicLayout {
+export class TraditionalRenderables extends BasicGroupRenderables {
 
-    constructor(sizeResolver){
-        super();
-        this._sizeResolver = sizeResolver;
-    }
-
-    run(traditionalRenderables, context, ownDecorations) {
+    layout(traditionalRenderables, context, ownDecorations) {
         let names = traditionalRenderables ? traditionalRenderables.keys() : [];
         for (let renderableName of names) {
             let [renderable, renderableCounterpart] = traditionalRenderables.get(renderableName);

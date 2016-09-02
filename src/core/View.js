@@ -25,14 +25,13 @@ import ContainerSurface             from 'famous/Surfaces/ContainerSurface.js';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
 
-import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {SizeResolver}               from '../utils/view/SizeResolver.js';
 import {Helpers}                    from '../utils/view/Helpers.js';
-import {DockedRenderablesLayout,
-    FullSizeRenderablesLayout,
-    TraditionalRenderablesLayout}
-                                    from '../utils/view/LayoutModules.js';
+import {DockedRenderables,
+    FullSizeRenderables,
+    TraditionalRenderables}
+                                    from '../utils/view/RenderableGroupModules.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 import {
     callbackToPromise,
@@ -53,13 +52,9 @@ export class View extends FamousView {
 
 
         this._copyPrototypeProperties();
-
         this._initDataStructures();
-
         this._initOwnDecorations();
-
         this._initOptions(options);
-
         this._constructDecoratedRenderables();
         this._initUtils();
 
@@ -178,12 +173,12 @@ export class View extends FamousView {
     prioritiseDockAfter(renderableName, prevRenderableName) {
         let docked = this._groupedRenderables.docked;
         if (!docked) {
-            this._warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': no docked renderables present.`);
+            Helpers.warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': no docked renderables present.`);
             return false;
         }
         let result = this._prioritiseDockAtIndex(renderableName, docked.indexOf(prevRenderableName) + 1);
         if (!result) {
-            this._warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': could not find one of the renderables by name.
+            Helpers.warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': could not find one of the renderables by name.
                         The following docked renderables are present: ${docked.keys()}`);
         }
         return result;
@@ -192,7 +187,7 @@ export class View extends FamousView {
     showRenderable(renderableName, show = true) {
         let renderable = this[renderableName];
         if (!renderable.animationController) {
-            this._warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
+            Helpers.warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
             return;
         }
         this._showWithAnimationController(this.renderables[renderableName], renderable, show);
@@ -227,7 +222,7 @@ export class View extends FamousView {
             }
         };
         if (!decorators.length) {
-            this._warn('No decorators specified to decorateRenderable(renderableName, ...decorators)');
+            Helpers.warn('No decorators specified to decorateRenderable(renderableName, ...decorators)');
         }
         for (let decorator of decorators) {
             /* There can be existing decorators already, which are preserved. We are extending the decorators object,
@@ -324,7 +319,7 @@ export class View extends FamousView {
 
         let renderable = this[renderableName];
         if (!renderable || !renderable.decorations || !renderable.decorations.flow) {
-            return this._warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
+            return Helpers.warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
         }
         let flowOptions = renderable.decorations.flow;
 
@@ -418,9 +413,9 @@ export class View extends FamousView {
         this._sizeResolver.on('layoutControllerReflow', this._requestLayoutControllerReflow);
         this._sizeResolver.on('reflow', () => this.layout.reflowLayout());
         this._sizeResolver.on('reflowRecursively', this.reflowRecursively);
-        this._dockedRenderablesLayout = new DockedRenderablesLayout(this._sizeResolver);
-        this._fullSizeRenderablesLayout = new FullSizeRenderablesLayout(this._sizeResolver);
-        this._traditionalRenderablesLayout = new TraditionalRenderablesLayout(this._sizeResolver);
+        this._dockedRenderables = new DockedRenderables(this._sizeResolver);
+        this._fullSizeRenderables = new FullSizeRenderables(this._sizeResolver);
+        this._traditionalRenderables = new TraditionalRenderables(this._sizeResolver);
     }
 
     _showWithAnimationController(animationController, renderable, show = true) {
@@ -475,7 +470,7 @@ export class View extends FamousView {
     _getRenderableOptions(renderableName, decorations = this.renderables[renderableName]) {
         let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
         if (!this._isPlainObject(decoratorOptions)) {
-            this._warn(`Invalid option '${decoratorOptions}' given to item ${renderableName}`);
+            Helpers.warn(`Invalid option '${decoratorOptions}' given to item ${renderableName}`);
         }
         return decoratorOptions;
     }
@@ -625,9 +620,9 @@ export class View extends FamousView {
 
 
     _layoutDecoratedRenderables(context, options) {
-        this._dockedRenderablesLayout.run(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, this.decorations);
-        this._fullSizeRenderablesLayout.run(this._groupedRenderables['fullSize'], context, this.decorations);
-        this._traditionalRenderablesLayout.run(this._groupedRenderables['traditional'], context, this.decorations);
+        this._dockedRenderables.layout(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, this.decorations);
+        this._fullSizeRenderables.layout(this._groupedRenderables['fullSize'], context, this.decorations);
+        this._traditionalRenderables.layout(this._groupedRenderables['traditional'], context, this.decorations);
     }
     
 
@@ -701,11 +696,11 @@ export class View extends FamousView {
                         layout.call(this, context, options);
                         break;
                     default:
-                        this._warn(`Unrecognized layout specification in view '${this._name()}'.`);
+                        Helpers.warn(`Unrecognized layout specification in view '${this._name()}'.`);
                         break;
                 }
             } catch (error) {
-                this._warn(`Exception thrown in ${this._name()}:`);
+                Helpers.warn(`Exception thrown in ${this._name()}:`);
                 console.log(error);
             }
         }
@@ -762,8 +757,9 @@ export class View extends FamousView {
         }
         let totalSize = [0, 0];
         if (dockedRenderables) {
-            totalSize = this._calculateDockedRenderablesBoundingBox();
 
+            // totalSize = this._calculateDockedRenderablesBoundingBox();
+            totalSize = this._dockedRenderables.boundingBoxSize(this._groupedRenderables['docked'], this._groupedRenderables['filled'], this.decorations);
             if (totalSize[0] === undefined && totalSize[1] === undefined) {
                 /* We can return here because it isn't necessary to check further */
                 return [undefined, undefined];
@@ -825,120 +821,6 @@ export class View extends FamousView {
         }
         return totalSize;
 
-    }
-
-
-    _calculateDockedRenderablesBoundingBox() {
-        let {docked: dockedRenderables, filled: filledRenderables} = this._groupedRenderables;
-        let {dockMethod} = dockedRenderables.get(dockedRenderables.keyAt(0))[0].decorations.dock;
-        /* Gets the dock type where, 0 is right or left (horizontal) and 1 is top or bottom (vertical) */
-        let dockType = this._dockedRenderablesLayout.getDockType(dockMethod);
-        let dockingDirection = dockType;
-        let orthogonalDirection = !dockType + 0;
-
-
-        /* Previously countered dock size for docking direction and opposite docking direction */
-        let previousDockSize = 0;
-        /* Add up the different sizes to if they are docked all in the same direction */
-        let dockSize = dockedRenderables.reduce((result, [dockedRenderable], name) => {
-            let {decorations} = dockedRenderable;
-            let {dockMethod: otherDockMethod} = decorations.dock;
-            /* If docking is done orthogonally */
-            if (this._dockedRenderablesLayout.getDockType(otherDockMethod) !== dockType) {
-                return [NaN, NaN];
-            } else {
-                /* Resolve both inner size and outer size */
-                let renderableEquivalent = this.renderables[name];
-                this._sizeResolver.settleDecoratedSize(dockedRenderable, renderableEquivalent, {size: [NaN, NaN]}, decorations.dock.size);
-                let resolvedOuterSize = this._sizeResolver.getResolvedSize(dockedRenderable);
-
-                let resolvedInnerSize = [undefined, undefined];
-                if (dockedRenderable.decorations.size) {
-                    this._sizeResolver.settleDecoratedSize(dockedRenderable, renderableEquivalent, {size: [NaN, NaN]}, decorations.size);
-                    resolvedInnerSize = this._sizeResolver.getResolvedSize(dockedRenderable);
-                }
-
-                if (!resolvedOuterSize || !resolvedInnerSize) {
-                    return [NaN, NaN];
-                }
-                let resolvedSize = [resolvedOuterSize[0] === undefined ? resolvedInnerSize[0] : resolvedOuterSize[0],
-                    resolvedOuterSize[1] === undefined ? resolvedInnerSize[1] : resolvedOuterSize[1]];
-                let newResult = new Array(2);
-                /* If docking is done from opposite directions */
-                let dockingFromOpposite = dockMethod !== otherDockMethod;
-                if (dockingFromOpposite) {
-                    newResult[dockingDirection] = NaN;
-                } else {
-                    /* If this or the previous renderable size is 0, don't add the space */
-                    let spaceSize = (resolvedSize[dockingDirection] === 0 || previousDockSize === 0) ? 0 : decorations.dock.space;
-                    newResult[dockingDirection] = resolvedSize[dockingDirection] + spaceSize + result[dockingDirection];
-                    previousDockSize = resolvedSize[dockingDirection];
-                }
-                /* If a size in the orthogonalDirection has been set... */
-                if (resolvedSize[orthogonalDirection] !== undefined && !Number.isNaN(resolvedSize[orthogonalDirection])) {
-                    /* If there is no result in the orthogonal direction specified yet... */
-                    if (result[orthogonalDirection] === undefined) {
-                        newResult[orthogonalDirection] = resolvedSize[orthogonalDirection];
-                    } else {
-                        /* get the max bounding box for the specified orthogonal direction */
-                        newResult[orthogonalDirection] = Math.max(result[orthogonalDirection], resolvedSize[orthogonalDirection]);
-                    }
-                } else {
-                    newResult[orthogonalDirection] = result[orthogonalDirection];
-                }
-                return newResult;
-            }
-        }, dockingDirection ? [undefined, 0] : [0, undefined]);
-
-        if (filledRenderables) {
-            dockSize[dockingDirection] = undefined;
-            /* We currently support multiple fills, but that might change in the future */
-            let orthogonalSizes = filledRenderables.reduce((result, [filledRenderable], renderableName) => {
-                let renderable = this[renderableName];
-                this._sizeResolver.settleDecoratedSize(renderable, this.renderables[renderableName], {size: [NaN, NaN]}, renderable.decorations.dock.size);
-                let resolvedSize = this._sizeResolver.getResolvedSize(filledRenderable);
-                if (resolvedSize) {
-                    let orthogonalSize = resolvedSize[orthogonalDirection];
-                    if (orthogonalSize || orthogonalSize == 0) {
-                        return result.concat(orthogonalSize);
-                    }
-                }
-            }, []);
-
-            if (orthogonalSizes) {
-                let originalOrthogonalSize = dockSize[orthogonalDirection];
-                if (originalOrthogonalSize || originalOrthogonalSize === 0) {
-                    orthogonalSizes.push(originalOrthogonalSize)
-                }
-                dockSize[orthogonalDirection] = Math.max(...orthogonalSizes);
-            }
-        }
-
-        for (let i = 0; i < 2; i++) {
-            if (Number.isNaN(dockSize[i])) {
-                dockSize[i] = undefined;
-            }
-            if (dockSize[i] !== undefined && this.decorations.viewMargins) {
-                let {viewMargins} = this.decorations;
-                /* if i==0 we want margin left and right, if i==1 we want margin top and bottom */
-                dockSize[i] += viewMargins[(i + 1) % 4] + viewMargins[(i + 3) % 4];
-            }
-        }
-        return dockSize;
-    }
-
-    /**
-     * Uses either console.warn() or console.log() to log a mildly serious issue, depending on the user agent's availability.
-     * @param {String|Object} message
-     * @returns {void}
-     * @private
-     */
-    _warn(message) {
-        if (console.warn) {
-            console.warn(message);
-        } else {
-            console.log(message);
-        }
     }
 
     /**
