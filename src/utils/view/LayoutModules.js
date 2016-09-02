@@ -7,13 +7,15 @@ import _                            from 'lodash';
 
 
 class BasicLayout {
-    static run() {throw Error("Not implemented")}
+    run() {
+        throw Error("Not implemented")
+    }
 }
 
 
 export class DockedRenderablesLayout extends BasicLayout {
-    
-    constructor(sizeResolver){
+
+    constructor(sizeResolver) {
         super();
         this._sizeResolver = sizeResolver;
     }
@@ -106,7 +108,7 @@ export class DockedRenderablesLayout extends BasicLayout {
                     if (dockMethod === 'fill') {
                         outerDockSize = [...sizeWithoutMargins];
                     } else {
-                        let dockingDirection = this._getDockType(dockMethod);
+                        let dockingDirection = this.getDockType(dockMethod);
                         outerDockSize[dockingDirection] = innerSize[dockingDirection];
                         outerDockSize[+!dockingDirection] = sizeWithoutMargins[+!dockingDirection];
                     }
@@ -142,21 +144,66 @@ export class DockedRenderablesLayout extends BasicLayout {
         return {dockSize, translate, innerSize, inUseDockSize, space};
     }
 
-    _getDockType(dockMethodToGet) {
+    getDockType(dockMethodToGet) {
         let dockTypes = [['right', 'left'], ['top', 'bottom']];
         return _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
     }
 }
 
 export class FullSizeRenderablesLayout extends BasicLayout {
-    static run() {
-
+    /**
+     * Layouts full size renderables
+     * @param {OrderedHashMap} A map containing Array-pairs of [renderable, renderableCounterpart] containing the full size renderables.
+     * @param {Object} context The famous-flex context with a valid size property
+     * @param {Object} ownDecorations. The decorators that are applied to the view.
+     */
+    run(fullScreenRenderables, context, ownDecorations) {
+        let {extraTranslate} = ownDecorations;
+        let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
+        for (let renderableName of names) {
+            let [renderable] = fullScreenRenderables.get(renderableName);
+            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
+            let translate = Helpers.addTranslations(extraTranslate, renderable.decorations.translate || [0, 0, 0]);
+            context.set(renderableName, {
+                translate, size: context.size, transition: renderableCurve,
+                opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity
+            });
+        }
     }
 
 }
 
 export class TraditionalRenderablesLayout extends BasicLayout {
-    static run() {
 
+    constructor(sizeResolver){
+        super();
+        this._sizeResolver = sizeResolver;
     }
+
+    run(traditionalRenderables, context, ownDecorations) {
+        let names = traditionalRenderables ? traditionalRenderables.keys() : [];
+        for (let renderableName of names) {
+            let [renderable, renderableCounterpart] = traditionalRenderables.get(renderableName);
+
+            let renderableSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, context, renderable.decorations.size) || [undefined, undefined];
+            let {
+                translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
+                opacity = 1, transition, scale = [1, 1, 1], skew = [0, 0, 0]
+            } = renderable.decorations;
+            translate = Helpers.addTranslations(ownDecorations.extraTranslate, translate);
+            let adjustedTranslation = Helpers.adjustPlacementForTrueSize(renderable, renderableSize, origin, translate, this._sizeResolver);
+            let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
+            context.set(renderableName, {
+                size: renderableSize,
+                translate: adjustedTranslation,
+                transition: renderableTransition || transition,
+                origin,
+                scale,
+                skew,
+                align,
+                rotate,
+                opacity
+            });
+        }
+    }   
 }

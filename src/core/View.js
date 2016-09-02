@@ -29,7 +29,9 @@ import {TrueSizedLayoutDockHelper}  from '../layout/TrueSizedLayoutDockHelper.js
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {SizeResolver}               from '../utils/view/SizeResolver.js';
 import {Helpers}                    from '../utils/view/Helpers.js';
-import {DockedRenderablesLayout}                    
+import {DockedRenderablesLayout,
+    FullSizeRenderablesLayout,
+    TraditionalRenderablesLayout}
                                     from '../utils/view/LayoutModules.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 import {
@@ -417,6 +419,8 @@ export class View extends FamousView {
         this._sizeResolver.on('reflow', () => this.layout.reflowLayout());
         this._sizeResolver.on('reflowRecursively', this.reflowRecursively);
         this._dockedRenderablesLayout = new DockedRenderablesLayout(this._sizeResolver);
+        this._fullSizeRenderablesLayout = new FullSizeRenderablesLayout(this._sizeResolver);
+        this._traditionalRenderablesLayout = new TraditionalRenderablesLayout(this._sizeResolver);
     }
 
     _showWithAnimationController(animationController, renderable, show = true) {
@@ -622,74 +626,10 @@ export class View extends FamousView {
 
     _layoutDecoratedRenderables(context, options) {
         this._dockedRenderablesLayout.run(this._groupedRenderables['docked'], this._groupedRenderables['filled'], context, this.decorations);
-        this._layoutFullScreenRenderables(this._groupedRenderables['fullSize'], context, options);
-        this._layoutTraditionalRenderables(this._groupedRenderables['traditional'], context, options);
+        this._fullSizeRenderablesLayout.run(this._groupedRenderables['fullSize'], context, this.decorations);
+        this._traditionalRenderablesLayout.run(this._groupedRenderables['traditional'], context, this.decorations);
     }
-
-    _layoutFullScreenRenderables(fullScreenRenderables, context) {
-        let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
-        for (let name of names) {
-            let renderable = fullScreenRenderables.get(name);
-            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
-            let translate = Helpers.addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
-            context.set(name, {
-                translate, size: context.size, transition: renderableCurve,
-                opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity
-            });
-        }
-    }
-
-    _layoutTraditionalRenderables(traditionalRenderables, context) {
-        let names = traditionalRenderables ? traditionalRenderables.keys() : [];
-        for (let renderableName of names) {
-            let renderable = traditionalRenderables.get(renderableName);
-
-            let renderableSize = this._sizeResolver.settleDecoratedSize(renderable, this.renderables[renderableName], context, renderable.decorations.size) || [undefined, undefined];
-            let {
-                translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
-                opacity = 1, transition, scale = [1, 1, 1], skew = [0, 0, 0]
-            } = renderable.decorations;
-            translate = Helpers.addTranslations(this.decorations.extraTranslate, translate);
-            let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
-            let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
-            context.set(renderableName, {
-                size: renderableSize,
-                translate: adjustedTranslation,
-                transition: renderableTransition || transition,
-                origin,
-                scale,
-                skew,
-                align,
-                rotate,
-                opacity
-            });
-        }
-    }
-
     
-    /**
-     * Specifying origin for true sized renderables doesn't work. Therefore we do a quick fix to adjust the
-     * translation according to the current faulty behaviour of famous.
-     * @param renderable The renderable of which we should correct
-     * @param size  The size of this renderable
-     * @param origin The origin
-     * @param translate The current translation
-     * @returns {*[]} The new translation taking this the current famous implementation into account
-     * @private
-     */
-    _adjustPlacementForTrueSize(renderable, size, origin, translate) {
-        let newTranslation = [translate[0], translate[1], translate[2]];
-        for (let i = 0; i < 2; i++) {
-            if (size[i] === true && origin[i] !== 0) {
-                /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
-                 *  to make up for this.
-                 */
-                newTranslation[i] -= (this._sizeResolver.getResolvedSize(renderable)[i] * origin[i] - 1);
-            }
-        }
-        return newTranslation;
-    }
-
 
     /**
      * Combines all layouts defined in subclasses of the View into a single layout for the LayoutController.
@@ -853,7 +793,7 @@ export class View extends FamousView {
                     renderableSpec.translate = renderableSpec.translate || [0, 0, 0];
 
                     if (renderableSpec.translate) {
-                        renderableSpec.translate = this._adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0]
+                        renderableSpec.translate = Helpers.adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0]
                             , renderableSpec.translate);
                     } else {
                         renderableSpec.translate = [0, 0, 0];
@@ -1254,13 +1194,8 @@ export class View extends FamousView {
             if (!(groupName in this._groupedRenderables)) {
                 this._groupedRenderables[groupName] = new OrderedHashMap();
             }
-            //TODO: Refactor
-            if(groupName === 'filled' || groupName === 'docked'){
-                this._groupedRenderables[groupName].set(renderableName, [renderable, this.renderables[renderableName]]);
-            } else {
-                this._groupedRenderables[groupName].set(renderableName, renderable);
-            }
-
+            /* We save the both the renderable and the renderable counterpart in pairs */
+            this._groupedRenderables[groupName].set(renderableName, [renderable, this.renderables[renderableName]]);
         }
     }
 
