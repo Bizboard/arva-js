@@ -819,7 +819,7 @@ export const layout = {
             let decorations = prepPrototypeDecorations(target.prototype);
             decorations.useFlow = true;
             decorations.flowOptions = flowOptions || {};
-            decorations.curve = flowOptions.curve || undefined;
+            decorations.transition = flowOptions.transition || undefined;
         }
     },
 

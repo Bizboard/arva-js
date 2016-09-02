@@ -98,19 +98,16 @@ export class View extends FamousView {
         }
         let size = this._resolvedSizesCache.get(renderable);
 
-
-        if (size && (size[0] === true || size[1] === true)) {
-            return renderable.getSize();
-        }
+        /* Backup: If size can't be resolved, then see if there's a size specified on the decorator */
         if (!size && renderable.decorations) {
             let decoratedSize = renderable.decorations.size;
             let isValidSize = (inputSize) => typeof inputSize == 'number' && inputSize > 0;
-            if (decoratedSize && isValidSize(decoratedSize[0]) && isValidSize(decoratedSize[1])) {
+            if (decoratedSize && decoratedSize.every(isValidSize)) {
                 size = decoratedSize;
             }
         }
 
-        return size;
+        return size || [undefined, undefined];
     }
 
     containsUncalculatedSurfaces() {
@@ -297,11 +294,14 @@ export class View extends FamousView {
         this.reflowRecursively();
     }
 
-    async setRenderableFlowState(renderableName = '', stateName = ''){
-
-        /* Keep track of which flow state changes are running. We only allow one at a time per renderable.
-         * The latest one is always the valid one.
-         */
+    /**
+     * Does bookkeeping for a new flow state
+     *
+     * @param renderableName
+     * @param stateName
+     * @private
+     */
+    _registerNewFlowState(renderableName){
         let currentFlow = {};
         let runningFlowStates = this._runningFlowStates[renderableName];
         if(!runningFlowStates){
@@ -313,25 +313,37 @@ export class View extends FamousView {
         runningFlowStates.forEach((flowState) => {
             flowState.shouldInterrupt = (flowState !== currentFlow);
         });
+        return currentFlow;
+    }
 
+    _removeFinishedFlowState(renderableName, flowState){
+        let runningFlowStates = this._runningFlowStates[renderableName];
+        runningFlowStates.splice(runningFlowStates.indexOf(flowState), 1);
+    }
+
+    async setRenderableFlowState(renderableName = '', stateName = ''){
 
         let renderable = this[renderableName];
-        if(!renderable) {
-            return this._warn(`setRenderableFlowState called on non-existing renderable '${renderableName}'`);
+        if(!renderable || !renderable.decorations || !renderable.decorations.flow) {
+            return this._warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
         }
-
         let flowOptions = renderable.decorations.flow;
+
+
+        /* Keep track of which flow state changes are running. We only allow one at a time per renderable.
+         * The latest one is always the valid one.
+         */
+        let currentFlow = this._registerNewFlowState(renderableName);
+        let flowWasInterrupted = false;
 
         flowOptions.currentState = stateName;
         for(let {transformations, options} of flowOptions.states[stateName].steps){
-
-
-            flowOptions.currentCurve = options.curve || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
-
+            flowOptions.currentTransition = options.transition || flowOptions.defaults.curve || {curve: Easing.outCubic, duration: 300};
+            
             this.decorateRenderable(renderableName, ...transformations);
 
             let renderableOn = renderable.on.bind(renderable);
-            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'),callbackToPromise(renderableOn, 'flowInterrupted')]);
+            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'),callbackToPromise(renderableOn, 'flowInterrupted').then(() => console.log("INterrupted"))]);
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if(options.delay) { await waitMilliseconds(options.delay); }
@@ -342,11 +354,10 @@ export class View extends FamousView {
                 break;
             }
 
-
             let emit = (renderable._eventOutput && renderable._eventOutput.emit || renderable.emit).bind(renderable._eventOutput || renderable);
             emit('flowStep', {state: stateName});
         }
-        runningFlowStates.splice(runningFlowStates.indexOf(currentFlow), 1);
+        this._removeFinishedFlowState(renderableName, currentFlow);
 
 
         return !flowWasInterrupted;
@@ -791,10 +802,10 @@ export class View extends FamousView {
         let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
         for (let name of names) {
             let renderable = fullScreenRenderables.get(name);
-            let defaultCurve = {curve: Easing.outCubic, duration: 300};
-            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentCurve;
+            let defaultCurve = {transition: Easing.outCubic, duration: 300};
+            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
-            context.set(name, {translate, size: context.size, curve: renderableCurve || defaultCurve,
+            context.set(name, {translate, size: context.size, transition: renderableCurve || defaultCurve,
                 opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity});
         }
     }
@@ -805,14 +816,14 @@ export class View extends FamousView {
             let renderable = traditionalRenderables.get(renderableName);
             let renderableSize = this._resolveDecoratedSize(renderableName, context) || [undefined, undefined];
             let {translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
-                opacity = 1, curve = {curve: Easing.outCubic, duration: 300}, scale = [1,1,1], skew = [0,0,0]} = renderable.decorations;
+                opacity = 1, transition = {transition: Easing.outCubic, duration: 300}, scale = [1,1,1], skew = [0,0,0]} = renderable.decorations;
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
-            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentCurve;
+            let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             context.set(renderableName, {
                 size: renderableSize,
                 translate: adjustedTranslation,
-                curve: renderableCurve || curve,
+                transition: renderableTransition || transition,
                 origin,
                 scale,
                 skew,
@@ -836,10 +847,10 @@ export class View extends FamousView {
         for (let renderableName of dockedNames) {
             let renderable = dockedRenderables.get(renderableName);
             let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableName, context);
-            let {dock, rotate, opacity} = renderable.decorations;
+            let {dock, rotate, opacity, origin} = renderable.decorations;
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
-                dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {rotate, opacity});
+                dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {rotate, opacity, origin});
             } else {
                 this._warn(`Arva: ${this._name()}.${renderableName} contains an unknown @dock method '${dockMethod}', and was ignored.`);
             }
@@ -849,8 +860,12 @@ export class View extends FamousView {
         let filledNames = filledRenderables ? filledRenderables.keys() : [];
         for (let renderableName of filledNames) {
             let renderable = filledRenderables.get(renderableName);
-            let {rotate, opacity} = renderable.decorations;
+            let {decorations} = renderable;
+            let {rotate, opacity, origin} = decorations;
             let {translate, dockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
+            /* Special case for undefined size, since it's treated differently by the dockhelper, and should be kept to undefined if specified */
+            let dimensionHasUndefinedSize = (dimension) => ![decorations.dock.size, decorations.size].every((size) => size && size[dimension] !== undefined);
+            dockSize = dockSize.map((fallbackSize, dimension) => dimensionHasUndefinedSize(dimension) ? undefined : fallbackSize);
             dockHelper.fill(renderableName, dockSize, translate, {rotate, opacity});
         }
     }
@@ -902,8 +917,14 @@ export class View extends FamousView {
                 }
 
                 if (origin) {
-                    translateWithProportion(origin, innerSize, translate, 0, -1);
-                    translateWithProportion(origin, innerSize, translate, 1, -1);
+                    renderable.decorations.size.forEach((size, dimension) => {
+                        if(this._isValueTrueSized(size)){
+                            /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
+                             *  to make up for this.
+                             */
+                            translate[dimension] += 1;
+                        }
+                    });
                 }
                 if (align) {
 
