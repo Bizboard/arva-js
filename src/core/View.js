@@ -63,10 +63,6 @@ export class View extends FamousView {
 
     }
 
-    get hasDecorators() {
-        return !!this.decoratedRenderables;
-    }
-
     //noinspection JSUnusedGlobalSymbols
     /**
      * Deprecated, it is no longer required to call build() from within your View instances.
@@ -108,7 +104,10 @@ export class View extends FamousView {
         return size || [undefined, undefined];
     }
 
-
+    /**
+     * Returns true if the view contains uncalculated surfaces
+     * @returns {Boolean}
+     */
     containsUncalculatedSurfaces() {
         return this._sizeResolver.containsUncalculatedSurfaces();
     }
@@ -135,6 +134,10 @@ export class View extends FamousView {
         return renderable;
     }
 
+    /**
+     * Removes the renderable from the view
+     * @param {String} renderableName The name of the renderable
+     */
     removeRenderable(renderableName) {
         let renderable = this[renderableName];
         this._setDecorationPipes(renderableName, false);
@@ -340,7 +343,7 @@ export class View extends FamousView {
             this.decorateRenderable(renderableName, ...transformations);
 
             let renderableOn = renderable.on.bind(renderable);
-            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'), callbackToPromise(renderableOn, 'flowInterrupted').then(() => console.log("INterrupted"))]);
+            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'), callbackToPromise(renderableOn, 'flowInterrupted')]);
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if (options.delay) {
@@ -357,8 +360,7 @@ export class View extends FamousView {
             emit('flowStep', {state: stateName});
         }
         this._removeFinishedFlowState(renderableName, currentFlow);
-
-
+        
         return !flowWasInterrupted;
     }
 
@@ -477,19 +479,18 @@ export class View extends FamousView {
 
     _constructDecoratedRenderables() {
 
-        let classList = [];
+        let classConstructorList = [];
 
         for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
-            classList.push(currentClass);
+            classConstructorList.push(currentClass.__proto__.constructor);
         }
-        classList.reverse();
+        classConstructorList.reverse();
 
 
-        for (let currentClass of classList) {
-            let renderableConstructors = this.renderableConstructors.get(currentClass.__proto__.constructor);
+        for (let currentClassConstructor of classConstructorList) {
+            let renderableConstructors = this.renderableConstructors.get(currentClassConstructor);
             for (let renderableName in renderableConstructors) {
                 let decorations = renderableConstructors[renderableName].decorations;
-
 
                 let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
 
@@ -508,7 +509,6 @@ export class View extends FamousView {
                  * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
                  * to the renderables of this instance, which is unwanted.
                  */
-
                 let {descriptor} = decorations;
                 if (descriptor) {
                     if (descriptor.get) {
@@ -537,7 +537,6 @@ export class View extends FamousView {
         let renderable = this._pipedRenderables[renderableName];
         /* Auto pipe events from the renderable to the view */
         if (renderable && renderable.unpipe) {
-            renderable.unpipe(this);
             renderable.unpipe(this._eventOutput);
             delete this._pipedRenderables[renderableName];
         }
@@ -546,7 +545,6 @@ export class View extends FamousView {
     _pipeRenderable(renderable, renderableName) {
         /* Auto pipe events from the renderable to the view */
         if (renderable.pipe) {
-            renderable.pipe(this);
             renderable.pipe(this._eventOutput);
             this._pipedRenderables[renderableName] = renderable;
         }
@@ -658,14 +656,12 @@ export class View extends FamousView {
                 }
 
                 /* Layout all renderables that have decorators (e.g. @someDecorator) */
-                if (this.hasDecorators) {
-                    this._layoutDecoratedRenderables(context, options);
-                    if (this.decorations.customLayoutFunction) {
-                        this.decorations.customLayoutFunction(context);
-                    }
+                this._layoutDecoratedRenderables(context, options);
+                if (this.decorations.customLayoutFunction) {
+                    this.decorations.customLayoutFunction(context);
                 }
 
-
+                
                 this._doTrueSizedSurfacesBookkeeping();
 
                 /* Legacy context.set() based layout functions */
@@ -888,9 +884,6 @@ export class View extends FamousView {
         if (!this.decorations.extraTranslate) {
             this.decorations.extraTranslate = [0, 0, 10];
         }
-        if (!this.decoratedRenderables) {
-            this.decoratedRenderables = {};
-        }
 
         if (!this.delayedAnimations) {
             this.delayedAnimations = [];
@@ -916,7 +909,6 @@ export class View extends FamousView {
      * @private
      */
     _addDecoratedRenderable(renderable, renderableName) {
-        this.decoratedRenderables[renderableName] = renderable;
         let {flow, size, dock} = renderable.decorations;
         if (flow) {
             if (!this.decorations.useFlow) {
