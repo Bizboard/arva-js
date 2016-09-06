@@ -16,6 +16,7 @@ import Draggable                    from 'famous/modifiers/Draggable';
 import RenderNode                   from 'famous/core/RenderNode';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
+import {Throttler}                  from 'arva-js/utils/Throttler.js';
 
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
@@ -319,6 +320,35 @@ export class View extends FamousView {
     _removeFinishedFlowState(renderableName, flowState){
         let runningFlowStates = this._runningFlowStates[renderableName];
         runningFlowStates.splice(runningFlowStates.indexOf(flowState), 1);
+    }
+
+    /**
+     * Repeat a certain flowState indefinitely
+     * @param renderableName
+     * @param stateName
+     */
+    async repeatFlowState(renderableName = '', stateName = ''){
+        if(!this._runningRepeats){
+            this._runningRepeats = {}
+        }
+
+        if(!this._runningRepeats[renderableName]){
+            this._runningRepeats[renderableName] = true;
+            while(this._runningRepeats[renderableName]){
+                await this.setRenderableFlowState(renderableName, stateName);
+            }
+        }
+    }
+
+    /**
+     * Cancel a repeating renderable. This will cancel the animation for next flow-cycle, it won't interject the current animation cycle.
+     * @param renderableName
+     */
+    cancelRepeatFlowState(renderableName){
+        if(this._runningRepeats){
+            this._runningRepeats[renderableName] = false;
+        }
+
     }
 
     async setRenderableFlowState(renderableName = '', stateName = ''){
