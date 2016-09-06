@@ -6,7 +6,7 @@ import {TrueSizedLayoutDockHelper}  from '../../layout/TrueSizedLayoutDockHelper
 import _                            from 'lodash';
 
 
-class BasicGroupRenderables {
+class BaseRenderableGroupHelpers {
     constructor(sizeResolver){
         this._sizeResolver = sizeResolver;
     }
@@ -21,7 +21,7 @@ class BasicGroupRenderables {
 }
 
 
-export class DockedRenderables extends BasicGroupRenderables {
+export class DockedRenderablesHelper extends BaseRenderableGroupHelpers {
 
     /**
      * Computes translation, inner size, actual docking size (outer size) and an adjusted docking size for a renderable that is about to be docked.
@@ -257,7 +257,7 @@ export class DockedRenderables extends BasicGroupRenderables {
     }
 }
 
-export class FullSizeRenderables extends BasicGroupRenderables {
+export class FullSizeRenderablesHelper extends BaseRenderableGroupHelpers {
 
     /**
      * Layouts full size renderables
@@ -281,7 +281,7 @@ export class FullSizeRenderables extends BasicGroupRenderables {
 
 }
 
-export class TraditionalRenderables extends BasicGroupRenderables {
+export class TraditionalRenderablesHelper extends BaseRenderableGroupHelpers {
 
     layout(traditionalRenderables, context, ownDecorations) {
         let names = traditionalRenderables ? traditionalRenderables.keys() : [];
