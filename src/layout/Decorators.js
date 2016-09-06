@@ -1038,5 +1038,13 @@ export const flow = {
             }
             decorations.flow.viewStates = states;
         }
+    },
+
+    multipleStateStep: function(stateName = '', states = []){
+        return function (target, renderableName, descriptor) {
+            for(let {stateOptions, transformations} of states){
+                flow.stateStep(stateName, stateOptions, ...transformations)(target, renderableName, descriptor);
+            }
+        }
     }
 };
