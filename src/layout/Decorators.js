@@ -1021,7 +1021,7 @@ export const flow = {
                 decorations.flow = {states: {}};
                 decorations.useFlow = true; // todo remove
                 decorations.flowOptions = {flow: true}; // todo remove
-                decorations.flow.defaults = {flow: true, curve: Easing.outCubic, duration: 300};
+                decorations.flow.defaults = {flow: true, transition: { curve: Easing.outCubic, duration: 300 }};
             }
             if (!decorations.flow.states[stateName]) {
                 decorations.flow.states[stateName] = {steps: []};
