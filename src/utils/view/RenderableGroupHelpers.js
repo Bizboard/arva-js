@@ -1,9 +1,11 @@
 /**
  * Created by lundfall on 01/09/16.
  */
+import Easing                       from 'famous/transitions/Easing.js';
+import _                            from 'lodash';
+
 import {Helpers}                    from './Helpers.js';
 import {TrueSizedLayoutDockHelper}  from '../../layout/TrueSizedLayoutDockHelper.js';
-import _                            from 'lodash';
 
 
 class BaseRenderableGroupHelpers {
@@ -287,7 +289,8 @@ export class TraditionalRenderablesHelper extends BaseRenderableGroupHelpers {
         let names = traditionalRenderables ? traditionalRenderables.keys() : [];
         for (let renderableName of names) {
             let [renderable, renderableCounterpart] = traditionalRenderables.get(renderableName);
-
+            let defaultCurve = {curve: Easing.outCubic, duration: 300};
+            let renderableCurve = renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             let renderableSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, context, renderable.decorations.size) || [undefined, undefined];
             let {
                 translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
@@ -303,6 +306,7 @@ export class TraditionalRenderablesHelper extends BaseRenderableGroupHelpers {
                 origin,
                 scale,
                 skew,
+                curve: renderableCurve || defaultCurve,
                 align,
                 rotate,
                 opacity

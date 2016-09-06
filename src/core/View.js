@@ -21,7 +21,7 @@ import {
     FullSizeRenderablesHelper,
     TraditionalRenderablesHelper
 }
-    from '../utils/view/RenderableGroupModules.js';
+                                    from '../utils/view/RenderableGroupHelpers.js';
 import {RenderableHelper}           from '../utils/view/RenderableHelper.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 
@@ -373,8 +373,7 @@ export class View extends FamousView {
                 if (this.decorations.customLayoutFunction) {
                     this.decorations.customLayoutFunction(context);
                 }
-
-
+                
                 this._doTrueSizedSurfacesBookkeeping();
 
                 /* Legacy context.set() based layout functions */
@@ -580,5 +579,14 @@ export class View extends FamousView {
      */
     _bindToSelf(method) {
         return method.bind(this);
+    }
+
+    /**
+     * Repeat a certain flowState indefinitely
+     * @param renderableName
+     * @param stateName
+     */
+    repeatFlowState(renderableName = '', stateName = ''){
+        return this._renderableHelper.repeatFlowState(renderableName, stateName);
     }
 }

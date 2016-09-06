@@ -16,6 +16,7 @@ import RenderNode                   from 'famous/core/RenderNode';
 import Modifier                     from 'famous/core/Modifier.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
 
+import {Throttler}                  from 'arva-js/utils/Throttler.js';
 
 import {limit}                      from '../Limiter.js';
 import {Helpers}                    from './Helpers.js';
@@ -46,6 +47,7 @@ export class RenderableHelper {
         this._pipedRenderables = {};
         this._groupedRenderables = {};
         this._runningFlowStates = {};
+        this._runningRepeatingFlowStates = {};
     }
 
     assignRenderable(renderable, renderableName) {
@@ -569,6 +571,7 @@ export class RenderableHelper {
     async setRenderableFlowState(renderableName = '', stateName = '') {
 
         let renderable = this._renderables[renderableName];
+        let renderableCounterpart = this._renderableCounterparts[renderableName];
         if (!renderable || !renderable.decorations || !renderable.decorations.flow) {
             return Helpers.warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
         }
@@ -587,16 +590,17 @@ export class RenderableHelper {
                     curve: Easing.outCubic,
                     duration: 300
                 };
-
             this.decorateRenderable(renderableName, ...transformations);
 
-            let renderableOn = renderable.on.bind(renderable);
+            let renderableOn = renderableCounterpart.on.bind(renderable);
             await Promise.race([callbackToPromise(renderableOn, 'flowEnd'), callbackToPromise(renderableOn, 'flowInterrupted')]);
+            console.log("flow ended for state " + stateName);
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if (options.delay) {
                 await waitMilliseconds(options.delay);
             }
+            console.log("Completed state " + stateName);
 
             /* If the flow has been interrupted */
             if (currentFlow.shouldInterrupt) {
@@ -792,4 +796,29 @@ export class RenderableHelper {
         return true;
 
     }
+
+    /**
+     * Repeat a certain flowState indefinitely
+     * @param renderableName
+     * @param stateName
+     */
+    async repeatFlowState(renderableName = '', stateName = ''){
+        if(!this._runningRepeatingFlowStates[renderableName]){
+            this._runningRepeatingFlowStates[renderableName] = true;
+            while(this._runningRepeatingFlowStates[renderableName]){
+                await this.setRenderableFlowState(renderableName, stateName);
+            }
+        }
+    }
+
+    /**
+     * Cancel a repeating renderable. This will cancel the animation for next flow-cycle, it won't interject the current animation cycle.
+     * @param renderableName
+     */
+    cancelRepeatFlowState(renderableName){
+        if(this._runningRepeatingFlowStates){
+            this._runningRepeatingFlowStates[renderableName] = false;
+        }
+    }
+
 }
