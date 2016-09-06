@@ -569,6 +569,7 @@ export class View extends FamousView {
         if (!this.decorations.extraTranslate) {
             this.decorations.extraTranslate = [0, 0, 10];
         }
+        this._runningRepeatingFlowStates = {};
     }
 
     /**
@@ -586,7 +587,22 @@ export class View extends FamousView {
      * @param renderableName
      * @param stateName
      */
-    repeatFlowState(renderableName = '', stateName = ''){
-        return this._renderableHelper.repeatFlowState(renderableName, stateName);
+    async repeatFlowState(renderableName = '', stateName = ''){
+        if(!this._runningRepeatingFlowStates[renderableName]){
+            this._runningRepeatingFlowStates[renderableName] = true;
+            while(this._runningRepeatingFlowStates[renderableName]){
+                await this.setRenderableFlowState(renderableName, stateName);
+            }
+        }
+    }
+
+    /**
+     * Cancel a repeating renderable. This will cancel the animation for next flow-cycle, it won't interject the current animation cycle.
+     * @param renderableName
+     */
+    cancelRepeatFlowState(renderableName){
+        if(this._runningRepeatingFlowStates){
+            this._runningRepeatingFlowStates[renderableName] = false;
+        }
     }
 }

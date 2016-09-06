@@ -47,7 +47,6 @@ export class RenderableHelper {
         this._pipedRenderables = {};
         this._groupedRenderables = {};
         this._runningFlowStates = {};
-        this._runningRepeatingFlowStates = {};
     }
 
     assignRenderable(renderable, renderableName) {
