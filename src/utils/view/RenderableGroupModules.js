@@ -315,6 +315,7 @@ export class TraditionalRenderables extends BasicGroupRenderables {
         let totalSize = [undefined, undefined];
         for (let renderableName of renderableNames) {
             let [renderable, renderableCounterpart] = traditionalRenderables.get(renderableName);
+            this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: [NaN, NaN]}, renderable.decorations.size);
             let size = this._sizeResolver.getResolvedSize(renderable);
 
             /* Backup: If size can't be resolved, then see if there's a size specified on the decorator */
