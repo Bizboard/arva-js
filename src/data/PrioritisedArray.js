@@ -156,7 +156,7 @@ export class PrioritisedArray extends Array {
 
     /**
      * Adds a model instance to the rear of the PrioritisedArray, and emits a 'child_added' and possibly 'new_child' event after successful addition.
-     * @param {Model} model Instance of a Model.
+     * @param {Model|Object} model Instance of a Model.
      * @param {String} prevSiblingId ID of the model preceding the one that will be added.
      * @returns {Object} Same model as the one originally passed as parameter.
      */
