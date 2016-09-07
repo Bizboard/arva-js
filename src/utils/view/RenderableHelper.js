@@ -6,6 +6,7 @@ import OrderedHashMap               from 'ordered-hashmap';
 
 import Transitionable               from 'famous/transitions/Transitionable.js';
 import Easing                       from 'famous/transitions/Easing.js';
+import Draggable                    from 'famous/modifiers/Draggable.js';
 import ContainerSurface             from 'famous/Surfaces/ContainerSurface.js';
 import Transform                    from 'famous/core/Transform.js';
 import Timer                        from 'famous/utilities/Timer.js';
@@ -30,18 +31,17 @@ export class RenderableHelper {
 
     /**
      * Creates a utility for maintaining proper state of decorated renderables
-     * @param bindMethod
-     * @param eventOutput
-     * @param outputRenderables
+     * @param {Function} bindMethod
+     * @param {Function} pipeMethod
+     * @param {Object|Renderable} outputRenderables
      * @param sizeResolver
      */
-    constructor(bindMethod, eventOutput, outputRenderables, sizeResolver) {
+    constructor(bindMethod, pipeMethod, outputRenderables, sizeResolver) {
         this._bindMethod = bindMethod;
-        this._eventOutput = eventOutput;
         this._renderableCounterparts = outputRenderables;
         this._sizeResolver = sizeResolver;
+        this._pipeToView = pipeMethod;
         this.waitingAnimations = [];
-        this.immediateAnimations = [];
         this._renderables = {};
         this._groupedRenderables = {};
         this._pipedRenderables = {};
@@ -128,10 +128,7 @@ export class RenderableHelper {
      * @private
      */
     _unpipeRenderable(renderableName) {
-        let renderable = this._pipedRenderables[renderableName];
-        /* Auto pipe events from the renderable to the view */
-        if (renderable && renderable.unpipe) {
-            renderable.unpipe(this._eventOutput);
+        if(this._pipeToView(this._pipedRenderables[renderableName]), false){
             delete this._pipedRenderables[renderableName];
         }
     }
@@ -144,8 +141,7 @@ export class RenderableHelper {
      */
     _pipeRenderable(renderable, renderableName) {
         /* Auto pipe events from the renderable to the view */
-        if (renderable.pipe) {
-            renderable.pipe(this._eventOutput);
+        if(this._pipeToView(renderable, true)){
             this._pipedRenderables[renderableName] = renderable;
         }
     }
@@ -251,15 +247,13 @@ export class RenderableHelper {
 
         if (swipableOptions) {
             renderable = this._initSwipable(swipableOptions, renderable);
-
         } else if (draggableOptions) {
             renderable.node = new RenderNode();
             let draggable = new Draggable(draggableOptions);
             renderable.draggable = draggable;
             renderable.node.add(draggable).add(renderable);
-            renderable.pipe(draggable);
-            renderable.pipe(this._eventOutput);
-            draggable.pipe(this._eventOutput);
+            //TODO: We don't do an unpiping of the draggable, which might be dangerous
+            this._pipeToView(draggable);
         }
 
         if (renderable.node) {
@@ -690,7 +684,6 @@ export class RenderableHelper {
 
         renderable.node = new RenderNode();
         renderable.node.add(positionModifier).add(renderable);
-        renderable.pipe(this._eventOutput);
 
         return renderable;
     }

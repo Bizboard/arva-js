@@ -233,7 +233,7 @@ export class View extends FamousView {
         this._dockedRenderablesHelper = new DockedRenderablesHelper(this._sizeResolver);
         this._fullSizeRenderablesHelper = new FullSizeRenderablesHelper(this._sizeResolver);
         this._traditionalRenderablesHelper = new TraditionalRenderablesHelper(this._sizeResolver);
-        this._renderableHelper = new RenderableHelper(this._bindToSelf, this._eventOutput, this.renderables, this._sizeResolver);
+        this._renderableHelper = new RenderableHelper(this._bindToSelf,this._setPipeToSelf, this.renderables, this._sizeResolver);
     }
 
     /** Requests for a parent LayoutController trying to resolve the size of this view
@@ -580,6 +580,28 @@ export class View extends FamousView {
      */
     _bindToSelf(method) {
         return method.bind(this);
+    }
+
+    /**
+     * Pipes a renderable to this view. Used by the util DecoratedRenderables
+     * @param {Function} method The method that is about to be bound
+     * @param {Boolean} enable set to false to unpipe
+     * @returns {Boolean} true if piping was successful, otherwise false
+     * @private
+     */
+    _setPipeToSelf(renderable, enable = true) {
+        let methodName = enable ? 'pipe' : 'unpipe';
+        /* Auto pipe events from the renderable to the view */
+        if (renderable && renderable[methodName]) {
+            /*
+             * We see it as a bit of a mystery why the piping needs to be done both to this and this._eventOutput,
+             * but they both seem to be necessary so I'm gonna leave it for now.
+             */
+            renderable[methodName](this);
+            renderable[methodName](this._eventOutput);
+            return true;
+        }
+        return false;
     }
 
     /**
