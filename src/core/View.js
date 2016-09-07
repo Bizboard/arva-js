@@ -370,8 +370,8 @@ export class View extends FamousView {
             
             this.decorateRenderable(renderableName, ...transformations);
 
-            let renderableOn = renderable.on.bind(renderable);
-            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'),callbackToPromise(renderableOn, 'flowInterrupted').then(() => console.log("INterrupted"))]);
+
+            await new Promise((resolve) => renderable.decorations.flow.callback = resolve);
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if(options.delay) { await waitMilliseconds(options.delay); }
@@ -832,9 +832,10 @@ export class View extends FamousView {
             let renderable = fullScreenRenderables.get(name);
             let {origin = [0, 0], align = [0, 0], rotate = [0, 0, 0], transition = {transition: Easing.outCubic, duration: 300}, scale = [1,1,1], skew = [0,0,0]} = renderable.decorations;
             let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
+            let callback = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.callback;
             let translate = this._addTranslations(this.decorations.extraTranslate, renderable.decorations.translate || [0, 0, 0]);
             context.set(name, {translate, size: context.size, transition: renderableCurve || transition,
-                opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity, origin, align, rotate, scale, skew});
+                opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity, origin, align, rotate, scale, skew, callback});
         }
     }
 
@@ -848,6 +849,7 @@ export class View extends FamousView {
             translate = this._addTranslations(this.decorations.extraTranslate, translate);
             let adjustedTranslation = this._adjustPlacementForTrueSize(renderable, renderableSize, origin, translate);
             let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
+            let callback = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.callback;
             context.set(renderableName, {
                 size: renderableSize,
                 translate: adjustedTranslation,
@@ -856,6 +858,7 @@ export class View extends FamousView {
                 scale,
                 skew,
                 align,
+                callback,
                 rotate,
                 opacity
             });
@@ -877,9 +880,10 @@ export class View extends FamousView {
             let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableName, context);
             let {dock, rotate, opacity, origin, scale = [1,1,1], skew = [0,0,0], transition = {transition: Easing.outCubic, duration: 300}} = renderable.decorations;
             let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
+            let callback = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.callback;
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
-                dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {rotate, opacity, origin, scale, skew, transition: renderableTransition || transition});
+                dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {callback, rotate, opacity, origin, scale, skew, transition: renderableTransition || transition});
             } else {
                 this._warn(`Arva: ${this._name()}.${renderableName} contains an unknown @dock method '${dockMethod}', and was ignored.`);
             }
@@ -892,11 +896,12 @@ export class View extends FamousView {
             let {decorations} = renderable;
             let {dock, rotate, opacity, origin, scale = [1,1,1], skew = [0,0,0], transition = {transition: Easing.outCubic, duration: 300}} = decorations;
             let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
+            let callback = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.callback;
             let {translate, dockSize} = this._prepareForDockedRenderable(renderable, renderableName, context);
             /* Special case for undefined size, since it's treated differently by the dockhelper, and should be kept to undefined if specified */
             let dimensionHasUndefinedSize = (dimension) => ![decorations.dock.size, decorations.size].every((size) => size && size[dimension] !== undefined);
             dockSize = dockSize.map((fallbackSize, dimension) => dimensionHasUndefinedSize(dimension) ? undefined : fallbackSize);
-            dockHelper.fill(renderableName, dockSize, translate, {rotate, opacity, origin, scale, skew, transition: renderableTransition || transition});
+            dockHelper.fill(renderableName, dockSize, translate, {callback, rotate, opacity, origin, scale, skew, transition: renderableTransition || transition});
         }
     }
 
@@ -1148,7 +1153,8 @@ export class View extends FamousView {
             let combinedNames = traditionalNames.concat(ignoredNames);
 
             for (let renderableName of combinedNames) {
-                let renderable = this.renderables[renderableName];
+                let renderable = this[renderableName];
+                this._resolveDecoratedSize(renderableName, { size: [NaN, NaN] });
                 let size = this.getResolvedSize(renderable);
                 if (!size) {
                     continue;
