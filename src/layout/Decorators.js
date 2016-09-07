@@ -7,12 +7,10 @@
 
  */
 import _                        from 'lodash';
-import Timer                    from 'famous/utilities/Timer.js';
 import Easing                   from 'famous/transitions/Easing.js';
 import AnimationController      from 'famous-flex/AnimationController.js';
 import LayoutUtility            from 'famous-flex/LayoutUtility.js';
 
-import {View}                   from '../core/View.js';
 
 function prepDecoratedRenderable(viewOrRenderable, renderableName, descriptor) {
     /* This function can also be called as prepDecoratedRenderable(renderable) */
@@ -807,6 +805,7 @@ export const layout = {
      *
      * Makes the view flow.
      * @param {Object} Options to pass as flowOptions to the LayoutController
+     * @param {Bool} [flowOptions.transition] If specified, sets the default transition to use
      * @param {Bool} [flowOptions.reflowOnResize] Smoothly reflows renderables on resize (only used when flow = true) (default: `true`).
      * @param {Object} [flowOptions.spring] Spring options used by nodes when reflowing (default: `{dampingRatio: 0.8, period: 300}`).
      * @param {Object} [flowOptions.properties] Properties which should be enabled or disabled for flowing.
