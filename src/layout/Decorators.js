@@ -807,6 +807,7 @@ export const layout = {
      *
      * Makes the view flow.
      * @param {Object} Options to pass as flowOptions to the LayoutController
+     * @param {Bool} [flowOptions.transition] If specified, sets the default transition to use
      * @param {Bool} [flowOptions.reflowOnResize] Smoothly reflows renderables on resize (only used when flow = true) (default: `true`).
      * @param {Object} [flowOptions.spring] Spring options used by nodes when reflowing (default: `{dampingRatio: 0.8, period: 300}`).
      * @param {Object} [flowOptions.properties] Properties which should be enabled or disabled for flowing.
@@ -1021,7 +1022,7 @@ export const flow = {
                 decorations.flow = {states: {}};
                 decorations.useFlow = true; // todo remove
                 decorations.flowOptions = {flow: true}; // todo remove
-                decorations.flow.defaults = {flow: true, curve: Easing.outCubic, duration: 300};
+                decorations.flow.defaults = {flow: true, transition: Easing.outCubic, duration: 300};
             }
             if (!decorations.flow.states[stateName]) {
                 decorations.flow.states[stateName] = {steps: []};

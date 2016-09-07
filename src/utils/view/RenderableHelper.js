@@ -585,21 +585,16 @@ export class RenderableHelper {
 
         flowOptions.currentState = stateName;
         for (let {transformations, options} of flowOptions.states[stateName].steps) {
-            flowOptions.currentTransition = options.transition || flowOptions.defaults.curve || {
-                    curve: Easing.outCubic,
-                    duration: 300
-                };
+            flowOptions.currentTransition = options.transition || flowOptions.defaults.curve;
             this.decorateRenderable(renderableName, ...transformations);
 
             let renderableOn = renderableCounterpart.on.bind(renderable);
             await Promise.race([callbackToPromise(renderableOn, 'flowEnd'), callbackToPromise(renderableOn, 'flowInterrupted')]);
-            console.log("flow ended for state " + stateName);
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if (options.delay) {
                 await waitMilliseconds(options.delay);
             }
-            console.log("Completed state " + stateName);
 
             /* If the flow has been interrupted */
             if (currentFlow.shouldInterrupt) {
@@ -795,29 +790,5 @@ export class RenderableHelper {
         return true;
 
     }
-
-    /**
-     * Repeat a certain flowState indefinitely
-     * @param renderableName
-     * @param stateName
-     */
-    async repeatFlowState(renderableName = '', stateName = ''){
-        if(!this._runningRepeatingFlowStates[renderableName]){
-            this._runningRepeatingFlowStates[renderableName] = true;
-            while(this._runningRepeatingFlowStates[renderableName]){
-                await this.setRenderableFlowState(renderableName, stateName);
-            }
-        }
-    }
-
-    /**
-     * Cancel a repeating renderable. This will cancel the animation for next flow-cycle, it won't interject the current animation cycle.
-     * @param renderableName
-     */
-    cancelRepeatFlowState(renderableName){
-        if(this._runningRepeatingFlowStates){
-            this._runningRepeatingFlowStates[renderableName] = false;
-        }
-    }
-
+    
 }

@@ -49,12 +49,14 @@ export class DockedRenderablesHelper extends BaseRenderableGroupHelpers {
         for (let renderableName of dockedNames) {
             let [renderable, renderableCounterpart] = dockedRenderables.get(renderableName);
             let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
-            let {dock, rotate, opacity, origin} = renderable.decorations;
+            let renderableTransition = renderable.decorations.flow && renderable.decorations.flow.currentTransition;
+            let {dock, rotate, opacity, origin, transition} = renderable.decorations;
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
                 dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {
                     rotate,
                     opacity,
+                    transition: renderableTransition || transition,
                     origin
                 });
             }
@@ -272,10 +274,10 @@ export class FullSizeRenderablesHelper extends BaseRenderableGroupHelpers {
         let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
         for (let renderableName of names) {
             let [renderable] = fullScreenRenderables.get(renderableName);
-            let renderableCurve = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
+            let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             let translate = Helpers.addTranslations(extraTranslate, renderable.decorations.translate || [0, 0, 0]);
             context.set(renderableName, {
-                translate, size: context.size, transition: renderableCurve,
+                translate, size: context.size, transition: renderableTransition,
                 opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity
             });
         }
@@ -289,8 +291,6 @@ export class TraditionalRenderablesHelper extends BaseRenderableGroupHelpers {
         let names = traditionalRenderables ? traditionalRenderables.keys() : [];
         for (let renderableName of names) {
             let [renderable, renderableCounterpart] = traditionalRenderables.get(renderableName);
-            let defaultCurve = {curve: Easing.outCubic, duration: 300};
-            let renderableCurve = renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             let renderableSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, context, renderable.decorations.size) || [undefined, undefined];
             let {
                 translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
@@ -306,7 +306,6 @@ export class TraditionalRenderablesHelper extends BaseRenderableGroupHelpers {
                 origin,
                 scale,
                 skew,
-                curve: renderableCurve || defaultCurve,
                 align,
                 rotate,
                 opacity
