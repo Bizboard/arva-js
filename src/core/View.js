@@ -586,13 +586,18 @@ export class View extends FamousView {
      * Repeat a certain flowState indefinitely
      * @param renderableName
      * @param stateName
+     * @param {Boolean} persistent. If true, then it will keep on repeating until explicitly cancelled by cancelRepeatFlowState.
+     * If false, it will be interrupted automatically by any interrput to another state. Defaults to true
+     * @returns {Promise} resolves to false if the flow state can't be repeated due to an existing running repeat
      */
-    async repeatFlowState(renderableName = '', stateName = ''){
+    async repeatFlowState(renderableName = '', stateName = '', persistent = true){
         if(!this._runningRepeatingFlowStates[renderableName]){
-            this._runningRepeatingFlowStates[renderableName] = true;
-            while(this._runningRepeatingFlowStates[renderableName]){
-                await this.setRenderableFlowState(renderableName, stateName);
-            }
+            this._runningRepeatingFlowStates[renderableName] = {persistent};
+            while(this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent))
+            {}
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -602,7 +607,7 @@ export class View extends FamousView {
      */
     cancelRepeatFlowState(renderableName){
         if(this._runningRepeatingFlowStates){
-            this._runningRepeatingFlowStates[renderableName] = false;
+            delete this._runningRepeatingFlowStates[renderableName];
         }
     }
 }
