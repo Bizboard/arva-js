@@ -34,7 +34,9 @@ class BaseRenderableGroupHelpers {
         if(flow){
             let {currentTransition} = flow;
             if(currentTransition){
-                flowInformation.transition = currentTransition;
+                flowInformation.transition = currentTransition || flowOptions.defaults.transition;
+            } else {
+                flowInformation.transition = flow.defaults.transition;
             }
             flowInformation.callback = flow.callback;
         }
@@ -70,7 +72,7 @@ export class DockedRenderablesHelper extends BaseRenderableGroupHelpers {
             let [renderable, renderableCounterpart] = dockedRenderables.get(renderableName);
             let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
-            let {dock, rotate, opacity, origin} = renderable.decorations;
+            let {dock, rotate, opacity, origin} = renderable.decorations; // todo add scaling/skew
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
                 dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {

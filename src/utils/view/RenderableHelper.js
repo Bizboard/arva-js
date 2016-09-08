@@ -579,7 +579,7 @@ export class RenderableHelper {
 
         flowOptions.currentState = stateName;
         for (let {transformations, options} of flowOptions.states[stateName].steps) {
-            flowOptions.currentTransition = options.transition || flowOptions.defaults.curve;
+            flowOptions.currentTransition = options.transition;
             this.decorateRenderable(renderableName, ...transformations);
 
 

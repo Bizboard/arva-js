@@ -97,7 +97,7 @@ TrueSizedLayoutDockHelper.prototype.top = function (renderableName, size, space 
     if (this._data.top !== this._initialData.top) {
         this._data.top += space;
     }
-    ;
+
     this._context.set(renderableName, {
         size: innerSize || ([width || (this._data.right - this._data.left), this._ensureTrueSize(height)]),
         translate: this._addTranslations([this._data.left, this._data.top, this._data.z], extraTranslation),
