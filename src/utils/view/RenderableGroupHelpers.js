@@ -29,15 +29,10 @@ class BaseRenderableGroupHelpers {
      */
     _getRenderableFlowInformation(renderable) {
         let {decorations} = renderable;
-        let flowInformation = {transition: decorations.transition, callback: undefined};
+        let flowInformation = {transition: undefined, callback: undefined};
         let {flow} = decorations;
         if(flow){
-            let {currentTransition} = flow;
-            if(currentTransition){
-                flowInformation.transition = currentTransition || flowOptions.defaults.transition;
-            } else {
-                flowInformation.transition = flow.defaults.transition;
-            }
+            flowInformation.transition = flow.currentTransition || (flow.defaults && flow.defaults.transition);
             flowInformation.callback = flow.callback;
         }
         return flowInformation;

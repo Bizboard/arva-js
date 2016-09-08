@@ -998,10 +998,7 @@ export const flow = {
             if (!decorations.flow) {
                 decorations.flow = {states: {}};
             }
-            decorations.flowOptions = {flow: true}; //todo remove
-            decorations.flow.flowOptions = {flow: true, ...flowOptions}; // todo remove
-            decorations.flow.defaults = {flow: true, ...flowOptions};
-            // decorations.curve = flowOptions.curve || undefined; //todo refactor to defaultcurve
+            decorations.flow.defaults = {...flowOptions};
         }
     },
 
@@ -1014,15 +1011,11 @@ export const flow = {
         }
     },
 
-    //?
     stateStep: function (stateName = '', stateOptions = {}, ...transformations) {
         return function (target, renderableName, descriptor) {
             let decorations = prepDecoratedRenderable(...arguments).decorations;
             if (!decorations.flow) {
                 decorations.flow = {states: {}};
-                decorations.useFlow = true; // todo remove
-                decorations.flowOptions = {flow: true}; // todo remove
-                decorations.flow.defaults = {flow: true, transition: { curve: Easing.outCubic, duration: 300 }};
             }
             if (!decorations.flow.states[stateName]) {
                 decorations.flow.states[stateName] = {steps: []};
