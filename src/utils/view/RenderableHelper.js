@@ -582,8 +582,9 @@ export class RenderableHelper {
             flowOptions.currentTransition = options.transition || flowOptions.defaults.curve;
             this.decorateRenderable(renderableName, ...transformations);
 
-            let renderableOn = renderableCounterpart.on.bind(renderable);
-            await Promise.race([callbackToPromise(renderableOn, 'flowEnd'), callbackToPromise(renderableOn, 'flowInterrupted')]);
+
+            /* Set the callback of the renderable so it's passed to the flowLayoutNode */
+            await new Promise((resolve) => renderable.decorations.flow.callback = resolve);
 
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if (options.delay) {

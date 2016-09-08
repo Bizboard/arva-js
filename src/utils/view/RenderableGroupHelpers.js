@@ -20,6 +20,26 @@ class BaseRenderableGroupHelpers {
     boundingBoxSize() {
         throw Error("Not implemented")
     }
+
+    /**
+     * Gets the flow information from the renderable
+     * @param {Renderable} renderable
+     * @returns {{transition: Object, callback: Function}}
+     * @private
+     */
+    _getRenderableFlowInformation(renderable) {
+        let {decorations} = renderable;
+        let flowInformation = {transition: decorations.transition, callback: undefined};
+        let {flow} = decorations;
+        if(flow){
+            let {currentTransition} = flow;
+            if(currentTransition){
+                flowInformation.transition = currentTransition;
+            }
+            flowInformation.callback = flow.callback;
+        }
+        return flowInformation;
+    }
 }
 
 
@@ -49,14 +69,15 @@ export class DockedRenderablesHelper extends BaseRenderableGroupHelpers {
         for (let renderableName of dockedNames) {
             let [renderable, renderableCounterpart] = dockedRenderables.get(renderableName);
             let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
-            let renderableTransition = renderable.decorations.flow && renderable.decorations.flow.currentTransition;
-            let {dock, rotate, opacity, origin, transition} = renderable.decorations;
+            let {callback, transition} = this._getRenderableFlowInformation(renderable);
+            let {dock, rotate, opacity, origin} = renderable.decorations;
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
                 dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {
                     rotate,
                     opacity,
-                    transition: renderableTransition || transition,
+                    callback,
+                    transition,
                     origin
                 });
             }
@@ -69,10 +90,11 @@ export class DockedRenderablesHelper extends BaseRenderableGroupHelpers {
             let {decorations} = renderable;
             let {rotate, opacity, origin} = decorations;
             let {translate, dockSize} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
+            let {callback, transition} = this._getRenderableFlowInformation(renderable);
             /* Special case for undefined size, since it's treated differently by the dockhelper, and should be kept to undefined if specified */
             let dimensionHasUndefinedSize = (dimension) => ![decorations.dock.size, decorations.size].every((size) => size && size[dimension] !== undefined);
             dockSize = dockSize.map((fallbackSize, dimension) => dimensionHasUndefinedSize(dimension) ? undefined : fallbackSize);
-            dockHelper.fill(renderableName, dockSize, translate, {rotate, opacity, origin});
+            dockHelper.fill(renderableName, dockSize, translate, {rotate, opacity, origin, callback, transition});
         }
     }
 
@@ -274,11 +296,14 @@ export class FullSizeRenderablesHelper extends BaseRenderableGroupHelpers {
         let names = fullScreenRenderables ? fullScreenRenderables.keys() : [];
         for (let renderableName of names) {
             let [renderable] = fullScreenRenderables.get(renderableName);
-            let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
+            let {callback, transition} = this._getRenderableFlowInformation(renderable);
             let translate = Helpers.addTranslations(extraTranslate, renderable.decorations.translate || [0, 0, 0]);
             context.set(renderableName, {
-                translate, size: context.size, transition: renderableTransition,
-                opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity
+                translate,
+                size: context.size,
+                opacity: renderable.decorations.opacity === undefined ? 1 : renderable.decorations.opacity,
+                callback,
+                transition
             });
         }
     }
@@ -294,19 +319,20 @@ export class TraditionalRenderablesHelper extends BaseRenderableGroupHelpers {
             let renderableSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, context, renderable.decorations.size) || [undefined, undefined];
             let {
                 translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
-                opacity = 1, transition, scale = [1, 1, 1], skew = [0, 0, 0]
+                opacity = 1, scale = [1, 1, 1], skew = [0, 0, 0]
             } = renderable.decorations;
             translate = Helpers.addTranslations(ownDecorations.extraTranslate, translate);
+            let {callback, transition} = this._getRenderableFlowInformation(renderable);
             let adjustedTranslation = Helpers.adjustPlacementForTrueSize(renderable, renderableSize, origin, translate, this._sizeResolver);
-            let renderableTransition = renderable.decorations && renderable.decorations.flow && renderable.decorations.flow.currentTransition;
             context.set(renderableName, {
                 size: renderableSize,
                 translate: adjustedTranslation,
-                transition: renderableTransition || transition,
                 origin,
                 scale,
                 skew,
                 align,
+                callback,
+                transition,
                 rotate,
                 opacity
             });
