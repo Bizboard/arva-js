@@ -995,7 +995,9 @@ export const flow = {
     defaultOptions: function (flowOptions = {}) {
         return function (target, renderableName, descriptor) {
             let decorations = prepDecoratedRenderable(...arguments).decorations;
-
+            if (!decorations.flow) {
+                decorations.flow = {states: {}};
+            }
             decorations.flowOptions = {flow: true}; //todo remove
             decorations.flow.flowOptions = {flow: true, ...flowOptions}; // todo remove
             decorations.flow.defaults = {flow: true, ...flowOptions};
