@@ -188,7 +188,6 @@ export class View extends FamousView {
      * @returns {*}
      */
     setRenderableFlowState(renderableName = '', stateName = '') {
-        this.layout.reflowLayout();
         return this._renderableHelper.setRenderableFlowState(renderableName, stateName);
     }
 

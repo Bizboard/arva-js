@@ -582,10 +582,11 @@ export class RenderableHelper {
             flowOptions.currentTransition = options.transition;
             this.decorateRenderable(renderableName, ...transformations);
 
+            /* Make sure FlowLayoutNode.set() is called next render tick */
+            this._sizeResolver.requestReflow();
 
             /* Set the callback of the renderable so it's passed to the flowLayoutNode */
             await new Promise((resolve) => renderable.decorations.flow.callback = resolve);
-
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if (options.delay) {
                 await waitMilliseconds(options.delay);
