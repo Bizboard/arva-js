@@ -617,6 +617,7 @@ export class View extends FamousView {
             this._runningRepeatingFlowStates[renderableName] = {persistent};
             while(this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent))
             {}
+            delete this._runningRepeatingFlowStates[renderableName];
             return true;
         } else {
             return false;
