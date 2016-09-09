@@ -252,6 +252,7 @@ export class RenderableHelper {
             let draggable = new Draggable(draggableOptions);
             renderable.draggable = draggable;
             renderable.node.add(draggable).add(renderable);
+            renderable.pipe(draggable);
             //TODO: We don't do an unpiping of the draggable, which might be dangerous
             this._pipeToView(draggable);
         }
