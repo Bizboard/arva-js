@@ -6,7 +6,7 @@ import Surface                      from 'famous/core/Surface.js';
 import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 
 
-export class Helpers {
+export class Utils {
     static renderableIsSurface(renderable) {
         return renderable instanceof Surface || renderable instanceof ImageSurface;
     }
@@ -38,7 +38,7 @@ export class Helpers {
      * @private
      */
     static renderableIsComposite(renderable) {
-        return renderable.getSize && !(Helpers.renderableIsSurface(renderable));
+        return renderable.getSize && !(Utils.renderableIsSurface(renderable));
     }
 
     /**

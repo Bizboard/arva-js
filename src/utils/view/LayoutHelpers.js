@@ -4,21 +4,21 @@
 import Easing                       from 'famous/transitions/Easing.js';
 import _                            from 'lodash';
 
-import {Helpers}                    from './Helpers.js';
+import {Utils}                      from './Utils.js';
 import {TrueSizedLayoutDockHelper}  from '../../layout/TrueSizedLayoutDockHelper.js';
 
 
-class BaseRenderableGroupHelpers {
+class BaseLayoutHelper {
     constructor(sizeResolver){
         this._sizeResolver = sizeResolver;
     }
 
     layout() {
-        throw Error("Not implemented")
+        throw Error("Not implemented");
     }
 
     boundingBoxSize() {
-        throw Error("Not implemented")
+        throw Error("Not implemented");
     }
 
     /**
@@ -40,7 +40,7 @@ class BaseRenderableGroupHelpers {
 }
 
 
-export class DockedRenderablesHelper extends BaseRenderableGroupHelpers {
+export class DockedLayoutHelper extends BaseLayoutHelper {
 
     /**
      * Computes translation, inner size, actual docking size (outer size) and an adjusted docking size for a renderable that is about to be docked.
@@ -108,7 +108,7 @@ export class DockedRenderablesHelper extends BaseRenderableGroupHelpers {
     _prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins = [0, 0, 0, 0]) {
         let {decorations} = renderable;
         let {translate = [0, 0, 0]} = decorations;
-        translate = Helpers.addTranslations(extraTranslate, translate);
+        translate = Utils.addTranslations(extraTranslate, translate);
         let {dockMethod, space} = decorations.dock;
         let horizontalMargins = margins[1] + margins[3];
         let verticalMargins = margins[0] + margins[2];
@@ -280,7 +280,7 @@ export class DockedRenderablesHelper extends BaseRenderableGroupHelpers {
     }
 }
 
-export class FullSizeRenderablesHelper extends BaseRenderableGroupHelpers {
+export class FullSizeLayoutHelper extends BaseLayoutHelper {
 
     /**
      * Layouts full size renderables
@@ -294,7 +294,7 @@ export class FullSizeRenderablesHelper extends BaseRenderableGroupHelpers {
         for (let renderableName of names) {
             let [renderable] = fullScreenRenderables.get(renderableName);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
-            let translate = Helpers.addTranslations(extraTranslate, renderable.decorations.translate || [0, 0, 0]);
+            let translate = Utils.addTranslations(extraTranslate, renderable.decorations.translate || [0, 0, 0]);
             context.set(renderableName, {
                 translate,
                 size: context.size,
@@ -307,7 +307,7 @@ export class FullSizeRenderablesHelper extends BaseRenderableGroupHelpers {
 
 }
 
-export class TraditionalRenderablesHelper extends BaseRenderableGroupHelpers {
+export class TraditionalLayoutHelper extends BaseLayoutHelper {
 
     layout(traditionalRenderables, context, ownDecorations) {
         let names = traditionalRenderables ? traditionalRenderables.keys() : [];
@@ -318,9 +318,9 @@ export class TraditionalRenderablesHelper extends BaseRenderableGroupHelpers {
                 translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
                 opacity = 1, scale = [1, 1, 1], skew = [0, 0, 0]
             } = renderable.decorations;
-            translate = Helpers.addTranslations(ownDecorations.extraTranslate, translate);
+            translate = Utils.addTranslations(ownDecorations.extraTranslate, translate);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
-            let adjustedTranslation = Helpers.adjustPlacementForTrueSize(renderable, renderableSize, origin, translate, this._sizeResolver);
+            let adjustedTranslation = Utils.adjustPlacementForTrueSize(renderable, renderableSize, origin, translate, this._sizeResolver);
             context.set(renderableName, {
                 size: renderableSize,
                 translate: adjustedTranslation,
@@ -358,7 +358,7 @@ export class TraditionalRenderablesHelper extends BaseRenderableGroupHelpers {
             let renderableSpec;
             renderableSpec = renderable.decorations;
             let {align = [0, 0]} = renderableSpec;
-            let translate = Helpers.adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0], renderableSpec.translate || [0, 0, 0]);
+            let translate = Utils.adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0], renderableSpec.translate || [0, 0, 0]);
 
             /* If there has been an align specified, then nothing can be calculated */
             if (!renderableSpec || !renderableSpec.size || (align[0] && align[1])) {
