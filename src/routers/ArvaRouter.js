@@ -389,7 +389,10 @@ export class ArvaRouter extends Router {
         if (typeof controller === 'string') {
             return controller.replace('Controller', '');
         } else if (typeof controller === 'function' && Object.getPrototypeOf(controller).constructor.name == 'Function') {
-            return controller.name.replace('Controller', '');
+            /* The _name property is set by babel-plugin-transform-runtime-constructor-name.
+             * This is done so Controller class names remain available in minimised code. */
+            let controllerName = controller._name || controller.name;
+            return controllerName.replace('Controller', '');
         } else {
             return typeof controller === 'object' ?
                 Object.getPrototypeOf(controller).constructor.name.replace('Controller', '') : typeof controller;
