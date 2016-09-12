@@ -31,7 +31,7 @@ export class Model extends PrioritisedObject {
     constructor(id, data = null, options = {}) {
 
         /* Retrieve dataSource from the DI context */
-        let dataSource = Injection.get(DataSource);
+        let dataSource = options.dataSource || Injection.get(DataSource);
         super();
 
         /* Replace all stub data fields of any subclass of Model with databinding accessors.

@@ -5,7 +5,7 @@ import {PrioritisedArray} from "../PrioritisedArray";
 
 export class LocalPrioritisedArray extends PrioritisedArray {
     constructor(dataType) {
-        super(dataType);
+        super(dataType, {});
         this._dataSource = {ready: true};
     }
 
