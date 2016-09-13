@@ -114,7 +114,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         let verticalMargins = margins[0] + margins[2];
         let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
         let dockSizeSpecified = !(_.isEqual(decorations.dock.size, [undefined, undefined]));
-        let dockSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: sizeWithoutMargins}, dockSizeSpecified ? decorations.dock.size : undefined);
+        let dockSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: sizeWithoutMargins}, dockSizeSpecified ? decorations.dock.size : decorations.size);
         let inUseDockSize = this._sizeResolver.getResolvedSize(renderable);
         let innerSize;
         let {origin, align} = decorations;
