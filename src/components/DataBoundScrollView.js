@@ -346,6 +346,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 this.ensureVisible(newSurface);
             }
         }
+
+        super._addItem(child, previousSiblingID);
     }
 
     _replaceItem(child) {

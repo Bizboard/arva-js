@@ -26,5 +26,12 @@ export class ReflowingScrollView extends FlexScrollView {
             this._didReflowOnce = true;
         }
     }
+
+    _addItem() {
+        /* Views that use this ReflowingScrollView should manually subscribe to this event,
+         * since it does not automatically bubble to Arva's View.js.
+         */
+        this._eventOutput.emit('resize');
+    }
     
 }
