@@ -88,7 +88,7 @@ export class SizeResolver extends EventEmitter {
      */
     _resolveSingleTrueSizedRenderable(renderable, size, dim, renderableCounterpart) {
         if (size[dim] === -1) {
-            this._warn('-1 detected as set size. If you want a true sized element to take ' +
+            Utils.warn('-1 detected as set size. If you want a true sized element to take ' +
                 'up a proportion of your view, please define a function doing so by ' +
                 'using the context size');
         }
@@ -107,7 +107,7 @@ export class SizeResolver extends EventEmitter {
                 let renderableIsView = renderable instanceof View;
                 if (size[dim] === true && twoDimensionalSize[dim] === undefined &&
                     ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView)) {
-                    this._warn(`True sized renderable '${name}' is taking up the entire context size. Caused in ${this._name()}`);
+                    Utils.warn(`True sized renderable '${renderable.constructor.name}' is taking up the entire context size.`);
                     return twoDimensionalSize[dim];
                 } else {
                     let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
@@ -130,7 +130,7 @@ export class SizeResolver extends EventEmitter {
             } else {
                 if (size[dim] === true) {
                     let defaultSize = 5;
-                    this._warn(`No initial size set for surface, will default to ${defaultSize}px`);
+                    Utils.warn(`No initial size set for renderable '${renderable.constructor.name}', will default to ${defaultSize}px`);
                     size[dim] = ~5;
                 }
                 if (isUncalculated !== true) {
