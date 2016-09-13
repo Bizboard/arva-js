@@ -466,7 +466,7 @@ export class View extends FamousView {
             return [undefined, undefined];
         }
         let totalSize = [undefined, undefined];
-        if (dockedRenderables) {
+        if (dockedRenderables || filledRenderables) {
             totalSize = this._dockedRenderablesHelper.boundingBoxSize(dockedRenderables, filledRenderables, this.decorations);
         }
 
@@ -474,7 +474,7 @@ export class View extends FamousView {
             let traditionalRenderablesBoundingBox = this._traditionalLayoutHelper.boundingBoxSize(traditionalRenderables);
             for (let [dimension, singleSize] of totalSize.entries()) {
                 let traditionalSingleSize = traditionalRenderablesBoundingBox[dimension];
-                if (singleSize === undefined || singleSize < traditionalSingleSize) {
+                if (traditionalSingleSize !== undefined && (singleSize === undefined || singleSize < traditionalSingleSize)) {
                     totalSize[dimension] = traditionalSingleSize;
                 }
             }
