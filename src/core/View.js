@@ -201,6 +201,14 @@ export class View extends FamousView {
         return this._renderableHelper.setViewFlowState(stateName, this.decorations.flow);
     }
 
+    getRenderableFlowState(renderableName = '') {
+        return this._renderableHelper.getRenderableFlowState(renderableName);
+    }
+
+    getViewFlowState() {
+        return this._renderableHelper.getViewFlowState(this.decorations.flow);
+    }
+
     /**
      * Replaces an existing decorated renderable with a new renderable, preserving all necessary state and decorations
      * @param {String} renderableName. The name of the renderable
