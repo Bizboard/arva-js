@@ -247,7 +247,7 @@ export class RenderableHelper {
 
         if (swipableOptions) {
             renderable = this._initSwipable(swipableOptions, renderable);
-        } else if (draggableOptions) {
+        } else if (draggableOptions && !renderable.node) {
             renderable.node = new RenderNode();
             let draggable = new Draggable(draggableOptions);
             renderable.draggable = draggable;

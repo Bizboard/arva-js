@@ -634,4 +634,15 @@ export class View extends FamousView {
             delete this._runningRepeatingFlowStates[renderableName];
         }
     }
+
+    /**
+     * Initiate a renderable to a default flow state.
+     * @param renderableName
+     * @param stateName
+     */
+    setDefaultState(renderableName, stateName) {
+        for (let step of this[renderableName].decorations.flow.states[stateName].steps) {
+            this.decorateRenderable(renderableName, ...step.transformations);
+        }
+    }
 }
