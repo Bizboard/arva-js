@@ -244,9 +244,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
 
         if (filledRenderables) {
             dockSize[dockingDirection] = undefined;
-            /* We currently support multiple fills, but that might change in the future */
+            /* We support having multiple fills */
             let orthogonalSizes = filledRenderables.reduce((result, [filledRenderable, renderableCounterpart], renderableName) => {
-                this._sizeResolver.settleDecoratedSize(filledRenderable, renderableCounterpart, {size: [NaN, NaN]}, filledRenderable.decorations.dock.size);
+                this._sizeResolver.settleDecoratedSize(filledRenderable, renderableCounterpart, {size: [NaN, NaN]}, filledRenderable.decorations.size);
                 let resolvedSize = this._sizeResolver.getResolvedSize(filledRenderable);
                 if (resolvedSize) {
                     let orthogonalSize = resolvedSize[orthogonalDirection];
@@ -254,6 +254,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                         return result.concat(orthogonalSize);
                     }
                 }
+                return result;
             }, []);
 
             if (orthogonalSizes) {
