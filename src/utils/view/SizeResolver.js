@@ -9,7 +9,7 @@ import ImageSurface                 from 'famous/surfaces/ImageSurface.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
 
 import {View}                       from '../../core/View.js';
-import {Helpers}                    from './Helpers.js';
+import {Utils}                      from './Utils.js';
 
 import EventEmitter                 from 'eventemitter3';
 
@@ -40,7 +40,7 @@ export class SizeResolver extends EventEmitter {
             size[dimension] = this.resolveSingleSize(specifiedSize[dimension], context.size, dimension);
             if (this.isValueTrueSized(size[dimension])) {
                 cacheResolvedSize[dimension] = this._resolveSingleTrueSizedRenderable(renderable, size, dimension, renderableCounterpart);
-                if (Helpers.renderableIsSurface(renderable)) {
+                if (Utils.renderableIsSurface(renderable)) {
                     size[dimension] = true;
                 } else {
                     size[dimension] = cacheResolvedSize[dimension];
@@ -88,7 +88,7 @@ export class SizeResolver extends EventEmitter {
      */
     _resolveSingleTrueSizedRenderable(renderable, size, dim, renderableCounterpart) {
         if (size[dim] === -1) {
-            this._warn('-1 detected as set size. If you want a true sized element to take ' +
+            Utils.warn('-1 detected as set size. If you want a true sized element to take ' +
                 'up a proportion of your view, please define a function doing so by ' +
                 'using the context size');
         }
@@ -99,7 +99,7 @@ export class SizeResolver extends EventEmitter {
         /* True sized element. This has been specified as ~100 where 100 is the initial size
          * applying this operator again (e.g. ~~100) gives us the value 100 back
          * */
-        if (Helpers.renderableIsComposite(renderable)) {
+        if (Utils.renderableIsComposite(renderable)) {
             let twoDimensionalSize = renderable.getSize();
             if (!twoDimensionalSize) {
                 return this._specifyUndeterminedSingleHeight(renderable, size, dim);
@@ -107,7 +107,7 @@ export class SizeResolver extends EventEmitter {
                 let renderableIsView = renderable instanceof View;
                 if (size[dim] === true && twoDimensionalSize[dim] === undefined &&
                     ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView)) {
-                    this._warn(`True sized renderable '${name}' is taking up the entire context size. Caused in ${this._name()}`);
+                    Utils.warn(`True sized renderable '${renderable.constructor.name}' is taking up the entire context size.`);
                     return twoDimensionalSize[dim];
                 } else {
                     let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
@@ -118,7 +118,7 @@ export class SizeResolver extends EventEmitter {
                     return resultingSize;
                 }
             }
-        } else if (Helpers.renderableIsSurface(renderable)) {
+        } else if (Utils.renderableIsSurface(renderable)) {
             let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable) || {};
             if (trueSizedSurfaceInfo.calculateOnNext) {
                 trueSizedSurfaceInfo.calculateOnNext = false;
@@ -130,7 +130,7 @@ export class SizeResolver extends EventEmitter {
             } else {
                 if (size[dim] === true) {
                     let defaultSize = 5;
-                    this._warn(`No initial size set for surface, will default to ${defaultSize}px`);
+                    Utils.warn(`No initial size set for renderable '${renderable.constructor.name}', will default to ${defaultSize}px`);
                     size[dim] = ~5;
                 }
                 if (isUncalculated !== true) {
@@ -160,7 +160,7 @@ export class SizeResolver extends EventEmitter {
 
     _specifyUndeterminedSingleHeight(renderable, size, dim) {
         let resultingSize = size[dim] < 0 ? ~size[dim] : 5;
-        Helpers.warn(`Cannot determine size of ${renderable.constructor.name}, falling back to default size or ${resultingSize}px. If the renderable is using legacy declaration this.renderables = ... this isn't supported for true sizing.`);
+        Utils.warn(`Cannot determine size of ${renderable.constructor.name}, falling back to default size or ${resultingSize}px. If the renderable is using legacy declaration this.renderables = ... this isn't supported for true sizing.`);
         return resultingSize;
     }
 

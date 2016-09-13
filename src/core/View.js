@@ -15,13 +15,13 @@ import {limit}                      from 'arva-js/utils/Limiter.js';
 
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {SizeResolver}               from '../utils/view/SizeResolver.js';
-import {Helpers}                    from '../utils/view/Helpers.js';
+import {Utils}                      from '../utils/view/Utils.js';
 import {
-    DockedRenderablesHelper,
-    FullSizeRenderablesHelper,
-    TraditionalRenderablesHelper
+    DockedLayoutHelper,
+    FullSizeLayoutHelper,
+    TraditionalLayoutHelper
 }
-                                    from '../utils/view/RenderableGroupHelpers.js';
+                                    from '../utils/view/LayoutHelpers.js';
 import {RenderableHelper}           from '../utils/view/RenderableHelper.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 
@@ -45,7 +45,7 @@ export class View extends FamousView {
         this._initUtils();
         this._constructDecoratedRenderables();
 
-        this._combineLayouts();
+        this._createLayoutController();
         this._initTrueSizedBookkeeping();
 
     }
@@ -57,7 +57,7 @@ export class View extends FamousView {
      * @returns {void}
      */
     build() {
-        Helpers.warn(`Arva: calling build() from within views is no longer necessary, any existing calls can safely be removed. Called from ${this._name()}`);
+        Utils.warn(`Arva: calling build() from within views is no longer necessary, any existing calls can safely be removed. Called from ${this._name()}`);
     }
 
     /**
@@ -109,7 +109,7 @@ export class View extends FamousView {
     addRenderable(renderable, renderableName, ...decorators) {
         /* Due to common mistake, we check if renderableName is a string */
         if (typeof renderableName !== 'string') {
-            Helpers.warn(`The second argument of addRenderable(...) was not a string. Please pass the renderable name in ${this._name()}`);
+            Utils.warn(`The second argument of addRenderable(...) was not a string. Please pass the renderable name in ${this._name()}`);
         }
         this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, decorators);
         this._assignRenderable(renderable, renderableName);
@@ -150,7 +150,7 @@ export class View extends FamousView {
     showRenderable(renderableName, show = true) {
         let renderable = this[renderableName];
         if (!renderable.animationController) {
-            Helpers.warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
+            Utils.warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
             return;
         }
         this._renderableHelper.showWithAnimationController(this.renderables[renderableName], renderable, show);
@@ -201,6 +201,14 @@ export class View extends FamousView {
         return this._renderableHelper.setViewFlowState(stateName, this.decorations.flow);
     }
 
+    getRenderableFlowState(renderableName = '') {
+        return this._renderableHelper.getRenderableFlowState(renderableName);
+    }
+
+    getViewFlowState() {
+        return this._renderableHelper.getViewFlowState(this.decorations.flow);
+    }
+
     /**
      * Replaces an existing decorated renderable with a new renderable, preserving all necessary state and decorations
      * @param {String} renderableName. The name of the renderable
@@ -229,9 +237,9 @@ export class View extends FamousView {
         this._sizeResolver.on('layoutControllerReflow', this._requestLayoutControllerReflow);
         this._sizeResolver.on('reflow', () => this.layout.reflowLayout());
         this._sizeResolver.on('reflowRecursively', this.reflowRecursively);
-        this._dockedRenderablesHelper = new DockedRenderablesHelper(this._sizeResolver);
-        this._fullSizeRenderablesHelper = new FullSizeRenderablesHelper(this._sizeResolver);
-        this._traditionalRenderablesHelper = new TraditionalRenderablesHelper(this._sizeResolver);
+        this._dockedRenderablesHelper = new DockedLayoutHelper(this._sizeResolver);
+        this._fullSizeLayoutHelper = new FullSizeLayoutHelper(this._sizeResolver);
+        this._traditionalLayoutHelper = new TraditionalLayoutHelper(this._sizeResolver);
         this._renderableHelper = new RenderableHelper(this._bindToSelf,this._setPipeToSelf, this.renderables, this._sizeResolver);
     }
 
@@ -246,8 +254,8 @@ export class View extends FamousView {
 
     _getRenderableOptions(renderableName, decorations = this.renderables[renderableName]) {
         let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
-        if (!Helpers.isPlainObject(decoratorOptions)) {
-            Helpers.warn(`Invalid option '${decoratorOptions}' given to item ${renderableName}`);
+        if (!Utils.isPlainObject(decoratorOptions)) {
+            Utils.warn(`Invalid option '${decoratorOptions}' given to item ${renderableName}`);
         }
         return decoratorOptions;
     }
@@ -330,8 +338,8 @@ export class View extends FamousView {
     _layoutDecoratedRenderables(context, options) {
         let dockedRenderables = this._renderableHelper;
         this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations);
-        this._fullSizeRenderablesHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations);
-        this._traditionalRenderablesHelper.layout(dockedRenderables.getRenderableGroup('traditional'), context, this.decorations);
+        this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations);
+        this._traditionalLayoutHelper.layout(dockedRenderables.getRenderableGroup('traditional'), context, this.decorations);
     }
 
 
@@ -340,12 +348,12 @@ export class View extends FamousView {
      * @returns {void}
      * @private
      */
-    _combineLayouts() {
+    _createLayoutController() {
         let hasFlowyRenderables = this._renderableHelper.hasFlowyRenderables();
         this.layout = new LayoutController({
             flow: !!this.decorations.useFlow || hasFlowyRenderables,
             partialFlow: !this.decorations.useFlow,
-            flowOptions: this.decorations.flowOptions || {},
+            flowOptions: this.decorations.flowOptions || {spring: {period: 200}},
             layout: function (context, options) {
 
                 /* Because views that extend this View class first call super() and then define their renderables,
@@ -403,11 +411,11 @@ export class View extends FamousView {
                         layout.call(this, context, options);
                         break;
                     default:
-                        Helpers.warn(`Unrecognized layout specification in view '${this._name()}'.`);
+                        Utils.warn(`Unrecognized layout specification in view '${this._name()}'.`);
                         break;
                 }
             } catch (error) {
-                Helpers.warn(`Exception thrown in ${this._name()}:`);
+                Utils.warn(`Exception thrown in ${this._name()}:`);
                 console.log(error);
             }
         }
@@ -465,22 +473,16 @@ export class View extends FamousView {
         if (!traditionalRenderables && !dockedRenderables) {
             return [undefined, undefined];
         }
-        let totalSize = [0, 0];
-        if (dockedRenderables) {
-
-            // totalSize = this._calculateDockedRenderablesBoundingBox();
+        let totalSize = [undefined, undefined];
+        if (dockedRenderables || filledRenderables) {
             totalSize = this._dockedRenderablesHelper.boundingBoxSize(dockedRenderables, filledRenderables, this.decorations);
-            if (totalSize[0] === undefined && totalSize[1] === undefined) {
-                /* We can return here because it isn't necessary to check further */
-                return [undefined, undefined];
-            }
         }
 
         if (traditionalRenderables) {
-            let traditionalRenderablesBoundingBox = this._traditionalRenderablesHelper.boundingBoxSize(traditionalRenderables);
+            let traditionalRenderablesBoundingBox = this._traditionalLayoutHelper.boundingBoxSize(traditionalRenderables);
             for (let [dimension, singleSize] of totalSize.entries()) {
                 let traditionalSingleSize = traditionalRenderablesBoundingBox[dimension];
-                if (singleSize === undefined || singleSize < traditionalSingleSize) {
+                if (traditionalSingleSize !== undefined && (singleSize === undefined || singleSize < traditionalSingleSize)) {
                     totalSize[dimension] = traditionalSingleSize;
                 }
             }
@@ -547,8 +549,8 @@ export class View extends FamousView {
 
 
     _initOptions(options) {
-        if (!Helpers.isPlainObject(options)) {
-            Helpers.warn(`View ${this._name()} initialized with invalid non-object arguments`);
+        if (!Utils.isPlainObject(options)) {
+            Utils.warn(`View ${this._name()} initialized with invalid non-object arguments`);
         }
         this.options = options;
     }

@@ -110,6 +110,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._bindDataSource(this.options.dataStore);
     }
 
+    getDataStore() {
+        return this.options.dataStore;
+    }
+
     /**
      * Reloads the dataFilter option of the DataBoundScrollView, and verifies whether the items in the dataStore are allowed by the new filter.
      * It removes any currently visible items that aren't allowed anymore, and adds any non-visible ones that are allowed now.
@@ -153,6 +157,14 @@ export class DataBoundScrollView extends ReflowingScrollView {
     isAtBottom() {
         let lastVisibleItem = this.getLastVisibleItem();
         return (lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value);
+    }
+
+    /**
+     * Returns the currently active group elements, or an empty object of none are present.
+     * @returns {Object}
+     */
+    getGroups() {
+        return this._internalGroups || {};
     }
 
     _handleNewFilterResult(shouldShow, alreadyExists, entry) {
@@ -334,6 +346,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 this.ensureVisible(newSurface);
             }
         }
+
+        super._addItem(child, previousSiblingID);
     }
 
     _replaceItem(child) {
@@ -364,9 +378,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
     _removeGroupIfNecessary(groupByValue) {
         /* Check if the group corresponding to the child is now empty */
-        if (this._internalGroups[groupByValue].itemsCount === 0) {
+        let group = this._internalGroups[groupByValue];
+        if (group && group.itemsCount === 0) {
             /* TODO: Maybe remove internalgroups[groupByValue]? (Or not?) */
-            let {position} = this._internalGroups[groupByValue];
+            let {position} = group;
             this._updatePosition(position, -1);
             this.remove(position);
             delete this._internalGroups[groupByValue];
@@ -376,7 +391,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     _removeItem(child) {
-        let index = this.internalDataSource[child.id].position;
+        let internalChild = this.internalDataSource[child.id] || {};
+        let index = internalChild.position;
         if (index > -1) {
             this._updatePosition(index, -1);
             this.remove(index);
@@ -386,7 +402,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
         /* If we're using groups, check if we need to remove the group that this child belonged to. */
         if (this.isGrouped) {
             let groupByValue = this._getGroupByValue(child);
-            this._internalGroups[groupByValue].itemsCount--;
+            let group = this._internalGroups[groupByValue];
+            if(group){ group.itemsCount--; }
 
 
             this._removeGroupIfNecessary(groupByValue);

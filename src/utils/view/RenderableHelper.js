@@ -20,7 +20,7 @@ import AnimationController          from 'famous-flex/AnimationController.js';
 import {Throttler}                  from 'arva-js/utils/Throttler.js';
 
 import {limit}                      from '../Limiter.js';
-import {Helpers}                    from './Helpers.js';
+import {Utils}                      from './Utils.js';
 import {
     callbackToPromise,
     waitMilliseconds
@@ -298,7 +298,7 @@ export class RenderableHelper {
                     }
                 });
             } else {
-                Helpers.warn(`Attempted to delay showing renderable ${animation.waitFor}, which does not exist or contain an on() method.`);
+                Utils.warn(`Attempted to delay showing renderable ${animation.waitFor}, which does not exist or contain an on() method.`);
             }
         }
     }
@@ -447,7 +447,7 @@ export class RenderableHelper {
             }
         };
         if (!decorators.length) {
-            Helpers.warn('No decorators specified to decorateRenderable(renderableName, ...decorators)');
+            Utils.warn('No decorators specified to decorateRenderable(renderableName, ...decorators)');
         }
         /* There can be existing decorators already, which are preserved. We are extending the decorators object,
          * by first creating a fake renderable that gets decorators */
@@ -459,7 +459,7 @@ export class RenderableHelper {
         this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions);
 
         /* If the renderable is surface, we need to do some special things if there is a true size being used */
-        if (Helpers.renderableIsSurface(renderable)) {
+        if (Utils.renderableIsSurface(renderable)) {
             let sizesToCheck = [];
             let {size, dock} = decorations;
             if (size) {
@@ -565,9 +565,8 @@ export class RenderableHelper {
     async setRenderableFlowState(renderableName = '', stateName = '') {
 
         let renderable = this._renderables[renderableName];
-        let renderableCounterpart = this._renderableCounterparts[renderableName];
         if (!renderable || !renderable.decorations || !renderable.decorations.flow) {
-            return Helpers.warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
+            return Utils.warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
         }
         let flowOptions = renderable.decorations.flow;
 
@@ -629,6 +628,19 @@ export class RenderableHelper {
         }
 
         return true;
+    }
+
+    getRenderableFlowState(renderableName = '') {
+        let renderable = this._renderables[renderableName];
+        if (!renderable || !renderable.decorations || !renderable.decorations.flow) {
+            return Utils.warn(`getRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
+        }
+        let flowOptions = renderable.decorations.flow;
+        return flowOptions.currentState;
+    }
+
+    getViewFlowState(flowOptions = {}) {
+        return flowOptions.currentState;
     }
 
     /**
@@ -736,12 +748,12 @@ export class RenderableHelper {
     prioritiseDockBefore(renderableName, nextRenderableName) {
         let dockedRenderables = this._groupedRenderables.docked;
         if (!dockedRenderables) {
-            Helpers.warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': no docked renderables present.`);
+            Utils.warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': no docked renderables present.`);
             return false;
         }
         let result = this._prioritiseDockAtIndex(renderableName, dockedRenderables.indexOf(nextRenderableName));
         if (!result) {
-            Helpers.warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': could not find one of the renderables by name.
+            Utils.warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': could not find one of the renderables by name.
                         The following docked renderables are present: ${dockedRenderables.keys()}`);
         }
         return result;
@@ -754,12 +766,12 @@ export class RenderableHelper {
     prioritiseDockAfter(renderableName, prevRenderableName) {
         let dockedRenderables = this._groupedRenderables.docked;
         if (!dockedRenderables) {
-            Helpers.warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': no docked renderables present.`);
+            Utils.warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': no docked renderables present.`);
             return false;
         }
         let result = this._prioritiseDockAtIndex(renderableName, dockedRenderables.indexOf(prevRenderableName) + 1);
         if (!result) {
-            Helpers.warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': could not find one of the renderables by name.
+            Utils.warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': could not find one of the renderables by name.
                         The following docked renderables are present: ${dockedRenderables.keys()}`);
         }
         return result;

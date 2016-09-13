@@ -21,9 +21,6 @@ export class LocalModel extends Model {
     constructor(id, data) {
         super(id, data, {dataSource: new DataSource()});
         this.id = id;
-        this._dataSource = {
-            ready: true, remove: ()=> {
-            }
-        }
+        this._dataSource.ready = true;
     }
 }
