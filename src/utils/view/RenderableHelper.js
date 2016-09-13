@@ -565,7 +565,6 @@ export class RenderableHelper {
     async setRenderableFlowState(renderableName = '', stateName = '') {
 
         let renderable = this._renderables[renderableName];
-        let renderableCounterpart = this._renderableCounterparts[renderableName];
         if (!renderable || !renderable.decorations || !renderable.decorations.flow) {
             return Utils.warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
         }
@@ -629,6 +628,19 @@ export class RenderableHelper {
         }
 
         return true;
+    }
+
+    getRenderableFlowState(renderableName = '') {
+        let renderable = this._renderables[renderableName];
+        if (!renderable || !renderable.decorations || !renderable.decorations.flow) {
+            return Utils.warn(`getRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
+        }
+        let flowOptions = renderable.decorations.flow;
+        return flowOptions.currentState;
+    }
+
+    getViewFlowState(flowOptions = {}) {
+        return flowOptions.currentState;
     }
 
     /**
