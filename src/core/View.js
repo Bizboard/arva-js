@@ -465,15 +465,9 @@ export class View extends FamousView {
         if (!traditionalRenderables && !dockedRenderables) {
             return [undefined, undefined];
         }
-        let totalSize = [0, 0];
+        let totalSize = [undefined, undefined];
         if (dockedRenderables) {
-
-            // totalSize = this._calculateDockedRenderablesBoundingBox();
             totalSize = this._dockedRenderablesHelper.boundingBoxSize(dockedRenderables, filledRenderables, this.decorations);
-            if (totalSize[0] === undefined && totalSize[1] === undefined) {
-                /* We can return here because it isn't necessary to check further */
-                return [undefined, undefined];
-            }
         }
 
         if (traditionalRenderables) {

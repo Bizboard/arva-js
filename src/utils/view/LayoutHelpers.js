@@ -246,8 +246,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
             dockSize[dockingDirection] = undefined;
             /* We currently support multiple fills, but that might change in the future */
             let orthogonalSizes = filledRenderables.reduce((result, [filledRenderable, renderableCounterpart], renderableName) => {
-                let renderable = this[renderableName];
-                this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: [NaN, NaN]}, renderable.decorations.dock.size);
+                this._sizeResolver.settleDecoratedSize(filledRenderable, renderableCounterpart, {size: [NaN, NaN]}, filledRenderable.decorations.dock.size);
                 let resolvedSize = this._sizeResolver.getResolvedSize(filledRenderable);
                 if (resolvedSize) {
                     let orthogonalSize = resolvedSize[orthogonalDirection];
