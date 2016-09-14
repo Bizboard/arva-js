@@ -67,7 +67,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
             let [renderable, renderableCounterpart] = dockedRenderables.get(renderableName);
             let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
-            let {dock, rotate, opacity, origin} = renderable.decorations; // todo add scaling/skew
+            let {dock, rotate, opacity, origin, scale, skew} = renderable.decorations; // todo add scaling/skew
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
                 dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {
@@ -75,7 +75,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                     opacity,
                     callback,
                     transition,
-                    origin
+                    origin,
+                    scale,
+                    skew
                 });
             }
         }
@@ -325,8 +327,8 @@ export class TraditionalLayoutHelper extends BaseLayoutHelper {
             let [renderable, renderableCounterpart] = traditionalRenderables.get(renderableName);
             let renderableSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, context, renderable.decorations.size) || [undefined, undefined];
             let {
-                translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
-                opacity = 1, scale = [1, 1, 1], skew = [0, 0, 0]
+                translate = [0, 0, 0], origin = [0, 0], align, rotate,
+                opacity = 1, scale, skew
             } = renderable.decorations;
             translate = Utils.addTranslations(ownDecorations.extraTranslate, translate);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
