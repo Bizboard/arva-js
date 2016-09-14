@@ -817,7 +817,7 @@ export const layout = {
      * @param {Spec} [flowOptions.removeSpec] Size, transform, opacity... to use when removing renderables from the scene (default: undefined).
      * @returns {Function} A decorator function
      */
-    flow: function (flowOptions) {
+    flow: function (flowOptions = {}) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
             decorations.useFlow = true;
