@@ -469,9 +469,9 @@ export class RenderableHelper {
                 sizesToCheck.push(dock.size);
             }
             let renderableSize = [undefined, undefined];
+            let trueSizedInfo = this._sizeResolver.getSurfaceTrueSizedInfo(renderable);
             for (let sizeToCheck of sizesToCheck) {
                 for (let dimension of [0, 1]) {
-                    let trueSizedInfo = this._sizeResolver.getSurfaceTrueSizedInfo(renderable);
                     if (this._sizeResolver.isValueTrueSized(sizeToCheck[dimension])) {
                         if (!trueSizedInfo) {
                             trueSizedInfo = this._sizeResolver.configureTrueSizedSurface(renderable);
@@ -588,12 +588,7 @@ export class RenderableHelper {
         flowOptions.currentState = stateName;
 
         for (let step of steps) {
-            let waitQueue = [];
-            for (let renderableName in step) {
-                let state = step[renderableName];
-                waitQueue.push(this.setRenderableFlowState(renderableName, state));
-            }
-            await Promise.all(waitQueue);
+            await Promise.all(this.generateWaitQueueFromViewStateStep(step));
 
             /* If another state has been set since the invocation of this method, skip any remaining transformations. */
             if (flowOptions.currentState !== stateName) {
@@ -603,6 +598,16 @@ export class RenderableHelper {
 
         return true;
     }
+
+    generateWaitQueueFromViewStateStep(step) {
+        let waitQueue = [];
+        for (let renderableName in step) {
+            let state = step[renderableName];
+            waitQueue.push(this.setRenderableFlowState(renderableName, state));
+        }
+        return waitQueue;
+    }
+
 
     getRenderableFlowState(renderableName = '') {
         let renderable = this._renderables[renderableName];
