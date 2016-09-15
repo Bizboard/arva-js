@@ -839,10 +839,10 @@ export const layout = {
      *
      * @returns {Function} A decorator function
      */
-    scrollable: function () {
+    scrollable: function (options = {}) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
-            decorations.isScrollable = true;
+            decorations.scrollableOptions = options;
         }
     },
 

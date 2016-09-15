@@ -428,8 +428,9 @@ export class View extends FamousView {
      * @private
      */
     _prepareLayoutController() {
-        if (this.decorations.isScrollable) {
-            this._scrollView = new ReflowingScrollView();
+        let {scrollableOptions} = this.decorations;
+        if (scrollableOptions) {
+            this._scrollView = new ReflowingScrollView(scrollableOptions);
             this.layout.getSize = this.getSize;
             this._scrollView.push(this.layout);
             this.pipe(this._scrollView);
