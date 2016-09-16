@@ -538,7 +538,12 @@ export class View extends FamousView {
             if (size[0] !== oldSize[0] ||
                 size[1] !== oldSize[1]) {
                 this._sizeResolver.doTrueSizedBookkeeping();
+                ///
+                //TODO: Kept for legacy reasons, but remove all listeners to this function
                 this._eventOutput.emit('newSize', size);
+                for(let callback of this._onNewSizeCallbacks){
+                    callback(size);
+                }
             }
         });
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
@@ -547,6 +552,18 @@ export class View extends FamousView {
         this.options.size = this.options.size || [true, true];
     }
 
+    onNewSize(callback) {
+        this._onNewSizeCallbacks.push(callback);
+    }
+
+    onceNewSize() {
+        return new Promise((resolve) => {
+            this._onNewSizeCallbacks.push(function onNewSize(size)  {
+                this._onNewSizeCallbacks.splice(this._onNewSizeCallbacks.indexOf(onNewSize), 1);
+                resolve(size);
+            }.bind(this))
+        })
+    }
 
     _initOptions(options) {
         if (!Utils.isPlainObject(options)) {
@@ -571,6 +588,7 @@ export class View extends FamousView {
             this.decorations.extraTranslate = [0, 0, 10];
         }
         this._runningRepeatingFlowStates = {};
+        this._onNewSizeCallbacks = [];
     }
 
     /**
