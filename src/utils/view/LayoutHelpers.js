@@ -67,7 +67,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
             let [renderable, renderableCounterpart] = dockedRenderables.get(renderableName);
             let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
-            let {dock, rotate, opacity, origin} = renderable.decorations; // todo add scaling/skew
+            let {dock, rotate, opacity, origin, scale, skew} = renderable.decorations; // todo add scaling/skew
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
                 dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {
@@ -75,7 +75,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                     opacity,
                     callback,
                     transition,
-                    origin
+                    origin,
+                    scale,
+                    skew
                 });
             }
         }
@@ -89,7 +91,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
             let {translate, dockSize} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
             /* Special case for undefined size, since it's treated differently by the dockhelper, and should be kept to undefined if specified */
-            let dimensionHasUndefinedSize = (dimension) => ![decorations.dock.size, decorations.size].every((size) => size && size[dimension] !== undefined);
+            let dimensionHasUndefinedSize = (dimension) => [decorations.dock.size, decorations.size].every((size) => size && size[dimension] !== undefined);
             dockSize = dockSize.map((fallbackSize, dimension) => dimensionHasUndefinedSize(dimension) ? undefined : fallbackSize);
             dockHelper.fill(renderableName, dockSize, translate, {rotate, opacity, origin, callback, transition});
         }
@@ -140,8 +142,8 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                     }
                 }
 
-                if (origin) {
-                    renderable.decorations.size.forEach((size, dimension) => {
+                if (origin && decorations.size) {
+                    decorations.size.forEach((size, dimension) => {
                         if (this._sizeResolver.isValueTrueSized(size)) {
                             /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
                              *  to make up for this.
@@ -190,8 +192,8 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                 this._sizeResolver.settleDecoratedSize(filledRenderable, renderableCounterpart, {size: [NaN, NaN]}, filledRenderable.decorations.size);
                 let resolvedSize = this._sizeResolver.getResolvedSize(filledRenderable);
                 if (resolvedSize) {
-                    for(let [dimension, singleSize] of resolvedSize.entries()){
-                        if(singleSize !== undefined && ((resultingSize[dimension] === undefined) || resultingSize[dimension] < singleSize)){
+                    for (let [dimension, singleSize] of resolvedSize.entries()) {
+                        if (singleSize !== undefined && ((resultingSize[dimension] === undefined) || resultingSize[dimension] < singleSize)) {
                             resultingSize[dimension] = singleSize;
                         }
                     }
@@ -202,10 +204,10 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         let dockSize = [...fillSize];
         if (dockedRenderables) {
             dockSize = this._getDockedRenderablesBoundingBox(dockedRenderables);
-            if(fillSize){
-                for(let [dimension, singleFillSize] of fillSize.entries()){
-                    if(singleFillSize !== undefined){
-                        if(dockSize[dimension] === undefined){
+            if (fillSize) {
+                for (let [dimension, singleFillSize] of fillSize.entries()) {
+                    if (singleFillSize !== undefined) {
+                        if (dockSize[dimension] === undefined) {
                             dockSize[dimension] = singleFillSize;
                         } else {
                             dockSize[dimension] += singleFillSize;
@@ -325,8 +327,8 @@ export class TraditionalLayoutHelper extends BaseLayoutHelper {
             let [renderable, renderableCounterpart] = traditionalRenderables.get(renderableName);
             let renderableSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, context, renderable.decorations.size) || [undefined, undefined];
             let {
-                translate = [0, 0, 0], origin = [0, 0], align = [0, 0], rotate = [0, 0, 0],
-                opacity = 1, scale = [1, 1, 1], skew = [0, 0, 0]
+                translate = [0, 0, 0], origin = [0, 0], align, rotate,
+                opacity = 1, scale, skew
             } = renderable.decorations;
             translate = Utils.addTranslations(ownDecorations.extraTranslate, translate);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
@@ -378,7 +380,7 @@ export class TraditionalLayoutHelper extends BaseLayoutHelper {
             /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
             for (let i = 0; i < 2; i++) {
                 /* Undefined is the same as context size */
-                if (size[i] !== undefined && !(align && align[i])) {
+                if (renderable.decorations.size[i] !== undefined && size[i] !== undefined && !(align && align[i])) {
                     let newPotentialOuterSize = translate[i] + size[i];
                     if (newPotentialOuterSize > totalSize[i] || totalSize[i] === undefined) {
                         totalSize[i] = newPotentialOuterSize;

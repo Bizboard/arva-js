@@ -14,7 +14,7 @@ import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
 import Easing                from 'famous/transitions/Easing.js';
 
-@layout.scrollable()
+@layout.scrollable({overscroll: false})
 class DialogWrapper extends View {
 
     /**

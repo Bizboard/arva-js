@@ -469,9 +469,9 @@ export class RenderableHelper {
                 sizesToCheck.push(dock.size);
             }
             let renderableSize = [undefined, undefined];
+            let trueSizedInfo = this._sizeResolver.getSurfaceTrueSizedInfo(renderable);
             for (let sizeToCheck of sizesToCheck) {
                 for (let dimension of [0, 1]) {
-                    let trueSizedInfo = this._sizeResolver.getSurfaceTrueSizedInfo(renderable);
                     if (this._sizeResolver.isValueTrueSized(sizeToCheck[dimension])) {
                         if (!trueSizedInfo) {
                             trueSizedInfo = this._sizeResolver.configureTrueSizedSurface(renderable);
@@ -536,31 +536,7 @@ export class RenderableHelper {
         this._renderables[renderableName] = newRenderable;
     }
 
-    //Done
-    /**
-     * Does bookkeeping for a new flow state
-     *
-     * @param renderableName
-     * @param stateName
-     * @private
-     */
-    _registerNewFlowState(renderableName) {
-        let currentFlow = {};
-        let runningFlowStates = this._runningFlowStates[renderableName];
-        if (!runningFlowStates) {
-            this._runningFlowStates[renderableName] = runningFlowStates = [];
-        }
-        runningFlowStates.push(currentFlow);
-        for(let flowState of runningFlowStates){
-            flowState.shouldInterrupt = (flowState !== currentFlow);
-        }
-        return currentFlow;
-    }
 
-    _removeFinishedFlowState(renderableName, flowState) {
-        let runningFlowStates = this._runningFlowStates[renderableName];
-        runningFlowStates.splice(runningFlowStates.indexOf(flowState), 1);
-    }
     //Done
     async setRenderableFlowState(renderableName = '', stateName = '') {
 
@@ -570,11 +546,9 @@ export class RenderableHelper {
         }
         let flowOptions = renderable.decorations.flow;
 
-
         /* Keep track of which flow state changes are running. We only allow one at a time per renderable.
          * The latest one is always the valid one.
          */
-        let currentFlow = this._registerNewFlowState(renderableName);
         let flowWasInterrupted = false;
 
         flowOptions.currentState = stateName;
@@ -586,14 +560,15 @@ export class RenderableHelper {
             this._sizeResolver.requestReflow();
 
             /* Set the callback of the renderable so it's passed to the flowLayoutNode */
-            await new Promise((resolve) => renderable.decorations.flow.callback = resolve);
+            let resolveData = await new Promise((resolve) => renderable.decorations.flow.callback = resolve);
+
             /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
             if (options.delay) {
                 await waitMilliseconds(options.delay);
             }
 
             /* If the flow has been interrupted */
-            if (currentFlow.shouldInterrupt) {
+            if (resolveData.reason === 'flowInterrupted') {
                 flowWasInterrupted = true;
                 break;
             }
@@ -602,7 +577,6 @@ export class RenderableHelper {
             let emit = (renderable._eventOutput && renderable._eventOutput.emit || renderable.emit).bind(renderable._eventOutput || renderable);
             emit('flowStep', {state: stateName});
         }
-        this._removeFinishedFlowState(renderableName, currentFlow);
 
         return !flowWasInterrupted;
     }
@@ -614,12 +588,7 @@ export class RenderableHelper {
         flowOptions.currentState = stateName;
 
         for (let step of steps) {
-            let waitQueue = [];
-            for (let renderableName in step) {
-                let state = step[renderableName];
-                waitQueue.push(this.setRenderableFlowState(renderableName, state));
-            }
-            await Promise.all(waitQueue);
+            await Promise.all(this.generateWaitQueueFromViewStateStep(step));
 
             /* If another state has been set since the invocation of this method, skip any remaining transformations. */
             if (flowOptions.currentState !== stateName) {
@@ -629,6 +598,16 @@ export class RenderableHelper {
 
         return true;
     }
+
+    generateWaitQueueFromViewStateStep(step) {
+        let waitQueue = [];
+        for (let renderableName in step) {
+            let state = step[renderableName];
+            waitQueue.push(this.setRenderableFlowState(renderableName, state));
+        }
+        return waitQueue;
+    }
+
 
     getRenderableFlowState(renderableName = '') {
         let renderable = this._renderables[renderableName];

@@ -7,10 +7,12 @@
 
  */
 import _                        from 'lodash';
-import Easing                   from 'famous/transitions/Easing.js';
+
 import AnimationController      from 'famous-flex/AnimationController.js';
 import LayoutUtility            from 'famous-flex/LayoutUtility.js';
+import Easing                   from 'famous/transitions/Easing.js';
 
+import {Utils}                    from '../utils/view/Utils.js';
 
 function prepDecoratedRenderable(viewOrRenderable, renderableName, descriptor) {
     /* This function can also be called as prepDecoratedRenderable(renderable) */
@@ -714,7 +716,9 @@ export const layout = {
      * @param {Number} z Scales the renderable along the z axis.
      * @returns {Function} A decorator function.
      */
-    scale: function (x, y, z) {
+    scale: function (x,
+                     y = Utils.warn('Please specify y parameter for scaling'),
+                     z = Utils.warn('Please specify z parameter for scaling')) {
         return function (target, renderableName, descriptor) {
             let decorations = prepDecoratedRenderable(...arguments).decorations;
             let propertyName = 'scale';
@@ -813,7 +817,7 @@ export const layout = {
      * @param {Spec} [flowOptions.removeSpec] Size, transform, opacity... to use when removing renderables from the scene (default: undefined).
      * @returns {Function} A decorator function
      */
-    flow: function (flowOptions) {
+    flow: function (flowOptions = {}) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
             decorations.useFlow = true;
@@ -835,10 +839,10 @@ export const layout = {
      *
      * @returns {Function} A decorator function
      */
-    scrollable: function () {
+    scrollable: function (options = {}) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
-            decorations.isScrollable = true;
+            decorations.scrollableOptions = options;
         }
     },
 
