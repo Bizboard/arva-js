@@ -142,8 +142,8 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                     }
                 }
 
-                if (origin) {
-                    renderable.decorations.size.forEach((size, dimension) => {
+                if (origin && decorations.size) {
+                    decorations.size.forEach((size, dimension) => {
                         if (this._sizeResolver.isValueTrueSized(size)) {
                             /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
                              *  to make up for this.
@@ -192,8 +192,8 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                 this._sizeResolver.settleDecoratedSize(filledRenderable, renderableCounterpart, {size: [NaN, NaN]}, filledRenderable.decorations.size);
                 let resolvedSize = this._sizeResolver.getResolvedSize(filledRenderable);
                 if (resolvedSize) {
-                    for(let [dimension, singleSize] of resolvedSize.entries()){
-                        if(singleSize !== undefined && ((resultingSize[dimension] === undefined) || resultingSize[dimension] < singleSize)){
+                    for (let [dimension, singleSize] of resolvedSize.entries()) {
+                        if (singleSize !== undefined && ((resultingSize[dimension] === undefined) || resultingSize[dimension] < singleSize)) {
                             resultingSize[dimension] = singleSize;
                         }
                     }
@@ -204,10 +204,10 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         let dockSize = [...fillSize];
         if (dockedRenderables) {
             dockSize = this._getDockedRenderablesBoundingBox(dockedRenderables);
-            if(fillSize){
-                for(let [dimension, singleFillSize] of fillSize.entries()){
-                    if(singleFillSize !== undefined){
-                        if(dockSize[dimension] === undefined){
+            if (fillSize) {
+                for (let [dimension, singleFillSize] of fillSize.entries()) {
+                    if (singleFillSize !== undefined) {
+                        if (dockSize[dimension] === undefined) {
                             dockSize[dimension] = singleFillSize;
                         } else {
                             dockSize[dimension] += singleFillSize;
@@ -380,7 +380,7 @@ export class TraditionalLayoutHelper extends BaseLayoutHelper {
             /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
             for (let i = 0; i < 2; i++) {
                 /* Undefined is the same as context size */
-                if (size[i] !== undefined && !(align && align[i])) {
+                if (renderable.decorations.size[i] !== undefined && size[i] !== undefined && !(align && align[i])) {
                     let newPotentialOuterSize = translate[i] + size[i];
                     if (newPotentialOuterSize > totalSize[i] || totalSize[i] === undefined) {
                         totalSize[i] = newPotentialOuterSize;
