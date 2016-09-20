@@ -166,9 +166,7 @@ export class RenderableHelper {
      */
     _addDecoratedRenderable(renderable, renderableName) {
         let {flow, size, dock} = renderable.decorations;
-        if (flow) {
-            renderable.isFlowy = true;
-        }
+
         if (size) {
             this._bindSizeFunctions(size);
         }
@@ -176,6 +174,7 @@ export class RenderableHelper {
             this._bindSizeFunctions(dock.size);
         }
         let renderableCounterpart = this._processsDecoratedRenderableCounterpart(renderable, renderableName);
+
         this._addRenderableToDecoratorGroup(renderable, renderableCounterpart, renderableName);
         return renderableCounterpart;
     }
@@ -216,7 +215,7 @@ export class RenderableHelper {
      * @private
      */
     _processsDecoratedRenderableCounterpart(renderable, renderableName) {
-        let {draggableOptions, swipableOptions, clip, animation} = renderable.decorations;
+        let {draggableOptions, swipableOptions, clip, animation, flow} = renderable.decorations;
 
         /* If we clip, then we need to create a containerSurface */
         if (clip) {
@@ -253,10 +252,15 @@ export class RenderableHelper {
             /* Assign output handler */
             renderable.node._eventOutput = renderable._eventOutput;
         }
+
+        let renderableCounterpart = renderable.animationController || renderable.containerSurface || renderable.node || renderable;
         /* If a renderable has an AnimationController used to animate it, add that to this._renderableCounterparts.
          * If a renderable has an ContainerSurface used to clip it, add that to this._renderableCounterparts.
          * this._renderableCounterparts is used in the LayoutController in this.layout to render this view. */
-        return renderable.animationController || renderable.containerSurface || renderable.node || renderable;
+        if (flow) {
+            renderableCounterpart.isFlowy = true;
+        }
+        return renderableCounterpart;
     }
 
     /**
