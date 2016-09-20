@@ -19,7 +19,8 @@ export class LocalModel extends Model {
     }
 
     constructor(id, data) {
-        super(id, data, {dataSource: new DataSource()});
+        if(id === null) { id = `${Math.random() * 100000}`; }
+        super(id, data, {dataSource: { setWithPriority: async function(){} }});
         this.id = id;
         this._dataSource.ready = true;
     }
