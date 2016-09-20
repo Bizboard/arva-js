@@ -222,14 +222,6 @@ export class RenderableHelper {
         if (clip) {
             let clipSize = clip.size;
             /* Resolve clipSize specified as undefined */
-            if (clipSize[0] === undefined || clipSize[1] === undefined) {
-                //TODO: Come up with a way of how to do this
-                /*this.layout.once('layoutstart', ({size}) => {
-                 for (let i of [0, 1]) {
-                 clipSize[i] = clipSize[i] || size[i]
-                 }
-                 });*/
-            }
             let containerSurface = new ContainerSurface({
                 size: clipSize,
                 properties: {overflow: 'hidden', ...clip.properties}
