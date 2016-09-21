@@ -23,5 +23,6 @@ export class LocalModel extends Model {
         super(id, data, {dataSource: { setWithPriority: async function(){} }});
         this.id = id;
         this._dataSource.ready = true;
+        this._dataSource.remove = () => {};
     }
 }
