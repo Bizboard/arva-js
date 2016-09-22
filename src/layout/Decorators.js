@@ -884,6 +884,27 @@ export const layout = {
         };
     },
 
+    columnDockPadding: function (maxContentWidth = 720, defaultPadding = [0, 16, 0, 16]) {
+        return function (target) {
+            let decorations = prepPrototypeDecorations(target.prototype);
+            let normalisedPadding = LayoutUtility.normalizeMargins(defaultPadding);
+
+            /* Default to 16px dockPadding */
+            layout.dockPadding(normalisedPadding);
+
+            /* Calculate the dockPadding dynamically every time the View's size changes.
+             * The results from calling this method are further handled in View.js.
+             *
+             * The logic behind this is 16px padding by default, unless the screen is
+             * wider than 720px. In that case, the padding is increased to make the content
+             * in between be at maximum 720px. */
+            decorations.dynamicDockPadding = function(size) {
+                let sideWidth = size[0] > maxContentWidth + 32 ? (size[0] - maxContentWidth) / 2 : normalisedPadding[1];
+                return [normalisedPadding[0], sideWidth, normalisedPadding[2], sideWidth];
+            }
+        };
+    },
+
     /**
      * @example
      * @layout.custom((context) => {

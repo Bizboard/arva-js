@@ -334,7 +334,7 @@ export class View extends FamousView {
          */
         ObjectHelper.addPropertyToObject(this, renderableName, renderable, true, true, null, false);
     }
-    
+
     _layoutDecoratedRenderables(context, options) {
         let dockedRenderables = this._renderableHelper;
         this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations);
@@ -380,7 +380,7 @@ export class View extends FamousView {
                 if (this.decorations.customLayoutFunction) {
                     this.decorations.customLayoutFunction(context);
                 }
-                
+
                 this._doTrueSizedSurfacesBookkeeping();
 
                 /* Legacy context.set() based layout functions */
@@ -528,8 +528,12 @@ export class View extends FamousView {
                 }
             }
         }
+
+        if(this.decorations.dynamicDockPadding) {
+            this.onNewSize((size) => this.decorations.viewMargins = this.decorations.dynamicDockPadding(size));
+        }
     }
-    
+
     _doTrueSizedSurfacesBookkeeping() {
         this._nodes._trueSizeRequested = false;
     }
