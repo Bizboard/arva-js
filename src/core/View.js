@@ -147,13 +147,18 @@ export class View extends FamousView {
         return this._renderableHelper.prioritiseDockAfter(renderableName, prevRenderableName);
     }
 
+    /**
+     *
+     * @param {String} renderableName
+     * @param {Boolean} show. Whether to show or not
+     * @returns {Promise} when the renderable has finished its animation
+     */
     showRenderable(renderableName, show = true) {
         let renderable = this[renderableName];
         if (!renderable.animationController) {
             Utils.warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
             return;
         }
-        this._renderableHelper.showWithAnimationController(this.renderables[renderableName], renderable, show);
         let decoratedSize = this[renderableName].decorations.size || (this[renderableName].decorations.dock ? this[renderableName].decorations.dock.size : undefined);
         if (decoratedSize) {
             /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
@@ -166,6 +171,8 @@ export class View extends FamousView {
 
             }
         }
+        
+        return new Promise((resolve) => this._renderableHelper.showWithAnimationController(this.renderables[renderableName], renderable, show, resolve));
     }
 
     /**
@@ -223,9 +230,10 @@ export class View extends FamousView {
     /**
      * Hides a renderable that has been declared with @layout.animate
      * @param renderableName
+     * @returns {Promise} when the renderable has finished its animation
      */
     hideRenderable(renderableName) {
-        this.showRenderable(renderableName, false);
+        return this.showRenderable(renderableName, false);
     }
 
     /**

@@ -344,18 +344,24 @@ export class RenderableHelper {
      * @param show
      * @private
      */
-    showWithAnimationController(animationController, renderable, show = true) {
+    showWithAnimationController(animationController, renderable, show = true, callback) {
         animationController._showingRenderable = show;
-        let callback = () => {
+        let callbackIfExists = () => {
+            if(callback) {
+                callback();
+            }
+        };
+        let emitOnFinished = () => {
             if (renderable.emit) {
                 renderable.emit(show ? 'shown' : 'hidden');
             }
+            callbackIfExists();
         };
 
         if (show) {
-            animationController.show(renderable.containerSurface || renderable, null, callback);
+            animationController.show(renderable.containerSurface || renderable, null, emitOnFinished);
         } else {
-            animationController.hide(null, callback);
+            animationController.hide(null, emitOnFinished);
         }
     }
     //Done
