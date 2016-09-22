@@ -123,7 +123,7 @@ export class View extends FamousView {
      */
     removeRenderable(renderableName) {
         this._renderableHelper.removeRenderable(renderableName);
-        delete this[renderableName];
+        this[renderableName] = undefined;
         this.layout.reflowLayout();
     }
 
