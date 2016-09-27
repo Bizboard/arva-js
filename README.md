@@ -15,10 +15,10 @@ and maintainable.*
 
 ## Core components
 
-* **[[App]]** *The entry point of your application, defining the controllers and their routes.*
-* **[[Controllers]]** *Manage the control flow and business logic of your application.*
-* **[[Views]]** *Define the way your app looks, feels, and interacts.*
-* **[[Models]]** *Take care of two-way realtime data binding.*
+* **App** *The entry point of your application, defining the controllers and their routes.*
+* **Controllers** *Manage the control flow and business logic of your application.*
+* **Views** *Define the way your app looks, feels, and interacts.*
+* **Models** *Take care of two-way realtime data binding.*
 
 Enjoy the benefit of 60 fps animations cross-platform in an enterprise grade style.
 
