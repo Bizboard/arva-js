@@ -25,7 +25,7 @@ System.config({
     "eventemitter3": "npm:eventemitter3@1.2.0",
     "famous": "github:bizboard/famous@0.3.7",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
-    "famous-flex": "github:bizboard/famous-flex@v1.3.11",
+    "famous-flex": "github:bizboard/famous-flex@1.3.11",
     "fastclick": "npm:fastclick@1.0.6",
     "firebase": "github:firebase/firebase-bower@3.0.5",
     "fs": "github:jspm/nodelibs-fs@0.1.2",
