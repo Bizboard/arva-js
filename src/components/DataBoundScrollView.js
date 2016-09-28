@@ -21,6 +21,15 @@ export class DataBoundScrollView extends ReflowingScrollView {
         return this._internalDataSource;
     }
 
+    /**
+     * A FlexScrollView with enhanced functionality for maintaining a two-way connection with a PrioritisedArray.
+     *
+     * @param options
+     * @param [options.headerTemplate] A function that returns a renderable to display as a header
+     * @param [options.orderBy] An ordering function that takes two data models (model1, model2).
+     * If this function returns true, then model1 will be placed before model2.
+     *
+     */
     constructor(options = {}) {
         super(combineOptions({
             scrollFriction: {
