@@ -1,0 +1,526 @@
+{
+  "coverage": "46.51%",
+  "expectCount": 445,
+  "actualCount": 207,
+  "files": {
+    "src/core/App.js": {
+      "expectCount": 6,
+      "actualCount": 2,
+      "undocumentLines": [
+        61,
+        58,
+        60,
+        73
+      ]
+    },
+    "src/routers/ArvaRouter.js": {
+      "expectCount": 17,
+      "actualCount": 5,
+      "undocumentLines": [
+        17,
+        25,
+        38,
+        53,
+        56,
+        238,
+        37,
+        234,
+        36,
+        230,
+        226,
+        66
+      ]
+    },
+    "src/utils/view/LayoutHelpers.js": {
+      "expectCount": 12,
+      "actualCount": 2,
+      "undocumentLines": [
+        11,
+        43,
+        295,
+        322,
+        351,
+        20,
+        12,
+        175,
+        16,
+        324
+      ]
+    },
+    "src/utils/BlobHelper.js": {
+      "expectCount": 2,
+      "actualCount": 2,
+      "undocumentLines": []
+    },
+    "src/components/logic/branding/BrandingEngine.js": {
+      "expectCount": 9,
+      "actualCount": 5,
+      "undocumentLines": [
+        15,
+        24,
+        16,
+        20
+      ]
+    },
+    "src/components/logic/branding/BrandingEngineSingleton.js": {
+      "expectCount": 2,
+      "actualCount": 1,
+      "undocumentLines": [
+        13
+      ]
+    },
+    "src/utils/di/Decorators.js": {
+      "expectCount": 15,
+      "actualCount": 0,
+      "undocumentLines": [
+        34,
+        36,
+        22,
+        28,
+        14,
+        19,
+        44,
+        23,
+        29,
+        51,
+        118,
+        130,
+        67,
+        30,
+        24
+      ]
+    },
+    "src/core/Controller.js": {
+      "expectCount": 8,
+      "actualCount": 3,
+      "undocumentLines": [
+        27,
+        31,
+        52,
+        30,
+        29
+      ]
+    },
+    "src/components/DataBoundScrollView.js": {
+      "expectCount": 20,
+      "actualCount": 7,
+      "undocumentLines": [
+        18,
+        443,
+        122,
+        445,
+        20,
+        65,
+        64,
+        622,
+        464,
+        453,
+        114,
+        105,
+        66
+      ]
+    },
+    "src/data/datasources/SharePoint/DataModelGenerator.js": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        18,
+        49,
+        76,
+        20,
+        28
+      ]
+    },
+    "src/data/DataSource.js": {
+      "expectCount": 37,
+      "actualCount": 37,
+      "undocumentLines": []
+    },
+    "src/utils/DialogManager.js": {
+      "expectCount": 8,
+      "actualCount": 1,
+      "undocumentLines": [
+        49,
+        173,
+        73,
+        162,
+        157,
+        128,
+        85
+      ]
+    },
+    "src/utils/request/RequestClient.js": {
+      "expectCount": 3,
+      "actualCount": 2,
+      "undocumentLines": [
+        100
+      ]
+    },
+    "src/data/datasources/FirebaseDataSource.js": {
+      "expectCount": 42,
+      "actualCount": 37,
+      "undocumentLines": [
+        17,
+        19,
+        23,
+        45,
+        46
+      ]
+    },
+    "src/utils/Injection.js": {
+      "expectCount": 4,
+      "actualCount": 3,
+      "undocumentLines": [
+        7
+      ]
+    },
+    "src/utils/di/injector.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        40,
+        42,
+        222,
+        147
+      ]
+    },
+    "src/utils/KeyboardHelper.js": {
+      "expectCount": 7,
+      "actualCount": 1,
+      "undocumentLines": [
+        10,
+        15,
+        71,
+        55,
+        47,
+        63
+      ]
+    },
+    "src/data/local/LocalModel.js": {
+      "expectCount": 4,
+      "actualCount": 0,
+      "undocumentLines": [
+        8,
+        21,
+        10,
+        14
+      ]
+    },
+    "src/data/local/LocalPrioritisedArray.js": {
+      "expectCount": 2,
+      "actualCount": 0,
+      "undocumentLines": [
+        6,
+        7
+      ]
+    },
+    "src/core/Model.js": {
+      "expectCount": 3,
+      "actualCount": 2,
+      "undocumentLines": [
+        16
+      ]
+    },
+    "src/utils/ObjectHelper.js": {
+      "expectCount": 14,
+      "actualCount": 0,
+      "undocumentLines": [
+        12,
+        94,
+        72,
+        79,
+        149,
+        123,
+        100,
+        194,
+        171,
+        200,
+        65,
+        16,
+        35,
+        46
+      ]
+    },
+    "src/utils/request/XmlParser.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "src/data/PrioritisedArray.js": {
+      "expectCount": 12,
+      "actualCount": 7,
+      "undocumentLines": [
+        18,
+        490,
+        24,
+        28,
+        232
+      ]
+    },
+    "src/data/PrioritisedObject.js": {
+      "expectCount": 14,
+      "actualCount": 9,
+      "undocumentLines": [
+        15,
+        30,
+        21,
+        17,
+        34
+      ]
+    },
+    "src/components/ReflowingScrollView.js": {
+      "expectCount": 2,
+      "actualCount": 1,
+      "undocumentLines": [
+        17
+      ]
+    },
+    "src/utils/view/RenderableHelper.js": {
+      "expectCount": 18,
+      "actualCount": 8,
+      "undocumentLines": [
+        30,
+        516,
+        52,
+        604,
+        614,
+        623,
+        524,
+        543,
+        586,
+        44
+      ]
+    },
+    "src/core/Router.js": {
+      "expectCount": 9,
+      "actualCount": 5,
+      "undocumentLines": [
+        19,
+        26,
+        30,
+        34
+      ]
+    },
+    "src/data/datasources/SharePoint/SPSoapAdapter/Settings.js": {
+      "expectCount": 2,
+      "actualCount": 1,
+      "undocumentLines": [
+        6
+      ]
+    },
+    "src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js": {
+      "expectCount": 12,
+      "actualCount": 1,
+      "undocumentLines": [
+        36,
+        26,
+        41,
+        214,
+        92,
+        60,
+        53,
+        35,
+        148,
+        111,
+        34
+      ]
+    },
+    "src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js": {
+      "expectCount": 20,
+      "actualCount": 0,
+      "undocumentLines": [
+        17,
+        33,
+        805,
+        27,
+        58,
+        205,
+        64,
+        34,
+        38,
+        31,
+        42,
+        543,
+        211,
+        23,
+        19,
+        54,
+        32,
+        50,
+        30,
+        84
+      ]
+    },
+    "src/data/datasources/SharePointDataSource.js": {
+      "expectCount": 39,
+      "actualCount": 34,
+      "undocumentLines": [
+        20,
+        96,
+        22,
+        26,
+        45
+      ]
+    },
+    "src/data/datasources/SharePoint/SharePointSnapshot.js": {
+      "expectCount": 8,
+      "actualCount": 0,
+      "undocumentLines": [
+        13,
+        15,
+        52,
+        47,
+        26,
+        66,
+        43,
+        38
+      ]
+    },
+    "src/components/inputs/SingleLineTextInput.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        11,
+        12,
+        25
+      ]
+    },
+    "src/utils/view/SizeResolver.js": {
+      "expectCount": 10,
+      "actualCount": 3,
+      "undocumentLines": [
+        21,
+        167,
+        263,
+        270,
+        225,
+        217,
+        221
+      ]
+    },
+    "src/data/Snapshot.js": {
+      "expectCount": 8,
+      "actualCount": 1,
+      "undocumentLines": [
+        12,
+        18,
+        17,
+        14,
+        19,
+        16,
+        15
+      ]
+    },
+    "src/data/datasources/SharePoint/SPSoapAdapter/Worker/SoapClient.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        19,
+        81,
+        21
+      ]
+    },
+    "src/utils/Throttler.js": {
+      "expectCount": 9,
+      "actualCount": 2,
+      "undocumentLines": [
+        12,
+        28,
+        23,
+        31,
+        30,
+        27,
+        26
+      ]
+    },
+    "src/layout/TrueSizedLayoutDockHelper.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "src/utils/request/UrlParser.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "src/utils/view/Utils.js": {
+      "expectCount": 4,
+      "actualCount": 1,
+      "undocumentLines": [
+        9,
+        82,
+        10
+      ]
+    },
+    "src/core/View.js": {
+      "expectCount": 30,
+      "actualCount": 19,
+      "undocumentLines": [
+        29,
+        31,
+        597,
+        211,
+        215,
+        361,
+        593,
+        568,
+        572,
+        585,
+        590
+      ]
+    },
+    "src/utils/CallbackHelpers.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        11,
+        15
+      ]
+    },
+    "src/utils/CombineOptions.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    },
+    "src/utils/di/providers.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        151
+      ]
+    },
+    "src/layout/Decorators.js": {
+      "expectCount": 3,
+      "actualCount": 0,
+      "undocumentLines": [
+        935,
+        1019,
+        83
+      ]
+    },
+    "src/layout/FlowStates.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        14
+      ]
+    },
+    "src/utils/di/util.js": {
+      "expectCount": 5,
+      "actualCount": 0,
+      "undocumentLines": [
+        7,
+        12,
+        3,
+        33,
+        17
+      ]
+    },
+    "src/utils/Limiter.js": {
+      "expectCount": 1,
+      "actualCount": 1,
+      "undocumentLines": []
+    }
+  }
+}

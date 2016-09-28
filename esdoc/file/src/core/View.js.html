@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/core/View.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+<link data-ice="userStyle" rel="stylesheet" href="user/css/0-styles.css">
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html">Controller</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Model.js~Model.html">Model</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Router.js~Router.html">Router</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/View.js~View.html">View</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedObject.js~PrioritisedObject.html">PrioritisedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html">FirebaseDataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html">SharePointDataSource</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/DataModelGenerator.js~DataModelGenerator.html">DataModelGenerator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SharePointSnapshot.js~SharePointSnapshot.html">SharePointSnapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Settings.js~Settings.html">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js~SharePoint.html">SharePoint</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter/Worker</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html">SharePointClient</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SoapClient.js~SoapClient.html">SoapClient</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/local</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalModel.js~LocalModel.html">LocalModel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html">LocalPrioritisedArray</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">layout</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-TrueSizedLayoutDockHelper">TrueSizedLayoutDockHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-event">event</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flow">flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-layout">layout</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flowStates">flowStates</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">routers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/routers/ArvaRouter.js~ArvaRouter.html">ArvaRouter</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/BlobHelper.js~BlobHelper.html">BlobHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/DialogManager.js~DialogManager.html">DialogManager</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Injection.js~Injection.html">Injection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/KeyboardHelper.js~KeyboardHelper.html">KeyboardHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/ObjectHelper.js~ObjectHelper.html">ObjectHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Throttler.js~Throttler.html">Throttler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-callbackToPromise">callbackToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-successAndErrorToPromise">successAndErrorToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-waitMilliseconds">waitMilliseconds</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-combineOptions">combineOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-limit">limit</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/di</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~ClassProvider.html">ClassProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~FactoryProvider.html">FactoryProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Inject.html">Inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Provide.html">Provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~SuperConstructor.html">SuperConstructor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~TransientScope.html">TransientScope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/injector.js~Injector.html">Injector</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-annotate">annotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-hasAnnotation">hasAnnotation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-inject">inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-provide">provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-readAnnotations">readAnnotations</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createProviderFromFnOrClass">createProviderFromFnOrClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isFunction">isFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isObject">isObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isUpperCase">isUpperCase</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-toString">toString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ownKeys">ownKeys</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/request</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ExistsRequest">ExistsRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-GetRequest">GetRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-PostRequest">PostRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-UrlParser">UrlParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ParseStringToXml">ParseStringToXml</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/view</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~BaseLayoutHelper.html">BaseLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~DockedLayoutHelper.html">DockedLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~FullSizeLayoutHelper.html">FullSizeLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~TraditionalLayoutHelper.html">TraditionalLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/RenderableHelper.js~RenderableHelper.html">RenderableHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/SizeResolver.js~SizeResolver.html">SizeResolver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/Utils.js~Utils.html">Utils</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/core/View.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+
+
+ @author: Hans van den Akker (mysim1)
+ @license NPOSL-3.0
+ @copyright Bizboard, 2015
+
+ */
+
+import _                            from &apos;lodash&apos;;
+import FamousView                   from &apos;famous/core/View.js&apos;;
+import LayoutController             from &apos;famous-flex/LayoutController.js&apos;;
+
+import {limit}                      from &apos;arva-js/utils/Limiter.js&apos;;
+
+import {ObjectHelper}               from &apos;../utils/ObjectHelper.js&apos;;
+import {SizeResolver}               from &apos;../utils/view/SizeResolver.js&apos;;
+import {Utils}                      from &apos;../utils/view/Utils.js&apos;;
+import {
+    DockedLayoutHelper,
+    FullSizeLayoutHelper,
+    TraditionalLayoutHelper
+}
+                                    from &apos;../utils/view/LayoutHelpers.js&apos;;
+import {RenderableHelper}           from &apos;../utils/view/RenderableHelper.js&apos;;
+import {ReflowingScrollView}        from &apos;../components/ReflowingScrollView.js&apos;;
+
+
+export class View extends FamousView {
+
+    constructor(options = {}) {
+
+        super(options);
+
+
+        /* Bind all local methods to the current object instance, so we can refer to &apos;this&apos;
+         * in the methods as expected, even when they&apos;re called from event handlers.        */
+        ObjectHelper.bindAllMethods(this, this);
+
+
+        this._copyPrototypeProperties();
+        this._initDataStructures();
+        this._initOwnDecorations();
+        this._initOptions(options);
+        this._initUtils();
+        this._constructDecoratedRenderables();
+
+        this._createLayoutController();
+        this._initTrueSizedBookkeeping();
+
+    }
+
+    //noinspection JSUnusedGlobalSymbols
+    /**
+     * Deprecated, it is no longer required to call build() from within your View instances.
+     * @deprecated
+     * @returns {void}
+     */
+    build() {
+        Utils.warn(`Arva: calling build() from within views is no longer necessary, any existing calls can safely be removed. Called from ${this._name()}`);
+    }
+
+    /**
+     * Reflows the layout while also informing any subscribing parents that a reflow has to take place
+     */
+    reflowRecursively() {
+        this.layout.reflowLayout();
+        this._eventOutput.emit(&apos;recursiveReflow&apos;);
+    }
+
+    /**
+     * Gets the size used when displaying a renderable on the screen the last tick
+     * @param {Renderable/Name} renderableOrName The renderable or the name of the renderable of which you need the size
+     */
+    getResolvedSize(renderableOrName) {
+        let renderable = renderableOrName;
+        if (typeof renderableOrName === &apos;string&apos;) {
+            renderable = this.renderables[renderableOrName];
+        }
+        let size = this._sizeResolver.getResolvedSize(renderable);
+
+        /* Backup: If size can&apos;t be resolved, then see if there&apos;s a size specified on the decorator */
+        if (!size &amp;&amp; renderable.decorations) {
+            let decoratedSize = renderable.decorations.size;
+            let isValidSize = (inputSize) =&gt; typeof inputSize == &apos;number&apos; &amp;&amp; inputSize &gt; 0;
+            if (decoratedSize &amp;&amp; decoratedSize.every(isValidSize)) {
+                size = decoratedSize;
+            }
+        }
+
+        return size || [undefined, undefined];
+    }
+
+    /**
+     * Returns true if the view contains uncalculated surfaces
+     * @returns {Boolean}
+     */
+    containsUncalculatedSurfaces() {
+        return this._sizeResolver.containsUncalculatedSurfaces();
+    }
+
+    /**
+     * Adds a renderable to the layout.
+     * @param {Renderable} renderable The renderable to be added
+     * @param {String} renderableName The name (key) of the renderable
+     * @param {Decorator} Decorator Any decorator(s) to apply to the renderable
+     * @returns {Renderable} The renderable that was assigned
+     */
+    addRenderable(renderable, renderableName, ...decorators) {
+        /* Due to common mistake, we check if renderableName is a string */
+        if (typeof renderableName !== &apos;string&apos;) {
+            Utils.warn(`The second argument of addRenderable(...) was not a string. Please pass the renderable name in ${this._name()}`);
+        }
+        this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, decorators);
+        this._assignRenderable(renderable, renderableName);
+        this.layout.reflowLayout();
+        return renderable;
+    }
+
+    /**
+     * Removes the renderable from the view
+     * @param {String} renderableName The name of the renderable
+     */
+    removeRenderable(renderableName) {
+        this._renderableHelper.removeRenderable(renderableName);
+        this[renderableName] = undefined;
+        this.layout.reflowLayout();
+    }
+
+    /**
+     * Rearranges the order in which docked renderables are parsed for rendering, ensuring that &apos;renderableName&apos; is processed
+     * before &apos;nextRenderableName&apos;.
+     * @param {String} renderableName
+     * @param {String} nextRenderableName
+     */
+    prioritiseDockBefore(renderableName, nextRenderableName) {
+        this.reflowRecursively();
+        return this._renderableHelper.prioritiseDockBefore(renderableName, nextRenderableName);
+    }
+
+    /**
+     * @param {String} renderableName
+     * @param {String} prevRenderableName
+     */
+    prioritiseDockAfter(renderableName, prevRenderableName) {
+        this.reflowRecursively();
+        return this._renderableHelper.prioritiseDockAfter(renderableName, prevRenderableName);
+    }
+
+    /**
+     *
+     * @param {String} renderableName
+     * @param {Boolean} show. Whether to show or not
+     * @returns {Promise} when the renderable has finished its animation
+     */
+    showRenderable(renderableName, show = true) {
+        let renderable = this[renderableName];
+        if (!renderable.animationController) {
+            Utils.warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
+            return;
+        }
+        let decoratedSize = this[renderableName].decorations.size || (this[renderableName].decorations.dock ? this[renderableName].decorations.dock.size : undefined);
+        if (decoratedSize) {
+            /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
+             * new size to take into account. */
+            for (let dimension of [0, 1]) {
+                if (this._sizeResolver.isValueTrueSized(this._sizeResolver.resolveSingleSize(decoratedSize[dimension], [NaN, NaN], dimension))) {
+                    this.reflowRecursively();
+                    break;
+                }
+
+            }
+        }
+        
+        return new Promise((resolve) =&gt; this._renderableHelper.showWithAnimationController(this.renderables[renderableName], renderable, show, resolve));
+    }
+
+    /**
+     * @example
+     * decorateRenderable(&apos;myRenderable&apos;,layout.size(100, 100));
+     *
+     * Decorates a renderable with other decorators. Using the same decorators as used previously will override the old ones.
+     * @param {String} renderableName The name of the renderable
+     * @param ...decorators The decorators that should be applied
+     */
+    decorateRenderable(renderableName, ...decorators) {
+        this._renderableHelper.decorateRenderable(renderableName, ...decorators);
+        this.reflowRecursively();
+    }
+
+    /**
+     * Sets a renderable flow state as declared in the @flow.stateStep, or @flow.defaultState
+     * @param {String} renderableName. The name of the renderable
+     * @param {String} stateName. The name of the state as declared in the first argument of the decorator
+     * @returns {*}
+     */
+    setRenderableFlowState(renderableName = &apos;&apos;, stateName = &apos;&apos;) {
+        return this._renderableHelper.setRenderableFlowState(renderableName, stateName);
+    }
+
+    /**
+     * Sets a renderable flow state as declared in the @flow.viewState
+     * @param {String} renderableName. The name of the renderable
+     * @param {String} stateName. The name of the state as declared in the first argument of the decorator
+     * @returns {*}
+     */
+    setViewFlowState(stateName = &apos;&apos;) {
+        return this._renderableHelper.setViewFlowState(stateName, this.decorations.flow);
+    }
+
+    getRenderableFlowState(renderableName = &apos;&apos;) {
+        return this._renderableHelper.getRenderableFlowState(renderableName);
+    }
+
+    getViewFlowState() {
+        return this._renderableHelper.getViewFlowState(this.decorations.flow);
+    }
+
+    /**
+     * Replaces an existing decorated renderable with a new renderable, preserving all necessary state and decorations
+     * @param {String} renderableName. The name of the renderable
+     * @param newRenderable
+     */
+    replaceRenderable(renderableName, newRenderable) {
+        this._renderableHelper.replaceRenderable(renderableName, newRenderable);
+        this.reflowRecursively();
+        this[renderableName] = newRenderable;
+    }
+
+    /**
+     * Hides a renderable that has been declared with @layout.animate
+     * @param renderableName
+     * @returns {Promise} when the renderable has finished its animation
+     */
+    hideRenderable(renderableName) {
+        return this.showRenderable(renderableName, false);
+    }
+
+    /**
+     * Inits the utils that are used as helper classes for the view
+     * @private
+     */
+    _initUtils() {
+        this._sizeResolver = new SizeResolver();
+        this._sizeResolver.on(&apos;layoutControllerReflow&apos;, this._requestLayoutControllerReflow);
+        this._sizeResolver.on(&apos;reflow&apos;, () =&gt; this.layout.reflowLayout());
+        this._sizeResolver.on(&apos;reflowRecursively&apos;, this.reflowRecursively);
+        this._dockedRenderablesHelper = new DockedLayoutHelper(this._sizeResolver);
+        this._fullSizeLayoutHelper = new FullSizeLayoutHelper(this._sizeResolver);
+        this._traditionalLayoutHelper = new TraditionalLayoutHelper(this._sizeResolver);
+        this._renderableHelper = new RenderableHelper(this._bindToSelf,this._setPipeToSelf, this.renderables, this._sizeResolver);
+    }
+
+    /** Requests for a parent LayoutController trying to resolve the size of this view
+     * @private
+     */
+    _requestLayoutControllerReflow() {
+        this._nodes = {_trueSizeRequested: true};
+        //TODO: Do we really need to emit this?
+        this._eventOutput.emit(&apos;layoutControllerReflow&apos;);
+    }
+
+    _getRenderableOptions(renderableName, decorations = this.renderables[renderableName]) {
+        let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
+        if (!Utils.isPlainObject(decoratorOptions)) {
+            Utils.warn(`Invalid option &apos;${decoratorOptions}&apos; given to item ${renderableName}`);
+        }
+        return decoratorOptions;
+    }
+
+    /**
+     * Construct all the renderables that have been decorated in the class.
+     * @private
+     */
+    _constructDecoratedRenderables() {
+
+        let classConstructorList = [];
+
+        /* Reverse the class list becaues rit makes more sense to make the renderables of the parent before the renderables
+         * of this view
+        */
+        for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
+            classConstructorList.push(currentClass.__proto__.constructor);
+        }
+        classConstructorList.reverse();
+
+
+        for (let currentClassConstructor of classConstructorList) {
+            let renderableConstructors = this.renderableConstructors.get(currentClassConstructor);
+            for (let renderableName in renderableConstructors) {
+                let decorations = renderableConstructors[renderableName].decorations;
+
+                let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
+
+                /* Clone the decorator properties, because otherwise every view of the same type willl share them between
+                 * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
+                 */
+                renderable.decorations = _.cloneDeep(_.extend({}, decorations, renderable.decorations || {}));
+
+
+                /* Since after constructor() of this View class is called, all decorated renderables will
+                 * be attempted to be initialized by Babel / the ES7 class properties spec, we&apos;ll need to
+                 * override the descriptor get/initializer to return this specific instance once.
+                 *
+                 * If we don&apos;t do this, the View will have its renderables overwritten by new renderable instances
+                 * that don&apos;t have constructor.options applied to them correctly. If we always return this specific instance
+                 * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
+                 * to the renderables of this instance, which is unwanted.
+                 */
+                let {descriptor} = decorations;
+                if (descriptor) {
+                    if (descriptor.get) {
+                        let originalGet = decorations.descriptor.get;
+                        descriptor.get = () =&gt; {
+                            descriptor.get = originalGet;
+                            return renderable;
+                        }
+                    }
+                    if (descriptor.initializer) {
+                        let originalInitializer = decorations.descriptor.initializer;
+                        descriptor.initializer = () =&gt; {
+                            descriptor.initializer = originalInitializer;
+                            return renderable;
+                        }
+                    }
+                }
+                this._assignRenderable(renderable, renderableName);
+            }
+        }
+    }
+
+    /**
+     * Assigns a renderable to this view, without setting this[renderableName]
+     * @param {Renderable} renderable the renderable that is going to be added
+     * @param {String} renderableName the name of the renderable
+     * @private
+     */
+    _assignRenderable(renderable, renderableName) {
+        this._renderableHelper.assignRenderable(renderable, renderableName);
+        /* Do add property to object because there can be a getter defined instead of a class property,
+         * in which case we have to use the ObjectHelper
+         */
+        ObjectHelper.addPropertyToObject(this, renderableName, renderable, true, true, null, false);
+    }
+
+    _layoutDecoratedRenderables(context, options) {
+        let dockedRenderables = this._renderableHelper;
+        this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup(&apos;docked&apos;), dockedRenderables.getRenderableGroup(&apos;filled&apos;), context, this.decorations);
+        this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup(&apos;fullSize&apos;), context, this.decorations);
+        this._traditionalLayoutHelper.layout(dockedRenderables.getRenderableGroup(&apos;traditional&apos;), context, this.decorations);
+    }
+
+
+    /**
+     * Combines all layouts defined in subclasses of the View into a single layout for the LayoutController.
+     * @returns {void}
+     * @private
+     */
+    _createLayoutController() {
+        let hasFlowyRenderables = this._renderableHelper.hasFlowyRenderables();
+        this.layout = new LayoutController({
+            flow: !!this.decorations.useFlow || hasFlowyRenderables,
+            partialFlow: !this.decorations.useFlow,
+            flowOptions: this.decorations.flowOptions || {spring: {period: 200}},
+            layout: function (context, options) {
+
+                /* Because views that extend this View class first call super() and then define their renderables,
+                 * we wait until the first engine render tick to add our renderables to the layout, when the view will have declared them all.
+                 * layout.setDataSource() will automatically pipe events from the renderables to this View. */
+                if (!this._initialised) {
+                    this.layout.setDataSource(this.renderables);
+                    this._renderableHelper.pipeAllRenderables();
+                    this._renderableHelper.initializeAnimations();
+                    this._initialised = true;
+                    this.layout.reflowLayout();
+
+                    /*
+                     * When the data source is set, it will not be reflected in the context yet because the layout is already
+                     * prepared for the previous (empty) renderable data source. Therefore, it&apos;s a waste of resources
+                     * and mysterious bugs to continue. We will wait for the next rendering cycle. However, if views
+                     * are only having decorated renderables, then we don&apos;t have to do this whatsoever
+                     */
+                    return;
+                }
+
+                /* Layout all renderables that have decorators (e.g. @someDecorator) */
+                this._layoutDecoratedRenderables(context, options);
+                if (this.decorations.customLayoutFunction) {
+                    this.decorations.customLayoutFunction(context);
+                }
+
+                this._doTrueSizedSurfacesBookkeeping();
+
+                /* Legacy context.set() based layout functions */
+                if (this.layouts.length) {
+                    this._callLegacyLayoutFunctions(context, options);
+                }
+            }.bind(this)
+        });
+
+        this._eventInput.on(&apos;recursiveReflow&apos;, () =&gt; {
+            this.reflowRecursively();
+        });
+
+        /* Add the layoutController to this View&apos;s rendering context. */
+        this._prepareLayoutController();
+    }
+
+    /**
+     * Layout all renderables that have explicit context.set() calls in this View&apos;s legacy layout array.
+     * @returns {void}
+     * @private
+     */
+    _callLegacyLayoutFunctions(context, options) {
+        for (let layout of this.layouts) {
+            try {
+                switch (typeof layout) {
+                    case &apos;function&apos;:
+                        layout.call(this, context, options);
+                        break;
+                    default:
+                        Utils.warn(`Unrecognized layout specification in view &apos;${this._name()}&apos;.`);
+                        break;
+                }
+            } catch (error) {
+                Utils.warn(`Exception thrown in ${this._name()}:`);
+                console.log(error);
+            }
+        }
+    }
+
+    /**
+     * Either adds this.layout (a LayoutController) to the current View, or a FlexScrollView containing this.layout if this view
+     * has been decorated with a @scrollable.
+     * @returns {void}
+     * @private
+     */
+    _prepareLayoutController() {
+        let {scrollableOptions} = this.decorations;
+        if (scrollableOptions) {
+            this._scrollView = new ReflowingScrollView(scrollableOptions);
+            this.layout.getSize = this.getSize;
+            this._scrollView.push(this.layout);
+            this.pipe(this._scrollView);
+            this.add(this._scrollView);
+        }
+        else {
+            this.add(this.layout);
+        }
+    }
+
+    /**
+     * Gets the scroll view that was set if @layout.scrollable was used on the view
+     * @returns {ReflowingScrollView}
+     */
+    getScrollView() {
+        return this._scrollView;
+    }
+
+    /**
+     * getSize() is called by this view and by layoutControllers. For lazy people that don&apos;t want to specifiy their own getSize() function,
+     * we provide a fallback. This function can be performance expensive when using non-docked renderables, but for docked renderables it
+     * is efficient and convenient]
+     * @returns {*[]}
+     */
+    getSize() {
+        return this._getLayoutSize();
+    }
+
+    /**
+     * Calculates the total height of the View&apos;s layout when it&apos;s embedded inside a FlexScrollView (i.e. @scrollable is set on the View),
+     * by iterating over each renderable inside the View, and finding the minimum and maximum y values at which they are drawn.
+     *
+     *
+     * @returns {*[]}
+     * @private
+     */
+    _getLayoutSize() {
+        let dockedRenderables = this._renderableHelper.getRenderableGroup(&apos;docked&apos;);
+        let traditionalRenderables = this._renderableHelper.getRenderableGroup(&apos;traditional&apos;);
+        let filledRenderables = this._renderableHelper.getRenderableGroup(&apos;filled&apos;);
+        if (!traditionalRenderables &amp;&amp; !dockedRenderables) {
+            return [undefined, undefined];
+        }
+        let totalSize = [undefined, undefined];
+        if (dockedRenderables || filledRenderables) {
+            totalSize = this._dockedRenderablesHelper.boundingBoxSize(dockedRenderables, filledRenderables, this.decorations);
+        }
+
+        if (traditionalRenderables) {
+            let traditionalRenderablesBoundingBox = this._traditionalLayoutHelper.boundingBoxSize(traditionalRenderables);
+            for (let [dimension, singleSize] of totalSize.entries()) {
+                let traditionalSingleSize = traditionalRenderablesBoundingBox[dimension];
+                if (traditionalSingleSize !== undefined &amp;&amp; (singleSize === undefined || singleSize &lt; traditionalSingleSize)) {
+                    totalSize[dimension] = traditionalSingleSize;
+                }
+            }
+        }
+        return totalSize;
+
+    }
+
+    /**
+     * Retrieves the class name of the subclass View instance.
+     * @returns {string}
+     * @private
+     */
+    _name() {
+        return Object.getPrototypeOf(this).constructor.name;
+    }
+
+    /**
+     * Copies prototype properties set by decorators to this
+     * @private
+     */
+    _copyPrototypeProperties() {
+        let prototype = Object.getPrototypeOf(this);
+
+        /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
+        for (let name of [&apos;decorationsMap&apos;, &apos;renderableConstructors&apos;]) {
+            this[name] = _.cloneDeep(prototype[name]) || new Map();
+        }
+    }
+
+    /**
+     * Inits the decorations that is set on a class level
+     * @private
+     */
+    _initOwnDecorations() {
+        for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
+            /* The close the decoration is to this constructor in the prototype chain, the higher the priority */
+            let decorations = this.decorationsMap.get(currentClass.__proto__.constructor);
+            for (let property in decorations) {
+                if (!(property in this.decorations)) {
+                    this.decorations[property] = decorations[property];
+                }
+            }
+        }
+
+        if(this.decorations.dynamicDockPadding) {
+            this.onNewSize((size) =&gt; this.decorations.viewMargins = this.decorations.dynamicDockPadding(size));
+        }
+    }
+
+    _doTrueSizedSurfacesBookkeeping() {
+        this._nodes._trueSizeRequested = false;
+    }
+
+    _initTrueSizedBookkeeping() {
+        this.layout.on(&apos;layoutstart&apos;, ({oldSize, size}) =&gt; {
+            if (size[0] !== oldSize[0] ||
+                size[1] !== oldSize[1]) {
+                this._sizeResolver.doTrueSizedBookkeeping();
+                ///
+                //TODO: Kept for legacy reasons, but remove all listeners to this function
+                this._eventOutput.emit(&apos;newSize&apos;, size);
+                for(let callback of this._onNewSizeCallbacks){
+                    callback(size);
+                }
+            }
+        });
+        /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
+        this._nodes = {_trueSizedRequested: false};
+        /* This needs to be set in order for the LayoutNodeManager to be happy */
+        this.options.size = this.options.size || [true, true];
+    }
+
+    onNewSize(callback) {
+        this._onNewSizeCallbacks.push(callback);
+    }
+
+    onceNewSize() {
+        return new Promise((resolve) =&gt; {
+            this._onNewSizeCallbacks.push(function onNewSize(size)  {
+                this._onNewSizeCallbacks.splice(this._onNewSizeCallbacks.indexOf(onNewSize), 1);
+                resolve(size);
+            }.bind(this))
+        })
+    }
+
+    _initOptions(options) {
+        if (!Utils.isPlainObject(options)) {
+            Utils.warn(`View ${this._name()} initialized with invalid non-object arguments`);
+        }
+        this.options = options;
+    }
+
+    _initDataStructures() {
+        if (!this.renderables) {
+            this.renderables = {};
+        }
+        if (!this.layouts) {
+            this.layouts = [];
+        }
+
+        if (!this.decorations) {
+            this.decorations = {};
+        }
+
+        if (!this.decorations.extraTranslate) {
+            this.decorations.extraTranslate = [0, 0, 10];
+        }
+        this._runningRepeatingFlowStates = {};
+        this._onNewSizeCallbacks = [];
+    }
+
+    /**
+     * Binds the method to this view. Used by the util DecoratedRenderables
+     * @param {Function} method The method that is about to be bound
+     * @returns {*}
+     * @private
+     */
+    _bindToSelf(method) {
+        return method.bind(this);
+    }
+
+    /**
+     * Pipes a renderable to this view. Used by the util DecoratedRenderables
+     * @param {Function} method The method that is about to be bound
+     * @param {Boolean} enable set to false to unpipe
+     * @returns {Boolean} true if piping was successful, otherwise false
+     * @private
+     */
+    _setPipeToSelf(renderable, enable = true) {
+        let methodName = enable ? &apos;pipe&apos; : &apos;unpipe&apos;;
+        /* Auto pipe events from the renderable to the view */
+        if (renderable &amp;&amp; renderable[methodName]) {
+            /*
+             * We see it as a bit of a mystery why the piping needs to be done both to this and this._eventOutput,
+             * but they both seem to be necessary so I&apos;m gonna leave it for now.
+             */
+            renderable[methodName](this);
+            renderable[methodName](this._eventOutput);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Repeat a certain flowState indefinitely
+     * @param renderableName
+     * @param stateName
+     * @param {Boolean} persistent. If true, then it will keep on repeating until explicitly cancelled by cancelRepeatFlowState.
+     * If false, it will be interrupted automatically by any interrput to another state. Defaults to true
+     * @returns {Promise} resolves to false if the flow state can&apos;t be repeated due to an existing running repeat
+     */
+    async repeatFlowState(renderableName = &apos;&apos;, stateName = &apos;&apos;, persistent = true){
+        if(!this._runningRepeatingFlowStates[renderableName]){
+            this._runningRepeatingFlowStates[renderableName] = {persistent};
+            while(this._runningRepeatingFlowStates[renderableName] &amp;&amp; (await this.setRenderableFlowState(renderableName, stateName) || persistent))
+            {}
+            delete this._runningRepeatingFlowStates[renderableName];
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Cancel a repeating renderable. This will cancel the animation for next flow-cycle, it won&apos;t interject the current animation cycle.
+     * @param renderableName
+     */
+    cancelRepeatFlowState(renderableName){
+        if(this._runningRepeatingFlowStates){
+            delete this._runningRepeatingFlowStates[renderableName];
+        }
+    }
+
+    /**
+     * Initiate a renderable to a default flow state.
+     * @param renderableName
+     * @param stateName
+     */
+    setDefaultState(renderableName, stateName) {
+        for (let step of this[renderableName].decorations.flow.states[stateName].steps) {
+            this.decorateRenderable(renderableName, ...step.transformations);
+        }
+    }
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.8)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

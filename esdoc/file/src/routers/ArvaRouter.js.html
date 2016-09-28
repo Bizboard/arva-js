@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/routers/ArvaRouter.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+<link data-ice="userStyle" rel="stylesheet" href="user/css/0-styles.css">
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html">Controller</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Model.js~Model.html">Model</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Router.js~Router.html">Router</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/View.js~View.html">View</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedObject.js~PrioritisedObject.html">PrioritisedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html">FirebaseDataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html">SharePointDataSource</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/DataModelGenerator.js~DataModelGenerator.html">DataModelGenerator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SharePointSnapshot.js~SharePointSnapshot.html">SharePointSnapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Settings.js~Settings.html">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js~SharePoint.html">SharePoint</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter/Worker</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html">SharePointClient</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SoapClient.js~SoapClient.html">SoapClient</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/local</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalModel.js~LocalModel.html">LocalModel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html">LocalPrioritisedArray</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">layout</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-TrueSizedLayoutDockHelper">TrueSizedLayoutDockHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-event">event</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flow">flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-layout">layout</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flowStates">flowStates</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">routers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/routers/ArvaRouter.js~ArvaRouter.html">ArvaRouter</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/BlobHelper.js~BlobHelper.html">BlobHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/DialogManager.js~DialogManager.html">DialogManager</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Injection.js~Injection.html">Injection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/KeyboardHelper.js~KeyboardHelper.html">KeyboardHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/ObjectHelper.js~ObjectHelper.html">ObjectHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Throttler.js~Throttler.html">Throttler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-callbackToPromise">callbackToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-successAndErrorToPromise">successAndErrorToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-waitMilliseconds">waitMilliseconds</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-combineOptions">combineOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-limit">limit</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/di</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~ClassProvider.html">ClassProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~FactoryProvider.html">FactoryProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Inject.html">Inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Provide.html">Provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~SuperConstructor.html">SuperConstructor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~TransientScope.html">TransientScope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/injector.js~Injector.html">Injector</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-annotate">annotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-hasAnnotation">hasAnnotation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-inject">inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-provide">provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-readAnnotations">readAnnotations</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createProviderFromFnOrClass">createProviderFromFnOrClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isFunction">isFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isObject">isObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isUpperCase">isUpperCase</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-toString">toString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ownKeys">ownKeys</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/request</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ExistsRequest">ExistsRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-GetRequest">GetRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-PostRequest">PostRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-UrlParser">UrlParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ParseStringToXml">ParseStringToXml</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/view</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~BaseLayoutHelper.html">BaseLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~DockedLayoutHelper.html">DockedLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~FullSizeLayoutHelper.html">FullSizeLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~TraditionalLayoutHelper.html">TraditionalLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/RenderableHelper.js~RenderableHelper.html">RenderableHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/SizeResolver.js~SizeResolver.html">SizeResolver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/Utils.js~Utils.html">Utils</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/routers/ArvaRouter.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+
+
+ @author: Hans van den Akker (mysim1)
+ @license NPOSL-3.0
+ @copyright Bizboard, 2015
+
+ */
+
+import _                            from &apos;lodash&apos;;
+import {Router}                     from &apos;../core/Router.js&apos;;
+import {provide}                    from &apos;../utils/di/Decorators.js&apos;;
+import Easing                       from &apos;famous/transitions/Easing.js&apos;;
+import AnimationController          from &apos;famous-flex/AnimationController.js&apos;;
+
+@provide(Router)
+export class ArvaRouter extends Router {
+
+    routes = {};
+    history = [];
+    decode = decodeURIComponent;
+    defaultController = &apos;Home&apos;;
+    defaultMethod = &apos;Index&apos;;
+
+    constructor() {
+        super();
+        if (window == null) {
+            return;
+        }
+        window.addEventListener(&apos;hashchange&apos;, this.run);
+
+        if (window == null) {
+            return;
+        }
+
+        this.routes = {};
+        this.history = [];
+        this.decode = decodeURIComponent;
+
+
+        window.addEventListener(&apos;hashchange&apos;, this.run);
+        this._setupNativeBackButtonListener();
+    }
+
+    /**
+     * Sets the initial controller and method to be activated whenever the controllers are activated.
+     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.
+     * @param {String} method Default method to call in given controller.
+     * @returns {void}
+     */
+    setDefault(controller, method = null) {
+
+        this.defaultController = this._getControllerName(controller);
+
+        if (method != null) {
+            this.defaultMethod = method;
+        }
+    }
+
+    /**
+     * Sets the animation specs object for use by the famous-flex AnimationController.
+     * @param {Object} specs Animation specs, keyed by target controller.
+     * @returns {void}
+     */
+    setControllerSpecs(specs) {
+        this.specs = specs;
+    }
+
+    /**
+     * Triggers navigation to one of the controllers
+     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.
+     * @param {String} method The method to call in given controller.
+     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: &quot;yes&quot;})
+     * @returns {void}
+     */
+    go(controller, method, params = null) {
+
+        let controllerName = this._getControllerName(controller);
+
+        let routeRoot = controllerName
+            .replace(this.defaultController, &apos;&apos;)
+            .replace(&apos;Controller&apos;, &apos;&apos;);
+
+        let hash = &apos;#&apos; + (routeRoot.length &gt; 0 ? &apos;/&apos; + routeRoot : &apos;&apos;) + (&apos;/&apos; + method);
+        if (params !== null) {
+            for (let i = 0; i &lt; Object.keys(params).length; i++) {
+                var key = Object.keys(params)[i];
+                hash += i == 0 ? &apos;?&apos; : &apos;&amp;&apos;;
+                hash += (key + &apos;=&apos; + params[key]);
+            }
+        }
+
+        if (history.pushState) {
+            history.pushState(null, null, hash);
+        }
+
+        this.run();
+    }
+
+
+    /**
+     * Registers a single controller.
+     * @param {String} route Route to trigger handler on.
+     * @param {Object} handlers
+     * @param {Function} handler.enter Method to call on entering a route.
+     * @param {Function} handler.leave Method to call on when leaving a route.
+     * @returns {void}
+     */
+    add(route, {enter, leave}, controller) {
+        let pieces = route.split(&apos;/&apos;),
+            rules = this.routes;
+
+        for (let i = 0; i &lt; pieces.length; ++i) {
+            let piece = pieces[i],
+                name = piece[0] === &apos;:&apos; ? &apos;:&apos; : piece;
+
+            rules = rules[name] || (rules[name] = {});
+
+            if (name === &apos;:&apos;) {
+                rules[&apos;@name&apos;] = piece.slice(1);
+            }
+        }
+
+        rules[&apos;enter&apos;] = enter;
+        rules[&apos;leave&apos;] = leave;
+        rules[&apos;controller&apos;] = controller;
+
+    }
+
+    /**
+     * On a route change, calls the corresponding controller method with the given parameter values.
+     * @returns {Boolean} Whether the current route was successfully ran.
+     */
+    run() {
+        let url = window.location.hash.replace(&apos;#&apos;, &apos;&apos;);
+
+        if (url !== &apos;&apos;) {
+            url = url.replace(&apos;/?&apos;, &apos;?&apos;);
+            url[0] === &apos;/&apos; &amp;&amp; (url = url.slice(1));
+            url.slice(-1) === &apos;/&apos; &amp;&amp; (url = url.slice(0, -1));
+        }
+
+        let rules = this.routes,
+            querySplit = url.split(&apos;?&apos;),
+            pieces = querySplit[0].split(&apos;/&apos;),
+            values = [],
+            keys = [],
+            method = &apos;&apos;;
+        for (let piece in pieces) {
+            if (pieces[piece].indexOf(&apos;=&apos;) &gt; -1) {
+                let splitted = pieces[piece].split(&apos;=&apos;);
+                pieces[piece] = splitted[0];
+                querySplit.push(pieces[piece] + &apos;=&apos; + splitted[1]);
+            }
+        }
+
+        let rule = null;
+        let controller;
+
+        // if there is no controller reference, assume we have hit the default Controller
+        if (pieces.length === 1 &amp;&amp; pieces[0].length === 0) {
+            pieces[0] = this.defaultController;
+            pieces.push(this.defaultMethod);
+        } else if (pieces.length === 1 &amp;&amp; pieces[0].length &gt; 0) {
+            pieces.unshift(this.defaultController);
+        }
+
+        controller = pieces[0];
+
+        // Parse the non-query portion of the URL...
+        for (let i = 0; i &lt; pieces.length &amp;&amp; rules; ++i) {
+            let piece = this.decode(pieces[i]);
+            rule = rules[piece];
+
+            if (!rule &amp;&amp; (rule = rules[&apos;:&apos;])) {
+                method = piece;
+            }
+
+            rules = rules[piece];
+        }
+
+        (function parseQuery(q) {
+            let query = q.split(&apos;&amp;&apos;);
+
+            for (let i = 0; i &lt; query.length; ++i) {
+                let nameValue = query[i].split(&apos;=&apos;);
+
+                if (nameValue.length &gt; 1) {
+                    keys.push(nameValue[0]);
+                    values.push(this.decode(nameValue[1]));
+                }
+            }
+        }).call(this, querySplit.length &gt; 1 ? querySplit[1] : &apos;&apos;);
+
+        if (rule &amp;&amp; rule[&apos;enter&apos;]) {
+
+            /* Push current route to the history stack for later use */
+            let previousRoute = this.history.length ? this.history[this.history.length - 1] : undefined;
+            let currentRoute = {
+                url: url,
+                controller: controller,
+                controllerObject: rule[&apos;controller&apos;],
+                method: method,
+                keys: keys,
+                values: values
+            };
+
+            if(previousRoute){
+                if(currentRoute.controllerObject !== previousRoute.controllerObject){
+                    this.routes[previousRoute.controller][&apos;:&apos;][&apos;leave&apos;](currentRoute);
+                }
+            }
+            currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : (this._initialSpec || {});
+            this._setHistory(currentRoute);
+
+            this._executeRoute(rule, currentRoute);
+
+            return true;
+        } else {
+            console.log(&apos;Controller doesn\&apos;t exist!&apos;);
+        }
+
+        return false;
+    }
+
+    setInitialSpec(spec) {
+        this._initialSpec = spec;
+    }
+
+    setBackButtonEnabled(enabled) {
+        this._backButtonEnabled = enabled;
+    }
+
+    isBackButtonEnabled() {
+        return this._backButtonEnabled;
+    }
+
+    goBackInHistory() {
+        /* Default behaviour: go back in history in the arva router */
+        let {history} = this;
+        if (history.length &gt; 1) {
+            let {controller, method, keys, values} = history[history.length - 2];
+            let inputObject = {};
+            for (let i = 0; i &lt; keys.length; i++) {
+                inputObject[keys[i]] = values[i];
+            }
+            this.go(controller, method, inputObject);
+        } else {
+            this.go(this.defaultController, this.defaultMethod);
+        }
+    }
+
+    _setupNativeBackButtonListener() {
+        this._backButtonEnabled = true;
+        document.addEventListener(&quot;backbutton&quot;, (e) =&gt; {
+            if (!this._backButtonEnabled) {
+                e.preventDefault();
+            } else {
+                this.goBackInHistory();
+            }
+        }, false);
+    }
+
+
+    /**
+     * Executes the controller handler associated with a given route, passing the route as a parameter.
+     * @param {Object} rule Rule handler to execute.
+     * @param {Object} route Route object to pass as parameter.
+     * @returns {void}
+     * @private
+     */
+    _executeRoute(rule, route) {
+        /* Make the controller active for current scope */
+        if (rule[&apos;enter&apos;](route)) {
+            this.emit(&apos;routechange&apos;, route);
+        }
+    }
+
+    /**
+     * Checks if the current route is already present in the history stack, and if so removes all entries after
+     * and including the first occurrence. It will then append the current route to the history stack.
+     * @param {Object} currentRoute Route object containing url, controller, method, keys, and values.
+     * @returns {void}
+     * @private
+     */
+    _setHistory(currentRoute) {
+        for (let i = 0; i &lt; this.history.length; i++) {
+            let previousRoute = this.history[i];
+            if (currentRoute.controller === previousRoute.controller &amp;&amp;
+                currentRoute.method === previousRoute.method &amp;&amp;
+                _.isEqual(currentRoute.values, previousRoute.values)) {
+                this.history.splice(i, this.history.length - i);
+                break;
+            }
+        }
+
+        this.history.push(currentRoute);
+    }
+
+    /**
+     * CheckS whether a route is already present in the history stack.
+     * @param {Object} currentRoute Route object containing url, controller, method, keys, and values.
+     * @returns {Boolean} Whether the route has been visited previously.
+     * @private
+     */
+    _hasVisited(currentRoute) {
+        for (let i = 0; i &lt; this.history.length; i++) {
+            let previousRoute = this.history[i];
+            if (currentRoute.controller === previousRoute.controller &amp;&amp;
+                currentRoute.method === previousRoute.method &amp;&amp;
+                _.isEqual(currentRoute.values, previousRoute.values)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns the Famous-Flex animation spec for two given routes. Takes its spec inputs from the specs set in
+     * router.setControllerSpecs(), which is called from the app constructor.
+     * @param {Object} previousRoute Previous route object containing url, controller, method, keys, and values.
+     * @param {Object} currentRoute Current route object containing url, controller, method, keys, and values.
+     * @returns {Object} A spec object if one is found, or an empty object otherwise.
+     * @private
+     */
+    _getAnimationSpec(previousRoute, currentRoute) {
+        let fromController = previousRoute.controller;
+        let toController = currentRoute.controller;
+
+        if (fromController.indexOf(&apos;Controller&apos;) === -1) {
+            fromController += &apos;Controller&apos;;
+        }
+        if (toController.indexOf(&apos;Controller&apos;) === -1) {
+            toController += &apos;Controller&apos;;
+        }
+
+        /* We&apos;re on exactly the same page as before */
+        if (currentRoute.controller === previousRoute.controller &amp;&amp;
+            currentRoute.method === previousRoute.method &amp;&amp;
+            _.isEqual(currentRoute.values, previousRoute.values)) {
+            return {};
+        }
+
+        /* Same controller, different method or different parameters */
+        if (currentRoute.controller === previousRoute.controller) {
+
+            let direction = this._hasVisited(currentRoute) ? &apos;previous&apos; : &apos;next&apos;;
+            if (this.specs &amp;&amp; this.specs[fromController] &amp;&amp; this.specs[fromController].methods) {
+                return this.specs[fromController].methods[direction];
+            }
+
+            /* Default method-to-method animations, used only if not overridden in app&apos;s controllers spec. */
+            let defaults = {
+                &apos;previous&apos;: {
+                    transition: {duration: 400, curve: Easing.outBack},
+                    animation: AnimationController.Animation.Slide.Right
+                },
+                &apos;next&apos;: {
+                    transition: {duration: 400, curve: Easing.outBack},
+                    animation: AnimationController.Animation.Slide.Left
+                }
+            };
+            return defaults[direction];
+        }
+
+        /* Different controller */
+        if (this.specs &amp;&amp; this.specs.hasOwnProperty(toController) &amp;&amp; this.specs[toController].controllers) {
+            let controllerSpecs = this.specs[toController].controllers;
+            for (let specIndex in controllerSpecs) {
+                let spec = controllerSpecs[specIndex];
+                if (spec.activeFrom &amp;&amp; spec.activeFrom.indexOf(fromController) !== -1) {
+                    return spec;
+                }
+            }
+        }
+
+        console.log(&apos;No spec defined from &apos; + fromController + &apos; to &apos; + toController + &apos;. Please check router.setControllerSpecs() in your app constructor.&apos;);
+    }
+
+    /**
+     * Extracts a controller name from a given string, constructor, or controller instance. &apos;Controller&apos; part is not included in the returned name.
+     * E.g. _getControllerName(HomeController) -&gt; &apos;Home&apos;.
+     * @param {Function|Object|String} controller String, constructor, or controller instance.
+     * @returns {String} Name of the controller
+     * @private
+     */
+    _getControllerName(controller) {
+        if (typeof controller === &apos;string&apos;) {
+            return controller.replace(&apos;Controller&apos;, &apos;&apos;);
+        } else if (typeof controller === &apos;function&apos; &amp;&amp; Object.getPrototypeOf(controller).constructor.name == &apos;Function&apos;) {
+            /* The _name property is set by babel-plugin-transform-runtime-constructor-name.
+             * This is done so Controller class names remain available in minimised code. */
+            let controllerName = controller._name || controller.name;
+            return controllerName.replace(&apos;Controller&apos;, &apos;&apos;);
+        } else {
+            return typeof controller === &apos;object&apos; ?
+                Object.getPrototypeOf(controller).constructor.name.replace(&apos;Controller&apos;, &apos;&apos;) : typeof controller;
+        }
+    }
+
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.8)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

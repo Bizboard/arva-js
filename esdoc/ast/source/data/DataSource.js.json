@@ -1,0 +1,5270 @@
+{
+  "type": "Program",
+  "start": 0,
+  "end": 11164,
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 0
+    },
+    "end": {
+      "line": 318,
+      "column": 1
+    }
+  },
+  "sourceType": "module",
+  "body": [
+    {
+      "type": "ExportNamedDeclaration",
+      "start": 93,
+      "end": 11164,
+      "loc": {
+        "start": {
+          "line": 10,
+          "column": 0
+        },
+        "end": {
+          "line": 318,
+          "column": 1
+        }
+      },
+      "declaration": {
+        "type": "ClassDeclaration",
+        "start": 100,
+        "end": 11164,
+        "loc": {
+          "start": {
+            "line": 10,
+            "column": 7
+          },
+          "end": {
+            "line": 318,
+            "column": 1
+          }
+        },
+        "id": {
+          "type": "Identifier",
+          "start": 106,
+          "end": 116,
+          "loc": {
+            "start": {
+              "line": 10,
+              "column": 13
+            },
+            "end": {
+              "line": 10,
+              "column": 23
+            }
+          },
+          "name": "DataSource",
+          "leadingComments": null
+        },
+        "superClass": null,
+        "body": {
+          "type": "ClassBody",
+          "start": 117,
+          "end": 11164,
+          "loc": {
+            "start": {
+              "line": 10,
+              "column": 24
+            },
+            "end": {
+              "line": 318,
+              "column": 1
+            }
+          },
+          "body": [
+            {
+              "type": "MethodDefinition",
+              "start": 264,
+              "end": 325,
+              "loc": {
+                "start": {
+                  "line": 16,
+                  "column": 4
+                },
+                "end": {
+                  "line": 18,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 264,
+                "end": 275,
+                "loc": {
+                  "start": {
+                    "line": 16,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 16,
+                    "column": 15
+                  }
+                },
+                "name": "constructor",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "constructor",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 275,
+                "end": 325,
+                "loc": {
+                  "start": {
+                    "line": 16,
+                    "column": 15
+                  },
+                  "end": {
+                    "line": 18,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 276,
+                    "end": 280,
+                    "loc": {
+                      "start": {
+                        "line": 16,
+                        "column": 16
+                      },
+                      "end": {
+                        "line": 16,
+                        "column": 20
+                      }
+                    },
+                    "name": "path"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 282,
+                  "end": 325,
+                  "loc": {
+                    "start": {
+                      "line": 16,
+                      "column": 22
+                    },
+                    "end": {
+                      "line": 18,
+                      "column": 5
+                    }
+                  },
+                  "body": [
+                    {
+                      "type": "ExpressionStatement",
+                      "start": 292,
+                      "end": 319,
+                      "loc": {
+                        "start": {
+                          "line": 17,
+                          "column": 8
+                        },
+                        "end": {
+                          "line": 17,
+                          "column": 35
+                        }
+                      },
+                      "expression": {
+                        "type": "AssignmentExpression",
+                        "start": 292,
+                        "end": 318,
+                        "loc": {
+                          "start": {
+                            "line": 17,
+                            "column": 8
+                          },
+                          "end": {
+                            "line": 17,
+                            "column": 34
+                          }
+                        },
+                        "operator": "=",
+                        "left": {
+                          "type": "MemberExpression",
+                          "start": 292,
+                          "end": 311,
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 8
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 27
+                            }
+                          },
+                          "object": {
+                            "type": "ThisExpression",
+                            "start": 292,
+                            "end": 296,
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 8
+                              },
+                              "end": {
+                                "line": 17,
+                                "column": 12
+                              }
+                            }
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "start": 297,
+                            "end": 311,
+                            "loc": {
+                              "start": {
+                                "line": 17,
+                                "column": 13
+                              },
+                              "end": {
+                                "line": 17,
+                                "column": 27
+                              }
+                            },
+                            "name": "_dataReference"
+                          },
+                          "computed": false
+                        },
+                        "right": {
+                          "type": "Literal",
+                          "start": 314,
+                          "end": 318,
+                          "loc": {
+                            "start": {
+                              "line": 17,
+                              "column": 30
+                            },
+                            "end": {
+                              "line": 17,
+                              "column": 34
+                            }
+                          },
+                          "value": null,
+                          "rawValue": null,
+                          "raw": "null"
+                        }
+                      }
+                    }
+                  ],
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * @param {String} path Full path to resource in remote data storage.\n     * @return {DataSource} DataSource instance.\n     *",
+                  "start": 124,
+                  "end": 259,
+                  "loc": {
+                    "start": {
+                      "line": 12,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 15,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    124,
+                    259
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Indicate that the DataSource can be inherited when instantiating a list of models. By\n     * default we indicate false, which should trigger data model instantiation to create unique\n     * DataSource references to each model either in array or directly.\n     *\n     * If set to false, model updates trigger creation of a new DataSource instance. (default)\n     *\n     * @returns {Boolean} Whether the DataSource is inheritable.\n     ",
+                  "start": 331,
+                  "end": 778,
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 28,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    331,
+                    778
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 783,
+              "end": 830,
+              "loc": {
+                "start": {
+                  "line": 29,
+                  "column": 4
+                },
+                "end": {
+                  "line": 31,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 787,
+                "end": 798,
+                "loc": {
+                  "start": {
+                    "line": 29,
+                    "column": 8
+                  },
+                  "end": {
+                    "line": 29,
+                    "column": 19
+                  }
+                },
+                "name": "inheritable"
+              },
+              "static": false,
+              "kind": "get",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 798,
+                "end": 830,
+                "loc": {
+                  "start": {
+                    "line": 29,
+                    "column": 19
+                  },
+                  "end": {
+                    "line": 31,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 801,
+                  "end": 830,
+                  "loc": {
+                    "start": {
+                      "line": 29,
+                      "column": 22
+                    },
+                    "end": {
+                      "line": 31,
+                      "column": 5
+                    }
+                  },
+                  "body": [
+                    {
+                      "type": "ReturnStatement",
+                      "start": 811,
+                      "end": 824,
+                      "loc": {
+                        "start": {
+                          "line": 30,
+                          "column": 8
+                        },
+                        "end": {
+                          "line": 30,
+                          "column": 21
+                        }
+                      },
+                      "argument": {
+                        "type": "Literal",
+                        "start": 818,
+                        "end": 823,
+                        "loc": {
+                          "start": {
+                            "line": 30,
+                            "column": 15
+                          },
+                          "end": {
+                            "line": 30,
+                            "column": 20
+                          }
+                        },
+                        "value": false,
+                        "rawValue": false,
+                        "raw": "false"
+                      }
+                    }
+                  ],
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Indicate that the DataSource can be inherited when instantiating a list of models. By\n     * default we indicate false, which should trigger data model instantiation to create unique\n     * DataSource references to each model either in array or directly.\n     *\n     * If set to false, model updates trigger creation of a new DataSource instance. (default)\n     *\n     * @returns {Boolean} Whether the DataSource is inheritable.\n     ",
+                  "start": 331,
+                  "end": 778,
+                  "loc": {
+                    "start": {
+                      "line": 20,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 28,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    331,
+                    778
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns the full path to this dataSource's source on the remote storage provider.\n     * @returns {String} Full resource path.\n     ",
+                  "start": 836,
+                  "end": 981,
+                  "loc": {
+                    "start": {
+                      "line": 33,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 36,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    836,
+                    981
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 986,
+              "end": 1004,
+              "loc": {
+                "start": {
+                  "line": 37,
+                  "column": 4
+                },
+                "end": {
+                  "line": 38,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 986,
+                "end": 994,
+                "loc": {
+                  "start": {
+                    "line": 37,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 37,
+                    "column": 12
+                  }
+                },
+                "name": "toString",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 994,
+                "end": 1004,
+                "loc": {
+                  "start": {
+                    "line": 37,
+                    "column": 12
+                  },
+                  "end": {
+                    "line": 38,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 997,
+                  "end": 1004,
+                  "loc": {
+                    "start": {
+                      "line": 37,
+                      "column": 15
+                    },
+                    "end": {
+                      "line": 38,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns the full path to this dataSource's source on the remote storage provider.\n     * @returns {String} Full resource path.\n     ",
+                  "start": 836,
+                  "end": 981,
+                  "loc": {
+                    "start": {
+                      "line": 33,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 36,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    836,
+                    981
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns a dataSource reference to the given child branch of the current dataSource.\n     * @param {String} childName Child branch name.\n     * @param {Object} options Optional: additional options to pass to new DataSource instance.\n     * @returns {DataSource} New dataSource instance pointing to the given child branch.\n     ",
+                  "start": 1010,
+                  "end": 1349,
+                  "loc": {
+                    "start": {
+                      "line": 40,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 45,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    1010,
+                    1349
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 1354,
+              "end": 1394,
+              "loc": {
+                "start": {
+                  "line": 46,
+                  "column": 4
+                },
+                "end": {
+                  "line": 47,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 1354,
+                "end": 1359,
+                "loc": {
+                  "start": {
+                    "line": 46,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 46,
+                    "column": 9
+                  }
+                },
+                "name": "child",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 1359,
+                "end": 1394,
+                "loc": {
+                  "start": {
+                    "line": 46,
+                    "column": 9
+                  },
+                  "end": {
+                    "line": 47,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 1360,
+                    "end": 1369,
+                    "loc": {
+                      "start": {
+                        "line": 46,
+                        "column": 10
+                      },
+                      "end": {
+                        "line": 46,
+                        "column": 19
+                      }
+                    },
+                    "name": "childName"
+                  },
+                  {
+                    "type": "AssignmentPattern",
+                    "start": 1371,
+                    "end": 1385,
+                    "loc": {
+                      "start": {
+                        "line": 46,
+                        "column": 21
+                      },
+                      "end": {
+                        "line": 46,
+                        "column": 35
+                      }
+                    },
+                    "operator": "=",
+                    "left": {
+                      "type": "Identifier",
+                      "start": 1371,
+                      "end": 1378,
+                      "loc": {
+                        "start": {
+                          "line": 46,
+                          "column": 21
+                        },
+                        "end": {
+                          "line": 46,
+                          "column": 28
+                        }
+                      },
+                      "name": "options"
+                    },
+                    "right": {
+                      "type": "Literal",
+                      "start": 1381,
+                      "end": 1385,
+                      "loc": {
+                        "start": {
+                          "line": 46,
+                          "column": 31
+                        },
+                        "end": {
+                          "line": 46,
+                          "column": 35
+                        }
+                      },
+                      "value": null,
+                      "rawValue": null,
+                      "raw": "null"
+                    }
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 1387,
+                  "end": 1394,
+                  "loc": {
+                    "start": {
+                      "line": 46,
+                      "column": 37
+                    },
+                    "end": {
+                      "line": 47,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns a dataSource reference to the given child branch of the current dataSource.\n     * @param {String} childName Child branch name.\n     * @param {Object} options Optional: additional options to pass to new DataSource instance.\n     * @returns {DataSource} New dataSource instance pointing to the given child branch.\n     ",
+                  "start": 1010,
+                  "end": 1349,
+                  "loc": {
+                    "start": {
+                      "line": 40,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 45,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    1010,
+                    1349
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns the full URL to the path on the dataSource. Functionally identical to toString().\n     * @returns {String} Full resource path.\n     ",
+                  "start": 1400,
+                  "end": 1553,
+                  "loc": {
+                    "start": {
+                      "line": 49,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 52,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    1400,
+                    1553
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 1558,
+              "end": 1572,
+              "loc": {
+                "start": {
+                  "line": 53,
+                  "column": 4
+                },
+                "end": {
+                  "line": 54,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 1558,
+                "end": 1562,
+                "loc": {
+                  "start": {
+                    "line": 53,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 53,
+                    "column": 8
+                  }
+                },
+                "name": "path",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 1562,
+                "end": 1572,
+                "loc": {
+                  "start": {
+                    "line": 53,
+                    "column": 8
+                  },
+                  "end": {
+                    "line": 54,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 1565,
+                  "end": 1572,
+                  "loc": {
+                    "start": {
+                      "line": 53,
+                      "column": 11
+                    },
+                    "end": {
+                      "line": 54,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns the full URL to the path on the dataSource. Functionally identical to toString().\n     * @returns {String} Full resource path.\n     ",
+                  "start": 1400,
+                  "end": 1553,
+                  "loc": {
+                    "start": {
+                      "line": 49,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 52,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    1400,
+                    1553
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns the name of the current branch in the path on the dataSource.\n     * @returns {String} Current branch name.\n     ",
+                  "start": 1578,
+                  "end": 1712,
+                  "loc": {
+                    "start": {
+                      "line": 56,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 59,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    1578,
+                    1712
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 1717,
+              "end": 1730,
+              "loc": {
+                "start": {
+                  "line": 60,
+                  "column": 4
+                },
+                "end": {
+                  "line": 61,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 1717,
+                "end": 1720,
+                "loc": {
+                  "start": {
+                    "line": 60,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 60,
+                    "column": 7
+                  }
+                },
+                "name": "key",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 1720,
+                "end": 1730,
+                "loc": {
+                  "start": {
+                    "line": 60,
+                    "column": 7
+                  },
+                  "end": {
+                    "line": 61,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 1723,
+                  "end": 1730,
+                  "loc": {
+                    "start": {
+                      "line": 60,
+                      "column": 10
+                    },
+                    "end": {
+                      "line": 61,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns the name of the current branch in the path on the dataSource.\n     * @returns {String} Current branch name.\n     ",
+                  "start": 1578,
+                  "end": 1712,
+                  "loc": {
+                    "start": {
+                      "line": 56,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 59,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    1578,
+                    1712
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Writes newData to the path this dataSource was constructed with.\n     * @param {Object} newData Data to write to dataSource.\n     * @returns {Promise} Resolves when write to server is complete.\n     ",
+                  "start": 1736,
+                  "end": 1948,
+                  "loc": {
+                    "start": {
+                      "line": 63,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 67,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    1736,
+                    1948
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 1953,
+              "end": 2007,
+              "loc": {
+                "start": {
+                  "line": 68,
+                  "column": 4
+                },
+                "end": {
+                  "line": 70,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 1953,
+                "end": 1956,
+                "loc": {
+                  "start": {
+                    "line": 68,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 68,
+                    "column": 7
+                  }
+                },
+                "name": "set",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 1956,
+                "end": 2007,
+                "loc": {
+                  "start": {
+                    "line": 68,
+                    "column": 7
+                  },
+                  "end": {
+                    "line": 70,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 1957,
+                    "end": 1964,
+                    "loc": {
+                      "start": {
+                        "line": 68,
+                        "column": 8
+                      },
+                      "end": {
+                        "line": 68,
+                        "column": 15
+                      }
+                    },
+                    "name": "newData"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 1966,
+                  "end": 2007,
+                  "loc": {
+                    "start": {
+                      "line": 68,
+                      "column": 17
+                    },
+                    "end": {
+                      "line": 70,
+                      "column": 5
+                    }
+                  },
+                  "body": [
+                    {
+                      "type": "ReturnStatement",
+                      "start": 1976,
+                      "end": 2001,
+                      "loc": {
+                        "start": {
+                          "line": 69,
+                          "column": 8
+                        },
+                        "end": {
+                          "line": 69,
+                          "column": 33
+                        }
+                      },
+                      "argument": {
+                        "type": "CallExpression",
+                        "start": 1983,
+                        "end": 2000,
+                        "loc": {
+                          "start": {
+                            "line": 69,
+                            "column": 15
+                          },
+                          "end": {
+                            "line": 69,
+                            "column": 32
+                          }
+                        },
+                        "callee": {
+                          "type": "MemberExpression",
+                          "start": 1983,
+                          "end": 1998,
+                          "loc": {
+                            "start": {
+                              "line": 69,
+                              "column": 15
+                            },
+                            "end": {
+                              "line": 69,
+                              "column": 30
+                            }
+                          },
+                          "object": {
+                            "type": "Identifier",
+                            "start": 1983,
+                            "end": 1990,
+                            "loc": {
+                              "start": {
+                                "line": 69,
+                                "column": 15
+                              },
+                              "end": {
+                                "line": 69,
+                                "column": 22
+                              }
+                            },
+                            "name": "Promise"
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "start": 1991,
+                            "end": 1998,
+                            "loc": {
+                              "start": {
+                                "line": 69,
+                                "column": 23
+                              },
+                              "end": {
+                                "line": 69,
+                                "column": 30
+                              }
+                            },
+                            "name": "resolve"
+                          },
+                          "computed": false
+                        },
+                        "arguments": []
+                      }
+                    }
+                  ],
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Writes newData to the path this dataSource was constructed with.\n     * @param {Object} newData Data to write to dataSource.\n     * @returns {Promise} Resolves when write to server is complete.\n     ",
+                  "start": 1736,
+                  "end": 1948,
+                  "loc": {
+                    "start": {
+                      "line": 63,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 67,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    1736,
+                    1948
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the object and all underlying children that this dataSource points to.\n     * @returns {void}\n     ",
+                  "start": 2013,
+                  "end": 2133,
+                  "loc": {
+                    "start": {
+                      "line": 72,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 75,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    2013,
+                    2133
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 2138,
+              "end": 2154,
+              "loc": {
+                "start": {
+                  "line": 76,
+                  "column": 4
+                },
+                "end": {
+                  "line": 77,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 2138,
+                "end": 2144,
+                "loc": {
+                  "start": {
+                    "line": 76,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 76,
+                    "column": 10
+                  }
+                },
+                "name": "remove",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 2144,
+                "end": 2154,
+                "loc": {
+                  "start": {
+                    "line": 76,
+                    "column": 10
+                  },
+                  "end": {
+                    "line": 77,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 2147,
+                  "end": 2154,
+                  "loc": {
+                    "start": {
+                      "line": 76,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 77,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the object and all underlying children that this dataSource points to.\n     * @returns {void}\n     ",
+                  "start": 2013,
+                  "end": 2133,
+                  "loc": {
+                    "start": {
+                      "line": 72,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 75,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    2013,
+                    2133
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Writes newData to the path this dataSource was constructed with, appended by a random UID generated by\n     * the dataSource.\n     * @param {Object} newData New data to append to dataSource.\n     * @returns {void}\n     ",
+                  "start": 2160,
+                  "end": 2392,
+                  "loc": {
+                    "start": {
+                      "line": 79,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 84,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    2160,
+                    2392
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 2397,
+              "end": 2418,
+              "loc": {
+                "start": {
+                  "line": 85,
+                  "column": 4
+                },
+                "end": {
+                  "line": 86,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 2397,
+                "end": 2401,
+                "loc": {
+                  "start": {
+                    "line": 85,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 85,
+                    "column": 8
+                  }
+                },
+                "name": "push",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 2401,
+                "end": 2418,
+                "loc": {
+                  "start": {
+                    "line": 85,
+                    "column": 8
+                  },
+                  "end": {
+                    "line": 86,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 2402,
+                    "end": 2409,
+                    "loc": {
+                      "start": {
+                        "line": 85,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 85,
+                        "column": 16
+                      }
+                    },
+                    "name": "newData"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 2411,
+                  "end": 2418,
+                  "loc": {
+                    "start": {
+                      "line": 85,
+                      "column": 18
+                    },
+                    "end": {
+                      "line": 86,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Writes newData to the path this dataSource was constructed with, appended by a random UID generated by\n     * the dataSource.\n     * @param {Object} newData New data to append to dataSource.\n     * @returns {void}\n     ",
+                  "start": 2160,
+                  "end": 2392,
+                  "loc": {
+                    "start": {
+                      "line": 79,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 84,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    2160,
+                    2392
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Writes newData with given priority (ordering) to the path this dataSource was constructed with.\n     * @param {Object} newData New data to set.\n     * @param {String|Number} priority Priority value by which the data should be ordered.\n     * @returns {Promise} Resolves when write to server is complete.\n     ",
+                  "start": 2424,
+                  "end": 2746,
+                  "loc": {
+                    "start": {
+                      "line": 88,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 93,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    2424,
+                    2746
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 2751,
+              "end": 2827,
+              "loc": {
+                "start": {
+                  "line": 94,
+                  "column": 4
+                },
+                "end": {
+                  "line": 96,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 2751,
+                "end": 2766,
+                "loc": {
+                  "start": {
+                    "line": 94,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 94,
+                    "column": 19
+                  }
+                },
+                "name": "setWithPriority",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 2766,
+                "end": 2827,
+                "loc": {
+                  "start": {
+                    "line": 94,
+                    "column": 19
+                  },
+                  "end": {
+                    "line": 96,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 2767,
+                    "end": 2774,
+                    "loc": {
+                      "start": {
+                        "line": 94,
+                        "column": 20
+                      },
+                      "end": {
+                        "line": 94,
+                        "column": 27
+                      }
+                    },
+                    "name": "newData"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 2776,
+                    "end": 2784,
+                    "loc": {
+                      "start": {
+                        "line": 94,
+                        "column": 29
+                      },
+                      "end": {
+                        "line": 94,
+                        "column": 37
+                      }
+                    },
+                    "name": "priority"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 2786,
+                  "end": 2827,
+                  "loc": {
+                    "start": {
+                      "line": 94,
+                      "column": 39
+                    },
+                    "end": {
+                      "line": 96,
+                      "column": 5
+                    }
+                  },
+                  "body": [
+                    {
+                      "type": "ReturnStatement",
+                      "start": 2796,
+                      "end": 2821,
+                      "loc": {
+                        "start": {
+                          "line": 95,
+                          "column": 8
+                        },
+                        "end": {
+                          "line": 95,
+                          "column": 33
+                        }
+                      },
+                      "argument": {
+                        "type": "CallExpression",
+                        "start": 2803,
+                        "end": 2820,
+                        "loc": {
+                          "start": {
+                            "line": 95,
+                            "column": 15
+                          },
+                          "end": {
+                            "line": 95,
+                            "column": 32
+                          }
+                        },
+                        "callee": {
+                          "type": "MemberExpression",
+                          "start": 2803,
+                          "end": 2818,
+                          "loc": {
+                            "start": {
+                              "line": 95,
+                              "column": 15
+                            },
+                            "end": {
+                              "line": 95,
+                              "column": 30
+                            }
+                          },
+                          "object": {
+                            "type": "Identifier",
+                            "start": 2803,
+                            "end": 2810,
+                            "loc": {
+                              "start": {
+                                "line": 95,
+                                "column": 15
+                              },
+                              "end": {
+                                "line": 95,
+                                "column": 22
+                              }
+                            },
+                            "name": "Promise"
+                          },
+                          "property": {
+                            "type": "Identifier",
+                            "start": 2811,
+                            "end": 2818,
+                            "loc": {
+                              "start": {
+                                "line": 95,
+                                "column": 23
+                              },
+                              "end": {
+                                "line": 95,
+                                "column": 30
+                              }
+                            },
+                            "name": "resolve"
+                          },
+                          "computed": false
+                        },
+                        "arguments": []
+                      }
+                    }
+                  ],
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Writes newData with given priority (ordering) to the path this dataSource was constructed with.\n     * @param {Object} newData New data to set.\n     * @param {String|Number} priority Priority value by which the data should be ordered.\n     * @returns {Promise} Resolves when write to server is complete.\n     ",
+                  "start": 2424,
+                  "end": 2746,
+                  "loc": {
+                    "start": {
+                      "line": 88,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 93,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    2424,
+                    2746
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Sets the priority (ordering) of an object on a given dataSource.\n     * @param {String|Number} newPriority New priority value to order data by.\n     * @returns {void}\n     ",
+                  "start": 2833,
+                  "end": 3018,
+                  "loc": {
+                    "start": {
+                      "line": 98,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 102,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    2833,
+                    3018
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 3023,
+              "end": 3055,
+              "loc": {
+                "start": {
+                  "line": 103,
+                  "column": 4
+                },
+                "end": {
+                  "line": 104,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 3023,
+                "end": 3034,
+                "loc": {
+                  "start": {
+                    "line": 103,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 103,
+                    "column": 15
+                  }
+                },
+                "name": "setPriority",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 3034,
+                "end": 3055,
+                "loc": {
+                  "start": {
+                    "line": 103,
+                    "column": 15
+                  },
+                  "end": {
+                    "line": 104,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 3035,
+                    "end": 3046,
+                    "loc": {
+                      "start": {
+                        "line": 103,
+                        "column": 16
+                      },
+                      "end": {
+                        "line": 103,
+                        "column": 27
+                      }
+                    },
+                    "name": "newPriority"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 3048,
+                  "end": 3055,
+                  "loc": {
+                    "start": {
+                      "line": 103,
+                      "column": 29
+                    },
+                    "end": {
+                      "line": 104,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Sets the priority (ordering) of an object on a given dataSource.\n     * @param {String|Number} newPriority New priority value to order data by.\n     * @returns {void}\n     ",
+                  "start": 2833,
+                  "end": 3018,
+                  "loc": {
+                    "start": {
+                      "line": 98,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 102,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    2833,
+                    3018
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Orders the DataSource's childs by the value in child[key].\n     * @param {String} childKey Key of the field to order by.\n     * @returns {DataSource} New dataSource instance.\n     ",
+                  "start": 3061,
+                  "end": 3254,
+                  "loc": {
+                    "start": {
+                      "line": 106,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 110,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    3061,
+                    3254
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 3259,
+              "end": 3289,
+              "loc": {
+                "start": {
+                  "line": 111,
+                  "column": 4
+                },
+                "end": {
+                  "line": 112,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 3259,
+                "end": 3271,
+                "loc": {
+                  "start": {
+                    "line": 111,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 111,
+                    "column": 16
+                  }
+                },
+                "name": "orderByChild",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 3271,
+                "end": 3289,
+                "loc": {
+                  "start": {
+                    "line": 111,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 112,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 3272,
+                    "end": 3280,
+                    "loc": {
+                      "start": {
+                        "line": 111,
+                        "column": 17
+                      },
+                      "end": {
+                        "line": 111,
+                        "column": 25
+                      }
+                    },
+                    "name": "childKey"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 3282,
+                  "end": 3289,
+                  "loc": {
+                    "start": {
+                      "line": 111,
+                      "column": 27
+                    },
+                    "end": {
+                      "line": 112,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Orders the DataSource's childs by the value in child[key].\n     * @param {String} childKey Key of the field to order by.\n     * @returns {DataSource} New dataSource instance.\n     ",
+                  "start": 3061,
+                  "end": 3254,
+                  "loc": {
+                    "start": {
+                      "line": 106,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 110,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    3061,
+                    3254
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Orders the DataSource's childs by their key names, ignoring their priority.\n     * @returns {DataSource} New dataSource instance.\n     ",
+                  "start": 3295,
+                  "end": 3443,
+                  "loc": {
+                    "start": {
+                      "line": 114,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 117,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    3295,
+                    3443
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 3448,
+              "end": 3468,
+              "loc": {
+                "start": {
+                  "line": 118,
+                  "column": 4
+                },
+                "end": {
+                  "line": 119,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 3448,
+                "end": 3458,
+                "loc": {
+                  "start": {
+                    "line": 118,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 118,
+                    "column": 14
+                  }
+                },
+                "name": "orderByKey",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 3458,
+                "end": 3468,
+                "loc": {
+                  "start": {
+                    "line": 118,
+                    "column": 14
+                  },
+                  "end": {
+                    "line": 119,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 3461,
+                  "end": 3468,
+                  "loc": {
+                    "start": {
+                      "line": 118,
+                      "column": 17
+                    },
+                    "end": {
+                      "line": 119,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Orders the DataSource's childs by their key names, ignoring their priority.\n     * @returns {DataSource} New dataSource instance.\n     ",
+                  "start": 3295,
+                  "end": 3443,
+                  "loc": {
+                    "start": {
+                      "line": 114,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 117,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    3295,
+                    3443
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Orders the DataSource's childs by their values, ignoring their priority.\n     * @returns {DataSource} New dataSource instance.\n     ",
+                  "start": 3474,
+                  "end": 3619,
+                  "loc": {
+                    "start": {
+                      "line": 121,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 124,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    3474,
+                    3619
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 3624,
+              "end": 3646,
+              "loc": {
+                "start": {
+                  "line": 125,
+                  "column": 4
+                },
+                "end": {
+                  "line": 126,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 3624,
+                "end": 3636,
+                "loc": {
+                  "start": {
+                    "line": 125,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 125,
+                    "column": 16
+                  }
+                },
+                "name": "orderByValue",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 3636,
+                "end": 3646,
+                "loc": {
+                  "start": {
+                    "line": 125,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 126,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 3639,
+                  "end": 3646,
+                  "loc": {
+                    "start": {
+                      "line": 125,
+                      "column": 19
+                    },
+                    "end": {
+                      "line": 126,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Orders the DataSource's childs by their values, ignoring their priority.\n     * @returns {DataSource} New dataSource instance.\n     ",
+                  "start": 3474,
+                  "end": 3619,
+                  "loc": {
+                    "start": {
+                      "line": 121,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 124,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    3474,
+                    3619
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns a new dataSource reference that will limit the subscription to only the first given amount items.\n     * @param {Number} amount Amount of items to limit the dataSource to.\n     * @returns {DataSource} New dataSource instance.\n     ",
+                  "start": 3652,
+                  "end": 3904,
+                  "loc": {
+                    "start": {
+                      "line": 128,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 132,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    3652,
+                    3904
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 3909,
+              "end": 3937,
+              "loc": {
+                "start": {
+                  "line": 133,
+                  "column": 4
+                },
+                "end": {
+                  "line": 134,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 3909,
+                "end": 3921,
+                "loc": {
+                  "start": {
+                    "line": 133,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 133,
+                    "column": 16
+                  }
+                },
+                "name": "limitToFirst",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 3921,
+                "end": 3937,
+                "loc": {
+                  "start": {
+                    "line": 133,
+                    "column": 16
+                  },
+                  "end": {
+                    "line": 134,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 3922,
+                    "end": 3928,
+                    "loc": {
+                      "start": {
+                        "line": 133,
+                        "column": 17
+                      },
+                      "end": {
+                        "line": 133,
+                        "column": 23
+                      }
+                    },
+                    "name": "amount"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 3930,
+                  "end": 3937,
+                  "loc": {
+                    "start": {
+                      "line": 133,
+                      "column": 25
+                    },
+                    "end": {
+                      "line": 134,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns a new dataSource reference that will limit the subscription to only the first given amount items.\n     * @param {Number} amount Amount of items to limit the dataSource to.\n     * @returns {DataSource} New dataSource instance.\n     ",
+                  "start": 3652,
+                  "end": 3904,
+                  "loc": {
+                    "start": {
+                      "line": 128,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 132,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    3652,
+                    3904
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns a new dataSource reference that will limit the subscription to only the last given amount items.\n     * @param {Number} amount Amount of items to limit the dataSource to.\n     * @returns {DataSource} New dataSource instance.\n     ",
+                  "start": 3943,
+                  "end": 4194,
+                  "loc": {
+                    "start": {
+                      "line": 136,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 140,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    3943,
+                    4194
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 4199,
+              "end": 4226,
+              "loc": {
+                "start": {
+                  "line": 141,
+                  "column": 4
+                },
+                "end": {
+                  "line": 142,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 4199,
+                "end": 4210,
+                "loc": {
+                  "start": {
+                    "line": 141,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 141,
+                    "column": 15
+                  }
+                },
+                "name": "limitToLast",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 4210,
+                "end": 4226,
+                "loc": {
+                  "start": {
+                    "line": 141,
+                    "column": 15
+                  },
+                  "end": {
+                    "line": 142,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 4211,
+                    "end": 4217,
+                    "loc": {
+                      "start": {
+                        "line": 141,
+                        "column": 16
+                      },
+                      "end": {
+                        "line": 141,
+                        "column": 22
+                      }
+                    },
+                    "name": "amount"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 4219,
+                  "end": 4226,
+                  "loc": {
+                    "start": {
+                      "line": 141,
+                      "column": 24
+                    },
+                    "end": {
+                      "line": 142,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Returns a new dataSource reference that will limit the subscription to only the last given amount items.\n     * @param {Number} amount Amount of items to limit the dataSource to.\n     * @returns {DataSource} New dataSource instance.\n     ",
+                  "start": 3943,
+                  "end": 4194,
+                  "loc": {
+                    "start": {
+                      "line": 136,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 140,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    3943,
+                    4194
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Authenticates all instances of this DataSource with the given OAuth provider and credentials.\n     * @param {String} provider google, facebook, github, or twitter\n     * @param {String|Object} credentials Access token string, or object with key/value pairs with e.g. OAuth 1.1 credentials.\n     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.\n     * On error, first argument is error message.\n     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.\n     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.\n     * @returns {void}\n     ",
+                  "start": 4232,
+                  "end": 4979,
+                  "loc": {
+                    "start": {
+                      "line": 144,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 153,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    4232,
+                    4979
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 4984,
+              "end": 5054,
+              "loc": {
+                "start": {
+                  "line": 154,
+                  "column": 4
+                },
+                "end": {
+                  "line": 155,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 4984,
+                "end": 5002,
+                "loc": {
+                  "start": {
+                    "line": 154,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 154,
+                    "column": 22
+                  }
+                },
+                "name": "authWithOAuthToken",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 5002,
+                "end": 5054,
+                "loc": {
+                  "start": {
+                    "line": 154,
+                    "column": 22
+                  },
+                  "end": {
+                    "line": 155,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 5003,
+                    "end": 5011,
+                    "loc": {
+                      "start": {
+                        "line": 154,
+                        "column": 23
+                      },
+                      "end": {
+                        "line": 154,
+                        "column": 31
+                      }
+                    },
+                    "name": "provider"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 5013,
+                    "end": 5024,
+                    "loc": {
+                      "start": {
+                        "line": 154,
+                        "column": 33
+                      },
+                      "end": {
+                        "line": 154,
+                        "column": 44
+                      }
+                    },
+                    "name": "credentials"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 5026,
+                    "end": 5036,
+                    "loc": {
+                      "start": {
+                        "line": 154,
+                        "column": 46
+                      },
+                      "end": {
+                        "line": 154,
+                        "column": 56
+                      }
+                    },
+                    "name": "onComplete"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 5038,
+                    "end": 5045,
+                    "loc": {
+                      "start": {
+                        "line": 154,
+                        "column": 58
+                      },
+                      "end": {
+                        "line": 154,
+                        "column": 65
+                      }
+                    },
+                    "name": "options"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 5047,
+                  "end": 5054,
+                  "loc": {
+                    "start": {
+                      "line": 154,
+                      "column": 67
+                    },
+                    "end": {
+                      "line": 155,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Authenticates all instances of this DataSource with the given OAuth provider and credentials.\n     * @param {String} provider google, facebook, github, or twitter\n     * @param {String|Object} credentials Access token string, or object with key/value pairs with e.g. OAuth 1.1 credentials.\n     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.\n     * On error, first argument is error message.\n     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.\n     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.\n     * @returns {void}\n     ",
+                  "start": 4232,
+                  "end": 4979,
+                  "loc": {
+                    "start": {
+                      "line": 144,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 153,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    4232,
+                    4979
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Authenticates all instances of this DataSource with a custom auth token or secret.\n     * @param {String} authToken Authentication token or secret.\n     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.\n     * On error, first argument is error message.\n     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.\n     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.\n     * @returns {void}\n     ",
+                  "start": 5060,
+                  "end": 5665,
+                  "loc": {
+                    "start": {
+                      "line": 157,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 165,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    5060,
+                    5665
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 5670,
+              "end": 5729,
+              "loc": {
+                "start": {
+                  "line": 166,
+                  "column": 4
+                },
+                "end": {
+                  "line": 167,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 5670,
+                "end": 5689,
+                "loc": {
+                  "start": {
+                    "line": 166,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 166,
+                    "column": 23
+                  }
+                },
+                "name": "authWithCustomToken",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 5689,
+                "end": 5729,
+                "loc": {
+                  "start": {
+                    "line": 166,
+                    "column": 23
+                  },
+                  "end": {
+                    "line": 167,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 5690,
+                    "end": 5699,
+                    "loc": {
+                      "start": {
+                        "line": 166,
+                        "column": 24
+                      },
+                      "end": {
+                        "line": 166,
+                        "column": 33
+                      }
+                    },
+                    "name": "authToken"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 5701,
+                    "end": 5711,
+                    "loc": {
+                      "start": {
+                        "line": 166,
+                        "column": 35
+                      },
+                      "end": {
+                        "line": 166,
+                        "column": 45
+                      }
+                    },
+                    "name": "onComplete"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 5713,
+                    "end": 5720,
+                    "loc": {
+                      "start": {
+                        "line": 166,
+                        "column": 47
+                      },
+                      "end": {
+                        "line": 166,
+                        "column": 54
+                      }
+                    },
+                    "name": "options"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 5722,
+                  "end": 5729,
+                  "loc": {
+                    "start": {
+                      "line": 166,
+                      "column": 56
+                    },
+                    "end": {
+                      "line": 167,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Authenticates all instances of this DataSource with a custom auth token or secret.\n     * @param {String} authToken Authentication token or secret.\n     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.\n     * On error, first argument is error message.\n     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.\n     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.\n     * @returns {void}\n     ",
+                  "start": 5060,
+                  "end": 5665,
+                  "loc": {
+                    "start": {
+                      "line": 157,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 165,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    5060,
+                    5665
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Authenticates all instances of this DataSource with the given email/password credentials.\n     * @param {String|Object} credentials Object with key/value pairs {email: \"value\", password:\"value\"}.\n     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.\n     * On error, first argument is error message.\n     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.\n     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.\n     * @returns {void}\n     ",
+                  "start": 5735,
+                  "end": 6388,
+                  "loc": {
+                    "start": {
+                      "line": 169,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 177,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    5735,
+                    6388
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 6393,
+              "end": 6451,
+              "loc": {
+                "start": {
+                  "line": 178,
+                  "column": 4
+                },
+                "end": {
+                  "line": 179,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 6393,
+                "end": 6409,
+                "loc": {
+                  "start": {
+                    "line": 178,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 178,
+                    "column": 20
+                  }
+                },
+                "name": "authWithPassword",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 6409,
+                "end": 6451,
+                "loc": {
+                  "start": {
+                    "line": 178,
+                    "column": 20
+                  },
+                  "end": {
+                    "line": 179,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 6410,
+                    "end": 6421,
+                    "loc": {
+                      "start": {
+                        "line": 178,
+                        "column": 21
+                      },
+                      "end": {
+                        "line": 178,
+                        "column": 32
+                      }
+                    },
+                    "name": "credentials"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 6423,
+                    "end": 6433,
+                    "loc": {
+                      "start": {
+                        "line": 178,
+                        "column": 34
+                      },
+                      "end": {
+                        "line": 178,
+                        "column": 44
+                      }
+                    },
+                    "name": "onComplete"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 6435,
+                    "end": 6442,
+                    "loc": {
+                      "start": {
+                        "line": 178,
+                        "column": 46
+                      },
+                      "end": {
+                        "line": 178,
+                        "column": 53
+                      }
+                    },
+                    "name": "options"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 6444,
+                  "end": 6451,
+                  "loc": {
+                    "start": {
+                      "line": 178,
+                      "column": 55
+                    },
+                    "end": {
+                      "line": 179,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Authenticates all instances of this DataSource with the given email/password credentials.\n     * @param {String|Object} credentials Object with key/value pairs {email: \"value\", password:\"value\"}.\n     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.\n     * On error, first argument is error message.\n     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.\n     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.\n     * @returns {void}\n     ",
+                  "start": 5735,
+                  "end": 6388,
+                  "loc": {
+                    "start": {
+                      "line": 169,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 177,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    5735,
+                    6388
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Authenticates all instances of this DataSource as an anonymous user.\n     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.\n     * On error, first argument is error message.\n     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.\n     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.\n     * @returns {void}\n     ",
+                  "start": 6457,
+                  "end": 6983,
+                  "loc": {
+                    "start": {
+                      "line": 181,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 188,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    6457,
+                    6983
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 6988,
+              "end": 7032,
+              "loc": {
+                "start": {
+                  "line": 189,
+                  "column": 4
+                },
+                "end": {
+                  "line": 190,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 6988,
+                "end": 7003,
+                "loc": {
+                  "start": {
+                    "line": 189,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 189,
+                    "column": 19
+                  }
+                },
+                "name": "authAnonymously",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 7003,
+                "end": 7032,
+                "loc": {
+                  "start": {
+                    "line": 189,
+                    "column": 19
+                  },
+                  "end": {
+                    "line": 190,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 7004,
+                    "end": 7014,
+                    "loc": {
+                      "start": {
+                        "line": 189,
+                        "column": 20
+                      },
+                      "end": {
+                        "line": 189,
+                        "column": 30
+                      }
+                    },
+                    "name": "onComplete"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 7016,
+                    "end": 7023,
+                    "loc": {
+                      "start": {
+                        "line": 189,
+                        "column": 32
+                      },
+                      "end": {
+                        "line": 189,
+                        "column": 39
+                      }
+                    },
+                    "name": "options"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 7025,
+                  "end": 7032,
+                  "loc": {
+                    "start": {
+                      "line": 189,
+                      "column": 41
+                    },
+                    "end": {
+                      "line": 190,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Authenticates all instances of this DataSource as an anonymous user.\n     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.\n     * On error, first argument is error message.\n     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.\n     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.\n     * @returns {void}\n     ",
+                  "start": 6457,
+                  "end": 6983,
+                  "loc": {
+                    "start": {
+                      "line": 181,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 188,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    6457,
+                    6983
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Fetches the current user's authentication state.\n     * If the user is authenticated, returns an object containing at least the fields uid, provider, auth, and expires.\n     * If the user is not authenticated, returns null.\n     * @returns {Object|null} User auth object.\n     ",
+                  "start": 7038,
+                  "end": 7328,
+                  "loc": {
+                    "start": {
+                      "line": 192,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 197,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    7038,
+                    7328
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 7333,
+              "end": 7350,
+              "loc": {
+                "start": {
+                  "line": 198,
+                  "column": 4
+                },
+                "end": {
+                  "line": 199,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 7333,
+                "end": 7340,
+                "loc": {
+                  "start": {
+                    "line": 198,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 198,
+                    "column": 11
+                  }
+                },
+                "name": "getAuth",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 7340,
+                "end": 7350,
+                "loc": {
+                  "start": {
+                    "line": 198,
+                    "column": 11
+                  },
+                  "end": {
+                    "line": 199,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 7343,
+                  "end": 7350,
+                  "loc": {
+                    "start": {
+                      "line": 198,
+                      "column": 14
+                    },
+                    "end": {
+                      "line": 199,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Fetches the current user's authentication state.\n     * If the user is authenticated, returns an object containing at least the fields uid, provider, auth, and expires.\n     * If the user is not authenticated, returns null.\n     * @returns {Object|null} User auth object.\n     ",
+                  "start": 7038,
+                  "end": 7328,
+                  "loc": {
+                    "start": {
+                      "line": 192,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 197,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    7038,
+                    7328
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Logs out from the datasource, allowing to re-authenticate at a later time.\n     * @returns {void}\n     ",
+                  "start": 7356,
+                  "end": 7472,
+                  "loc": {
+                    "start": {
+                      "line": 201,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 204,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    7356,
+                    7472
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 7477,
+              "end": 7493,
+              "loc": {
+                "start": {
+                  "line": 205,
+                  "column": 4
+                },
+                "end": {
+                  "line": 206,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 7477,
+                "end": 7483,
+                "loc": {
+                  "start": {
+                    "line": 205,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 205,
+                    "column": 10
+                  }
+                },
+                "name": "unauth",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 7483,
+                "end": 7493,
+                "loc": {
+                  "start": {
+                    "line": 205,
+                    "column": 10
+                  },
+                  "end": {
+                    "line": 206,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 7486,
+                  "end": 7493,
+                  "loc": {
+                    "start": {
+                      "line": 205,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 206,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Logs out from the datasource, allowing to re-authenticate at a later time.\n     * @returns {void}\n     ",
+                  "start": 7356,
+                  "end": 7472,
+                  "loc": {
+                    "start": {
+                      "line": 201,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 204,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    7356,
+                    7472
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Subscribe to an event emitted by the DataSource.\n     * @param {String} event Event type to subscribe to. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed', 'child_moved'.\n     * @param {Function} handler Function to call when the subscribed event is emitted.\n     * @param {Object} context Context to set 'this' to when calling the handler function.\n     ",
+                  "start": 7499,
+                  "end": 7895,
+                  "loc": {
+                    "start": {
+                      "line": 208,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 213,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    7499,
+                    7895
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 7900,
+              "end": 7935,
+              "loc": {
+                "start": {
+                  "line": 214,
+                  "column": 4
+                },
+                "end": {
+                  "line": 215,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 7900,
+                "end": 7902,
+                "loc": {
+                  "start": {
+                    "line": 214,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 214,
+                    "column": 6
+                  }
+                },
+                "name": "on",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 7902,
+                "end": 7935,
+                "loc": {
+                  "start": {
+                    "line": 214,
+                    "column": 6
+                  },
+                  "end": {
+                    "line": 215,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 7903,
+                    "end": 7908,
+                    "loc": {
+                      "start": {
+                        "line": 214,
+                        "column": 7
+                      },
+                      "end": {
+                        "line": 214,
+                        "column": 12
+                      }
+                    },
+                    "name": "event"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 7910,
+                    "end": 7917,
+                    "loc": {
+                      "start": {
+                        "line": 214,
+                        "column": 14
+                      },
+                      "end": {
+                        "line": 214,
+                        "column": 21
+                      }
+                    },
+                    "name": "handler"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 7919,
+                    "end": 7926,
+                    "loc": {
+                      "start": {
+                        "line": 214,
+                        "column": 23
+                      },
+                      "end": {
+                        "line": 214,
+                        "column": 30
+                      }
+                    },
+                    "name": "context"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 7928,
+                  "end": 7935,
+                  "loc": {
+                    "start": {
+                      "line": 214,
+                      "column": 32
+                    },
+                    "end": {
+                      "line": 215,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Subscribe to an event emitted by the DataSource.\n     * @param {String} event Event type to subscribe to. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed', 'child_moved'.\n     * @param {Function} handler Function to call when the subscribed event is emitted.\n     * @param {Object} context Context to set 'this' to when calling the handler function.\n     ",
+                  "start": 7499,
+                  "end": 7895,
+                  "loc": {
+                    "start": {
+                      "line": 208,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 213,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    7499,
+                    7895
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Subscribe to an event emitted by the DataSource once, and then immediately unsubscribe.\n     * @param {String} event Event type to subscribe to. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed', 'child_moved'.\n     * @param {Function} handler Function to call when the subscribed event is emitted.\n     * @param {Object} context Context to set 'this' to when calling the handler function.\n     ",
+                  "start": 7941,
+                  "end": 8376,
+                  "loc": {
+                    "start": {
+                      "line": 217,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 222,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    7941,
+                    8376
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 8381,
+              "end": 8418,
+              "loc": {
+                "start": {
+                  "line": 223,
+                  "column": 4
+                },
+                "end": {
+                  "line": 224,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 8381,
+                "end": 8385,
+                "loc": {
+                  "start": {
+                    "line": 223,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 223,
+                    "column": 8
+                  }
+                },
+                "name": "once",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 8385,
+                "end": 8418,
+                "loc": {
+                  "start": {
+                    "line": 223,
+                    "column": 8
+                  },
+                  "end": {
+                    "line": 224,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 8386,
+                    "end": 8391,
+                    "loc": {
+                      "start": {
+                        "line": 223,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 223,
+                        "column": 14
+                      }
+                    },
+                    "name": "event"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 8393,
+                    "end": 8400,
+                    "loc": {
+                      "start": {
+                        "line": 223,
+                        "column": 16
+                      },
+                      "end": {
+                        "line": 223,
+                        "column": 23
+                      }
+                    },
+                    "name": "handler"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 8402,
+                    "end": 8409,
+                    "loc": {
+                      "start": {
+                        "line": 223,
+                        "column": 25
+                      },
+                      "end": {
+                        "line": 223,
+                        "column": 32
+                      }
+                    },
+                    "name": "context"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 8411,
+                  "end": 8418,
+                  "loc": {
+                    "start": {
+                      "line": 223,
+                      "column": 34
+                    },
+                    "end": {
+                      "line": 224,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Subscribe to an event emitted by the DataSource once, and then immediately unsubscribe.\n     * @param {String} event Event type to subscribe to. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed', 'child_moved'.\n     * @param {Function} handler Function to call when the subscribed event is emitted.\n     * @param {Object} context Context to set 'this' to when calling the handler function.\n     ",
+                  "start": 7941,
+                  "end": 8376,
+                  "loc": {
+                    "start": {
+                      "line": 217,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 222,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    7941,
+                    8376
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Unsubscribe to a previously subscribed event. If no handler or context is given, all handlers for\n     * the given event are removed. If no parameters are given at all, all event types will have their handlers removed.\n     * @param {String} event Event type to unsubscribe from. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed', 'child_moved'.\n     * @param {Function} handler Optional: Function that was used in previous subscription.\n     ",
+                  "start": 8425,
+                  "end": 8908,
+                  "loc": {
+                    "start": {
+                      "line": 227,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 232,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    8425,
+                    8908
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 8913,
+              "end": 8940,
+              "loc": {
+                "start": {
+                  "line": 233,
+                  "column": 4
+                },
+                "end": {
+                  "line": 234,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 8913,
+                "end": 8916,
+                "loc": {
+                  "start": {
+                    "line": 233,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 233,
+                    "column": 7
+                  }
+                },
+                "name": "off",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 8916,
+                "end": 8940,
+                "loc": {
+                  "start": {
+                    "line": 233,
+                    "column": 7
+                  },
+                  "end": {
+                    "line": 234,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 8917,
+                    "end": 8922,
+                    "loc": {
+                      "start": {
+                        "line": 233,
+                        "column": 8
+                      },
+                      "end": {
+                        "line": 233,
+                        "column": 13
+                      }
+                    },
+                    "name": "event"
+                  },
+                  {
+                    "type": "Identifier",
+                    "start": 8924,
+                    "end": 8931,
+                    "loc": {
+                      "start": {
+                        "line": 233,
+                        "column": 15
+                      },
+                      "end": {
+                        "line": 233,
+                        "column": 22
+                      }
+                    },
+                    "name": "handler"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 8933,
+                  "end": 8940,
+                  "loc": {
+                    "start": {
+                      "line": 233,
+                      "column": 24
+                    },
+                    "end": {
+                      "line": 234,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Unsubscribe to a previously subscribed event. If no handler or context is given, all handlers for\n     * the given event are removed. If no parameters are given at all, all event types will have their handlers removed.\n     * @param {String} event Event type to unsubscribe from. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed', 'child_moved'.\n     * @param {Function} handler Optional: Function that was used in previous subscription.\n     ",
+                  "start": 8425,
+                  "end": 8908,
+                  "loc": {
+                    "start": {
+                      "line": 227,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 232,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    8425,
+                    8908
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Sets the callback triggered when dataSource updates the data.\n     * @param {Function} callback Callback function to call when the subscribed data value changes.\n     * @returns {void}\n     *",
+                  "start": 8946,
+                  "end": 9150,
+                  "loc": {
+                    "start": {
+                      "line": 236,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 240,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    8946,
+                    9150
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 9155,
+              "end": 9196,
+              "loc": {
+                "start": {
+                  "line": 241,
+                  "column": 4
+                },
+                "end": {
+                  "line": 242,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 9155,
+                "end": 9178,
+                "loc": {
+                  "start": {
+                    "line": 241,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 241,
+                    "column": 27
+                  }
+                },
+                "name": "setValueChangedCallback",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 9178,
+                "end": 9196,
+                "loc": {
+                  "start": {
+                    "line": 241,
+                    "column": 27
+                  },
+                  "end": {
+                    "line": 242,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 9179,
+                    "end": 9187,
+                    "loc": {
+                      "start": {
+                        "line": 241,
+                        "column": 28
+                      },
+                      "end": {
+                        "line": 241,
+                        "column": 36
+                      }
+                    },
+                    "name": "callback"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 9189,
+                  "end": 9196,
+                  "loc": {
+                    "start": {
+                      "line": 241,
+                      "column": 38
+                    },
+                    "end": {
+                      "line": 242,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Sets the callback triggered when dataSource updates the data.\n     * @param {Function} callback Callback function to call when the subscribed data value changes.\n     * @returns {void}\n     *",
+                  "start": 8946,
+                  "end": 9150,
+                  "loc": {
+                    "start": {
+                      "line": 236,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 240,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    8946,
+                    9150
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the callback set to trigger when dataSource updates the data.\n     * @returns {void}\n     *",
+                  "start": 9202,
+                  "end": 9314,
+                  "loc": {
+                    "start": {
+                      "line": 244,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 247,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    9202,
+                    9314
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 9319,
+              "end": 9355,
+              "loc": {
+                "start": {
+                  "line": 248,
+                  "column": 4
+                },
+                "end": {
+                  "line": 249,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 9319,
+                "end": 9345,
+                "loc": {
+                  "start": {
+                    "line": 248,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 248,
+                    "column": 30
+                  }
+                },
+                "name": "removeValueChangedCallback",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 9345,
+                "end": 9355,
+                "loc": {
+                  "start": {
+                    "line": 248,
+                    "column": 30
+                  },
+                  "end": {
+                    "line": 249,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 9348,
+                  "end": 9355,
+                  "loc": {
+                    "start": {
+                      "line": 248,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 249,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the callback set to trigger when dataSource updates the data.\n     * @returns {void}\n     *",
+                  "start": 9202,
+                  "end": 9314,
+                  "loc": {
+                    "start": {
+                      "line": 244,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 247,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    9202,
+                    9314
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Set the callback triggered when dataSource adds a data element.\n     * @param {Function} callback Callback function to call when a new data child is added.\n     * @returns {void}\n     *",
+                  "start": 9361,
+                  "end": 9559,
+                  "loc": {
+                    "start": {
+                      "line": 251,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 255,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    9361,
+                    9559
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 9564,
+              "end": 9603,
+              "loc": {
+                "start": {
+                  "line": 256,
+                  "column": 4
+                },
+                "end": {
+                  "line": 257,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 9564,
+                "end": 9585,
+                "loc": {
+                  "start": {
+                    "line": 256,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 256,
+                    "column": 25
+                  }
+                },
+                "name": "setChildAddedCallback",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 9585,
+                "end": 9603,
+                "loc": {
+                  "start": {
+                    "line": 256,
+                    "column": 25
+                  },
+                  "end": {
+                    "line": 257,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 9586,
+                    "end": 9594,
+                    "loc": {
+                      "start": {
+                        "line": 256,
+                        "column": 26
+                      },
+                      "end": {
+                        "line": 256,
+                        "column": 34
+                      }
+                    },
+                    "name": "callback"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 9596,
+                  "end": 9603,
+                  "loc": {
+                    "start": {
+                      "line": 256,
+                      "column": 36
+                    },
+                    "end": {
+                      "line": 257,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Set the callback triggered when dataSource adds a data element.\n     * @param {Function} callback Callback function to call when a new data child is added.\n     * @returns {void}\n     *",
+                  "start": 9361,
+                  "end": 9559,
+                  "loc": {
+                    "start": {
+                      "line": 251,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 255,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    9361,
+                    9559
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the callback set to trigger when dataSource adds a data element.\n     * @returns {void}\n     *",
+                  "start": 9609,
+                  "end": 9724,
+                  "loc": {
+                    "start": {
+                      "line": 259,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 262,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    9609,
+                    9724
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 9729,
+              "end": 9763,
+              "loc": {
+                "start": {
+                  "line": 263,
+                  "column": 4
+                },
+                "end": {
+                  "line": 264,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 9729,
+                "end": 9753,
+                "loc": {
+                  "start": {
+                    "line": 263,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 263,
+                    "column": 28
+                  }
+                },
+                "name": "removeChildAddedCallback",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 9753,
+                "end": 9763,
+                "loc": {
+                  "start": {
+                    "line": 263,
+                    "column": 28
+                  },
+                  "end": {
+                    "line": 264,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 9756,
+                  "end": 9763,
+                  "loc": {
+                    "start": {
+                      "line": 263,
+                      "column": 31
+                    },
+                    "end": {
+                      "line": 264,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the callback set to trigger when dataSource adds a data element.\n     * @returns {void}\n     *",
+                  "start": 9609,
+                  "end": 9724,
+                  "loc": {
+                    "start": {
+                      "line": 259,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 262,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    9609,
+                    9724
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Set the callback triggered when dataSource changes a data element.\n     * @param {Function} callback Callback function to call when a child is changed.\n     * @returns {void}\n     *",
+                  "start": 9769,
+                  "end": 9963,
+                  "loc": {
+                    "start": {
+                      "line": 266,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 270,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    9769,
+                    9963
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 9968,
+              "end": 10009,
+              "loc": {
+                "start": {
+                  "line": 271,
+                  "column": 4
+                },
+                "end": {
+                  "line": 272,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 9968,
+                "end": 9991,
+                "loc": {
+                  "start": {
+                    "line": 271,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 271,
+                    "column": 27
+                  }
+                },
+                "name": "setChildChangedCallback",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 9991,
+                "end": 10009,
+                "loc": {
+                  "start": {
+                    "line": 271,
+                    "column": 27
+                  },
+                  "end": {
+                    "line": 272,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 9992,
+                    "end": 10000,
+                    "loc": {
+                      "start": {
+                        "line": 271,
+                        "column": 28
+                      },
+                      "end": {
+                        "line": 271,
+                        "column": 36
+                      }
+                    },
+                    "name": "callback"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 10002,
+                  "end": 10009,
+                  "loc": {
+                    "start": {
+                      "line": 271,
+                      "column": 38
+                    },
+                    "end": {
+                      "line": 272,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Set the callback triggered when dataSource changes a data element.\n     * @param {Function} callback Callback function to call when a child is changed.\n     * @returns {void}\n     *",
+                  "start": 9769,
+                  "end": 9963,
+                  "loc": {
+                    "start": {
+                      "line": 266,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 270,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    9769,
+                    9963
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the callback set to trigger when dataSource changes a data element.\n     * @returns {void}\n     *",
+                  "start": 10015,
+                  "end": 10133,
+                  "loc": {
+                    "start": {
+                      "line": 274,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 277,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    10015,
+                    10133
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 10138,
+              "end": 10174,
+              "loc": {
+                "start": {
+                  "line": 278,
+                  "column": 4
+                },
+                "end": {
+                  "line": 279,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 10138,
+                "end": 10164,
+                "loc": {
+                  "start": {
+                    "line": 278,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 278,
+                    "column": 30
+                  }
+                },
+                "name": "removeChildChangedCallback",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 10164,
+                "end": 10174,
+                "loc": {
+                  "start": {
+                    "line": 278,
+                    "column": 30
+                  },
+                  "end": {
+                    "line": 279,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 10167,
+                  "end": 10174,
+                  "loc": {
+                    "start": {
+                      "line": 278,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 279,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the callback set to trigger when dataSource changes a data element.\n     * @returns {void}\n     *",
+                  "start": 10015,
+                  "end": 10133,
+                  "loc": {
+                    "start": {
+                      "line": 274,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 277,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    10015,
+                    10133
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Set the callback triggered when dataSource moves a data element.\n     * @param {Function} callback Callback function to call when a child is moved.\n     * @returns {void}\n     *",
+                  "start": 10180,
+                  "end": 10370,
+                  "loc": {
+                    "start": {
+                      "line": 281,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 285,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    10180,
+                    10370
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 10375,
+              "end": 10414,
+              "loc": {
+                "start": {
+                  "line": 286,
+                  "column": 4
+                },
+                "end": {
+                  "line": 287,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 10375,
+                "end": 10396,
+                "loc": {
+                  "start": {
+                    "line": 286,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 286,
+                    "column": 25
+                  }
+                },
+                "name": "setChildMovedCallback",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 10396,
+                "end": 10414,
+                "loc": {
+                  "start": {
+                    "line": 286,
+                    "column": 25
+                  },
+                  "end": {
+                    "line": 287,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 10397,
+                    "end": 10405,
+                    "loc": {
+                      "start": {
+                        "line": 286,
+                        "column": 26
+                      },
+                      "end": {
+                        "line": 286,
+                        "column": 34
+                      }
+                    },
+                    "name": "callback"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 10407,
+                  "end": 10414,
+                  "loc": {
+                    "start": {
+                      "line": 286,
+                      "column": 36
+                    },
+                    "end": {
+                      "line": 287,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Set the callback triggered when dataSource moves a data element.\n     * @param {Function} callback Callback function to call when a child is moved.\n     * @returns {void}\n     *",
+                  "start": 10180,
+                  "end": 10370,
+                  "loc": {
+                    "start": {
+                      "line": 281,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 285,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    10180,
+                    10370
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the callback set to trigger when dataSource moves a data element.\n     * @returns {void}\n     *",
+                  "start": 10420,
+                  "end": 10536,
+                  "loc": {
+                    "start": {
+                      "line": 289,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 292,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    10420,
+                    10536
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 10541,
+              "end": 10575,
+              "loc": {
+                "start": {
+                  "line": 293,
+                  "column": 4
+                },
+                "end": {
+                  "line": 294,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 10541,
+                "end": 10565,
+                "loc": {
+                  "start": {
+                    "line": 293,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 293,
+                    "column": 28
+                  }
+                },
+                "name": "removeChildMovedCallback",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 10565,
+                "end": 10575,
+                "loc": {
+                  "start": {
+                    "line": 293,
+                    "column": 28
+                  },
+                  "end": {
+                    "line": 294,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 10568,
+                  "end": 10575,
+                  "loc": {
+                    "start": {
+                      "line": 293,
+                      "column": 31
+                    },
+                    "end": {
+                      "line": 294,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the callback set to trigger when dataSource moves a data element.\n     * @returns {void}\n     *",
+                  "start": 10420,
+                  "end": 10536,
+                  "loc": {
+                    "start": {
+                      "line": 289,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 292,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    10420,
+                    10536
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Set the callback triggered when dataSource removes a data element.\n     * @param {Function} callback Callback function to call when a child is removed.\n     * @returns {void}\n     *",
+                  "start": 10581,
+                  "end": 10775,
+                  "loc": {
+                    "start": {
+                      "line": 296,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 300,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    10581,
+                    10775
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 10780,
+              "end": 10821,
+              "loc": {
+                "start": {
+                  "line": 301,
+                  "column": 4
+                },
+                "end": {
+                  "line": 302,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 10780,
+                "end": 10803,
+                "loc": {
+                  "start": {
+                    "line": 301,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 301,
+                    "column": 27
+                  }
+                },
+                "name": "setChildRemovedCallback",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 10803,
+                "end": 10821,
+                "loc": {
+                  "start": {
+                    "line": 301,
+                    "column": 27
+                  },
+                  "end": {
+                    "line": 302,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [
+                  {
+                    "type": "Identifier",
+                    "start": 10804,
+                    "end": 10812,
+                    "loc": {
+                      "start": {
+                        "line": 301,
+                        "column": 28
+                      },
+                      "end": {
+                        "line": 301,
+                        "column": 36
+                      }
+                    },
+                    "name": "callback"
+                  }
+                ],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 10814,
+                  "end": 10821,
+                  "loc": {
+                    "start": {
+                      "line": 301,
+                      "column": 38
+                    },
+                    "end": {
+                      "line": 302,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Set the callback triggered when dataSource removes a data element.\n     * @param {Function} callback Callback function to call when a child is removed.\n     * @returns {void}\n     *",
+                  "start": 10581,
+                  "end": 10775,
+                  "loc": {
+                    "start": {
+                      "line": 296,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 300,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    10581,
+                    10775
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the callback set to trigger when dataSource removes a data element.\n     * @returns {void}\n     *",
+                  "start": 10827,
+                  "end": 10945,
+                  "loc": {
+                    "start": {
+                      "line": 304,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 307,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    10827,
+                    10945
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 10950,
+              "end": 10986,
+              "loc": {
+                "start": {
+                  "line": 308,
+                  "column": 4
+                },
+                "end": {
+                  "line": 309,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 10950,
+                "end": 10976,
+                "loc": {
+                  "start": {
+                    "line": 308,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 308,
+                    "column": 30
+                  }
+                },
+                "name": "removeChildRemovedCallback",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 10976,
+                "end": 10986,
+                "loc": {
+                  "start": {
+                    "line": 308,
+                    "column": 30
+                  },
+                  "end": {
+                    "line": 309,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 10979,
+                  "end": 10986,
+                  "loc": {
+                    "start": {
+                      "line": 308,
+                      "column": 33
+                    },
+                    "end": {
+                      "line": 309,
+                      "column": 5
+                    }
+                  },
+                  "body": [],
+                  "leadingComments": null,
+                  "trailingComments": null
+                },
+                "trailingComments": null
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Removes the callback set to trigger when dataSource removes a data element.\n     * @returns {void}\n     *",
+                  "start": 10827,
+                  "end": 10945,
+                  "loc": {
+                    "start": {
+                      "line": 304,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 307,
+                      "column": 8
+                    }
+                  },
+                  "range": [
+                    10827,
+                    10945
+                  ]
+                }
+              ],
+              "trailingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Resolves when the DataSource is synchronized to the server\n     * @returns {Promise} Resolves when the DataSource is synchronized\n     ",
+                  "start": 10993,
+                  "end": 11141,
+                  "loc": {
+                    "start": {
+                      "line": 312,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 315,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    10993,
+                    11141
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "MethodDefinition",
+              "start": 11146,
+              "end": 11162,
+              "loc": {
+                "start": {
+                  "line": 316,
+                  "column": 4
+                },
+                "end": {
+                  "line": 317,
+                  "column": 5
+                }
+              },
+              "computed": false,
+              "key": {
+                "type": "Identifier",
+                "start": 11146,
+                "end": 11152,
+                "loc": {
+                  "start": {
+                    "line": 316,
+                    "column": 4
+                  },
+                  "end": {
+                    "line": 316,
+                    "column": 10
+                  }
+                },
+                "name": "synced",
+                "leadingComments": null
+              },
+              "static": false,
+              "kind": "method",
+              "value": {
+                "type": "FunctionExpression",
+                "start": 11152,
+                "end": 11162,
+                "loc": {
+                  "start": {
+                    "line": 316,
+                    "column": 10
+                  },
+                  "end": {
+                    "line": 317,
+                    "column": 5
+                  }
+                },
+                "id": null,
+                "generator": false,
+                "expression": false,
+                "async": false,
+                "params": [],
+                "body": {
+                  "type": "BlockStatement",
+                  "start": 11155,
+                  "end": 11162,
+                  "loc": {
+                    "start": {
+                      "line": 316,
+                      "column": 13
+                    },
+                    "end": {
+                      "line": 317,
+                      "column": 5
+                    }
+                  },
+                  "body": []
+                }
+              },
+              "leadingComments": [
+                {
+                  "type": "Block",
+                  "value": "*\n     * Resolves when the DataSource is synchronized to the server\n     * @returns {Promise} Resolves when the DataSource is synchronized\n     ",
+                  "start": 10993,
+                  "end": 11141,
+                  "loc": {
+                    "start": {
+                      "line": 312,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 315,
+                      "column": 7
+                    }
+                  },
+                  "range": [
+                    10993,
+                    11141
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "leadingComments": [
+          {
+            "type": "Block",
+            "value": "*\n\n\n @author: Tom Clement (tjclement)\n @license NPOSL-3.0\n @copyright Bizboard, 2015\n\n ",
+            "start": 0,
+            "end": 91,
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 0
+              },
+              "end": {
+                "line": 8,
+                "column": 3
+              }
+            },
+            "range": [
+              0,
+              91
+            ]
+          }
+        ],
+        "trailingComments": []
+      },
+      "specifiers": [],
+      "source": null,
+      "leadingComments": [
+        {
+          "type": "Block",
+          "value": "*\n\n\n @author: Tom Clement (tjclement)\n @license NPOSL-3.0\n @copyright Bizboard, 2015\n\n ",
+          "start": 0,
+          "end": 91,
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 8,
+              "column": 3
+            }
+          },
+          "range": [
+            0,
+            91
+          ]
+        }
+      ]
+    }
+  ]
+}

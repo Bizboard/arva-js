@@ -1,0 +1,932 @@
+{
+  "type": "Program",
+  "start": 0,
+  "end": 1311,
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 0
+    },
+    "end": {
+      "line": 33,
+      "column": 52
+    }
+  },
+  "sourceType": "module",
+  "body": [
+    {
+      "type": "ExportAllDeclaration",
+      "start": 94,
+      "end": 124,
+      "loc": {
+        "start": {
+          "line": 7,
+          "column": 0
+        },
+        "end": {
+          "line": 7,
+          "column": 30
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 108,
+        "end": 123,
+        "loc": {
+          "start": {
+            "line": 7,
+            "column": 14
+          },
+          "end": {
+            "line": 7,
+            "column": 29
+          }
+        },
+        "value": "./core/App.js",
+        "rawValue": "./core/App.js",
+        "raw": "'./core/App.js'",
+        "leadingComments": null
+      },
+      "leadingComments": [
+        {
+          "type": "Block",
+          "value": "*\n @author: Hans van den Akker (mysim1)\n @license NPOSL-3.0\n @copyright Bizboard, 2015\n\n ",
+          "start": 0,
+          "end": 93,
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 6,
+              "column": 3
+            }
+          },
+          "range": [
+            0,
+            93
+          ]
+        }
+      ]
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 125,
+      "end": 156,
+      "loc": {
+        "start": {
+          "line": 8,
+          "column": 0
+        },
+        "end": {
+          "line": 8,
+          "column": 31
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 139,
+        "end": 155,
+        "loc": {
+          "start": {
+            "line": 8,
+            "column": 14
+          },
+          "end": {
+            "line": 8,
+            "column": 30
+          }
+        },
+        "value": "./core/View.js",
+        "rawValue": "./core/View.js",
+        "raw": "'./core/View.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 157,
+      "end": 190,
+      "loc": {
+        "start": {
+          "line": 9,
+          "column": 0
+        },
+        "end": {
+          "line": 9,
+          "column": 33
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 171,
+        "end": 189,
+        "loc": {
+          "start": {
+            "line": 9,
+            "column": 14
+          },
+          "end": {
+            "line": 9,
+            "column": 32
+          }
+        },
+        "value": "./core/Router.js",
+        "rawValue": "./core/Router.js",
+        "raw": "'./core/Router.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 191,
+      "end": 228,
+      "loc": {
+        "start": {
+          "line": 10,
+          "column": 0
+        },
+        "end": {
+          "line": 10,
+          "column": 37
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 205,
+        "end": 227,
+        "loc": {
+          "start": {
+            "line": 10,
+            "column": 14
+          },
+          "end": {
+            "line": 10,
+            "column": 36
+          }
+        },
+        "value": "./core/Controller.js",
+        "rawValue": "./core/Controller.js",
+        "raw": "'./core/Controller.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 229,
+      "end": 264,
+      "loc": {
+        "start": {
+          "line": 11,
+          "column": 0
+        },
+        "end": {
+          "line": 11,
+          "column": 35
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 243,
+        "end": 263,
+        "loc": {
+          "start": {
+            "line": 11,
+            "column": 14
+          },
+          "end": {
+            "line": 11,
+            "column": 34
+          }
+        },
+        "value": "./data/Snapshot.js",
+        "rawValue": "./data/Snapshot.js",
+        "raw": "'./data/Snapshot.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 265,
+      "end": 302,
+      "loc": {
+        "start": {
+          "line": 12,
+          "column": 0
+        },
+        "end": {
+          "line": 12,
+          "column": 37
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 279,
+        "end": 301,
+        "loc": {
+          "start": {
+            "line": 12,
+            "column": 14
+          },
+          "end": {
+            "line": 12,
+            "column": 36
+          }
+        },
+        "value": "./data/DataSource.js",
+        "rawValue": "./data/DataSource.js",
+        "raw": "'./data/DataSource.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 303,
+      "end": 346,
+      "loc": {
+        "start": {
+          "line": 13,
+          "column": 0
+        },
+        "end": {
+          "line": 13,
+          "column": 43
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 317,
+        "end": 345,
+        "loc": {
+          "start": {
+            "line": 13,
+            "column": 14
+          },
+          "end": {
+            "line": 13,
+            "column": 42
+          }
+        },
+        "value": "./data/PrioritisedArray.js",
+        "rawValue": "./data/PrioritisedArray.js",
+        "raw": "'./data/PrioritisedArray.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 347,
+      "end": 391,
+      "loc": {
+        "start": {
+          "line": 14,
+          "column": 0
+        },
+        "end": {
+          "line": 14,
+          "column": 44
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 361,
+        "end": 390,
+        "loc": {
+          "start": {
+            "line": 14,
+            "column": 14
+          },
+          "end": {
+            "line": 14,
+            "column": 43
+          }
+        },
+        "value": "./data/PrioritisedObject.js",
+        "rawValue": "./data/PrioritisedObject.js",
+        "raw": "'./data/PrioritisedObject.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 392,
+      "end": 449,
+      "loc": {
+        "start": {
+          "line": 15,
+          "column": 0
+        },
+        "end": {
+          "line": 15,
+          "column": 57
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 406,
+        "end": 448,
+        "loc": {
+          "start": {
+            "line": 15,
+            "column": 14
+          },
+          "end": {
+            "line": 15,
+            "column": 56
+          }
+        },
+        "value": "./data/datasources/FirebaseDataSource.js",
+        "rawValue": "./data/datasources/FirebaseDataSource.js",
+        "raw": "'./data/datasources/FirebaseDataSource.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 450,
+      "end": 509,
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 0
+        },
+        "end": {
+          "line": 16,
+          "column": 59
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 464,
+        "end": 508,
+        "loc": {
+          "start": {
+            "line": 16,
+            "column": 14
+          },
+          "end": {
+            "line": 16,
+            "column": 58
+          }
+        },
+        "value": "./data/datasources/SharePointDataSource.js",
+        "rawValue": "./data/datasources/SharePointDataSource.js",
+        "raw": "'./data/datasources/SharePointDataSource.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 510,
+      "end": 578,
+      "loc": {
+        "start": {
+          "line": 17,
+          "column": 0
+        },
+        "end": {
+          "line": 17,
+          "column": 68
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 524,
+        "end": 577,
+        "loc": {
+          "start": {
+            "line": 17,
+            "column": 14
+          },
+          "end": {
+            "line": 17,
+            "column": 67
+          }
+        },
+        "value": "./data/datasources/SharePoint/DataModelGenerator.js",
+        "rawValue": "./data/datasources/SharePoint/DataModelGenerator.js",
+        "raw": "'./data/datasources/SharePoint/DataModelGenerator.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 579,
+      "end": 647,
+      "loc": {
+        "start": {
+          "line": 18,
+          "column": 0
+        },
+        "end": {
+          "line": 18,
+          "column": 68
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 593,
+        "end": 646,
+        "loc": {
+          "start": {
+            "line": 18,
+            "column": 14
+          },
+          "end": {
+            "line": 18,
+            "column": 67
+          }
+        },
+        "value": "./data/datasources/SharePoint/SharePointSnapshot.js",
+        "rawValue": "./data/datasources/SharePoint/SharePointSnapshot.js",
+        "raw": "'./data/datasources/SharePoint/SharePointSnapshot.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 648,
+      "end": 687,
+      "loc": {
+        "start": {
+          "line": 19,
+          "column": 0
+        },
+        "end": {
+          "line": 19,
+          "column": 39
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 662,
+        "end": 686,
+        "loc": {
+          "start": {
+            "line": 19,
+            "column": 14
+          },
+          "end": {
+            "line": 19,
+            "column": 38
+          }
+        },
+        "value": "./layout/Decorators.js",
+        "rawValue": "./layout/Decorators.js",
+        "raw": "'./layout/Decorators.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 688,
+      "end": 728,
+      "loc": {
+        "start": {
+          "line": 20,
+          "column": 0
+        },
+        "end": {
+          "line": 20,
+          "column": 40
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 702,
+        "end": 727,
+        "loc": {
+          "start": {
+            "line": 20,
+            "column": 14
+          },
+          "end": {
+            "line": 20,
+            "column": 39
+          }
+        },
+        "value": "./routers/ArvaRouter.js",
+        "rawValue": "./routers/ArvaRouter.js",
+        "raw": "'./routers/ArvaRouter.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 729,
+      "end": 770,
+      "loc": {
+        "start": {
+          "line": 21,
+          "column": 0
+        },
+        "end": {
+          "line": 21,
+          "column": 41
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 743,
+        "end": 769,
+        "loc": {
+          "start": {
+            "line": 21,
+            "column": 14
+          },
+          "end": {
+            "line": 21,
+            "column": 40
+          }
+        },
+        "value": "./utils/di/Decorators.js",
+        "rawValue": "./utils/di/Decorators.js",
+        "raw": "'./utils/di/Decorators.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 771,
+      "end": 817,
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 0
+        },
+        "end": {
+          "line": 22,
+          "column": 46
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 785,
+        "end": 816,
+        "loc": {
+          "start": {
+            "line": 22,
+            "column": 14
+          },
+          "end": {
+            "line": 22,
+            "column": 45
+          }
+        },
+        "value": "./utils/hotfixes/Polyfills.js",
+        "rawValue": "./utils/hotfixes/Polyfills.js",
+        "raw": "'./utils/hotfixes/Polyfills.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 818,
+      "end": 864,
+      "loc": {
+        "start": {
+          "line": 23,
+          "column": 0
+        },
+        "end": {
+          "line": 23,
+          "column": 46
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 832,
+        "end": 863,
+        "loc": {
+          "start": {
+            "line": 23,
+            "column": 14
+          },
+          "end": {
+            "line": 23,
+            "column": 45
+          }
+        },
+        "value": "./utils/hotfixes/IESupport.js",
+        "rawValue": "./utils/hotfixes/IESupport.js",
+        "raw": "'./utils/hotfixes/IESupport.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 865,
+      "end": 922,
+      "loc": {
+        "start": {
+          "line": 24,
+          "column": 0
+        },
+        "end": {
+          "line": 24,
+          "column": 57
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 879,
+        "end": 921,
+        "loc": {
+          "start": {
+            "line": 24,
+            "column": 14
+          },
+          "end": {
+            "line": 24,
+            "column": 56
+          }
+        },
+        "value": "./utils/hotfixes/FamousKeyboardOffset.js",
+        "rawValue": "./utils/hotfixes/FamousKeyboardOffset.js",
+        "raw": "'./utils/hotfixes/FamousKeyboardOffset.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 923,
+      "end": 980,
+      "loc": {
+        "start": {
+          "line": 25,
+          "column": 0
+        },
+        "end": {
+          "line": 25,
+          "column": 57
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 937,
+        "end": 979,
+        "loc": {
+          "start": {
+            "line": 25,
+            "column": 14
+          },
+          "end": {
+            "line": 25,
+            "column": 56
+          }
+        },
+        "value": "./utils/hotfixes/DisableTextSelection.js",
+        "rawValue": "./utils/hotfixes/DisableTextSelection.js",
+        "raw": "'./utils/hotfixes/DisableTextSelection.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 981,
+      "end": 1023,
+      "loc": {
+        "start": {
+          "line": 26,
+          "column": 0
+        },
+        "end": {
+          "line": 26,
+          "column": 42
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 995,
+        "end": 1022,
+        "loc": {
+          "start": {
+            "line": 26,
+            "column": 14
+          },
+          "end": {
+            "line": 26,
+            "column": 41
+          }
+        },
+        "value": "./utils/CombineOptions.js",
+        "rawValue": "./utils/CombineOptions.js",
+        "raw": "'./utils/CombineOptions.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 1024,
+      "end": 1065,
+      "loc": {
+        "start": {
+          "line": 27,
+          "column": 0
+        },
+        "end": {
+          "line": 27,
+          "column": 41
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 1038,
+        "end": 1064,
+        "loc": {
+          "start": {
+            "line": 27,
+            "column": 14
+          },
+          "end": {
+            "line": 27,
+            "column": 40
+          }
+        },
+        "value": "./utils/DialogManager.js",
+        "rawValue": "./utils/DialogManager.js",
+        "raw": "'./utils/DialogManager.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 1066,
+      "end": 1105,
+      "loc": {
+        "start": {
+          "line": 28,
+          "column": 0
+        },
+        "end": {
+          "line": 28,
+          "column": 39
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 1080,
+        "end": 1104,
+        "loc": {
+          "start": {
+            "line": 28,
+            "column": 14
+          },
+          "end": {
+            "line": 28,
+            "column": 38
+          }
+        },
+        "value": "./utils/ImageLoader.js",
+        "rawValue": "./utils/ImageLoader.js",
+        "raw": "'./utils/ImageLoader.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 1106,
+      "end": 1143,
+      "loc": {
+        "start": {
+          "line": 29,
+          "column": 0
+        },
+        "end": {
+          "line": 29,
+          "column": 37
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 1120,
+        "end": 1142,
+        "loc": {
+          "start": {
+            "line": 29,
+            "column": 14
+          },
+          "end": {
+            "line": 29,
+            "column": 36
+          }
+        },
+        "value": "./utils/Injection.js",
+        "rawValue": "./utils/Injection.js",
+        "raw": "'./utils/Injection.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 1144,
+      "end": 1179,
+      "loc": {
+        "start": {
+          "line": 30,
+          "column": 0
+        },
+        "end": {
+          "line": 30,
+          "column": 35
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 1158,
+        "end": 1178,
+        "loc": {
+          "start": {
+            "line": 30,
+            "column": 14
+          },
+          "end": {
+            "line": 30,
+            "column": 34
+          }
+        },
+        "value": "./utils/Limiter.js",
+        "rawValue": "./utils/Limiter.js",
+        "raw": "'./utils/Limiter.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 1180,
+      "end": 1220,
+      "loc": {
+        "start": {
+          "line": 31,
+          "column": 0
+        },
+        "end": {
+          "line": 31,
+          "column": 40
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 1194,
+        "end": 1219,
+        "loc": {
+          "start": {
+            "line": 31,
+            "column": 14
+          },
+          "end": {
+            "line": 31,
+            "column": 39
+          }
+        },
+        "value": "./utils/ObjectHelper.js",
+        "rawValue": "./utils/ObjectHelper.js",
+        "raw": "'./utils/ObjectHelper.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 1221,
+      "end": 1258,
+      "loc": {
+        "start": {
+          "line": 32,
+          "column": 0
+        },
+        "end": {
+          "line": 32,
+          "column": 37
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 1235,
+        "end": 1257,
+        "loc": {
+          "start": {
+            "line": 32,
+            "column": 14
+          },
+          "end": {
+            "line": 32,
+            "column": 36
+          }
+        },
+        "value": "./utils/Throttler.js",
+        "rawValue": "./utils/Throttler.js",
+        "raw": "'./utils/Throttler.js'"
+      }
+    },
+    {
+      "type": "ExportAllDeclaration",
+      "start": 1259,
+      "end": 1311,
+      "loc": {
+        "start": {
+          "line": 33,
+          "column": 0
+        },
+        "end": {
+          "line": 33,
+          "column": 52
+        }
+      },
+      "source": {
+        "type": "Literal",
+        "start": 1273,
+        "end": 1310,
+        "loc": {
+          "start": {
+            "line": 33,
+            "column": 14
+          },
+          "end": {
+            "line": 33,
+            "column": 51
+          }
+        },
+        "value": "./components/DataBoundScrollView.js",
+        "rawValue": "./components/DataBoundScrollView.js",
+        "raw": "'./components/DataBoundScrollView.js'"
+      }
+    }
+  ]
+}
