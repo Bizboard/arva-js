@@ -15,6 +15,9 @@ import {combineOptions}             from '../utils/CombineOptions.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
 import Timer                        from 'famous/utilities/Timer.js';
 
+/**
+ * A FlexScrollView with enhanced functionality for maintaining a two-way connection with a PrioritisedArray.
+ */
 export class DataBoundScrollView extends ReflowingScrollView {
 
     get internalDataSource() {
@@ -22,11 +25,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     /**
-     * A FlexScrollView with enhanced functionality for maintaining a two-way connection with a PrioritisedArray.
-     *
      * @param options
-     * @param [options.headerTemplate] A function that returns a renderable to display as a header
-     * @param [options.orderBy] An ordering function that takes two data models (model1, model2).
+     * @param {Function} [options.itemTemplate] A function that returns a renderable representing each data item.
+     * @param {Function} [options.headerTemplate] A function that returns a renderable to display as a header
+     * @param {Function} [options.orderBy] An ordering function that takes two data models (model1, model2).
      * If this function returns true, then model1 will be placed before model2.
      *
      */
