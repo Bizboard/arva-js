@@ -1,7 +1,7 @@
 {
-  "coverage": "46.51%",
-  "expectCount": 445,
-  "actualCount": 207,
+  "coverage": "50.83%",
+  "expectCount": 480,
+  "actualCount": 244,
   "files": {
     "src/core/App.js": {
       "expectCount": 6,
@@ -80,8 +80,8 @@
         14,
         19,
         44,
-        23,
         29,
+        23,
         51,
         118,
         130,
@@ -92,32 +92,32 @@
     },
     "src/core/Controller.js": {
       "expectCount": 8,
-      "actualCount": 3,
+      "actualCount": 2,
       "undocumentLines": [
-        27,
-        31,
-        52,
+        28,
         30,
-        29
+        34,
+        55,
+        33,
+        32
       ]
     },
     "src/components/DataBoundScrollView.js": {
       "expectCount": 20,
-      "actualCount": 7,
+      "actualCount": 8,
       "undocumentLines": [
-        18,
-        443,
-        122,
         445,
-        20,
-        65,
-        64,
-        622,
-        464,
-        453,
-        114,
-        105,
-        66
+        124,
+        447,
+        23,
+        67,
+        66,
+        624,
+        466,
+        455,
+        116,
+        107,
+        68
       ]
     },
     "src/data/datasources/SharePoint/DataModelGenerator.js": {
@@ -161,17 +161,17 @@
       "actualCount": 37,
       "undocumentLines": [
         17,
-        19,
         23,
+        19,
         45,
         46
       ]
     },
     "src/utils/Injection.js": {
-      "expectCount": 4,
-      "actualCount": 3,
+      "expectCount": 6,
+      "actualCount": 5,
       "undocumentLines": [
-        7
+        8
       ]
     },
     "src/utils/di/injector.js": {
@@ -252,8 +252,8 @@
       "undocumentLines": [
         18,
         490,
-        24,
         28,
+        24,
         232
       ]
     },
@@ -454,19 +454,17 @@
     },
     "src/core/View.js": {
       "expectCount": 30,
-      "actualCount": 19,
+      "actualCount": 21,
       "undocumentLines": [
-        29,
-        31,
-        597,
-        211,
-        215,
-        361,
+        622,
+        236,
+        240,
+        386,
+        618,
         593,
-        568,
-        572,
-        585,
-        590
+        597,
+        610,
+        615
       ]
     },
     "src/utils/CallbackHelpers.js": {
@@ -491,11 +489,11 @@
       ]
     },
     "src/layout/Decorators.js": {
-      "expectCount": 3,
-      "actualCount": 0,
+      "expectCount": 36,
+      "actualCount": 33,
       "undocumentLines": [
-        935,
-        1019,
+        967,
+        1051,
         83
       ]
     },

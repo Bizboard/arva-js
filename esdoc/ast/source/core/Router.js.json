@@ -1,5 +1,5 @@
 {
-  "type": "Program",
+  "type": "File",
   "start": 0,
   "end": 2647,
   "loc": {
@@ -12,39 +12,39 @@
       "column": 1
     }
   },
-  "sourceType": "module",
-  "body": [
-    {
-      "type": "ImportDeclaration",
-      "start": 97,
-      "end": 154,
-      "loc": {
-        "start": {
-          "line": 10,
-          "column": 0
-        },
-        "end": {
-          "line": 10,
-          "column": 57
-        }
+  "program": {
+    "type": "Program",
+    "start": 0,
+    "end": 2647,
+    "loc": {
+      "start": {
+        "line": 1,
+        "column": 0
       },
-      "specifiers": [
-        {
-          "type": "ImportDefaultSpecifier",
-          "start": 104,
-          "end": 116,
-          "loc": {
-            "start": {
-              "line": 10,
-              "column": 7
-            },
-            "end": {
-              "line": 10,
-              "column": 19
-            }
+      "end": {
+        "line": 77,
+        "column": 1
+      }
+    },
+    "sourceType": "module",
+    "body": [
+      {
+        "type": "ImportDeclaration",
+        "start": 97,
+        "end": 154,
+        "loc": {
+          "start": {
+            "line": 10,
+            "column": 0
           },
-          "local": {
-            "type": "Identifier",
+          "end": {
+            "line": 10,
+            "column": 57
+          }
+        },
+        "specifiers": [
+          {
+            "type": "ImportDefaultSpecifier",
             "start": 104,
             "end": 116,
             "loc": {
@@ -57,85 +57,84 @@
                 "column": 19
               }
             },
-            "name": "EventEmitter",
+            "local": {
+              "type": "Identifier",
+              "start": 104,
+              "end": 116,
+              "loc": {
+                "start": {
+                  "line": 10,
+                  "column": 7
+                },
+                "end": {
+                  "line": 10,
+                  "column": 19
+                },
+                "identifierName": "EventEmitter"
+              },
+              "name": "EventEmitter",
+              "leadingComments": null
+            },
             "leadingComments": null
+          }
+        ],
+        "importKind": "value",
+        "source": {
+          "type": "StringLiteral",
+          "start": 138,
+          "end": 153,
+          "loc": {
+            "start": {
+              "line": 10,
+              "column": 41
+            },
+            "end": {
+              "line": 10,
+              "column": 56
+            }
           },
-          "leadingComments": null
-        }
-      ],
-      "importKind": "value",
-      "source": {
-        "type": "Literal",
-        "start": 138,
-        "end": 153,
+          "extra": {
+            "rawValue": "eventemitter3",
+            "raw": "'eventemitter3'"
+          },
+          "value": "eventemitter3"
+        },
+        "leadingComments": [
+          {
+            "type": "CommentBlock",
+            "value": "*\n\n\n @author: Hans van den Akker (mysim1)\n @license NPOSL-3.0\n @copyright Bizboard, 2015\n\n ",
+            "start": 0,
+            "end": 95,
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 0
+              },
+              "end": {
+                "line": 8,
+                "column": 3
+              }
+            }
+          }
+        ]
+      },
+      {
+        "type": "ImportDeclaration",
+        "start": 155,
+        "end": 223,
         "loc": {
           "start": {
-            "line": 10,
-            "column": 41
+            "line": 11,
+            "column": 0
           },
           "end": {
-            "line": 10,
-            "column": 56
+            "line": 11,
+            "column": 68
           }
         },
-        "value": "eventemitter3",
-        "rawValue": "eventemitter3",
-        "raw": "'eventemitter3'"
-      },
-      "leadingComments": [
-        {
-          "type": "Block",
-          "value": "*\n\n\n @author: Hans van den Akker (mysim1)\n @license NPOSL-3.0\n @copyright Bizboard, 2015\n\n ",
-          "start": 0,
-          "end": 95,
-          "loc": {
-            "start": {
-              "line": 1,
-              "column": 0
-            },
-            "end": {
-              "line": 8,
-              "column": 3
-            }
-          },
-          "range": [
-            0,
-            95
-          ]
-        }
-      ]
-    },
-    {
-      "type": "ImportDeclaration",
-      "start": 155,
-      "end": 223,
-      "loc": {
-        "start": {
-          "line": 11,
-          "column": 0
-        },
-        "end": {
-          "line": 11,
-          "column": 68
-        }
-      },
-      "specifiers": [
-        {
-          "type": "ImportSpecifier",
-          "start": 163,
-          "end": 175,
-          "loc": {
-            "start": {
-              "line": 11,
-              "column": 8
-            },
-            "end": {
-              "line": 11,
-              "column": 20
-            }
-          },
-          "imported": {
-            "type": "Identifier",
+        "specifiers": [
+          {
+            "type": "ImportSpecifier",
             "start": 163,
             "end": 175,
             "loc": {
@@ -148,191 +147,196 @@
                 "column": 20
               }
             },
-            "name": "ObjectHelper"
-          },
-          "local": {
-            "type": "Identifier",
-            "start": 163,
-            "end": 175,
-            "loc": {
-              "start": {
-                "line": 11,
-                "column": 8
+            "imported": {
+              "type": "Identifier",
+              "start": 163,
+              "end": 175,
+              "loc": {
+                "start": {
+                  "line": 11,
+                  "column": 8
+                },
+                "end": {
+                  "line": 11,
+                  "column": 20
+                },
+                "identifierName": "ObjectHelper"
               },
-              "end": {
-                "line": 11,
-                "column": 20
-              }
+              "name": "ObjectHelper"
             },
-            "name": "ObjectHelper"
+            "local": {
+              "type": "Identifier",
+              "start": 163,
+              "end": 175,
+              "loc": {
+                "start": {
+                  "line": 11,
+                  "column": 8
+                },
+                "end": {
+                  "line": 11,
+                  "column": 20
+                },
+                "identifierName": "ObjectHelper"
+              },
+              "name": "ObjectHelper"
+            }
           }
-        }
-      ],
-      "importKind": "value",
-      "source": {
-        "type": "Literal",
-        "start": 196,
-        "end": 222,
-        "loc": {
-          "start": {
-            "line": 11,
-            "column": 41
-          },
-          "end": {
-            "line": 11,
-            "column": 67
-          }
-        },
-        "value": "../utils/ObjectHelper.js",
-        "rawValue": "../utils/ObjectHelper.js",
-        "raw": "'../utils/ObjectHelper.js'"
-      },
-      "trailingComments": [
-        {
-          "type": "Block",
-          "value": "*\n * Abstract Router class which can be implemented to be used in an MVP setup.\n ",
-          "start": 225,
-          "end": 310,
+        ],
+        "importKind": "value",
+        "source": {
+          "type": "StringLiteral",
+          "start": 196,
+          "end": 222,
           "loc": {
             "start": {
-              "line": 13,
-              "column": 0
+              "line": 11,
+              "column": 41
             },
             "end": {
-              "line": 15,
-              "column": 3
+              "line": 11,
+              "column": 67
             }
           },
-          "range": [
-            225,
-            310
-          ]
-        }
-      ]
-    },
-    {
-      "type": "ExportNamedDeclaration",
-      "start": 311,
-      "end": 2647,
-      "loc": {
-        "start": {
-          "line": 16,
-          "column": 0
+          "extra": {
+            "rawValue": "../utils/ObjectHelper.js",
+            "raw": "'../utils/ObjectHelper.js'"
+          },
+          "value": "../utils/ObjectHelper.js"
         },
-        "end": {
-          "line": 77,
-          "column": 1
-        }
+        "trailingComments": [
+          {
+            "type": "CommentBlock",
+            "value": "*\n * Abstract Router class which can be implemented to be used in an MVP setup.\n ",
+            "start": 225,
+            "end": 310,
+            "loc": {
+              "start": {
+                "line": 13,
+                "column": 0
+              },
+              "end": {
+                "line": 15,
+                "column": 3
+              }
+            }
+          }
+        ]
       },
-      "declaration": {
-        "type": "ClassDeclaration",
-        "start": 318,
+      {
+        "type": "ExportNamedDeclaration",
+        "start": 311,
         "end": 2647,
         "loc": {
           "start": {
             "line": 16,
-            "column": 7
+            "column": 0
           },
           "end": {
             "line": 77,
             "column": 1
           }
         },
-        "id": {
-          "type": "Identifier",
-          "start": 324,
-          "end": 330,
-          "loc": {
-            "start": {
-              "line": 16,
-              "column": 13
-            },
-            "end": {
-              "line": 16,
-              "column": 19
-            }
-          },
-          "name": "Router",
-          "leadingComments": null
-        },
-        "superClass": {
-          "type": "Identifier",
-          "start": 339,
-          "end": 351,
-          "loc": {
-            "start": {
-              "line": 16,
-              "column": 28
-            },
-            "end": {
-              "line": 16,
-              "column": 40
-            }
-          },
-          "name": "EventEmitter"
-        },
-        "body": {
-          "type": "ClassBody",
-          "start": 352,
+        "specifiers": [],
+        "source": null,
+        "declaration": {
+          "type": "ClassDeclaration",
+          "start": 318,
           "end": 2647,
           "loc": {
             "start": {
               "line": 16,
-              "column": 41
+              "column": 7
             },
             "end": {
               "line": 77,
               "column": 1
             }
           },
-          "body": [
-            {
-              "type": "MethodDefinition",
-              "start": 360,
-              "end": 1059,
-              "loc": {
-                "start": {
-                  "line": 19,
-                  "column": 4
-                },
-                "end": {
-                  "line": 35,
-                  "column": 5
-                }
+          "id": {
+            "type": "Identifier",
+            "start": 324,
+            "end": 330,
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 13
               },
-              "computed": false,
-              "key": {
-                "type": "Identifier",
+              "end": {
+                "line": 16,
+                "column": 19
+              },
+              "identifierName": "Router"
+            },
+            "name": "Router",
+            "leadingComments": null
+          },
+          "superClass": {
+            "type": "Identifier",
+            "start": 339,
+            "end": 351,
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 28
+              },
+              "end": {
+                "line": 16,
+                "column": 40
+              },
+              "identifierName": "EventEmitter"
+            },
+            "name": "EventEmitter"
+          },
+          "body": {
+            "type": "ClassBody",
+            "start": 352,
+            "end": 2647,
+            "loc": {
+              "start": {
+                "line": 16,
+                "column": 41
+              },
+              "end": {
+                "line": 77,
+                "column": 1
+              }
+            },
+            "body": [
+              {
+                "type": "ClassMethod",
                 "start": 360,
-                "end": 371,
+                "end": 1059,
                 "loc": {
                   "start": {
                     "line": 19,
                     "column": 4
                   },
                   "end": {
-                    "line": 19,
-                    "column": 15
-                  }
-                },
-                "name": "constructor"
-              },
-              "static": false,
-              "kind": "constructor",
-              "value": {
-                "type": "FunctionExpression",
-                "start": 371,
-                "end": 1059,
-                "loc": {
-                  "start": {
-                    "line": 19,
-                    "column": 15
-                  },
-                  "end": {
                     "line": 35,
                     "column": 5
                   }
                 },
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "start": 360,
+                  "end": 371,
+                  "loc": {
+                    "start": {
+                      "line": 19,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 19,
+                      "column": 15
+                    },
+                    "identifierName": "constructor"
+                  },
+                  "name": "constructor"
+                },
+                "static": false,
+                "kind": "constructor",
                 "id": null,
                 "generator": false,
                 "expression": false,
@@ -413,11 +417,7 @@
                               "line": 21,
                               "column": 49
                             }
-                          },
-                          "range": [
-                            401,
-                            442
-                          ]
+                          }
                         }
                       ]
                     },
@@ -475,7 +475,8 @@
                               "end": {
                                 "line": 22,
                                 "column": 20
-                              }
+                              },
+                              "identifierName": "ObjectHelper"
                             },
                             "name": "ObjectHelper",
                             "leadingComments": null
@@ -492,7 +493,8 @@
                               "end": {
                                 "line": 22,
                                 "column": 35
-                              }
+                              },
+                              "identifierName": "bindAllMethods"
                             },
                             "name": "bindAllMethods"
                           },
@@ -548,11 +550,7 @@
                               "line": 21,
                               "column": 49
                             }
-                          },
-                          "range": [
-                            401,
-                            442
-                          ]
+                          }
                         }
                       ],
                       "trailingComments": [
@@ -570,11 +568,7 @@
                               "line": 24,
                               "column": 73
                             }
-                          },
-                          "range": [
-                            501,
-                            566
-                          ]
+                          }
                         },
                         {
                           "type": "CommentLine",
@@ -590,11 +584,7 @@
                               "line": 25,
                               "column": 75
                             }
-                          },
-                          "range": [
-                            575,
-                            642
-                          ]
+                          }
                         }
                       ]
                     },
@@ -669,7 +659,8 @@
                               "end": {
                                 "line": 26,
                                 "column": 24
-                              }
+                              },
+                              "identifierName": "controllers"
                             },
                             "name": "controllers"
                           },
@@ -709,11 +700,7 @@
                               "line": 24,
                               "column": 73
                             }
-                          },
-                          "range": [
-                            501,
-                            566
-                          ]
+                          }
                         },
                         {
                           "type": "CommentLine",
@@ -729,11 +716,7 @@
                               "line": 25,
                               "column": 75
                             }
-                          },
-                          "range": [
-                            575,
-                            642
-                          ]
+                          }
                         }
                       ],
                       "trailingComments": [
@@ -751,11 +734,7 @@
                               "line": 28,
                               "column": 93
                             }
-                          },
-                          "range": [
-                            683,
-                            768
-                          ]
+                          }
                         },
                         {
                           "type": "CommentLine",
@@ -771,11 +750,7 @@
                               "line": 29,
                               "column": 54
                             }
-                          },
-                          "range": [
-                            777,
-                            823
-                          ]
+                          }
                         }
                       ]
                     },
@@ -850,7 +825,8 @@
                               "end": {
                                 "line": 30,
                                 "column": 30
-                              }
+                              },
+                              "identifierName": "defaultController"
                             },
                             "name": "defaultController"
                           },
@@ -858,7 +834,7 @@
                           "leadingComments": null
                         },
                         "right": {
-                          "type": "Literal",
+                          "type": "StringLiteral",
                           "start": 857,
                           "end": 863,
                           "loc": {
@@ -871,9 +847,11 @@
                               "column": 39
                             }
                           },
-                          "value": "Home",
-                          "rawValue": "Home",
-                          "raw": "'Home'"
+                          "extra": {
+                            "rawValue": "Home",
+                            "raw": "'Home'"
+                          },
+                          "value": "Home"
                         },
                         "leadingComments": null
                       },
@@ -892,11 +870,7 @@
                               "line": 28,
                               "column": 93
                             }
-                          },
-                          "range": [
-                            683,
-                            768
-                          ]
+                          }
                         },
                         {
                           "type": "CommentLine",
@@ -912,11 +886,7 @@
                               "line": 29,
                               "column": 54
                             }
-                          },
-                          "range": [
-                            777,
-                            823
-                          ]
+                          }
                         }
                       ],
                       "trailingComments": [
@@ -934,11 +904,7 @@
                               "line": 32,
                               "column": 89
                             }
-                          },
-                          "range": [
-                            874,
-                            955
-                          ]
+                          }
                         },
                         {
                           "type": "CommentLine",
@@ -954,11 +920,7 @@
                               "line": 33,
                               "column": 59
                             }
-                          },
-                          "range": [
-                            964,
-                            1015
-                          ]
+                          }
                         }
                       ]
                     },
@@ -1033,7 +995,8 @@
                               "end": {
                                 "line": 34,
                                 "column": 26
-                              }
+                              },
+                              "identifierName": "defaultMethod"
                             },
                             "name": "defaultMethod"
                           },
@@ -1041,7 +1004,7 @@
                           "leadingComments": null
                         },
                         "right": {
-                          "type": "Literal",
+                          "type": "StringLiteral",
                           "start": 1045,
                           "end": 1052,
                           "loc": {
@@ -1054,9 +1017,11 @@
                               "column": 36
                             }
                           },
-                          "value": "Index",
-                          "rawValue": "Index",
-                          "raw": "'Index'"
+                          "extra": {
+                            "rawValue": "Index",
+                            "raw": "'Index'"
+                          },
+                          "value": "Index"
                         },
                         "leadingComments": null
                       },
@@ -1075,11 +1040,7 @@
                               "line": 32,
                               "column": 89
                             }
-                          },
-                          "range": [
-                            874,
-                            955
-                          ]
+                          }
                         },
                         {
                           "type": "CommentLine",
@@ -1095,61 +1056,37 @@
                               "line": 33,
                               "column": 59
                             }
-                          },
-                          "range": [
-                            964,
-                            1015
-                          ]
+                          }
                         }
                       ]
                     }
                   ],
+                  "directives": [],
                   "trailingComments": null
                 },
-                "trailingComments": null
-              },
-              "trailingComments": [
-                {
-                  "type": "Block",
-                  "value": "*\n     * On a route change, calls the corresponding controller method with the given parameter values.\n     * @returns {Boolean} Whether the current route was successfully ran.\n     ",
-                  "start": 1065,
-                  "end": 1251,
-                  "loc": {
-                    "start": {
-                      "line": 37,
-                      "column": 4
-                    },
-                    "end": {
-                      "line": 40,
-                      "column": 7
+                "trailingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n     * On a route change, calls the corresponding controller method with the given parameter values.\n     * @returns {Boolean} Whether the current route was successfully ran.\n     ",
+                    "start": 1065,
+                    "end": 1251,
+                    "loc": {
+                      "start": {
+                        "line": 37,
+                        "column": 4
+                      },
+                      "end": {
+                        "line": 40,
+                        "column": 7
+                      }
                     }
-                  },
-                  "range": [
-                    1065,
-                    1251
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "MethodDefinition",
-              "start": 1256,
-              "end": 1265,
-              "loc": {
-                "start": {
-                  "line": 41,
-                  "column": 4
-                },
-                "end": {
-                  "line": 41,
-                  "column": 13
-                }
+                  }
+                ]
               },
-              "computed": false,
-              "key": {
-                "type": "Identifier",
+              {
+                "type": "ClassMethod",
                 "start": 1256,
-                "end": 1259,
+                "end": 1265,
                 "loc": {
                   "start": {
                     "line": 41,
@@ -1157,28 +1094,30 @@
                   },
                   "end": {
                     "line": 41,
-                    "column": 7
-                  }
-                },
-                "name": "run",
-                "leadingComments": null
-              },
-              "static": false,
-              "kind": "method",
-              "value": {
-                "type": "FunctionExpression",
-                "start": 1259,
-                "end": 1265,
-                "loc": {
-                  "start": {
-                    "line": 41,
-                    "column": 7
-                  },
-                  "end": {
-                    "line": 41,
                     "column": 13
                   }
                 },
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "start": 1256,
+                  "end": 1259,
+                  "loc": {
+                    "start": {
+                      "line": 41,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 41,
+                      "column": 7
+                    },
+                    "identifierName": "run"
+                  },
+                  "name": "run",
+                  "leadingComments": null
+                },
+                "static": false,
+                "kind": "method",
                 "id": null,
                 "generator": false,
                 "expression": false,
@@ -1199,75 +1138,51 @@
                     }
                   },
                   "body": [],
+                  "directives": [],
                   "leadingComments": null,
                   "trailingComments": null
                 },
-                "trailingComments": null
-              },
-              "leadingComments": [
-                {
-                  "type": "Block",
-                  "value": "*\n     * On a route change, calls the corresponding controller method with the given parameter values.\n     * @returns {Boolean} Whether the current route was successfully ran.\n     ",
-                  "start": 1065,
-                  "end": 1251,
-                  "loc": {
-                    "start": {
-                      "line": 37,
-                      "column": 4
-                    },
-                    "end": {
-                      "line": 40,
-                      "column": 7
+                "leadingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n     * On a route change, calls the corresponding controller method with the given parameter values.\n     * @returns {Boolean} Whether the current route was successfully ran.\n     ",
+                    "start": 1065,
+                    "end": 1251,
+                    "loc": {
+                      "start": {
+                        "line": 37,
+                        "column": 4
+                      },
+                      "end": {
+                        "line": 40,
+                        "column": 7
+                      }
                     }
-                  },
-                  "range": [
-                    1065,
-                    1251
-                  ]
-                }
-              ],
-              "trailingComments": [
-                {
-                  "type": "Block",
-                  "value": "*\n     * Sets the initial controller and method to be activated whenever the controllers are activated.\n     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.\n     * @param {String} method Default method to call in given controller.\n     * @returns {void}\n     ",
-                  "start": 1272,
-                  "end": 1618,
-                  "loc": {
-                    "start": {
-                      "line": 44,
-                      "column": 4
-                    },
-                    "end": {
-                      "line": 49,
-                      "column": 7
+                  }
+                ],
+                "trailingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n     * Sets the initial controller and method to be activated whenever the controllers are activated.\n     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.\n     * @param {String} method Default method to call in given controller.\n     * @returns {void}\n     ",
+                    "start": 1272,
+                    "end": 1618,
+                    "loc": {
+                      "start": {
+                        "line": 44,
+                        "column": 4
+                      },
+                      "end": {
+                        "line": 49,
+                        "column": 7
+                      }
                     }
-                  },
-                  "range": [
-                    1272,
-                    1618
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "MethodDefinition",
-              "start": 1623,
-              "end": 1657,
-              "loc": {
-                "start": {
-                  "line": 50,
-                  "column": 4
-                },
-                "end": {
-                  "line": 50,
-                  "column": 38
-                }
+                  }
+                ]
               },
-              "computed": false,
-              "key": {
-                "type": "Identifier",
+              {
+                "type": "ClassMethod",
                 "start": 1623,
-                "end": 1633,
+                "end": 1657,
                 "loc": {
                   "start": {
                     "line": 50,
@@ -1275,28 +1190,30 @@
                   },
                   "end": {
                     "line": 50,
-                    "column": 14
-                  }
-                },
-                "name": "setDefault",
-                "leadingComments": null
-              },
-              "static": false,
-              "kind": "method",
-              "value": {
-                "type": "FunctionExpression",
-                "start": 1633,
-                "end": 1657,
-                "loc": {
-                  "start": {
-                    "line": 50,
-                    "column": 14
-                  },
-                  "end": {
-                    "line": 50,
                     "column": 38
                   }
                 },
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "start": 1623,
+                  "end": 1633,
+                  "loc": {
+                    "start": {
+                      "line": 50,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 50,
+                      "column": 14
+                    },
+                    "identifierName": "setDefault"
+                  },
+                  "name": "setDefault",
+                  "leadingComments": null
+                },
+                "static": false,
+                "kind": "method",
                 "id": null,
                 "generator": false,
                 "expression": false,
@@ -1314,7 +1231,8 @@
                       "end": {
                         "line": 50,
                         "column": 25
-                      }
+                      },
+                      "identifierName": "controller"
                     },
                     "name": "controller"
                   },
@@ -1330,7 +1248,8 @@
                       "end": {
                         "line": 50,
                         "column": 33
-                      }
+                      },
+                      "identifierName": "method"
                     },
                     "name": "method"
                   }
@@ -1350,75 +1269,51 @@
                     }
                   },
                   "body": [],
+                  "directives": [],
                   "leadingComments": null,
                   "trailingComments": null
                 },
-                "trailingComments": null
-              },
-              "leadingComments": [
-                {
-                  "type": "Block",
-                  "value": "*\n     * Sets the initial controller and method to be activated whenever the controllers are activated.\n     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.\n     * @param {String} method Default method to call in given controller.\n     * @returns {void}\n     ",
-                  "start": 1272,
-                  "end": 1618,
-                  "loc": {
-                    "start": {
-                      "line": 44,
-                      "column": 4
-                    },
-                    "end": {
-                      "line": 49,
-                      "column": 7
+                "leadingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n     * Sets the initial controller and method to be activated whenever the controllers are activated.\n     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.\n     * @param {String} method Default method to call in given controller.\n     * @returns {void}\n     ",
+                    "start": 1272,
+                    "end": 1618,
+                    "loc": {
+                      "start": {
+                        "line": 44,
+                        "column": 4
+                      },
+                      "end": {
+                        "line": 49,
+                        "column": 7
+                      }
                     }
-                  },
-                  "range": [
-                    1272,
-                    1618
-                  ]
-                }
-              ],
-              "trailingComments": [
-                {
-                  "type": "Block",
-                  "value": "*\n     * Registers a single controller.\n     * @param {String} route Route to trigger handler on.\n     * @param {Function} handler Method to call on given route.\n     * @returns {void}\n     ",
-                  "start": 1663,
-                  "end": 1857,
-                  "loc": {
-                    "start": {
-                      "line": 52,
-                      "column": 4
-                    },
-                    "end": {
-                      "line": 57,
-                      "column": 7
+                  }
+                ],
+                "trailingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n     * Registers a single controller.\n     * @param {String} route Route to trigger handler on.\n     * @param {Function} handler Method to call on given route.\n     * @returns {void}\n     ",
+                    "start": 1663,
+                    "end": 1857,
+                    "loc": {
+                      "start": {
+                        "line": 52,
+                        "column": 4
+                      },
+                      "end": {
+                        "line": 57,
+                        "column": 7
+                      }
                     }
-                  },
-                  "range": [
-                    1663,
-                    1857
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "MethodDefinition",
-              "start": 1862,
-              "end": 1885,
-              "loc": {
-                "start": {
-                  "line": 58,
-                  "column": 4
-                },
-                "end": {
-                  "line": 58,
-                  "column": 27
-                }
+                  }
+                ]
               },
-              "computed": false,
-              "key": {
-                "type": "Identifier",
+              {
+                "type": "ClassMethod",
                 "start": 1862,
-                "end": 1865,
+                "end": 1885,
                 "loc": {
                   "start": {
                     "line": 58,
@@ -1426,28 +1321,30 @@
                   },
                   "end": {
                     "line": 58,
-                    "column": 7
-                  }
-                },
-                "name": "add",
-                "leadingComments": null
-              },
-              "static": false,
-              "kind": "method",
-              "value": {
-                "type": "FunctionExpression",
-                "start": 1865,
-                "end": 1885,
-                "loc": {
-                  "start": {
-                    "line": 58,
-                    "column": 7
-                  },
-                  "end": {
-                    "line": 58,
                     "column": 27
                   }
                 },
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "start": 1862,
+                  "end": 1865,
+                  "loc": {
+                    "start": {
+                      "line": 58,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 58,
+                      "column": 7
+                    },
+                    "identifierName": "add"
+                  },
+                  "name": "add",
+                  "leadingComments": null
+                },
+                "static": false,
+                "kind": "method",
                 "id": null,
                 "generator": false,
                 "expression": false,
@@ -1465,7 +1362,8 @@
                       "end": {
                         "line": 58,
                         "column": 13
-                      }
+                      },
+                      "identifierName": "route"
                     },
                     "name": "route"
                   },
@@ -1481,7 +1379,8 @@
                       "end": {
                         "line": 58,
                         "column": 22
-                      }
+                      },
+                      "identifierName": "handler"
                     },
                     "name": "handler"
                   }
@@ -1501,75 +1400,51 @@
                     }
                   },
                   "body": [],
+                  "directives": [],
                   "leadingComments": null,
                   "trailingComments": null
                 },
-                "trailingComments": null
-              },
-              "leadingComments": [
-                {
-                  "type": "Block",
-                  "value": "*\n     * Registers a single controller.\n     * @param {String} route Route to trigger handler on.\n     * @param {Function} handler Method to call on given route.\n     * @returns {void}\n     ",
-                  "start": 1663,
-                  "end": 1857,
-                  "loc": {
-                    "start": {
-                      "line": 52,
-                      "column": 4
-                    },
-                    "end": {
-                      "line": 57,
-                      "column": 7
+                "leadingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n     * Registers a single controller.\n     * @param {String} route Route to trigger handler on.\n     * @param {Function} handler Method to call on given route.\n     * @returns {void}\n     ",
+                    "start": 1663,
+                    "end": 1857,
+                    "loc": {
+                      "start": {
+                        "line": 52,
+                        "column": 4
+                      },
+                      "end": {
+                        "line": 57,
+                        "column": 7
+                      }
                     }
-                  },
-                  "range": [
-                    1663,
-                    1857
-                  ]
-                }
-              ],
-              "trailingComments": [
-                {
-                  "type": "Block",
-                  "value": "*\n     * Triggers navigation to one of the controllers\n     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.\n     * @param {String} method The method to call in given controller.\n     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: \"yes\"})\n     * @returns {void}\n     ",
-                  "start": 1891,
-                  "end": 2294,
-                  "loc": {
-                    "start": {
-                      "line": 60,
-                      "column": 4
-                    },
-                    "end": {
-                      "line": 66,
-                      "column": 7
+                  }
+                ],
+                "trailingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n     * Triggers navigation to one of the controllers\n     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.\n     * @param {String} method The method to call in given controller.\n     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: \"yes\"})\n     * @returns {void}\n     ",
+                    "start": 1891,
+                    "end": 2294,
+                    "loc": {
+                      "start": {
+                        "line": 60,
+                        "column": 4
+                      },
+                      "end": {
+                        "line": 66,
+                        "column": 7
+                      }
                     }
-                  },
-                  "range": [
-                    1891,
-                    2294
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "MethodDefinition",
-              "start": 2299,
-              "end": 2333,
-              "loc": {
-                "start": {
-                  "line": 67,
-                  "column": 4
-                },
-                "end": {
-                  "line": 67,
-                  "column": 38
-                }
+                  }
+                ]
               },
-              "computed": false,
-              "key": {
-                "type": "Identifier",
+              {
+                "type": "ClassMethod",
                 "start": 2299,
-                "end": 2301,
+                "end": 2333,
                 "loc": {
                   "start": {
                     "line": 67,
@@ -1577,28 +1452,30 @@
                   },
                   "end": {
                     "line": 67,
-                    "column": 6
-                  }
-                },
-                "name": "go",
-                "leadingComments": null
-              },
-              "static": false,
-              "kind": "method",
-              "value": {
-                "type": "FunctionExpression",
-                "start": 2301,
-                "end": 2333,
-                "loc": {
-                  "start": {
-                    "line": 67,
-                    "column": 6
-                  },
-                  "end": {
-                    "line": 67,
                     "column": 38
                   }
                 },
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "start": 2299,
+                  "end": 2301,
+                  "loc": {
+                    "start": {
+                      "line": 67,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 67,
+                      "column": 6
+                    },
+                    "identifierName": "go"
+                  },
+                  "name": "go",
+                  "leadingComments": null
+                },
+                "static": false,
+                "kind": "method",
                 "id": null,
                 "generator": false,
                 "expression": false,
@@ -1616,7 +1493,8 @@
                       "end": {
                         "line": 67,
                         "column": 17
-                      }
+                      },
+                      "identifierName": "controller"
                     },
                     "name": "controller"
                   },
@@ -1632,7 +1510,8 @@
                       "end": {
                         "line": 67,
                         "column": 25
-                      }
+                      },
+                      "identifierName": "method"
                     },
                     "name": "method"
                   },
@@ -1648,7 +1527,8 @@
                       "end": {
                         "line": 67,
                         "column": 33
-                      }
+                      },
+                      "identifierName": "params"
                     },
                     "name": "params"
                   }
@@ -1668,75 +1548,51 @@
                     }
                   },
                   "body": [],
+                  "directives": [],
                   "leadingComments": null,
                   "trailingComments": null
                 },
-                "trailingComments": null
-              },
-              "leadingComments": [
-                {
-                  "type": "Block",
-                  "value": "*\n     * Triggers navigation to one of the controllers\n     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.\n     * @param {String} method The method to call in given controller.\n     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: \"yes\"})\n     * @returns {void}\n     ",
-                  "start": 1891,
-                  "end": 2294,
-                  "loc": {
-                    "start": {
-                      "line": 60,
-                      "column": 4
-                    },
-                    "end": {
-                      "line": 66,
-                      "column": 7
+                "leadingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n     * Triggers navigation to one of the controllers\n     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.\n     * @param {String} method The method to call in given controller.\n     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: \"yes\"})\n     * @returns {void}\n     ",
+                    "start": 1891,
+                    "end": 2294,
+                    "loc": {
+                      "start": {
+                        "line": 60,
+                        "column": 4
+                      },
+                      "end": {
+                        "line": 66,
+                        "column": 7
+                      }
                     }
-                  },
-                  "range": [
-                    1891,
-                    2294
-                  ]
-                }
-              ],
-              "trailingComments": [
-                {
-                  "type": "Block",
-                  "value": "*\n     * Executes the controller handler associated with a given route, passing the route as a parameter.\n     * @param {Object} rule Rule handler to execute.\n     * @param {Object} route Route object to pass as parameter.\n     * @returns {void}\n     * @private\n     ",
-                  "start": 2339,
-                  "end": 2610,
-                  "loc": {
-                    "start": {
-                      "line": 69,
-                      "column": 4
-                    },
-                    "end": {
-                      "line": 75,
-                      "column": 7
+                  }
+                ],
+                "trailingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n     * Executes the controller handler associated with a given route, passing the route as a parameter.\n     * @param {Object} rule Rule handler to execute.\n     * @param {Object} route Route object to pass as parameter.\n     * @returns {void}\n     * @private\n     ",
+                    "start": 2339,
+                    "end": 2610,
+                    "loc": {
+                      "start": {
+                        "line": 69,
+                        "column": 4
+                      },
+                      "end": {
+                        "line": 75,
+                        "column": 7
+                      }
                     }
-                  },
-                  "range": [
-                    2339,
-                    2610
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "MethodDefinition",
-              "start": 2615,
-              "end": 2645,
-              "loc": {
-                "start": {
-                  "line": 76,
-                  "column": 4
-                },
-                "end": {
-                  "line": 76,
-                  "column": 34
-                }
+                  }
+                ]
               },
-              "computed": false,
-              "key": {
-                "type": "Identifier",
+              {
+                "type": "ClassMethod",
                 "start": 2615,
-                "end": 2628,
+                "end": 2645,
                 "loc": {
                   "start": {
                     "line": 76,
@@ -1744,28 +1600,30 @@
                   },
                   "end": {
                     "line": 76,
-                    "column": 17
-                  }
-                },
-                "name": "_executeRoute",
-                "leadingComments": null
-              },
-              "static": false,
-              "kind": "method",
-              "value": {
-                "type": "FunctionExpression",
-                "start": 2628,
-                "end": 2645,
-                "loc": {
-                  "start": {
-                    "line": 76,
-                    "column": 17
-                  },
-                  "end": {
-                    "line": 76,
                     "column": 34
                   }
                 },
+                "computed": false,
+                "key": {
+                  "type": "Identifier",
+                  "start": 2615,
+                  "end": 2628,
+                  "loc": {
+                    "start": {
+                      "line": 76,
+                      "column": 4
+                    },
+                    "end": {
+                      "line": 76,
+                      "column": 17
+                    },
+                    "identifierName": "_executeRoute"
+                  },
+                  "name": "_executeRoute",
+                  "leadingComments": null
+                },
+                "static": false,
+                "kind": "method",
                 "id": null,
                 "generator": false,
                 "expression": false,
@@ -1783,7 +1641,8 @@
                       "end": {
                         "line": 76,
                         "column": 22
-                      }
+                      },
+                      "identifierName": "rule"
                     },
                     "name": "rule"
                   },
@@ -1799,7 +1658,8 @@
                       "end": {
                         "line": 76,
                         "column": 29
-                      }
+                      },
+                      "identifierName": "route"
                     },
                     "name": "route"
                   }
@@ -1818,37 +1678,53 @@
                       "column": 34
                     }
                   },
-                  "body": []
-                }
-              },
-              "leadingComments": [
-                {
-                  "type": "Block",
-                  "value": "*\n     * Executes the controller handler associated with a given route, passing the route as a parameter.\n     * @param {Object} rule Rule handler to execute.\n     * @param {Object} route Route object to pass as parameter.\n     * @returns {void}\n     * @private\n     ",
-                  "start": 2339,
-                  "end": 2610,
-                  "loc": {
-                    "start": {
-                      "line": 69,
-                      "column": 4
-                    },
-                    "end": {
-                      "line": 75,
-                      "column": 7
+                  "body": [],
+                  "directives": []
+                },
+                "leadingComments": [
+                  {
+                    "type": "CommentBlock",
+                    "value": "*\n     * Executes the controller handler associated with a given route, passing the route as a parameter.\n     * @param {Object} rule Rule handler to execute.\n     * @param {Object} route Route object to pass as parameter.\n     * @returns {void}\n     * @private\n     ",
+                    "start": 2339,
+                    "end": 2610,
+                    "loc": {
+                      "start": {
+                        "line": 69,
+                        "column": 4
+                      },
+                      "end": {
+                        "line": 75,
+                        "column": 7
+                      }
                     }
-                  },
-                  "range": [
-                    2339,
-                    2610
-                  ]
+                  }
+                ]
+              }
+            ]
+          },
+          "leadingComments": [
+            {
+              "type": "CommentBlock",
+              "value": "*\n * Abstract Router class which can be implemented to be used in an MVP setup.\n ",
+              "start": 225,
+              "end": 310,
+              "loc": {
+                "start": {
+                  "line": 13,
+                  "column": 0
+                },
+                "end": {
+                  "line": 15,
+                  "column": 3
                 }
-              ]
+              }
             }
-          ]
+          ],
+          "trailingComments": []
         },
         "leadingComments": [
           {
-            "type": "Block",
+            "type": "CommentBlock",
             "value": "*\n * Abstract Router class which can be implemented to be used in an MVP setup.\n ",
             "start": 225,
             "end": 310,
@@ -1861,39 +1737,2957 @@
                 "line": 15,
                 "column": 3
               }
-            },
-            "range": [
-              225,
-              310
-            ]
+            }
           }
         ],
-        "trailingComments": []
-      },
-      "specifiers": [],
-      "source": null,
-      "leadingComments": [
-        {
-          "type": "Block",
-          "value": "*\n * Abstract Router class which can be implemented to be used in an MVP setup.\n ",
-          "start": 225,
-          "end": 310,
-          "loc": {
-            "start": {
-              "line": 13,
-              "column": 0
-            },
-            "end": {
-              "line": 15,
-              "column": 3
-            }
-          },
-          "range": [
-            225,
-            310
-          ]
+        "exportKind": "value"
+      }
+    ],
+    "directives": []
+  },
+  "comments": [
+    {
+      "type": "CommentBlock",
+      "value": "*\n\n\n @author: Hans van den Akker (mysim1)\n @license NPOSL-3.0\n @copyright Bizboard, 2015\n\n ",
+      "start": 0,
+      "end": 95,
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 0
+        },
+        "end": {
+          "line": 8,
+          "column": 3
         }
-      ]
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * Abstract Router class which can be implemented to be used in an MVP setup.\n ",
+      "start": 225,
+      "end": 310,
+      "loc": {
+        "start": {
+          "line": 13,
+          "column": 0
+        },
+        "end": {
+          "line": 15,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " make classes behave like context bound",
+      "start": 401,
+      "end": 442,
+      "loc": {
+        "start": {
+          "line": 21,
+          "column": 8
+        },
+        "end": {
+          "line": 21,
+          "column": 49
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " make the router aware of controllers active in the application",
+      "start": 501,
+      "end": 566,
+      "loc": {
+        "start": {
+          "line": 24,
+          "column": 8
+        },
+        "end": {
+          "line": 24,
+          "column": 73
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " each controller will need to subscribe itself to this container.",
+      "start": 575,
+      "end": 642,
+      "loc": {
+        "start": {
+          "line": 25,
+          "column": 8
+        },
+        "end": {
+          "line": 25,
+          "column": 75
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " when a default controller is designated. The router will map every route without a",
+      "start": 683,
+      "end": 768,
+      "loc": {
+        "start": {
+          "line": 28,
+          "column": 8
+        },
+        "end": {
+          "line": 28,
+          "column": 93
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " controller reference to the HomeController.",
+      "start": 777,
+      "end": 823,
+      "loc": {
+        "start": {
+          "line": 29,
+          "column": 8
+        },
+        "end": {
+          "line": 29,
+          "column": 54
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " when a default method is designated. the router map will every route without a",
+      "start": 874,
+      "end": 955,
+      "loc": {
+        "start": {
+          "line": 32,
+          "column": 8
+        },
+        "end": {
+          "line": 32,
+          "column": 89
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " method reference to the HomeController's method.",
+      "start": 964,
+      "end": 1015,
+      "loc": {
+        "start": {
+          "line": 33,
+          "column": 8
+        },
+        "end": {
+          "line": 33,
+          "column": 59
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n     * On a route change, calls the corresponding controller method with the given parameter values.\n     * @returns {Boolean} Whether the current route was successfully ran.\n     ",
+      "start": 1065,
+      "end": 1251,
+      "loc": {
+        "start": {
+          "line": 37,
+          "column": 4
+        },
+        "end": {
+          "line": 40,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n     * Sets the initial controller and method to be activated whenever the controllers are activated.\n     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.\n     * @param {String} method Default method to call in given controller.\n     * @returns {void}\n     ",
+      "start": 1272,
+      "end": 1618,
+      "loc": {
+        "start": {
+          "line": 44,
+          "column": 4
+        },
+        "end": {
+          "line": 49,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n     * Registers a single controller.\n     * @param {String} route Route to trigger handler on.\n     * @param {Function} handler Method to call on given route.\n     * @returns {void}\n     ",
+      "start": 1663,
+      "end": 1857,
+      "loc": {
+        "start": {
+          "line": 52,
+          "column": 4
+        },
+        "end": {
+          "line": 57,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n     * Triggers navigation to one of the controllers\n     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.\n     * @param {String} method The method to call in given controller.\n     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: \"yes\"})\n     * @returns {void}\n     ",
+      "start": 1891,
+      "end": 2294,
+      "loc": {
+        "start": {
+          "line": 60,
+          "column": 4
+        },
+        "end": {
+          "line": 66,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n     * Executes the controller handler associated with a given route, passing the route as a parameter.\n     * @param {Object} rule Rule handler to execute.\n     * @param {Object} route Route object to pass as parameter.\n     * @returns {void}\n     * @private\n     ",
+      "start": 2339,
+      "end": 2610,
+      "loc": {
+        "start": {
+          "line": 69,
+          "column": 4
+        },
+        "end": {
+          "line": 75,
+          "column": 7
+        }
+      }
+    }
+  ],
+  "tokens": [
+    {
+      "type": "CommentBlock",
+      "value": "*\n\n\n @author: Hans van den Akker (mysim1)\n @license NPOSL-3.0\n @copyright Bizboard, 2015\n\n ",
+      "start": 0,
+      "end": 95,
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 0
+        },
+        "end": {
+          "line": 8,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "import",
+        "keyword": "import",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "import",
+      "start": 97,
+      "end": 103,
+      "loc": {
+        "start": {
+          "line": 10,
+          "column": 0
+        },
+        "end": {
+          "line": 10,
+          "column": 6
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "EventEmitter",
+      "start": 104,
+      "end": 116,
+      "loc": {
+        "start": {
+          "line": 10,
+          "column": 7
+        },
+        "end": {
+          "line": 10,
+          "column": 19
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "from",
+      "start": 133,
+      "end": 137,
+      "loc": {
+        "start": {
+          "line": 10,
+          "column": 36
+        },
+        "end": {
+          "line": 10,
+          "column": 40
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "string",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "eventemitter3",
+      "start": 138,
+      "end": 153,
+      "loc": {
+        "start": {
+          "line": 10,
+          "column": 41
+        },
+        "end": {
+          "line": 10,
+          "column": 56
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 153,
+      "end": 154,
+      "loc": {
+        "start": {
+          "line": 10,
+          "column": 56
+        },
+        "end": {
+          "line": 10,
+          "column": 57
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "import",
+        "keyword": "import",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "import",
+      "start": 155,
+      "end": 161,
+      "loc": {
+        "start": {
+          "line": 11,
+          "column": 0
+        },
+        "end": {
+          "line": 11,
+          "column": 6
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "{",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 162,
+      "end": 163,
+      "loc": {
+        "start": {
+          "line": 11,
+          "column": 7
+        },
+        "end": {
+          "line": 11,
+          "column": 8
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "ObjectHelper",
+      "start": 163,
+      "end": 175,
+      "loc": {
+        "start": {
+          "line": 11,
+          "column": 8
+        },
+        "end": {
+          "line": 11,
+          "column": 20
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "}",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 175,
+      "end": 176,
+      "loc": {
+        "start": {
+          "line": 11,
+          "column": 20
+        },
+        "end": {
+          "line": 11,
+          "column": 21
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "from",
+      "start": 191,
+      "end": 195,
+      "loc": {
+        "start": {
+          "line": 11,
+          "column": 36
+        },
+        "end": {
+          "line": 11,
+          "column": 40
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "string",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "../utils/ObjectHelper.js",
+      "start": 196,
+      "end": 222,
+      "loc": {
+        "start": {
+          "line": 11,
+          "column": 41
+        },
+        "end": {
+          "line": 11,
+          "column": 67
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 222,
+      "end": 223,
+      "loc": {
+        "start": {
+          "line": 11,
+          "column": 67
+        },
+        "end": {
+          "line": 11,
+          "column": 68
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n * Abstract Router class which can be implemented to be used in an MVP setup.\n ",
+      "start": 225,
+      "end": 310,
+      "loc": {
+        "start": {
+          "line": 13,
+          "column": 0
+        },
+        "end": {
+          "line": 15,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "export",
+        "keyword": "export",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "export",
+      "start": 311,
+      "end": 317,
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 0
+        },
+        "end": {
+          "line": 16,
+          "column": 6
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "class",
+        "keyword": "class",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "class",
+      "start": 318,
+      "end": 323,
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 7
+        },
+        "end": {
+          "line": 16,
+          "column": 12
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "Router",
+      "start": 324,
+      "end": 330,
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 13
+        },
+        "end": {
+          "line": 16,
+          "column": 19
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "extends",
+        "keyword": "extends",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "extends",
+      "start": 331,
+      "end": 338,
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 20
+        },
+        "end": {
+          "line": 16,
+          "column": 27
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "EventEmitter",
+      "start": 339,
+      "end": 351,
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 28
+        },
+        "end": {
+          "line": 16,
+          "column": 40
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "{",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 352,
+      "end": 353,
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 41
+        },
+        "end": {
+          "line": 16,
+          "column": 42
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "constructor",
+      "start": 360,
+      "end": 371,
+      "loc": {
+        "start": {
+          "line": 19,
+          "column": 4
+        },
+        "end": {
+          "line": 19,
+          "column": 15
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "(",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 371,
+      "end": 372,
+      "loc": {
+        "start": {
+          "line": 19,
+          "column": 15
+        },
+        "end": {
+          "line": 19,
+          "column": 16
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ")",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 372,
+      "end": 373,
+      "loc": {
+        "start": {
+          "line": 19,
+          "column": 16
+        },
+        "end": {
+          "line": 19,
+          "column": 17
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "{",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 374,
+      "end": 375,
+      "loc": {
+        "start": {
+          "line": 19,
+          "column": 18
+        },
+        "end": {
+          "line": 19,
+          "column": 19
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "super",
+        "keyword": "super",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "super",
+      "start": 384,
+      "end": 389,
+      "loc": {
+        "start": {
+          "line": 20,
+          "column": 8
+        },
+        "end": {
+          "line": 20,
+          "column": 13
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "(",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 389,
+      "end": 390,
+      "loc": {
+        "start": {
+          "line": 20,
+          "column": 13
+        },
+        "end": {
+          "line": 20,
+          "column": 14
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ")",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 390,
+      "end": 391,
+      "loc": {
+        "start": {
+          "line": 20,
+          "column": 14
+        },
+        "end": {
+          "line": 20,
+          "column": 15
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 391,
+      "end": 392,
+      "loc": {
+        "start": {
+          "line": 20,
+          "column": 15
+        },
+        "end": {
+          "line": 20,
+          "column": 16
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " make classes behave like context bound",
+      "start": 401,
+      "end": 442,
+      "loc": {
+        "start": {
+          "line": 21,
+          "column": 8
+        },
+        "end": {
+          "line": 21,
+          "column": 49
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "ObjectHelper",
+      "start": 451,
+      "end": 463,
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 8
+        },
+        "end": {
+          "line": 22,
+          "column": 20
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ".",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 463,
+      "end": 464,
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 20
+        },
+        "end": {
+          "line": 22,
+          "column": 21
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "bindAllMethods",
+      "start": 464,
+      "end": 478,
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 21
+        },
+        "end": {
+          "line": 22,
+          "column": 35
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "(",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 478,
+      "end": 479,
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 35
+        },
+        "end": {
+          "line": 22,
+          "column": 36
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "this",
+        "keyword": "this",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "this",
+      "start": 479,
+      "end": 483,
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 36
+        },
+        "end": {
+          "line": 22,
+          "column": 40
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ",",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 483,
+      "end": 484,
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 40
+        },
+        "end": {
+          "line": 22,
+          "column": 41
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "this",
+        "keyword": "this",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "this",
+      "start": 485,
+      "end": 489,
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 42
+        },
+        "end": {
+          "line": 22,
+          "column": 46
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ")",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 489,
+      "end": 490,
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 46
+        },
+        "end": {
+          "line": 22,
+          "column": 47
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 490,
+      "end": 491,
+      "loc": {
+        "start": {
+          "line": 22,
+          "column": 47
+        },
+        "end": {
+          "line": 22,
+          "column": 48
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " make the router aware of controllers active in the application",
+      "start": 501,
+      "end": 566,
+      "loc": {
+        "start": {
+          "line": 24,
+          "column": 8
+        },
+        "end": {
+          "line": 24,
+          "column": 73
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " each controller will need to subscribe itself to this container.",
+      "start": 575,
+      "end": 642,
+      "loc": {
+        "start": {
+          "line": 25,
+          "column": 8
+        },
+        "end": {
+          "line": 25,
+          "column": 75
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "this",
+        "keyword": "this",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "this",
+      "start": 651,
+      "end": 655,
+      "loc": {
+        "start": {
+          "line": 26,
+          "column": 8
+        },
+        "end": {
+          "line": 26,
+          "column": 12
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ".",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 655,
+      "end": 656,
+      "loc": {
+        "start": {
+          "line": 26,
+          "column": 12
+        },
+        "end": {
+          "line": 26,
+          "column": 13
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "controllers",
+      "start": 656,
+      "end": 667,
+      "loc": {
+        "start": {
+          "line": 26,
+          "column": 13
+        },
+        "end": {
+          "line": 26,
+          "column": 24
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "=",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": true,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "=",
+      "start": 668,
+      "end": 669,
+      "loc": {
+        "start": {
+          "line": 26,
+          "column": 25
+        },
+        "end": {
+          "line": 26,
+          "column": 26
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "[",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 670,
+      "end": 671,
+      "loc": {
+        "start": {
+          "line": 26,
+          "column": 27
+        },
+        "end": {
+          "line": 26,
+          "column": 28
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "]",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 671,
+      "end": 672,
+      "loc": {
+        "start": {
+          "line": 26,
+          "column": 28
+        },
+        "end": {
+          "line": 26,
+          "column": 29
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 672,
+      "end": 673,
+      "loc": {
+        "start": {
+          "line": 26,
+          "column": 29
+        },
+        "end": {
+          "line": 26,
+          "column": 30
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " when a default controller is designated. The router will map every route without a",
+      "start": 683,
+      "end": 768,
+      "loc": {
+        "start": {
+          "line": 28,
+          "column": 8
+        },
+        "end": {
+          "line": 28,
+          "column": 93
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " controller reference to the HomeController.",
+      "start": 777,
+      "end": 823,
+      "loc": {
+        "start": {
+          "line": 29,
+          "column": 8
+        },
+        "end": {
+          "line": 29,
+          "column": 54
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "this",
+        "keyword": "this",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "this",
+      "start": 832,
+      "end": 836,
+      "loc": {
+        "start": {
+          "line": 30,
+          "column": 8
+        },
+        "end": {
+          "line": 30,
+          "column": 12
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ".",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 836,
+      "end": 837,
+      "loc": {
+        "start": {
+          "line": 30,
+          "column": 12
+        },
+        "end": {
+          "line": 30,
+          "column": 13
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "defaultController",
+      "start": 837,
+      "end": 854,
+      "loc": {
+        "start": {
+          "line": 30,
+          "column": 13
+        },
+        "end": {
+          "line": 30,
+          "column": 30
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "=",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": true,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "=",
+      "start": 855,
+      "end": 856,
+      "loc": {
+        "start": {
+          "line": 30,
+          "column": 31
+        },
+        "end": {
+          "line": 30,
+          "column": 32
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "string",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "Home",
+      "start": 857,
+      "end": 863,
+      "loc": {
+        "start": {
+          "line": 30,
+          "column": 33
+        },
+        "end": {
+          "line": 30,
+          "column": 39
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 863,
+      "end": 864,
+      "loc": {
+        "start": {
+          "line": 30,
+          "column": 39
+        },
+        "end": {
+          "line": 30,
+          "column": 40
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " when a default method is designated. the router map will every route without a",
+      "start": 874,
+      "end": 955,
+      "loc": {
+        "start": {
+          "line": 32,
+          "column": 8
+        },
+        "end": {
+          "line": 32,
+          "column": 89
+        }
+      }
+    },
+    {
+      "type": "CommentLine",
+      "value": " method reference to the HomeController's method.",
+      "start": 964,
+      "end": 1015,
+      "loc": {
+        "start": {
+          "line": 33,
+          "column": 8
+        },
+        "end": {
+          "line": 33,
+          "column": 59
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "this",
+        "keyword": "this",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "this",
+      "start": 1024,
+      "end": 1028,
+      "loc": {
+        "start": {
+          "line": 34,
+          "column": 8
+        },
+        "end": {
+          "line": 34,
+          "column": 12
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ".",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 1028,
+      "end": 1029,
+      "loc": {
+        "start": {
+          "line": 34,
+          "column": 12
+        },
+        "end": {
+          "line": 34,
+          "column": 13
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "defaultMethod",
+      "start": 1029,
+      "end": 1042,
+      "loc": {
+        "start": {
+          "line": 34,
+          "column": 13
+        },
+        "end": {
+          "line": 34,
+          "column": 26
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "=",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": true,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "=",
+      "start": 1043,
+      "end": 1044,
+      "loc": {
+        "start": {
+          "line": 34,
+          "column": 27
+        },
+        "end": {
+          "line": 34,
+          "column": 28
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "string",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "Index",
+      "start": 1045,
+      "end": 1052,
+      "loc": {
+        "start": {
+          "line": 34,
+          "column": 29
+        },
+        "end": {
+          "line": 34,
+          "column": 36
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 1052,
+      "end": 1053,
+      "loc": {
+        "start": {
+          "line": 34,
+          "column": 36
+        },
+        "end": {
+          "line": 34,
+          "column": 37
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "}",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1058,
+      "end": 1059,
+      "loc": {
+        "start": {
+          "line": 35,
+          "column": 4
+        },
+        "end": {
+          "line": 35,
+          "column": 5
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n     * On a route change, calls the corresponding controller method with the given parameter values.\n     * @returns {Boolean} Whether the current route was successfully ran.\n     ",
+      "start": 1065,
+      "end": 1251,
+      "loc": {
+        "start": {
+          "line": 37,
+          "column": 4
+        },
+        "end": {
+          "line": 40,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "run",
+      "start": 1256,
+      "end": 1259,
+      "loc": {
+        "start": {
+          "line": 41,
+          "column": 4
+        },
+        "end": {
+          "line": 41,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "(",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1259,
+      "end": 1260,
+      "loc": {
+        "start": {
+          "line": 41,
+          "column": 7
+        },
+        "end": {
+          "line": 41,
+          "column": 8
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ")",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1260,
+      "end": 1261,
+      "loc": {
+        "start": {
+          "line": 41,
+          "column": 8
+        },
+        "end": {
+          "line": 41,
+          "column": 9
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "{",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1262,
+      "end": 1263,
+      "loc": {
+        "start": {
+          "line": 41,
+          "column": 10
+        },
+        "end": {
+          "line": 41,
+          "column": 11
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "}",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1264,
+      "end": 1265,
+      "loc": {
+        "start": {
+          "line": 41,
+          "column": 12
+        },
+        "end": {
+          "line": 41,
+          "column": 13
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n     * Sets the initial controller and method to be activated whenever the controllers are activated.\n     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.\n     * @param {String} method Default method to call in given controller.\n     * @returns {void}\n     ",
+      "start": 1272,
+      "end": 1618,
+      "loc": {
+        "start": {
+          "line": 44,
+          "column": 4
+        },
+        "end": {
+          "line": 49,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "setDefault",
+      "start": 1623,
+      "end": 1633,
+      "loc": {
+        "start": {
+          "line": 50,
+          "column": 4
+        },
+        "end": {
+          "line": 50,
+          "column": 14
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "(",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1633,
+      "end": 1634,
+      "loc": {
+        "start": {
+          "line": 50,
+          "column": 14
+        },
+        "end": {
+          "line": 50,
+          "column": 15
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "controller",
+      "start": 1634,
+      "end": 1644,
+      "loc": {
+        "start": {
+          "line": 50,
+          "column": 15
+        },
+        "end": {
+          "line": 50,
+          "column": 25
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ",",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 1644,
+      "end": 1645,
+      "loc": {
+        "start": {
+          "line": 50,
+          "column": 25
+        },
+        "end": {
+          "line": 50,
+          "column": 26
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "method",
+      "start": 1646,
+      "end": 1652,
+      "loc": {
+        "start": {
+          "line": 50,
+          "column": 27
+        },
+        "end": {
+          "line": 50,
+          "column": 33
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ")",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1652,
+      "end": 1653,
+      "loc": {
+        "start": {
+          "line": 50,
+          "column": 33
+        },
+        "end": {
+          "line": 50,
+          "column": 34
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "{",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1654,
+      "end": 1655,
+      "loc": {
+        "start": {
+          "line": 50,
+          "column": 35
+        },
+        "end": {
+          "line": 50,
+          "column": 36
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "}",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1656,
+      "end": 1657,
+      "loc": {
+        "start": {
+          "line": 50,
+          "column": 37
+        },
+        "end": {
+          "line": 50,
+          "column": 38
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n     * Registers a single controller.\n     * @param {String} route Route to trigger handler on.\n     * @param {Function} handler Method to call on given route.\n     * @returns {void}\n     ",
+      "start": 1663,
+      "end": 1857,
+      "loc": {
+        "start": {
+          "line": 52,
+          "column": 4
+        },
+        "end": {
+          "line": 57,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "add",
+      "start": 1862,
+      "end": 1865,
+      "loc": {
+        "start": {
+          "line": 58,
+          "column": 4
+        },
+        "end": {
+          "line": 58,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "(",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1865,
+      "end": 1866,
+      "loc": {
+        "start": {
+          "line": 58,
+          "column": 7
+        },
+        "end": {
+          "line": 58,
+          "column": 8
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "route",
+      "start": 1866,
+      "end": 1871,
+      "loc": {
+        "start": {
+          "line": 58,
+          "column": 8
+        },
+        "end": {
+          "line": 58,
+          "column": 13
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ",",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 1871,
+      "end": 1872,
+      "loc": {
+        "start": {
+          "line": 58,
+          "column": 13
+        },
+        "end": {
+          "line": 58,
+          "column": 14
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "handler",
+      "start": 1873,
+      "end": 1880,
+      "loc": {
+        "start": {
+          "line": 58,
+          "column": 15
+        },
+        "end": {
+          "line": 58,
+          "column": 22
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ")",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1880,
+      "end": 1881,
+      "loc": {
+        "start": {
+          "line": 58,
+          "column": 22
+        },
+        "end": {
+          "line": 58,
+          "column": 23
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "{",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1882,
+      "end": 1883,
+      "loc": {
+        "start": {
+          "line": 58,
+          "column": 24
+        },
+        "end": {
+          "line": 58,
+          "column": 25
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "}",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 1884,
+      "end": 1885,
+      "loc": {
+        "start": {
+          "line": 58,
+          "column": 26
+        },
+        "end": {
+          "line": 58,
+          "column": 27
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n     * Triggers navigation to one of the controllers\n     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.\n     * @param {String} method The method to call in given controller.\n     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: \"yes\"})\n     * @returns {void}\n     ",
+      "start": 1891,
+      "end": 2294,
+      "loc": {
+        "start": {
+          "line": 60,
+          "column": 4
+        },
+        "end": {
+          "line": 66,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "go",
+      "start": 2299,
+      "end": 2301,
+      "loc": {
+        "start": {
+          "line": 67,
+          "column": 4
+        },
+        "end": {
+          "line": 67,
+          "column": 6
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "(",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 2301,
+      "end": 2302,
+      "loc": {
+        "start": {
+          "line": 67,
+          "column": 6
+        },
+        "end": {
+          "line": 67,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "controller",
+      "start": 2302,
+      "end": 2312,
+      "loc": {
+        "start": {
+          "line": 67,
+          "column": 7
+        },
+        "end": {
+          "line": 67,
+          "column": 17
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ",",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 2312,
+      "end": 2313,
+      "loc": {
+        "start": {
+          "line": 67,
+          "column": 17
+        },
+        "end": {
+          "line": 67,
+          "column": 18
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "method",
+      "start": 2314,
+      "end": 2320,
+      "loc": {
+        "start": {
+          "line": 67,
+          "column": 19
+        },
+        "end": {
+          "line": 67,
+          "column": 25
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ",",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 2320,
+      "end": 2321,
+      "loc": {
+        "start": {
+          "line": 67,
+          "column": 25
+        },
+        "end": {
+          "line": 67,
+          "column": 26
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "params",
+      "start": 2322,
+      "end": 2328,
+      "loc": {
+        "start": {
+          "line": 67,
+          "column": 27
+        },
+        "end": {
+          "line": 67,
+          "column": 33
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ")",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 2328,
+      "end": 2329,
+      "loc": {
+        "start": {
+          "line": 67,
+          "column": 33
+        },
+        "end": {
+          "line": 67,
+          "column": 34
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "{",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 2330,
+      "end": 2331,
+      "loc": {
+        "start": {
+          "line": 67,
+          "column": 35
+        },
+        "end": {
+          "line": 67,
+          "column": 36
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "}",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 2332,
+      "end": 2333,
+      "loc": {
+        "start": {
+          "line": 67,
+          "column": 37
+        },
+        "end": {
+          "line": 67,
+          "column": 38
+        }
+      }
+    },
+    {
+      "type": "CommentBlock",
+      "value": "*\n     * Executes the controller handler associated with a given route, passing the route as a parameter.\n     * @param {Object} rule Rule handler to execute.\n     * @param {Object} route Route object to pass as parameter.\n     * @returns {void}\n     * @private\n     ",
+      "start": 2339,
+      "end": 2610,
+      "loc": {
+        "start": {
+          "line": 69,
+          "column": 4
+        },
+        "end": {
+          "line": 75,
+          "column": 7
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "_executeRoute",
+      "start": 2615,
+      "end": 2628,
+      "loc": {
+        "start": {
+          "line": 76,
+          "column": 4
+        },
+        "end": {
+          "line": 76,
+          "column": 17
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "(",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 2628,
+      "end": 2629,
+      "loc": {
+        "start": {
+          "line": 76,
+          "column": 17
+        },
+        "end": {
+          "line": 76,
+          "column": 18
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "rule",
+      "start": 2629,
+      "end": 2633,
+      "loc": {
+        "start": {
+          "line": 76,
+          "column": 18
+        },
+        "end": {
+          "line": 76,
+          "column": 22
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ",",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 2633,
+      "end": 2634,
+      "loc": {
+        "start": {
+          "line": 76,
+          "column": 22
+        },
+        "end": {
+          "line": 76,
+          "column": 23
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "name",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "value": "route",
+      "start": 2635,
+      "end": 2640,
+      "loc": {
+        "start": {
+          "line": 76,
+          "column": 24
+        },
+        "end": {
+          "line": 76,
+          "column": 29
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ")",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 2640,
+      "end": 2641,
+      "loc": {
+        "start": {
+          "line": 76,
+          "column": 29
+        },
+        "end": {
+          "line": 76,
+          "column": 30
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "{",
+        "beforeExpr": true,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 2642,
+      "end": 2643,
+      "loc": {
+        "start": {
+          "line": 76,
+          "column": 31
+        },
+        "end": {
+          "line": 76,
+          "column": 32
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "}",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 2644,
+      "end": 2645,
+      "loc": {
+        "start": {
+          "line": 76,
+          "column": 33
+        },
+        "end": {
+          "line": 76,
+          "column": 34
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "}",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null
+      },
+      "start": 2646,
+      "end": 2647,
+      "loc": {
+        "start": {
+          "line": 77,
+          "column": 0
+        },
+        "end": {
+          "line": 77,
+          "column": 1
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "eof",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 2647,
+      "end": 2647,
+      "loc": {
+        "start": {
+          "line": 77,
+          "column": 1
+        },
+        "end": {
+          "line": 77,
+          "column": 1
+        }
+      }
     }
   ]
 }

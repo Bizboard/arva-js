@@ -55,5 +55,8 @@
     "request-animation-frame-mock": "git+https://github.com/erykpiast/request-animation-frame-mock.git",
     "sinon": "^1.17.3",
     "systemjs": "^0.19.5"
+  },
+  "dependencies": {
+    "esdoc": "git+https://git@github.com/typhonjs-node-esdoc/esdoc.git"
   }
 }

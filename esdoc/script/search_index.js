@@ -330,6 +330,30 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "arva-js/src/layout/decorators.js~event._subscribe",
+    "function/index.html#static-function-event._subscribe",
+    "<span>event._subscribe</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~event.on",
+    "function/index.html#static-function-event.on",
+    "<span>event.on</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~event.once",
+    "function/index.html#static-function-event.once",
+    "<span>event.once</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~event.pipe",
+    "function/index.html#static-function-event.pipe",
+    "<span>event.pipe</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
     "arva-js/src/layout/decorators.js~event",
     "variable/index.html#static-variable-event",
     "<span>event</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
@@ -375,6 +399,180 @@ window.esdocSearchIndex = [
     "arva-js/src/utils/di/util.js~isuppercase",
     "function/index.html#static-function-isUpperCase",
     "<span>isUpperCase</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/util.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout._dockto",
+    "function/index.html#static-function-layout._dockTo",
+    "<span>layout._dockTo</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.align",
+    "function/index.html#static-function-layout.align",
+    "<span>layout.align</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.animate",
+    "function/index.html#static-function-layout.animate",
+    "<span>layout.animate</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.clip",
+    "function/index.html#static-function-layout.clip",
+    "<span>layout.clip</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.custom",
+    "function/index.html#static-function-layout.custom",
+    "<span>layout.custom</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.dock.bottom",
+    "function/index.html#static-function-layout.dock.bottom",
+    "<span>layout.dock.bottom</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.dock.fill",
+    "function/index.html#static-function-layout.dock.fill",
+    "<span>layout.dock.fill</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.dock.left",
+    "function/index.html#static-function-layout.dock.left",
+    "<span>layout.dock.left</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.dock.none",
+    "function/index.html#static-function-layout.dock.none",
+    "<span>layout.dock.none</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.dock.right",
+    "function/index.html#static-function-layout.dock.right",
+    "<span>layout.dock.right</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.dock.top",
+    "function/index.html#static-function-layout.dock.top",
+    "<span>layout.dock.top</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.dockpadding",
+    "function/index.html#static-function-layout.dockPadding",
+    "<span>layout.dockPadding</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.dockspace",
+    "function/index.html#static-function-layout.dockSpace",
+    "<span>layout.dockSpace</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.draggable",
+    "function/index.html#static-function-layout.draggable",
+    "<span>layout.draggable</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.flow",
+    "function/index.html#static-function-layout.flow",
+    "<span>layout.flow</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.fullsize",
+    "function/index.html#static-function-layout.fullSize",
+    "<span>layout.fullSize</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.left",
+    "function/index.html#static-function-layout.left",
+    "<span>layout.left</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.opacity",
+    "function/index.html#static-function-layout.opacity",
+    "<span>layout.opacity</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.origin",
+    "function/index.html#static-function-layout.origin",
+    "<span>layout.origin</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.renderable",
+    "function/index.html#static-function-layout.renderable",
+    "<span>layout.renderable</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.rotate",
+    "function/index.html#static-function-layout.rotate",
+    "<span>layout.rotate</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.rotatefrom",
+    "function/index.html#static-function-layout.rotateFrom",
+    "<span>layout.rotateFrom</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.scale",
+    "function/index.html#static-function-layout.scale",
+    "<span>layout.scale</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.scrollable",
+    "function/index.html#static-function-layout.scrollable",
+    "<span>layout.scrollable</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.size",
+    "function/index.html#static-function-layout.size",
+    "<span>layout.size</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.skew",
+    "function/index.html#static-function-layout.skew",
+    "<span>layout.skew</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.swipable",
+    "function/index.html#static-function-layout.swipable",
+    "<span>layout.swipable</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.translate",
+    "function/index.html#static-function-layout.translate",
+    "<span>layout.translate</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.translatefrom",
+    "function/index.html#static-function-layout.translateFrom",
+    "<span>layout.translateFrom</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
     "function"
   ],
   [
@@ -931,13 +1129,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
@@ -1663,13 +1861,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#priority",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-priority",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-priority",
     "src/data/PrioritisedObject.js~PrioritisedObject#priority",
     "member"
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#priority",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-priority",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-priority",
     "src/data/PrioritisedObject.js~PrioritisedObject#priority",
     "member"
   ],
@@ -2527,13 +2725,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource.currentuser",
-    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-set-currentUser",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-get-currentUser",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource.currentUser",
     "member"
   ],
   [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource.currentuser",
-    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-get-currentUser",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-set-currentUser",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource.currentUser",
     "member"
   ],
@@ -2805,6 +3003,18 @@ window.esdocSearchIndex = [
     "src/utils/injection.js~injection.getall",
     "class/src/utils/Injection.js~Injection.html#static-method-getAll",
     "src/utils/Injection.js~Injection.getAll",
+    "method"
+  ],
+  [
+    "src/utils/injection.js~injection.provide",
+    "class/src/utils/Injection.js~Injection.html#static-method-provide",
+    "src/utils/Injection.js~Injection.provide",
+    "method"
+  ],
+  [
+    "src/utils/injection.js~injection.provideandget",
+    "class/src/utils/Injection.js~Injection.html#static-method-provideAndGet",
+    "src/utils/Injection.js~Injection.provideAndGet",
     "method"
   ],
   [
