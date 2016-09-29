@@ -80,6 +80,9 @@ function prepPrototypeDecorations(prototype) {
     return decorations;
 }
 
+/**
+ * Describes a set of decorators used for layouting of a renderable in a View.
+ */
 export const layout = {
 
 
