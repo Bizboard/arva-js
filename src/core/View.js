@@ -25,13 +25,38 @@ import {
 import {RenderableHelper}           from '../utils/view/RenderableHelper.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 
-
+/**
+ * An Arva View. Can be constructed explicitly by using new View() but is more commonly used as a base class for
+ * views used by the app.
+ *
+ */
 export class View extends FamousView {
 
+    /**
+     * @example
+     * HomeController extends Controller {
+     *      Index() {
+     *          let view = new View();
+     *          view.add(new Surface({properties: {backgroundColor: 'red'}}));
+     *          return view
+     *      }
+     * }
+     * @example
+     * class HomeView extends View {
+     *      @layout.size(100, 100)
+     *      @layout.place.center()
+     *      mySurface = new Surface({properties: {backgroundColor: 'red'}})
+     * }
+     *
+     *
+     *
+     * @param {Object} options. The options passed to the view will be stored in this.options, but won't change any
+     * behaviour of the core functionality of the view. Instead, configuration of the View is done by decorators.
+     *
+     */
     constructor(options = {}) {
 
         super(options);
-
 
         /* Bind all local methods to the current object instance, so we can refer to 'this'
          * in the methods as expected, even when they're called from event handlers.        */
