@@ -1,8 +1,8 @@
 {
-  "source": "./src",
+  "source": "./src/",
   "destination": "./esdoc",
   "styles": ["./esdoc-res/styles.css"],
   "plugins": [
-    {"name": "esdoc-es7-plugin"}
+    {"name": "./esdoc-res/arvalizer.js"}
   ]
 }
