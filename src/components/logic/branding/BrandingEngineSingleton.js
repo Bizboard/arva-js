@@ -8,14 +8,14 @@
  */
 
 import {BrandingEngine}         from './BrandingEngine.js';
-import {Context}                from '../../../utils/Context.js';
+import {Injection}              from '../../../utils/Injection.js';
 
 export class BrandingEngineSingleton {
     /**
      * Get a singleton global instance of the BrandingEngine.
      * @returns {BrandingEngine} BrandingEngine instance.
      */
-    static getInstance(){
-        return Context.getContext('Default').get(BrandingEngine);
+    static getInstance() {
+        return Injection.get(BrandingEngine);
     }
 }

@@ -38,30 +38,30 @@ if (typeof window !== 'undefined') {
         var absoluteDir = `www/${dir}`;
         var absoluteTarget = `www/${target}`;
 
-        fs.mkdir(absoluteDir, function(mkdirError){
+        fs.mkdir(absoluteDir, function (mkdirError) {
 
-            if(mkdirError && mkdirError.code !== 'EEXIST'){
+            if (mkdirError && mkdirError.code !== 'EEXIST') {
                 return reject(mkdirError);
             }
 
             var rd = fs.createReadStream(source);
-            rd.on('error', function(err) {
+            rd.on('error', function (err) {
                 done(err);
             });
             var wr = fs.createWriteStream(absoluteTarget);
-            wr.on('error', function(err) {
+            wr.on('error', function (err) {
                 done(err);
             });
-            wr.on('close', function(ex) {
+            wr.on('close', function (ex) {
                 done();
             });
             rd.pipe(wr);
 
             function done(error) {
                 if (!cbCalled) {
-                    if(!error && resolve){
+                    if (!error && resolve) {
                         return resolve('module.exports = \'' + target + '\';');
-                    } else if(reject) {
+                    } else if (reject) {
                         console.log('Error copying imported image:', error);
                         return reject(error);
                     }

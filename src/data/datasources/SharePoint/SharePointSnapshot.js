@@ -1,4 +1,3 @@
-
 /**
 
 
@@ -28,7 +27,7 @@ export class SharePointSnapshot extends Snapshot {
 
         if (this._kvpair) return this._kvpair.key;
 
-        else if (this._data instanceof Array && this._data.length==1)
+        else if (this._data instanceof Array && this._data.length == 1)
             return this._data[0].id;
         else if (this._data instanceof Object)
             return this._data.id;
@@ -59,7 +58,7 @@ export class SharePointSnapshot extends Snapshot {
         }
         else if (this._data instanceof Object) {
             for (let key in this._data) {
-                callback(new SharePointSnapshot(object, this._dataSource, { key: key, value: this._data[key] }));
+                callback(new SharePointSnapshot(object, this._dataSource, {key: key, value: this._data[key]}));
             }
         }
     }

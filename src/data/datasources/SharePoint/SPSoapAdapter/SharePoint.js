@@ -12,7 +12,9 @@ import {BlobHelper}     from '../../../../utils/BlobHelper.js';
 let DEBUG_WORKER = true;
 let SPWorker = new Worker('worker.js');
 let workerEvents = new EventEmitter();
-SPWorker.onmessage = (messageEvent) => { workerEvents.emit('message', messageEvent); };
+SPWorker.onmessage = (messageEvent) => {
+    workerEvents.emit('message', messageEvent);
+};
 
 /**
  * The SharePoint class will utilize a Web Worker to perform data operations. Running the data interfacing in a
@@ -97,7 +99,7 @@ export class SharePoint extends EventEmitter {
             amountRemoved = this.listeners(event).length;
         }
 
-        for(let i = 0; i < amountRemoved; i++) {
+        for (let i = 0; i < amountRemoved; i++) {
             /* Tell the Manager that this subscription is cancelled and no longer requires refreshed data from SharePoint. */
             SPWorker.postMessage(_.extend({}, this.options, {
                 subscriberID: this.subscriberID,
@@ -129,9 +131,13 @@ export class SharePoint extends EventEmitter {
 
         if (model['_temporary-identifier']) {
             /* Set the model's ID to the temporary one so it can be used to query the dataSource with. */
-            if (model.disableChangeListener) { model.disableChangeListener(); }
+            if (model.disableChangeListener) {
+                model.disableChangeListener();
+            }
             model.id = model['_temporary-identifier'];
-            if (model.enableChangeListener) { model.enableChangeListener(); }
+            if (model.enableChangeListener) {
+                model.enableChangeListener();
+            }
         }
 
         /* Cache is used to immediately trigger the value callback if a new model was created and subscribes to its own changes. */
@@ -151,7 +157,9 @@ export class SharePoint extends EventEmitter {
 
     _initialise() {
 
-        super.once('value', () => { this._ready = true; });
+        super.once('value', () => {
+            this._ready = true;
+        });
 
         /* Initialise the worker */
         SPWorker.postMessage(_.extend({}, this.options, {
@@ -163,7 +171,9 @@ export class SharePoint extends EventEmitter {
     _onMessage(messageEvent) {
         let message = messageEvent.data;
         /* Ignore messages not meant for this SharePoint instance. */
-        if (message.subscriberID !== this.subscriberID) { return; }
+        if (message.subscriberID !== this.subscriberID) {
+            return;
+        }
 
         if (message.event === 'cache_data') {
             this.emit('cache_data', message.cache);
@@ -177,7 +187,9 @@ export class SharePoint extends EventEmitter {
     }
 
     _handleCacheData(cacheData, event, handler, context) {
-        if (!cacheData) { cacheData = []; }
+        if (!cacheData) {
+            cacheData = [];
+        }
 
         if (event === 'child_added') {
             for (let index = 0; index < cacheData.length; index++) {
@@ -191,7 +203,9 @@ export class SharePoint extends EventEmitter {
     }
 
     _handleAuthResult(authData, handler, context = this) {
-        if (!authData) { authData = {}; }
+        if (!authData) {
+            authData = {};
+        }
 
         handler.call(context, authData);
 

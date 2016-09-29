@@ -1,8 +1,8 @@
 # Arva
 [![Join the chat at https://gitter.im/Bizboard/arva-js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bizboard/arva-js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Dependency Status](http://img.shields.io/gemnasium/Bizboard/arva-js.svg)](https://gemnasium.com/Bizboard/arva-js)
 
-Arva is an ES6/7 MV* framework for cross-platform applications that provides a
-remarkable development experience. You'll be able to code faster, write
+Arva is an ES6/7 MV* framework for creating JS-based cross-platform applications for Mobile/Desktop/Web/SmartTV that provides a
+remarkable development and user experience. You'll be able to code faster, write
 more robust and manageable code, and you'll be able to easily build views that scale on a large number of device resolutions.
 
 ## Why Arva?
@@ -26,7 +26,7 @@ Enjoy the benefit of 60 fps animations cross-platform in an enterprise grade sty
 You can read the latest documentation about Arva <a href="https://github.com/Bizboard/arva-js/wiki">here</a>.
 
 ## Installation
-> **Important note:** We don't support installing Arva from npm and bower (yet). We know these platforms are very popular and we will consider these for the near future. 
+> **Important note:** We don't support installing Arva from npm and bower (yet). We know these platforms are very popular and we will consider these for the near future.
 
 To get started, clone the Arva Seed project as described <a href="https://github.com/Bizboard/arva-js/wiki/Installation">in the documentation</a>.
 

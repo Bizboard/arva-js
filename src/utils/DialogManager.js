@@ -9,14 +9,27 @@ import FamousContext         from 'famous/core/Context.js';
 import {View}                from 'arva-js/core/View.js';
 import {ObjectHelper}        from 'arva-js/utils/ObjectHelper';
 
-import {Context}             from './Context.js';
+import {Injection}           from './Injection.js';
 import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
+import Easing                from 'famous/transitions/Easing.js';
 
-@layout.scrollable
+@layout.scrollable({overscroll: false})
 class DialogWrapper extends View {
-    @layout.size((size) => Math.min(480, size - 32), true)
-    @layout.place('center')
+
+    /**
+     * Defines the size that is appropriate for the dialog. The dialog can return undefined on its getSize function for
+     * full-blown sizing instead of true sizing, and it can define a maxSize to specify a maximum that causes the margins
+     * to get larger.
+     * @param size
+     */
+    determineSizeWithMargins (size, maxSize, dimension) {
+        return ~Math.min(maxSize ? maxSize[dimension] : 480, size[dimension] - 32);
+    }
+
+    @layout.size(function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)},
+        function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)})
+    @layout.stick.center()
     dialog = this.options.dialog;
 
     onNewParentSize(parentSize) {
@@ -24,20 +37,20 @@ class DialogWrapper extends View {
     }
 
     getSize() {
-        if(!this._parentSize){
+        if (!this._parentSize) {
             return [undefined, undefined];
         }
         let dialogHeight = this.dialog.getSize()[1];
-        return this._parentSize[1] > dialogHeight ? [undefined, undefined] : [undefined, dialogHeight];
+        return this._parentSize[1] > dialogHeight ? [undefined, this._parentSize[1]] : [undefined, dialogHeight];
     }
 
 }
 
 export class DialogManager extends View {
 
-    @layout.fullscreen
+    @layout.fullSize()
     @layout.animate({showInitially: false, animation: AnimationController.Animation.Fade})
-    @layout.translate(0, 0, 250)
+    @layout.translate(0, 0, 9000)
     background = new Surface({
         properties: {
             /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0.2+0,0.6+100 */
@@ -46,10 +59,11 @@ export class DialogManager extends View {
         }
     });
 
-    @layout.translate(0, 0, 1000)
-    @layout.fullscreen
+    @layout.translate(0, 0, 9500)
+    @layout.fullSize()
     @layout.animate({
-        animation: AnimationController.Animation.Slide.Up,
+        show: {transition: {curve: Easing.outCubic, duration: 300}, animation: AnimationController.Animation.Slide.Up},
+        hide: {transition: {curve: Easing.inCubic, duration: 300}, animation: AnimationController.Animation.Slide.Down},
         showInitially: false
     })
     /* Empty content until filled */
@@ -68,15 +82,15 @@ export class DialogManager extends View {
                 }
             });
         }
-        this.router = Context.get(Router);
-        let famousContext = Context.get(FamousContext);
+        this.router = Injection.get(Router);
+        let famousContext = Injection.get(FamousContext);
         famousContext.add(this);
 
         this.layout.on('layoutstart', ({size}) => {
-            if(this.dialog.onNewParentSize){
+            if (this.dialog.onNewParentSize) {
                 this.dialog.onNewParentSize(size);
                 this._savedParentSize = null;
-            }   else {
+            } else {
                 this._savedParentSize = size;
             }
         });
@@ -89,8 +103,9 @@ export class DialogManager extends View {
     /**
      *
      * @param dialog
-     * @param processingDialog
-     * @param isExplanation used for exaplanation texts
+     * @param canCancel
+     * @param killOldDialog
+     * @returns {*}
      */
     show({dialog, canCancel = true, killOldDialog = true}) {
         if (this._hasOpenDialog) {
@@ -104,10 +119,9 @@ export class DialogManager extends View {
 
         /* Replace whatever non-showing dialog we have right now with the new dialog */
         this.replaceRenderable('dialog', new DialogWrapper({dialog}));
-        if(this._savedParentSize){
+        if (this._savedParentSize) {
             this.dialog.onNewParentSize(this._savedParentSize);
         }
-
         this._canCancel = canCancel;
         if (canCancel) {
             /* Disable existing default behavior of backbutton going back to previous route */
@@ -146,7 +160,7 @@ export class DialogManager extends View {
 
 
     dialogComplete() {
-        if(!this._resolveDialogComplete){
+        if (!this._resolveDialogComplete) {
             return this._resolveDialogPromise = new Promise((resolve) => {
                 this._resolveDialogComplete = resolve
             });
