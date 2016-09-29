@@ -77,7 +77,6 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.draggable">layout.draggable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.flow">layout.flow</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.fullSize">layout.fullSize</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.left">layout.left</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.opacity">layout.opacity</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.origin">layout.origin</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.renderable">layout.renderable</a></span></span></li>
@@ -314,33 +313,6 @@ export const layout = {
                 renderable.decorations.translate[2] = zIndex;
             }
         };
-    },
-
-
-    /**
-     * Docks the renderable to the left.
-     * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
-     * The renderable can then be stickd within the docking area with origin and align. When combined with align, treats
-     * the context size the docking size.
-     * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
-     * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock &apos;left&apos;) has to be defined.
-     *
-     * @example
-     * @layout.dock.left(30, 0, 10)
-     * @layout.size(15, undefined)
-     * @layout.origin(0.5, 0)
-     * @layout.align(0.5, 0)
-     * dockedRenderable = new Surface();
-     *
-     * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
-     * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
-     * different variations, see layout.size.
-     * @param {Number} [space]. Any space that should be inserted before the docked renderable
-     * @param {Number} [zIndex]. DEPRECATED: Use translate(0, 0, zIndex) instead.
-     * @returns {Function} A decorator function
-     */
-    left: function () {
-        return layout._dockTo(&apos;left&apos;, ...arguments)
     },
 
     dock: {

@@ -498,12 +498,6 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
-    "arva-js/src/layout/decorators.js~layout.left",
-    "function/index.html#static-function-layout.left",
-    "<span>layout.left</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
     "arva-js/src/layout/decorators.js~layout.opacity",
     "function/index.html#static-function-layout.opacity",
     "<span>layout.opacity</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
@@ -1129,13 +1123,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
@@ -1861,13 +1855,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#priority",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-priority",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-priority",
     "src/data/PrioritisedObject.js~PrioritisedObject#priority",
     "member"
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#priority",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-priority",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-priority",
     "src/data/PrioritisedObject.js~PrioritisedObject#priority",
     "member"
   ],
@@ -2383,13 +2377,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/datasources/sharepoint/spsoapadapter/worker/sharepointclient.js~sharepointclient#refreshtimer",
-    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-get-refreshTimer",
+    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-set-refreshTimer",
     "src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient#refreshTimer",
     "member"
   ],
   [
     "src/data/datasources/sharepoint/spsoapadapter/worker/sharepointclient.js~sharepointclient#refreshtimer",
-    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-set-refreshTimer",
+    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-get-refreshTimer",
     "src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient#refreshTimer",
     "member"
   ],
@@ -2725,13 +2719,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource.currentuser",
-    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-get-currentUser",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-set-currentUser",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource.currentUser",
     "member"
   ],
   [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource.currentuser",
-    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-set-currentUser",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-get-currentUser",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource.currentUser",
     "member"
   ],

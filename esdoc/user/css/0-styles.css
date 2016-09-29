@@ -121,3 +121,31 @@ table.summary tbody td:nth-child(1) {
     min-width: 64px;
     vertical-align: top;
 }
+
+/* Hack for making the anchors scroll down beneath header */
+h3 {
+    border-top: 50px solid transparent;
+    margin-top: -50px !important;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+    box-sizing: content-box;
+
+}
+
+.inner-link-active {
+    background: inherit;
+    background-clip: padding-box;
+    background-color: rgb(255,255,150);
+}
+
+/* Style the 'attribute' column not to look so much like a list if there's only one item */
+
+ul:only-child li  {
+    list-style-type: none !important;
+}
+
+
+ul {
+    padding-left:0px
+}
