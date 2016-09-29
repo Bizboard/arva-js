@@ -84,12 +84,12 @@ export const layout = {
 
 
     /**
+     * Merely marks a view property as a decorated renderable, which allows it to be rendered.
+     * Use this in combination with a @layout.custom decorator on the view in which this renderable resides.
+     *
      * @example
      * @layout.renderable
      * renderable = new Surface();
-     *
-     * Merely marks a view property as a decorated renderable, which allows it to be rendered.
-     * Use this in combination with a @layout.custom decorator on the view in which this renderable resides.
      *
      * @returns {Function} A decorator function
      */
@@ -100,12 +100,12 @@ export const layout = {
     },
 
     /**
-     * @example:
+     * Marks the renderable to cover the entire screen. Translate can also be specified on such a renderable.
+     *
+     * @example
      * @layout.fullSize()
      * // View will have a red background
      * background = new Surface({properties: {backgroundColor: 'red'}});
-     *
-     * Marks the renderable to cover the entire screen. Translate can also be specified on such a renderable.
      *
      * @returns {Function} A decorator function
      */
@@ -117,16 +117,16 @@ export const layout = {
     },
 
     /**
-     * @example:
+     * Specifies the space that should come before the docked renderable. Useful when not specifying the size in the
+     * layout.dock function. Note that the space does not appear if there isn't any renderable with a size greater than
+     * zero before it.
+     *
+     * @example
      * // there's a 20px space before this box
      * @layout.dockSpace(20)
      * @layout.size(100, 100)
      * @layout.dock.left()
      * box = new Surface({properties: {backgroundColor: 'red'}});
-     *
-     * Specifies the space that should come before the docked renderable. Useful when not specifying the size in the
-     * layout.dock function. Note that the space does not appear if there isn't any renderable with a size greater than
-     * zero before it.
      *
      * @param {Number} space The space that is inserted before the renderable.
      * @returns {Function} A decorator function
@@ -141,6 +141,7 @@ export const layout = {
 
     /**
      * Internal function to do docking
+     *
      * @param dockMethod
      * @param size
      * @param space
@@ -171,16 +172,8 @@ export const layout = {
         };
     },
 
-
     dock: {
         /**
-         * @example:
-         * @layout.dock.left(30, 0, 10)
-         * @layout.size(15, undefined)
-         * @layout.origin(0.5, 0)
-         * @layout.align(0.5, 0)
-         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
-         *
          * Docks the renderable to the left.
          * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
          * The renderable can then be stickd within the docking area with origin and align. When combined with align, treats
@@ -188,11 +181,19 @@ export const layout = {
          * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
          * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
          *
+         * @example
+         * @layout.dock.left(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
+         *
          * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
          * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
          * different variations, see layout.size.
-         * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
-         * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
+         * @param {Number} [space]. Any space that should be inserted before the docked renderable
+         * @param {Number} [zIndex]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
         left: function () {
@@ -200,19 +201,19 @@ export const layout = {
         },
 
         /**
-         * @example:
-         * @layout.dock.right(30, 0, 10)
-         * @layout.size(15, undefined)
-         * @layout.origin(0.5, 0)
-         * @layout.align(0.5, 0)
-         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
-         *
          * Docks the renderable to the right.
          * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
          * The renderable can then be stickd within the docking area with origin and align. When combined with align, treats
          * the context size the docking size.
          * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
          * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
+         *
+         * @example
+         * @layout.dock.right(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
          *
          * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
          * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
@@ -226,12 +227,6 @@ export const layout = {
         },
 
         /**
-         * @example:
-         * @layout.dock.top(30, 0, 10)
-         * @layout.size(15, undefined)
-         * @layout.origin(0.5, 0)
-         * @layout.align(0.5, 0)
-         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
          *
          * Docks the renderable to the top.
          * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
@@ -239,6 +234,14 @@ export const layout = {
          * the context size the docking size.
          * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
          * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
+         *
+         * @example
+         * @layout.dock.top(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
          *
          * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
          * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
@@ -252,12 +255,6 @@ export const layout = {
         },
 
         /**
-         * @example:
-         * @layout.dock.bottom(30, 0, 10)
-         * @layout.size(15, undefined)
-         * @layout.origin(0.5, 0)
-         * @layout.align(0.5, 0)
-         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
          *
          * Docks the renderable to the bottom.
          * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
@@ -265,6 +262,14 @@ export const layout = {
          * the context size the docking size.
          * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
          * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
+         *
+         * @example
+         * @layout.dock.bottom(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
          *
          * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
          * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
@@ -278,14 +283,14 @@ export const layout = {
         },
 
         /**
-         * @example:
-         * @layout.dock.fill()
-         * filledRenderable = new Surface({properties: {backgroundColor: 'red'}});
-         *
          * Fills the space that is left after the docking with this renderable.
          *
+         * @example
          * When using layout.size, it will use that size as an inner size. This works similarly to other docking, from
          * where translate, size, origin, align, etc can be specified.
+         *
+         * @layout.dock.fill()
+         * filledRenderable = new Surface({properties: {backgroundColor: 'red'}});
          *
          * @returns {Function} A decorator function
          */
@@ -293,13 +298,13 @@ export const layout = {
             return layout._dockTo('fill', ...arguments)
         },
         /**
-         * @example:
+         * Marks the renderable as not being docked anymore. Useful when dynamically changing decorations through
+         * this.decorateRenderable or this.setRenderableFlowState
+         *
+         * @example
          * @layout.dock.fill()
          * @flow.stateStep('nonFilled', layout.dock.none(), layout.size(100, 100))
          * filledRenderable = new Surface({properties: {backgroundColor: 'red'}});
-         *
-         * Marks the renderable as not being docked anymore. Useful when dynamically changing decorations through
-         * this.decorateRenderable or this.setRenderableFlowState
          *
          * @returns {Function} A decorator function
          */
@@ -489,7 +494,7 @@ export const layout = {
      *
      * Sets te opacity of a renderable
      *
-     * @param {Number} The opacity, between 0 and 1
+     * @param {Number} opacity The opacity, between 0 and 1
      * @returns {Function} A decorator function
      */
     opacity: function (opacity) {
