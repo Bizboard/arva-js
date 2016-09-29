@@ -5,6 +5,8 @@
  Text plugin
  */
 
+var fs = require('fs');
+var path = require('path');
 var arvaOptions = System.arvaOptions;
 var iconOptions = arvaOptions.iconOptions || {
         form: 'rounded',
@@ -23,12 +25,46 @@ exports.locate = function (target) {
     return address;
 };
 
-exports.translate = function (load) {
-    if (this.builder && this.transpiler) {
-        load.metadata.format = 'esm';
-        return 'export default ' + JSON.stringify(load.source) + ';';
-    }
+exports.build = true;
 
-    load.metadata.format = 'amd';
-    return 'def' + 'ine(function() {\nreturn ' + JSON.stringify(load.source) + ';\n});';
+exports.fetch = function (load) {
+    return new Promise(function (resolve, reject) {
+        var absolutePath = load.address.replace('.js', '').substr('file:'.length);
+        copyFile(absolutePath, resolve, reject);
+    });
+};
+
+function copyFile(source, resolve, reject) {
+    var cbCalled = false;
+    var dir = 'img';
+    var target = `${dir}/${path.basename(source)}`;
+
+    var absoluteDir = `www/${dir}`;
+    var absoluteTarget = `www/${target}`;
+
+    fs.mkdir(absoluteDir, function (mkdirError) {
+
+        if (mkdirError && mkdirError.code !== 'EEXIST') {
+            return reject(mkdirError);
+        }
+
+        var rd = fs.createReadStream(source);
+        rd.on('error', done);
+        var wr = fs.createWriteStream(absoluteTarget);
+        wr.on('error', done);
+        wr.on('close', done);
+        rd.pipe(wr);
+
+        function done(error) {
+            if (!cbCalled) {
+                if (!error && resolve) {
+                    return resolve('var SystemJS = require("systemjs"); var config = require("jspm.config.js"); module.exports = SystemJS.import(\'' + absoluteTarget + '!www/systemjs-text.js\');');
+                } else if (reject) {
+                    console.log('Error copying imported image:', error);
+                    return reject(error);
+                }
+                cbCalled = true;
+            }
+        }
+    });
 }

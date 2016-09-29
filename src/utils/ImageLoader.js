@@ -45,16 +45,10 @@ if (typeof window !== 'undefined') {
             }
 
             var rd = fs.createReadStream(source);
-            rd.on('error', function (err) {
-                done(err);
-            });
+            rd.on('error', done);
             var wr = fs.createWriteStream(absoluteTarget);
-            wr.on('error', function (err) {
-                done(err);
-            });
-            wr.on('close', function (ex) {
-                done();
-            });
+            wr.on('error', done);
+            wr.on('close', done);
             rd.pipe(wr);
 
             function done(error) {
