@@ -565,6 +565,11 @@ export class View extends FamousView {
         if(this.decorations.dynamicDockPadding) {
             this.onNewSize((size) => this.decorations.viewMargins = this.decorations.dynamicDockPadding(size));
         }
+
+        if (!this.decorations.extraTranslate) {
+            this.decorations.extraTranslate = [0, 0, 10];
+        }
+
     }
 
     _doTrueSizedSurfacesBookkeeping() {
@@ -622,9 +627,7 @@ export class View extends FamousView {
             this.decorations = {};
         }
 
-        if (!this.decorations.extraTranslate) {
-            this.decorations.extraTranslate = [0, 0, 10];
-        }
+
         this._runningRepeatingFlowStates = {};
         this._onNewSizeCallbacks = [];
     }
