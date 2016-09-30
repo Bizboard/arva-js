@@ -1,0 +1,232 @@
+{
+  "type": "File",
+  "start": 0,
+  "end": 502,
+  "loc": {
+    "start": {
+      "line": 1,
+      "column": 0
+    },
+    "end": {
+      "line": 16,
+      "column": 0
+    }
+  },
+  "program": {
+    "type": "Program",
+    "start": 0,
+    "end": 502,
+    "loc": {
+      "start": {
+        "line": 1,
+        "column": 0
+      },
+      "end": {
+        "line": 16,
+        "column": 0
+      }
+    },
+    "sourceType": "module",
+    "body": [
+      {
+        "type": "ImportDeclaration",
+        "start": 464,
+        "end": 501,
+        "loc": {
+          "start": {
+            "line": 15,
+            "column": 0
+          },
+          "end": {
+            "line": 15,
+            "column": 37
+          }
+        },
+        "specifiers": [],
+        "source": {
+          "type": "StringLiteral",
+          "start": 471,
+          "end": 500,
+          "loc": {
+            "start": {
+              "line": 15,
+              "column": 7
+            },
+            "end": {
+              "line": 15,
+              "column": 36
+            }
+          },
+          "extra": {
+            "rawValue": "./famouskeyboardoffset.css!",
+            "raw": "'./famouskeyboardoffset.css!'"
+          },
+          "value": "./famouskeyboardoffset.css!",
+          "leadingComments": null
+        },
+        "leadingComments": [
+          {
+            "type": "CommentBlock",
+            "value": "*\n Fixes a bug causing the entire viewport to stick when a keyboard is spawned by a user click on an input field.\n When the keyboard is hidden again, the viewport remains in the top of the screen, with the bottom part of the screen being blank.\n\n This is caused by a change in Famo.us 0.3.0, and has been marked as \"won't fix\": https://github.com/Famous/famous/issues/317\n\n\n\n @author: Tom Clement (tjclement)\n @license NPOSL-3.0\n @copyright Bizboard, 2015\n\n ",
+            "start": 0,
+            "end": 462,
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 0
+              },
+              "end": {
+                "line": 13,
+                "column": 3
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "directives": []
+  },
+  "comments": [
+    {
+      "type": "CommentBlock",
+      "value": "*\n Fixes a bug causing the entire viewport to stick when a keyboard is spawned by a user click on an input field.\n When the keyboard is hidden again, the viewport remains in the top of the screen, with the bottom part of the screen being blank.\n\n This is caused by a change in Famo.us 0.3.0, and has been marked as \"won't fix\": https://github.com/Famous/famous/issues/317\n\n\n\n @author: Tom Clement (tjclement)\n @license NPOSL-3.0\n @copyright Bizboard, 2015\n\n ",
+      "start": 0,
+      "end": 462,
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 0
+        },
+        "end": {
+          "line": 13,
+          "column": 3
+        }
+      }
+    }
+  ],
+  "tokens": [
+    {
+      "type": "CommentBlock",
+      "value": "*\n Fixes a bug causing the entire viewport to stick when a keyboard is spawned by a user click on an input field.\n When the keyboard is hidden again, the viewport remains in the top of the screen, with the bottom part of the screen being blank.\n\n This is caused by a change in Famo.us 0.3.0, and has been marked as \"won't fix\": https://github.com/Famous/famous/issues/317\n\n\n\n @author: Tom Clement (tjclement)\n @license NPOSL-3.0\n @copyright Bizboard, 2015\n\n ",
+      "start": 0,
+      "end": 462,
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 0
+        },
+        "end": {
+          "line": 13,
+          "column": 3
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "import",
+        "keyword": "import",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "import",
+      "start": 464,
+      "end": 470,
+      "loc": {
+        "start": {
+          "line": 15,
+          "column": 0
+        },
+        "end": {
+          "line": 15,
+          "column": 6
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "string",
+        "beforeExpr": false,
+        "startsExpr": true,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "value": "./famouskeyboardoffset.css!",
+      "start": 471,
+      "end": 500,
+      "loc": {
+        "start": {
+          "line": 15,
+          "column": 7
+        },
+        "end": {
+          "line": 15,
+          "column": 36
+        }
+      }
+    },
+    {
+      "type": {
+        "label": ";",
+        "beforeExpr": true,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 500,
+      "end": 501,
+      "loc": {
+        "start": {
+          "line": 15,
+          "column": 36
+        },
+        "end": {
+          "line": 15,
+          "column": 37
+        }
+      }
+    },
+    {
+      "type": {
+        "label": "eof",
+        "beforeExpr": false,
+        "startsExpr": false,
+        "rightAssociative": false,
+        "isLoop": false,
+        "isAssign": false,
+        "prefix": false,
+        "postfix": false,
+        "binop": null,
+        "updateContext": null
+      },
+      "start": 502,
+      "end": 502,
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 0
+        },
+        "end": {
+          "line": 16,
+          "column": 0
+        }
+      }
+    }
+  ]
+}

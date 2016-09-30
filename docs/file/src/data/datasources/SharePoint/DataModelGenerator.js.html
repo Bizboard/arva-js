@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../../">
+  <title data-ice="title">src/data/datasources/SharePoint/DataModelGenerator.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+<link data-ice="userStyle" rel="stylesheet" href="user/css/0-styles.css">
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html">Controller</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Model.js~Model.html">Model</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Router.js~Router.html">Router</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/View.js~View.html">View</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedObject.js~PrioritisedObject.html">PrioritisedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html">FirebaseDataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html">SharePointDataSource</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/DataModelGenerator.js~DataModelGenerator.html">DataModelGenerator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SharePointSnapshot.js~SharePointSnapshot.html">SharePointSnapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Settings.js~Settings.html">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js~SharePoint.html">SharePoint</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter/Worker</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html">SharePointClient</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SoapClient.js~SoapClient.html">SoapClient</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/local</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalModel.js~LocalModel.html">LocalModel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html">LocalPrioritisedArray</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">layout</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event._subscribe">event._subscribe</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.on">event.on</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.once">event.once</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.pipe">event.pipe</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout._dockTo">layout._dockTo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.align">layout.align</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.animate">layout.animate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.custom">layout.custom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.bottom">layout.dock.bottom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.fill">layout.dock.fill</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.left">layout.dock.left</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.none">layout.dock.none</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.right">layout.dock.right</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.top">layout.dock.top</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dockPadding">layout.dockPadding</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dockSpace">layout.dockSpace</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.draggable">layout.draggable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.flow">layout.flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.fullSize">layout.fullSize</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.opacity">layout.opacity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.origin">layout.origin</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.renderable">layout.renderable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.rotate">layout.rotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.rotateFrom">layout.rotateFrom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.scale">layout.scale</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.scrollable">layout.scrollable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.size">layout.size</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.skew">layout.skew</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.swipable">layout.swipable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.translate">layout.translate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.translateFrom">layout.translateFrom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-TrueSizedLayoutDockHelper">TrueSizedLayoutDockHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-event">event</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flow">flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-layout">layout</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flowStates">flowStates</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">routers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/routers/ArvaRouter.js~ArvaRouter.html">ArvaRouter</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/BlobHelper.js~BlobHelper.html">BlobHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/DialogManager.js~DialogManager.html">DialogManager</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Injection.js~Injection.html">Injection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/KeyboardHelper.js~KeyboardHelper.html">KeyboardHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/ObjectHelper.js~ObjectHelper.html">ObjectHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Throttler.js~Throttler.html">Throttler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-callbackToPromise">callbackToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-successAndErrorToPromise">successAndErrorToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-waitMilliseconds">waitMilliseconds</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-combineOptions">combineOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-limit">limit</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/di</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~ClassProvider.html">ClassProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~FactoryProvider.html">FactoryProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Inject.html">Inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Provide.html">Provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~SuperConstructor.html">SuperConstructor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~TransientScope.html">TransientScope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/injector.js~Injector.html">Injector</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-annotate">annotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-hasAnnotation">hasAnnotation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-inject">inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-provide">provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-readAnnotations">readAnnotations</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createProviderFromFnOrClass">createProviderFromFnOrClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isFunction">isFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isObject">isObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isUpperCase">isUpperCase</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-toString">toString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ownKeys">ownKeys</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/request</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ExistsRequest">ExistsRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-GetRequest">GetRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-PostRequest">PostRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-UrlParser">UrlParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ParseStringToXml">ParseStringToXml</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/view</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~BaseLayoutHelper.html">BaseLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~DockedLayoutHelper.html">DockedLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~FullSizeLayoutHelper.html">FullSizeLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~TraditionalLayoutHelper.html">TraditionalLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/RenderableHelper.js~RenderableHelper.html">RenderableHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/SizeResolver.js~SizeResolver.html">SizeResolver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/Utils.js~Utils.html">Utils</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/data/datasources/SharePoint/DataModelGenerator.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+
+
+ @author: Hans van den Akker (mysim1)
+ @license NPOSL-3.0
+ @copyright Bizboard, 2015
+
+ */
+
+import _                    from &apos;lodash&apos;;
+import XML2JS               from &apos;./xml2js.js&apos;;
+import {PostRequest}        from &apos;../../../utils/request/RequestClient.js&apos;;
+import {ObjectHelper}       from &apos;../../../utils/ObjectHelper.js&apos;;
+import {UrlParser}          from &apos;../../../utils/request/UrlParser.js&apos;;
+import {ParseStringToXml}   from &apos;../../../utils/request/XmlParser.js&apos;;
+
+
+export class DataModelGenerator {
+
+    constructor(originalPath, schema) {
+
+        // initialize the arguments
+        if (!schema) throw &apos;Schema wasn\&apos;t provided.&apos;;
+        if (schema &amp;&amp; schema.Prefix) {
+            this._applicationId = schema.Prefix;
+        }
+
+        this.hidden = &apos;TRUE&apos;;
+        this._originalPath = originalPath;
+        this._Schema = schema.Schema;
+        this._Seed = schema.Seed;
+
+        // if the dataspec contains an instruction &apos;hidden&apos; have this setting override the default
+        if (schema &amp;&amp;
+            typeof schema.hidden == &apos;boolean&apos;) {
+            this.hidden = schema.hidden.toString().toUpperCase();
+        }
+
+        /* Bind all local methods to the current object instance, so we can refer to &apos;this&apos;
+         * in the methods as expected, even when they&apos;re called from event handlers.        */
+        ObjectHelper.bindAllMethods(this, this);
+
+        /* Hide all private properties (starting with &apos;_&apos;) and methods from enumeration,
+         * so when you do for( in ), only actual data properties show up. */
+        ObjectHelper.hideMethodsAndPrivatePropertiesFromObject(this);
+    }
+
+
+    Deploy() {
+        if (!this._Schema) throw &apos;There is no schema to deploy.&apos;;
+        //var listOfPromisesToFullfill = [];
+
+        return new Promise(async function (resolve, reject) {
+
+            // iterate through all tables listed.
+            for (let table in this._Schema) {
+
+                try {
+                    let listCreated = await this._GetOrCreateList(table);
+                    var fields = this._Schema[table];
+                    if (fields &amp;&amp; fields.length &gt; 0) {
+                        let modelCreated = await this._GetOrCreateModel(table, fields, listCreated);
+                        let viewCreated = await this._UpdateDefaultView(table, fields, listCreated);
+                    }
+
+                } catch (ex) {
+                    console.log(ex);
+                }
+            }
+
+            resolve();
+
+        }.bind(this));
+    }
+
+    Seed() {
+        if (!this._Seed) throw &apos;There is no seed to deploy.&apos;;
+
+
+    }
+
+
+    _UpdateDefaultView(listName, fields, listCreated) {
+
+        return new Promise(async function (resolve, reject) {
+
+            try {
+
+                // resolve correct info
+                let firstRequest = this._getDefaultViewRequest(listName);
+                let viewResult = await PostRequest(firstRequest);
+
+                // update
+                let viewId = this._ResolveViewID(viewResult.response);
+                let updateRequest = this._getUpdateViewRequest(listName, viewId, fields);
+                let updateResult = await PostRequest(updateRequest);
+
+                resolve(updateResult.response);
+            }
+            catch (ex) {
+                console.log(ex);
+                reject(ex);
+            }
+        }.bind(this));
+    }
+
+
+    _ResolveViewID(response) {
+
+        let data = ParseStringToXml(response);
+        let idNode;
+
+        if (typeof(data.selectSingleNode) != &apos;undefined&apos;)
+            idNode = data.selectSingleNode(&apos;//View[@DefaultView=\&apos;TRUE\&apos;]&apos;);
+        else
+            idNode = data.querySelector(&apos;View[DefaultView=\&apos;TRUE\&apos;]&apos;);
+
+        let idAttribute = &apos;&apos;;
+        if (idNode) idAttribute = idNode.getAttribute(&apos;Name&apos;);
+
+        return idAttribute;
+    }
+
+    _getUpdateViewRequest(listName, viewName, fieldNames) {
+
+        // rough configuration object
+        let params = {
+            listName: listName,
+            viewName: viewName,
+            viewFields: {
+                ViewFields: {
+                    FieldRef: []
+                }
+            },
+            rowLimit: {RowLimit: 100}
+        };
+
+        for (let fn = 0; fn &lt; fieldNames.length; fn++) {
+            params.viewFields.ViewFields.FieldRef.push({
+                &apos;_Name&apos;: fieldNames[fn].name
+            });
+        }
+
+        return {
+            url: this._ParsePath(this._originalPath, this._GetViewService),
+            headers: new Map([
+                [&apos;SOAPAction&apos;, &apos;http://schemas.microsoft.com/sharepoint/soap/UpdateView&apos;],
+                [&apos;Content-Type&apos;, &apos;text/xml&apos;]
+            ]),
+            data: this._applySoapTemplate({
+                method: &apos;UpdateView&apos;,
+                params: this._serializeParams(params)
+            })
+        };
+    }
+
+    _getDefaultViewRequest(listName) {
+        // rough configuration object
+        let params = {
+            listName: listName
+        };
+
+        return {
+            url: this._ParsePath(this._originalPath, this._GetViewService),
+            headers: new Map([
+                [&apos;SOAPAction&apos;, &apos;http://schemas.microsoft.com/sharepoint/soap/GetView&apos;],
+                [&apos;Content-Type&apos;, &apos;text/xml&apos;]
+            ]),
+            data: this._applySoapTemplate({
+                method: &apos;GetView&apos;,
+                params: this._serializeParams(params)
+            })
+        };
+    }
+
+    _getListExistRequest(listName) {
+        // rough configuration object
+        let params = {
+            listName: listName
+        };
+
+        return {
+            url: this._ParsePath(this._originalPath, this._GetListService),
+            headers: new Map([
+                [&apos;SOAPAction&apos;, &apos;http://schemas.microsoft.com/sharepoint/soap/GetList&apos;],
+                [&apos;Content-Type&apos;, &apos;text/xml&apos;]
+            ]),
+            data: this._applySoapTemplate({
+                method: &apos;GetList&apos;,
+                params: this._serializeParams(params)
+            })
+        };
+    }
+
+    _getListCreationRequest(listName, listDescription) {
+        // rough configuration object
+        let params = {
+            listName: listName,
+            description: listDescription,
+            templateID: &apos;100&apos;
+        };
+
+        return {
+            url: this._ParsePath(this._originalPath, this._GetListService),
+            headers: new Map([
+                [&apos;SOAPAction&apos;, &apos;http://schemas.microsoft.com/sharepoint/soap/AddList&apos;],
+                [&apos;Content-Type&apos;, &apos;text/xml&apos;]
+            ]),
+            data: this._applySoapTemplate({
+                method: &apos;AddList&apos;,
+                params: this._serializeParams(params)
+            })
+        };
+    }
+
+    _getListUpdateRequest(params) {
+
+        return {
+            url: this._ParsePath(this._originalPath, this._GetListService),
+            headers: new Map([
+                [&apos;SOAPAction&apos;, &apos;http://schemas.microsoft.com/sharepoint/soap/UpdateList&apos;],
+                [&apos;Content-Type&apos;, &apos;text/xml&apos;]
+            ]),
+            data: this._applySoapTemplate({
+                method: &apos;UpdateList&apos;,
+                params: this._serializeParams(params)
+            })
+        };
+    }
+
+    /**
+     *
+     * @param listName
+     * @param description
+     * @returns {Promise}
+     * @constructor
+     */
+    _GetOrCreateList(listName, description = &apos;&apos;) {
+
+        return new Promise(async function (resolve, reject) {
+
+            try {
+                let existingListRequest = this._getListExistRequest(listName);
+                let existingResult = await PostRequest(existingListRequest);
+                resolve(existingResult.response);
+            }
+            catch (ex) {
+                let newListRequest = this._getListCreationRequest(listName, description);
+                let creationResult = await PostRequest(newListRequest);
+                resolve(creationResult.response);
+            }
+        }.bind(this));
+    }
+
+    async _GetOrCreateModel(listName, modelDescription, listData) {
+
+        let listOfLookups = [];
+        let fieldsAdded = 0;
+        // rough configuration object
+        let params = {
+            listName: listName,
+            updateFields: {
+                Fields: {
+                    Method: [{
+                        &apos;_ID&apos;: 0, /* We automatically add an id field of our own, so we can push our own IDs to SharePoint. */
+                        Field: {
+                            &apos;_Type&apos;: &apos;Text&apos;,
+                            &apos;_Name&apos;: &apos;Title&apos;,
+                            &apos;_DisplayName&apos;: &apos;Title&apos;,
+                            &apos;_Required&apos;: &apos;FALSE&apos;
+                        }
+                    }]
+                }
+            },
+            listProperties: {
+                List: {
+                    _Hidden: this.hidden,
+                    _EnableAttachments: &apos;FALSE&apos;
+                }
+            }
+        };
+
+        if (listData.indexOf(`StaticName=&quot;__id&quot;`)) {
+            params.newFields = {
+                Fields: {
+                    Method: [{
+                        &apos;_ID&apos;: 0, /* We automatically add an id field of our own, so we can push our own IDs to SharePoint. */
+                        Field: {
+                            &apos;_Type&apos;: &apos;Integer&apos;,
+                            &apos;_DisplayName&apos;: &apos;__id&apos;,
+                            &apos;_FromBaseType&apos;: &apos;TRUE&apos;,
+                            &apos;_Hidden&apos;: &apos;TRUE&apos;
+                        }
+                    }]
+                }
+            };
+        }
+
+        for (let i = 1; i &lt; modelDescription.length; i++) {
+            let internalName = modelDescription[i].name;
+            if (this._applicationId) internalName = this._applicationId + &apos;_&apos; + internalName;
+            if (listData.indexOf(`StaticName=&quot;${internalName}&quot;`) != -1) continue;
+
+            // handle Lookups differently
+            if (modelDescription[i].type == &apos;Lookup&apos; || modelDescription[i].type == &apos;LookupMulti&apos;) {
+                listOfLookups.push([listName, internalName, modelDescription[i].type, modelDescription[i].source, modelDescription[i].showField]);
+            }
+            else {
+                // handle primitives
+
+                var modelData = {
+                    &apos;_ID&apos;: i,
+                    Field: {
+                        &apos;_Type&apos;: modelDescription[i].type,
+                        &apos;_DisplayName&apos;: internalName,
+                        &apos;_FromBaseType&apos;: &apos;TRUE&apos;
+                    }
+                };
+                params.newFields.Fields.Method.push(modelData);
+            }
+        }
+
+        return new Promise(async function (resolve, reject) {
+
+            try {
+                // update list with settings and simple fields
+                let updateListRequest = this._getListUpdateRequest(params);
+                let updateResult = await PostRequest(updateListRequest);
+
+                // go add lookups
+                for (let lf = 0; lf &lt; listOfLookups.length; lf++) {
+                    try {
+                        let lookupResult = await this._CreateLookup(...listOfLookups[lf]);
+                    }
+                    catch (ex) {
+                        console.error(&apos;Error creating lookup field&apos;);
+                    }
+                }
+                resolve(updateResult.response);
+            }
+            catch (ex) {
+                reject(ex);
+            }
+
+        }.bind(this));
+    }
+
+
+    async _CreateLookup(listName, fieldName, type, sourceName, showField) {
+
+        let listResult = await this._GetOrCreateList(sourceName);
+
+        let listId = this._ResolveListID(listResult);
+
+        // rough configuration object
+        let params = {
+            listName: listName,
+            newFields: {
+                Fields: {
+                    Method: [{
+                        &apos;_ID&apos;: 1,
+                        Field: {
+                            &apos;_Type&apos;: type,
+                            &apos;_DisplayName&apos;: fieldName,
+                            &apos;_FromBaseType&apos;: &apos;TRUE&apos;,
+                            &apos;_List&apos;: listId,
+                            &apos;_Mult&apos;: type === &apos;LookupMulti&apos; ? &apos;TRUE&apos; : &apos;FALSE&apos;,
+                            &apos;_ShowField&apos;: showField || &apos;ID&apos;
+                        }
+                    }]
+                }
+            }
+        };
+
+        let updateListRequest = this._getListUpdateRequest(params);
+        try {
+            let updateListResult = await PostRequest(updateListRequest);
+            return updateListResult;
+        }
+        catch (ex) {
+            return &apos;&apos;;
+        }
+    }
+
+
+    _ResolveListID(response) {
+
+        let data = ParseStringToXml(response);
+        let idNode;
+
+
+        if (typeof(data.selectSingleNode) != &apos;undefined&apos;)
+            idNode = data.selectSingleNode(&apos;//List&apos;);
+        else
+            idNode = data.querySelector(&apos;List&apos;);
+
+        let idAttribute = &apos;&apos;;
+        if (idNode) idAttribute = idNode.getAttribute(&apos;ID&apos;);
+
+        return idAttribute;
+    }
+
+
+    _applySoapTemplate(properties) {
+        return `&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+              &lt;soap:Envelope
+               xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+                xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;
+                xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;
+              &lt;soap:Body&gt;
+              &lt;${properties.method} xmlns=&quot;http://schemas.microsoft.com/sharepoint/soap/&quot;&gt;
+                ${properties.params}
+              &lt;/${properties.method}&gt;
+              &lt;/soap:Body&gt;
+              &lt;/soap:Envelope&gt;`;
+        /*
+         return _.template(
+         &apos;&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;&apos; +
+         &apos;&lt;soap:Envelope &apos; +
+         &apos;  xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; &apos; +
+         &apos;  xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; &apos; +
+         &apos;  xmlns:soap=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot;&gt;&apos; +
+         &apos;&lt;soap:Body&gt;&apos; +
+         &apos;&lt;&lt;%= method %&gt; xmlns=&quot;http://schemas.microsoft.com/sharepoint/soap/&quot;&gt;&apos; +
+         &apos;&lt;%= params %&gt;&apos; +
+         &apos;&lt;/&lt;%= method %&gt;&gt;&apos; +
+         &apos;&lt;/soap:Body&gt;&apos; +
+         &apos;&lt;/soap:Envelope&gt;&apos;)(properties);*/
+    }
+
+    get _GetListService() {
+        return &apos;_vti_bin/Lists.asmx&apos;;
+    }
+
+    get _GetViewService() {
+        return &apos;_vti_bin/Views.asmx&apos;;
+    }
+
+
+    _ParsePath(path, endPoint) {
+        var url = UrlParser(path);
+        if (!url) console.log(&apos;Invalid datasource path provided!&apos;);
+
+        var pathParts = url.path.split(&apos;/&apos;);
+        var newPath = url.protocol + &apos;://&apos; + url.host + &apos;/&apos;;
+        for (var i = 0; i &lt; pathParts.length; i++)
+            newPath += pathParts[i] + &apos;/&apos;;
+        newPath += endPoint;
+        return newPath;
+    }
+
+    _serializeParams(params) {
+        if (!params || params.length == 0) return &apos;&apos;;
+        var data = {root: params};
+        var creator = new XML2JS();
+        var payload = creator.json2xml_str(data);
+
+        return payload.replace(&apos;&lt;root&gt;&apos;, &apos;&apos;).replace(&apos;&lt;/root&gt;&apos;, &apos;&apos;);
+    }
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.0-alpha)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

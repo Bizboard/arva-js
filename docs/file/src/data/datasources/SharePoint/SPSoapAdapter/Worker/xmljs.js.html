@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../../../../">
+  <title data-ice="title">src/data/datasources/SharePoint/SPSoapAdapter/Worker/xmljs.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+<link data-ice="userStyle" rel="stylesheet" href="user/css/0-styles.css">
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html">Controller</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Model.js~Model.html">Model</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Router.js~Router.html">Router</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/View.js~View.html">View</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedObject.js~PrioritisedObject.html">PrioritisedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html">FirebaseDataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html">SharePointDataSource</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/DataModelGenerator.js~DataModelGenerator.html">DataModelGenerator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SharePointSnapshot.js~SharePointSnapshot.html">SharePointSnapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Settings.js~Settings.html">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js~SharePoint.html">SharePoint</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter/Worker</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html">SharePointClient</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SoapClient.js~SoapClient.html">SoapClient</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/local</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalModel.js~LocalModel.html">LocalModel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html">LocalPrioritisedArray</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">layout</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event._subscribe">event._subscribe</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.on">event.on</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.once">event.once</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.pipe">event.pipe</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout._dockTo">layout._dockTo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.align">layout.align</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.animate">layout.animate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.custom">layout.custom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.bottom">layout.dock.bottom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.fill">layout.dock.fill</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.left">layout.dock.left</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.none">layout.dock.none</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.right">layout.dock.right</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.top">layout.dock.top</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dockPadding">layout.dockPadding</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dockSpace">layout.dockSpace</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.draggable">layout.draggable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.flow">layout.flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.fullSize">layout.fullSize</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.opacity">layout.opacity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.origin">layout.origin</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.renderable">layout.renderable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.rotate">layout.rotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.rotateFrom">layout.rotateFrom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.scale">layout.scale</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.scrollable">layout.scrollable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.size">layout.size</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.skew">layout.skew</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.swipable">layout.swipable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.translate">layout.translate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.translateFrom">layout.translateFrom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-TrueSizedLayoutDockHelper">TrueSizedLayoutDockHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-event">event</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flow">flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-layout">layout</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flowStates">flowStates</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">routers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/routers/ArvaRouter.js~ArvaRouter.html">ArvaRouter</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/BlobHelper.js~BlobHelper.html">BlobHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/DialogManager.js~DialogManager.html">DialogManager</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Injection.js~Injection.html">Injection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/KeyboardHelper.js~KeyboardHelper.html">KeyboardHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/ObjectHelper.js~ObjectHelper.html">ObjectHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Throttler.js~Throttler.html">Throttler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-callbackToPromise">callbackToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-successAndErrorToPromise">successAndErrorToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-waitMilliseconds">waitMilliseconds</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-combineOptions">combineOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-limit">limit</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/di</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~ClassProvider.html">ClassProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~FactoryProvider.html">FactoryProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Inject.html">Inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Provide.html">Provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~SuperConstructor.html">SuperConstructor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~TransientScope.html">TransientScope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/injector.js~Injector.html">Injector</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-annotate">annotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-hasAnnotation">hasAnnotation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-inject">inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-provide">provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-readAnnotations">readAnnotations</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createProviderFromFnOrClass">createProviderFromFnOrClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isFunction">isFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isObject">isObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isUpperCase">isUpperCase</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-toString">toString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ownKeys">ownKeys</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/request</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ExistsRequest">ExistsRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-GetRequest">GetRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-PostRequest">PostRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-UrlParser">UrlParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ParseStringToXml">ParseStringToXml</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/view</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~BaseLayoutHelper.html">BaseLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~DockedLayoutHelper.html">DockedLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~FullSizeLayoutHelper.html">FullSizeLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~TraditionalLayoutHelper.html">TraditionalLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/RenderableHelper.js~RenderableHelper.html">RenderableHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/SizeResolver.js~SizeResolver.html">SizeResolver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/Utils.js~Utils.html">Utils</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/data/datasources/SharePoint/SPSoapAdapter/Worker/xmljs.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/*
+ Copyright 2011-2013 Abdulla Abdurakhmanov
+ Original sources are available at https://code.google.com/p/x2js/
+
+ Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
+define(function (require) {
+
+    return function (config) {
+        &apos;use strict&apos;;
+
+        var VERSION = &quot;1.1.6&quot;;
+
+        config = config || {};
+        initConfigDefaults();
+        initRequiredPolyfills();
+
+        function initConfigDefaults() {
+            if (config.escapeMode === undefined) {
+                config.escapeMode = true;
+            }
+            config.attributePrefix = config.attributePrefix || &quot;_&quot;;
+            config.arrayAccessForm = config.arrayAccessForm || &quot;none&quot;;
+            config.emptyNodeForm = config.emptyNodeForm || &quot;text&quot;;
+            if (config.enableToStringFunc === undefined) {
+                config.enableToStringFunc = true;
+            }
+            config.arrayAccessFormPaths = config.arrayAccessFormPaths || [];
+            if (config.skipEmptyTextNodesForObj === undefined) {
+                config.skipEmptyTextNodesForObj = true;
+            }
+            if (config.stripWhitespaces === undefined) {
+                config.stripWhitespaces = true;
+            }
+            config.datetimeAccessFormPaths = config.datetimeAccessFormPaths || [];
+        }
+
+        var DOMNodeTypes = {
+            ELEMENT_NODE: 1,
+            TEXT_NODE: 3,
+            CDATA_SECTION_NODE: 4,
+            COMMENT_NODE: 8,
+            DOCUMENT_NODE: 9
+        };
+
+        function initRequiredPolyfills() {
+            function pad(number) {
+                var r = String(number);
+                if (r.length === 1) {
+                    r = &apos;0&apos; + r;
+                }
+                return r;
+            }
+
+            // Hello IE8-
+            if (typeof String.prototype.trim !== &apos;function&apos;) {
+                String.prototype.trim = function () {
+                    return this.replace(/^\s+|^\n+|(\s|\n)+$/g, &apos;&apos;);
+                }
+            }
+            if (typeof Date.prototype.toISOString !== &apos;function&apos;) {
+                // Implementation from http://stackoverflow.com/questions/2573521/how-do-i-output-an-iso-8601-formatted-string-in-javascript
+                Date.prototype.toISOString = function () {
+                    return this.getUTCFullYear()
+                        + &apos;-&apos; + pad(this.getUTCMonth() + 1)
+                        + &apos;-&apos; + pad(this.getUTCDate())
+                        + &apos;T&apos; + pad(this.getUTCHours())
+                        + &apos;:&apos; + pad(this.getUTCMinutes())
+                        + &apos;:&apos; + pad(this.getUTCSeconds())
+                        + &apos;.&apos; + String((this.getUTCMilliseconds() / 1000).toFixed(3)).slice(2, 5)
+                        + &apos;Z&apos;;
+                };
+            }
+        }
+
+        function getNodeLocalName(node) {
+            var nodeLocalName = node.localName;
+            if (nodeLocalName == null) // Yeah, this is IE!!
+                nodeLocalName = node.baseName;
+            if (nodeLocalName == null || nodeLocalName == &quot;&quot;) // ==&quot;&quot; is IE too
+                nodeLocalName = node.nodeName;
+            return nodeLocalName;
+        }
+
+        function getNodePrefix(node) {
+            return node.prefix;
+        }
+
+        function escapeXmlChars(str) {
+            if (typeof(str) == &quot;string&quot;)
+                return str.replace(/&amp;/g, &apos;&amp;amp;&apos;).replace(/&lt;/g, &apos;&amp;lt;&apos;).replace(/&gt;/g, &apos;&amp;gt;&apos;).replace(/&quot;/g, &apos;&amp;quot;&apos;).replace(/&apos;/g, &apos;&amp;#x27;&apos;);
+            else
+                return str;
+        }
+
+        function unescapeXmlChars(str) {
+            return str.replace(/&amp;amp;/g, &apos;&amp;&apos;).replace(/&amp;lt;/g, &apos;&lt;&apos;).replace(/&amp;gt;/g, &apos;&gt;&apos;).replace(/&amp;quot;/g, &apos;&quot;&apos;).replace(/&amp;#x27;/g, &quot;&apos;&quot;);
+        }
+
+        function toArrayAccessForm(obj, childName, path) {
+            switch (config.arrayAccessForm) {
+                case &quot;property&quot;:
+                    if (!(obj[childName] instanceof Array))
+                        obj[childName + &quot;_asArray&quot;] = [obj[childName]];
+                    else
+                        obj[childName + &quot;_asArray&quot;] = obj[childName];
+                    break;
+                /*case &quot;none&quot;:
+                 break;*/
+            }
+
+            if (!(obj[childName] instanceof Array) &amp;&amp; config.arrayAccessFormPaths.length &gt; 0) {
+                var idx = 0;
+                for (; idx &lt; config.arrayAccessFormPaths.length; idx++) {
+                    var arrayPath = config.arrayAccessFormPaths[idx];
+                    if (typeof arrayPath === &quot;string&quot;) {
+                        if (arrayPath == path)
+                            break;
+                    }
+                    else if (arrayPath instanceof RegExp) {
+                        if (arrayPath.test(path))
+                            break;
+                    }
+                    else if (typeof arrayPath === &quot;function&quot;) {
+                        if (arrayPath(obj, childName, path))
+                            break;
+                    }
+                }
+                if (idx != config.arrayAccessFormPaths.length) {
+                    obj[childName] = [obj[childName]];
+                }
+            }
+        }
+
+        function fromXmlDateTime(prop) {
+            // Implementation based up on http://stackoverflow.com/questions/8178598/xml-datetime-to-javascript-date-object
+            // Improved to support full spec and optional parts
+            var bits = prop.split(/[-T:+Z]/g);
+
+            var d = new Date(bits[0], bits[1] - 1, bits[2]);
+            var secondBits = bits[5].split(&quot;\.&quot;);
+            d.setHours(bits[3], bits[4], secondBits[0]);
+            if (secondBits.length &gt; 1)
+                d.setMilliseconds(secondBits[1]);
+
+            // Get supplied time zone offset in minutes
+            if (bits[6] &amp;&amp; bits[7]) {
+                var offsetMinutes = bits[6] * 60 + Number(bits[7]);
+                var sign = /\d\d-\d\d:\d\d$/.test(prop) ? &apos;-&apos; : &apos;+&apos;;
+
+                // Apply the sign
+                offsetMinutes = 0 + (sign == &apos;-&apos; ? -1 * offsetMinutes : offsetMinutes);
+
+                // Apply offset and local timezone
+                d.setMinutes(d.getMinutes() - offsetMinutes - d.getTimezoneOffset())
+            }
+            else if (prop.indexOf(&quot;Z&quot;, prop.length - 1) !== -1) {
+                d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds(), d.getMilliseconds()));
+            }
+
+            // d is now a local time equivalent to the supplied time
+            return d;
+        }
+
+        function checkFromXmlDateTimePaths(value, childName, fullPath) {
+            if (config.datetimeAccessFormPaths.length &gt; 0) {
+                var path = fullPath.split(&quot;\.#&quot;)[0];
+                var idx = 0;
+                for (; idx &lt; config.datetimeAccessFormPaths.length; idx++) {
+                    var dtPath = config.datetimeAccessFormPaths[idx];
+                    if (typeof dtPath === &quot;string&quot;) {
+                        if (dtPath == path)
+                            break;
+                    }
+                    else if (dtPath instanceof RegExp) {
+                        if (dtPath.test(path))
+                            break;
+                    }
+                    else if (typeof dtPath === &quot;function&quot;) {
+                        if (dtPath(obj, childName, path))
+                            break;
+                    }
+                }
+                if (idx != config.datetimeAccessFormPaths.length) {
+                    return fromXmlDateTime(value);
+                }
+                else
+                    return value;
+            }
+            else
+                return value;
+        }
+
+        function parseDOMChildren(node, path) {
+            if (node.nodeType == DOMNodeTypes.DOCUMENT_NODE) {
+                var result = new Object;
+                var nodeChildren = node.childNodes;
+                // Alternative for firstElementChild which is not supported in some environments
+                for (var cidx = 0; cidx &lt; nodeChildren.length; cidx++) {
+                    var child = nodeChildren.item(cidx);
+                    if (child.nodeType == DOMNodeTypes.ELEMENT_NODE) {
+                        var childName = getNodeLocalName(child);
+                        result[childName] = parseDOMChildren(child, childName);
+                    }
+                }
+                return result;
+            }
+            else if (node.nodeType == DOMNodeTypes.ELEMENT_NODE) {
+                var result = new Object;
+                result.__cnt = 0;
+
+                var nodeChildren = node.childNodes;
+
+                // Children nodes
+                for (var cidx = 0; cidx &lt; nodeChildren.length; cidx++) {
+                    var child = nodeChildren.item(cidx); // nodeChildren[cidx];
+                    var childName = getNodeLocalName(child);
+
+                    if (child.nodeType != DOMNodeTypes.COMMENT_NODE) {
+                        result.__cnt++;
+                        if (result[childName] == null) {
+                            result[childName] = parseDOMChildren(child, path + &quot;.&quot; + childName);
+                            toArrayAccessForm(result, childName, path + &quot;.&quot; + childName);
+                        }
+                        else {
+                            if (result[childName] != null) {
+                                if (!(result[childName] instanceof Array)) {
+                                    result[childName] = [result[childName]];
+                                    toArrayAccessForm(result, childName, path + &quot;.&quot; + childName);
+                                }
+                            }
+                            (result[childName])[result[childName].length] = parseDOMChildren(child, path + &quot;.&quot; + childName);
+                        }
+                    }
+                }
+
+                // Attributes
+                for (var aidx = 0; aidx &lt; node.attributes.length; aidx++) {
+                    var attr = node.attributes.item(aidx); // [aidx];
+                    result.__cnt++;
+                    result[config.attributePrefix + attr.name] = attr.value;
+                }
+
+                // Node namespace prefix
+                var nodePrefix = getNodePrefix(node);
+                if (nodePrefix != null &amp;&amp; nodePrefix != &quot;&quot;) {
+                    result.__cnt++;
+                    result.__prefix = nodePrefix;
+                }
+
+                if (result[&quot;#text&quot;] != null) {
+                    result.__text = result[&quot;#text&quot;];
+                    if (result.__text instanceof Array) {
+                        result.__text = result.__text.join(&quot;\n&quot;);
+                    }
+                    if (config.escapeMode)
+                        result.__text = unescapeXmlChars(result.__text);
+                    if (config.stripWhitespaces)
+                        result.__text = result.__text.trim();
+                    delete result[&quot;#text&quot;];
+                    if (config.arrayAccessForm == &quot;property&quot;)
+                        delete result[&quot;#text_asArray&quot;];
+                    result.__text = checkFromXmlDateTimePaths(result.__text, childName, path + &quot;.&quot; + childName);
+                }
+                if (result[&quot;#cdata-section&quot;] != null) {
+                    result.__cdata = result[&quot;#cdata-section&quot;];
+                    delete result[&quot;#cdata-section&quot;];
+                    if (config.arrayAccessForm == &quot;property&quot;)
+                        delete result[&quot;#cdata-section_asArray&quot;];
+                }
+
+                if (result.__cnt == 1 &amp;&amp; result.__text != null) {
+                    result = result.__text;
+                }
+                else if (result.__cnt == 0 &amp;&amp; config.emptyNodeForm == &quot;text&quot;) {
+                    result = &apos;&apos;;
+                }
+                else if (result.__cnt &gt; 1 &amp;&amp; result.__text != null &amp;&amp; config.skipEmptyTextNodesForObj) {
+                    if ((config.stripWhitespaces &amp;&amp; result.__text == &quot;&quot;) || (result.__text.trim() == &quot;&quot;)) {
+                        delete result.__text;
+                    }
+                }
+                delete result.__cnt;
+
+                if (config.enableToStringFunc &amp;&amp; (result.__text != null || result.__cdata != null )) {
+                    result.toString = function () {
+                        return (this.__text != null ? this.__text : &apos;&apos;) + ( this.__cdata != null ? this.__cdata : &apos;&apos;);
+                    };
+                }
+
+                return result;
+            }
+            else if (node.nodeType == DOMNodeTypes.TEXT_NODE || node.nodeType == DOMNodeTypes.CDATA_SECTION_NODE) {
+                return node.nodeValue;
+            }
+        }
+
+        function startTag(jsonObj, element, attrList, closed) {
+            var resultStr = &quot;&lt;&quot; + ( (jsonObj != null &amp;&amp; jsonObj.__prefix != null) ? (jsonObj.__prefix + &quot;:&quot;) : &quot;&quot;) + element;
+            if (attrList != null) {
+                for (var aidx = 0; aidx &lt; attrList.length; aidx++) {
+                    var attrName = attrList[aidx];
+                    var attrVal = jsonObj[attrName];
+                    if (config.escapeMode)
+                        attrVal = escapeXmlChars(attrVal);
+                    resultStr += &quot; &quot; + attrName.substr(config.attributePrefix.length) + &quot;=&apos;&quot; + attrVal + &quot;&apos;&quot;;
+                }
+            }
+            if (!closed)
+                resultStr += &quot;&gt;&quot;;
+            else
+                resultStr += &quot;/&gt;&quot;;
+            return resultStr;
+        }
+
+        function endTag(jsonObj, elementName) {
+            return &quot;&lt;/&quot; + (jsonObj.__prefix != null ? (jsonObj.__prefix + &quot;:&quot;) : &quot;&quot;) + elementName + &quot;&gt;&quot;;
+        }
+
+        function endsWith(str, suffix) {
+            return str.indexOf(suffix, str.length - suffix.length) !== -1;
+        }
+
+        function jsonXmlSpecialElem(jsonObj, jsonObjField) {
+            if ((config.arrayAccessForm == &quot;property&quot; &amp;&amp; endsWith(jsonObjField.toString(), (&quot;_asArray&quot;)))
+                || jsonObjField.toString().indexOf(config.attributePrefix) == 0
+                || jsonObjField.toString().indexOf(&quot;__&quot;) == 0
+                || (jsonObj[jsonObjField] instanceof Function))
+                return true;
+            else
+                return false;
+        }
+
+        function jsonXmlElemCount(jsonObj) {
+            var elementsCnt = 0;
+            if (jsonObj instanceof Object) {
+                for (var it in jsonObj) {
+                    if (jsonXmlSpecialElem(jsonObj, it))
+                        continue;
+                    elementsCnt++;
+                }
+            }
+            return elementsCnt;
+        }
+
+        function parseJSONAttributes(jsonObj) {
+            var attrList = [];
+            if (jsonObj instanceof Object) {
+                for (var ait in jsonObj) {
+                    if (ait.toString().indexOf(&quot;__&quot;) == -1 &amp;&amp; ait.toString().indexOf(config.attributePrefix) == 0) {
+                        attrList.push(ait);
+                    }
+                }
+            }
+            return attrList;
+        }
+
+        function parseJSONTextAttrs(jsonTxtObj) {
+            var result = &quot;&quot;;
+
+            if (jsonTxtObj.__cdata != null) {
+                result += &quot;&lt;![CDATA[&quot; + jsonTxtObj.__cdata + &quot;]]&gt;&quot;;
+            }
+
+            if (jsonTxtObj.__text != null) {
+                if (config.escapeMode)
+                    result += escapeXmlChars(jsonTxtObj.__text);
+                else
+                    result += jsonTxtObj.__text;
+            }
+            return result;
+        }
+
+        function parseJSONTextObject(jsonTxtObj) {
+            var result = &quot;&quot;;
+
+            if (jsonTxtObj instanceof Object) {
+                result += parseJSONTextAttrs(jsonTxtObj);
+            }
+            else if (jsonTxtObj != null) {
+                if (config.escapeMode)
+                    result += escapeXmlChars(jsonTxtObj);
+                else
+                    result += jsonTxtObj;
+            }
+
+            return result;
+        }
+
+        function parseJSONArray(jsonArrRoot, jsonArrObj, attrList) {
+            var result = &quot;&quot;;
+            if (jsonArrRoot.length == 0) {
+                result += startTag(jsonArrRoot, jsonArrObj, attrList, true);
+            }
+            else {
+                for (var arIdx = 0; arIdx &lt; jsonArrRoot.length; arIdx++) {
+                    result += startTag(jsonArrRoot[arIdx], jsonArrObj, parseJSONAttributes(jsonArrRoot[arIdx]), false);
+                    result += parseJSONObject(jsonArrRoot[arIdx]);
+                    result += endTag(jsonArrRoot[arIdx], jsonArrObj);
+                }
+            }
+            return result;
+        }
+
+        function parseJSONObject(jsonObj) {
+            var result = &quot;&quot;;
+
+            var elementsCnt = jsonXmlElemCount(jsonObj);
+
+            if (elementsCnt &gt; 0) {
+                for (var it in jsonObj) {
+
+                    if (jsonXmlSpecialElem(jsonObj, it))
+                        continue;
+
+                    var subObj = jsonObj[it];
+
+                    var attrList = parseJSONAttributes(subObj)
+
+                    if (subObj == null || subObj == undefined) {
+                        result += startTag(subObj, it, attrList, true);
+                    }
+                    else if (subObj instanceof Object) {
+
+                        if (subObj instanceof Array) {
+                            result += parseJSONArray(subObj, it, attrList);
+                        }
+                        else if (subObj instanceof Date) {
+                            result += startTag(subObj, it, attrList, false);
+                            result += subObj.toISOString();
+                            result += endTag(subObj, it);
+                        }
+                        else {
+                            var subObjElementsCnt = jsonXmlElemCount(subObj);
+                            if (subObjElementsCnt &gt; 0 || subObj.__text != null || subObj.__cdata != null) {
+                                result += startTag(subObj, it, attrList, false);
+                                result += parseJSONObject(subObj);
+                                result += endTag(subObj, it);
+                            }
+                            else {
+                                result += startTag(subObj, it, attrList, true);
+                            }
+                        }
+                    }
+                    else {
+                        result += startTag(subObj, it, attrList, false);
+                        result += parseJSONTextObject(subObj);
+                        result += endTag(subObj, it);
+                    }
+                }
+            }
+            result += parseJSONTextObject(jsonObj);
+
+            return result;
+        }
+
+        this.parseXmlString = function (xmlDocStr) {
+            var isIEParser = window.ActiveXObject || &quot;ActiveXObject&quot; in window;
+            if (xmlDocStr === undefined) {
+                return null;
+            }
+            var xmlDoc;
+            if (window.DOMParser) {
+                var parser = new window.DOMParser();
+                var parsererrorNS = null;
+                // IE9+ now is here
+                if (!isIEParser) {
+                    try {
+                        parsererrorNS = parser.parseFromString(&quot;INVALID&quot;, &quot;text/xml&quot;).childNodes[0].namespaceURI;
+                    }
+                    catch (err) {
+                        parsererrorNS = null;
+                    }
+                }
+                try {
+                    xmlDoc = parser.parseFromString(xmlDocStr, &quot;text/xml&quot;);
+                    if (parsererrorNS != null &amp;&amp; xmlDoc.getElementsByTagNameNS(parsererrorNS, &quot;parsererror&quot;).length &gt; 0) {
+                        //throw new Error(&apos;Error parsing XML: &apos;+xmlDocStr);
+                        xmlDoc = null;
+                    }
+                }
+                catch (err) {
+                    xmlDoc = null;
+                }
+            }
+            else {
+                // IE :(
+                if (xmlDocStr.indexOf(&quot;&lt;?&quot;) == 0) {
+                    xmlDocStr = xmlDocStr.substr(xmlDocStr.indexOf(&quot;?&gt;&quot;) + 2);
+                }
+                xmlDoc = new ActiveXObject(&quot;Microsoft.XMLDOM&quot;);
+                xmlDoc.async = &quot;false&quot;;
+                xmlDoc.loadXML(xmlDocStr);
+            }
+            return xmlDoc;
+        };
+
+        this.asArray = function (prop) {
+            if (prop instanceof Array)
+                return prop;
+            else
+                return [prop];
+        };
+
+        this.toXmlDateTime = function (dt) {
+            if (dt instanceof Date)
+                return dt.toISOString();
+            else if (typeof(dt) === &apos;number&apos;)
+                return new Date(dt).toISOString();
+            else
+                return null;
+        };
+
+        this.asDateTime = function (prop) {
+            if (typeof(prop) == &quot;string&quot;) {
+                return fromXmlDateTime(prop);
+            }
+            else
+                return prop;
+        };
+
+        this.xml2json = function (xmlDoc) {
+            return parseDOMChildren(xmlDoc);
+        };
+
+        this.xml_str2json = function (xmlDocStr) {
+            var xmlDoc = this.parseXmlString(xmlDocStr);
+            if (xmlDoc != null)
+                return this.xml2json(xmlDoc);
+            else
+                return null;
+        };
+
+        this.json2xml_str = function (jsonObj) {
+            return parseJSONObject(jsonObj);
+        };
+
+        this.json2xml = function (jsonObj) {
+            var xmlDocStr = this.json2xml_str(jsonObj);
+            return this.parseXmlString(xmlDocStr);
+        };
+
+        this.getVersion = function () {
+            return VERSION;
+        };
+    }
+});
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.0-alpha)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

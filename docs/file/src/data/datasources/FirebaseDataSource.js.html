@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">src/data/datasources/FirebaseDataSource.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+<link data-ice="userStyle" rel="stylesheet" href="user/css/0-styles.css">
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html">Controller</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Model.js~Model.html">Model</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Router.js~Router.html">Router</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/View.js~View.html">View</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedObject.js~PrioritisedObject.html">PrioritisedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html">FirebaseDataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html">SharePointDataSource</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/DataModelGenerator.js~DataModelGenerator.html">DataModelGenerator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SharePointSnapshot.js~SharePointSnapshot.html">SharePointSnapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Settings.js~Settings.html">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js~SharePoint.html">SharePoint</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter/Worker</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html">SharePointClient</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SoapClient.js~SoapClient.html">SoapClient</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/local</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalModel.js~LocalModel.html">LocalModel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html">LocalPrioritisedArray</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">layout</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event._subscribe">event._subscribe</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.on">event.on</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.once">event.once</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.pipe">event.pipe</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout._dockTo">layout._dockTo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.align">layout.align</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.animate">layout.animate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.custom">layout.custom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.bottom">layout.dock.bottom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.fill">layout.dock.fill</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.left">layout.dock.left</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.none">layout.dock.none</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.right">layout.dock.right</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.top">layout.dock.top</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dockPadding">layout.dockPadding</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dockSpace">layout.dockSpace</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.draggable">layout.draggable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.flow">layout.flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.fullSize">layout.fullSize</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.opacity">layout.opacity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.origin">layout.origin</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.renderable">layout.renderable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.rotate">layout.rotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.rotateFrom">layout.rotateFrom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.scale">layout.scale</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.scrollable">layout.scrollable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.size">layout.size</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.skew">layout.skew</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.swipable">layout.swipable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.translate">layout.translate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.translateFrom">layout.translateFrom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-TrueSizedLayoutDockHelper">TrueSizedLayoutDockHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-event">event</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flow">flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-layout">layout</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flowStates">flowStates</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">routers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/routers/ArvaRouter.js~ArvaRouter.html">ArvaRouter</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/BlobHelper.js~BlobHelper.html">BlobHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/DialogManager.js~DialogManager.html">DialogManager</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Injection.js~Injection.html">Injection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/KeyboardHelper.js~KeyboardHelper.html">KeyboardHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/ObjectHelper.js~ObjectHelper.html">ObjectHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Throttler.js~Throttler.html">Throttler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-callbackToPromise">callbackToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-successAndErrorToPromise">successAndErrorToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-waitMilliseconds">waitMilliseconds</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-combineOptions">combineOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-limit">limit</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/di</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~ClassProvider.html">ClassProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~FactoryProvider.html">FactoryProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Inject.html">Inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Provide.html">Provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~SuperConstructor.html">SuperConstructor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~TransientScope.html">TransientScope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/injector.js~Injector.html">Injector</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-annotate">annotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-hasAnnotation">hasAnnotation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-inject">inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-provide">provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-readAnnotations">readAnnotations</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createProviderFromFnOrClass">createProviderFromFnOrClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isFunction">isFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isObject">isObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isUpperCase">isUpperCase</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-toString">toString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ownKeys">ownKeys</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/request</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ExistsRequest">ExistsRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-GetRequest">GetRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-PostRequest">PostRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-UrlParser">UrlParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ParseStringToXml">ParseStringToXml</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/view</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~BaseLayoutHelper.html">BaseLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~DockedLayoutHelper.html">DockedLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~FullSizeLayoutHelper.html">FullSizeLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~TraditionalLayoutHelper.html">TraditionalLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/RenderableHelper.js~RenderableHelper.html">RenderableHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/SizeResolver.js~SizeResolver.html">SizeResolver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/Utils.js~Utils.html">Utils</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/data/datasources/FirebaseDataSource.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+
+
+ @author: Tom Clement (tjclement)
+ @license NPOSL-3.0
+ @copyright Bizboard, 2015
+
+ */
+import _                            from &apos;lodash&apos;;
+import firebase                     from &apos;firebase&apos;;
+import {DataSource}                 from &apos;../DataSource.js&apos;;
+import {ObjectHelper}               from &apos;../../utils/ObjectHelper.js&apos;;
+import {provide}                    from &apos;../../utils/di/Decorators.js&apos;;
+import {combineOptions}             from &apos;../../utils/CombineOptions.js&apos;;
+
+@provide(DataSource)
+export class FirebaseDataSource extends DataSource {
+
+    get dataReference() {
+        return this._orderedDataReference;
+    }
+
+    set dataReference(value) {
+        this._orderedDataReference = value;
+    }
+
+    /**
+     * @param {String} path Full path to resource in remote data storage.
+     * @return {FirebaseDataSource} FirebaseDataSource instance.
+     * @param {Object} options Optional: options to construct the DataSource with.
+     * @param {String} [options.orderBy] Optional, order all items received through the dataSource.
+     *                                   Options are: &apos;.priority&apos;, &apos;.value&apos;, or a string containing the child key to order by (e.g. &apos;MyModelProperty&apos;)
+     * @param {Number} [options.limitToFirst] Optional, only subscribe to the first amount of entries.
+     * @param {Number} [options.limitToLast] Optional, only subscribe to the last amount of entries.
+     * @param {Promise} [options.synced] Optional, a promise to tell the data source that it is only synchronized after this promise is resolved
+     **/
+    constructor(path, options = {orderBy: &apos;.priority&apos;}) {
+        super(path);
+        this._onValueCallback = null;
+        this._onAddCallback = null;
+        this._onChangeCallback = null;
+        this._onMoveCallback = null;
+        this._onRemoveCallback = null;
+        this._dataReference = firebase.database().ref(path);
+        this.handlers = {};
+        this.options = combineOptions({synced: Promise.resolve()},options);
+        this._synced = this.options.synced;
+
+        /* Populate the orderedReference, which is the standard Firebase reference with an optional ordering
+         * defined. This needs to be saved seperately, because methods like child() and key() can&apos;t be called
+         * from the ordered reference, and must instead be performed on the standard reference. */
+
+        if (this.options.orderBy &amp;&amp; this.options.orderBy === &apos;.priority&apos;) {
+            this._orderedDataReference = this._dataReference.orderByPriority();
+        } else if (this.options.orderBy &amp;&amp; this.options.orderBy === &apos;.value&apos;) {
+            this._orderedDataReference = this._dataReference.orderByValue();
+        } else if (this.options.orderBy &amp;&amp; this.options.orderBy !== &apos;&apos;) {
+            this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+        } else {
+            this._orderedDataReference = this._dataReference;
+        }
+
+        if (this.options.limitToFirst !== undefined) {
+            this._orderedDataReference = this._orderedDataReference.limitToFirst(this.options.limitToFirst);
+        } else if (this.options.limitToLast !== undefined) {
+            this._orderedDataReference = this._orderedDataReference.limitToLast(this.options.limitToLast);
+        }
+
+        /* Bind all local methods to the current object instance, so we can refer to &quot;this&quot;
+         * in the methods as expected, even when they&apos;re called from event handlers. */
+        ObjectHelper.bindAllMethods(this, this);
+    }
+
+    /**
+     * Returns the full path to this dataSource&apos;s source on the remote storage provider.
+     * @returns {String} Full resource path.
+     */
+    toString() {
+        return this._dataReference.toString();
+    }
+
+    /**
+     * Resolves when the DataSource is synchronized to the server
+     * @returns {Promise} Resolves when the DataSource is synchronized
+     */
+    synced() {
+        return this._synced;
+    }
+
+    /**
+     * Returns a dataSource reference to the given child branch of the current datasource.
+     * @param {String} childName Child branch name.
+     * @param {Object} options Optional: additional options to pass to new DataSource instance.
+     * @returns {DataSource} New dataSource instance pointing to the given child branch.
+     */
+    child(childName, options = {}) {
+        return new FirebaseDataSource(`${this.path()}/${childName}`, options);
+    }
+
+    /**
+     * Returns the full URL to the path on the dataSource. Functionally identical to toString().
+     * @returns {String} Full resource path.
+     */
+    path() {
+        let rootUrl = this.root();
+        let parentUrl = this.parent();
+
+        let relativePath = parentUrl.replace(rootUrl, &apos;&apos;);
+        return `${relativePath}/${this.key()}`;
+    }
+
+    /**
+     * Returns the name of the current branch in the path on the dataSource.
+     * @returns {String} Current branch name.
+     */
+    key() {
+        return (this._dataReference.key || &apos;&apos;).toString();
+    }
+
+    /**
+     * Returns the full URL to the parent of the current branch on the dataSource.
+     * @returns {String} Full resource path of parent.
+     */
+    parent() {
+        return (this._dataReference.parent || &apos;&apos;).toString();
+    }
+
+    /**
+     * Returns the full URL to the root on the dataSource.
+     * @returns {String} Full resource path of root.
+     */
+    root() {
+        return (this._dataReference.root || &apos;&apos;).toString();
+    }
+
+    /**
+     * Writes newData to the path this dataSource was constructed with.
+     * @param {Object} newData Data to write to dataSource.
+     * @returns {Promise} Resolves when write to server is complete.
+     */
+    set(newData) {
+        let completionPromise = this._dataReference.set(newData);
+        /* Append another promise to the chain to keep track of whether it&apos;s still synchronized */
+        this._synced = this._synced.then(() =&gt; completionPromise);
+        return completionPromise
+    }
+
+    /**
+     * Removes the object and all underlying children that this dataSource points to.
+     * @returns {void}
+     */
+    remove() {
+        return this._dataReference.remove();
+    }
+
+    /**
+     * Writes newData to the path this dataSource was constructed with, appended by a random UID generated by
+     * the dataSource.
+     * @param {Object} newData New data to append to dataSource.
+     * @returns {FirebaseDataSource} A new FirebaseDataSource pointing to the injected data.
+     */
+    push(newData) {
+        let pushResult = this._dataReference.push(newData);
+        return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {synced: pushResult});
+    }
+
+    /**
+     * Writes newData with given priority (ordering) to the path this dataSource was constructed with.
+     * @param {Object} newData New data to set.
+     * @param {String|Number} priority Priority value by which the data should be ordered.
+     * @returns {Promise} Resolves when write to server is complete.
+     */
+    setWithPriority(newData, priority) {
+        let completionPromise = this.dataReference.setWithPriority(newData, priority);
+        /* Append another promise to the chain to keep track of whether it&apos;s still synchronized */
+        this._synced = this._synced.then(() =&gt; completionPromise);
+        return completionPromise;
+    }
+
+    /**
+     * Sets the priority (ordering) of an object on a given dataSource.
+     * @param {String|Number} newPriority New priority value to order data by.
+     * @returns {void}
+     */
+    setPriority(newPriority) {
+        return this.dataReference.setPriority(newPriority);
+    }
+
+    /**
+     * Orders the DataSource&apos;s childs by the value in child[key].
+     * @param {String} childKey Key of the field to order by.
+     * @returns {DataSource} New dataSource instance.
+     */
+    orderByChild(childKey) {
+        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: childKey}));
+    }
+
+    /**
+     * Orders the DataSource&apos;s childs by their key names, ignoring their priority.
+     * @returns {DataSource} New dataSource instance.
+     */
+    orderByKey() {
+        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: &apos;.key&apos;}));
+    }
+
+    /**
+     * Orders the DataSource&apos;s childs by their values, ignoring their priority.
+     * @returns {DataSource} New dataSource instance.
+     */
+    orderByValue() {
+        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: &apos;.value&apos;}));
+    }
+
+    /**
+     * Returns a new dataSource reference that will limit the subscription to only the first given amount items.
+     * @param {Number} amount Amount of items to limit the dataSource to.
+     * @returns {DataSource} New dataSource instance.
+     */
+    limitToFirst(amount) {
+        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {limitToFirst: amount}));
+    }
+
+    /**
+     * Returns a new dataSource reference that will limit the subscription to only the last given amount items.
+     * @param {Number} amount Amount of items to limit the dataSource to.
+     * @returns {DataSource} New dataSource instance.
+     */
+    limitToLast(amount) {
+        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {limitToLast: amount}));
+    }
+
+    /**
+     * Authenticates all instances of this DataSource with the given OAuth provider and credentials.
+     * @param {String} provider google, facebook, github, or twitter
+     * @param {String|Object} credentials Access token string, or object with key/value pairs with e.g. OAuth 1.1 credentials.
+     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * On error, first argument is error message.
+     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
+     * @returns {Promise} A promise that resolves after successful authentication.
+     */
+    authWithOAuthToken(provider, credentials, onComplete) {
+        credentials.provider = provider;
+        return firebase.auth().signInWithCredential(credentials).then((user) =&gt; {
+            if (onComplete) {
+                onComplete(user);
+            }
+            return user;
+        });
+    }
+
+    /**
+     * Authenticates all instances of this DataSource with a custom auth token or secret.
+     * @param {String} authToken Authentication token or secret.
+     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * On error, first argument is error message.
+     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
+     * @returns {Promise} A promise that resolves after successful authentication.
+     */
+    authWithCustomToken(authToken, onComplete) {
+        return firebase.auth().signInWithCustomToken(authToken).then((user) =&gt; {
+            if (onComplete) {
+                onComplete(user);
+            }
+            return user;
+        });
+    }
+
+    /**
+     * Authenticates all instances of this DataSource with the given email/password credentials.
+     * @param {String|Object} credentials Object with key/value pairs {email: &quot;value&quot;, password:&quot;value&quot;}.
+     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * On error, first argument is error message.
+     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
+     * @returns {Promise} A promise that resolves after successful authentication.
+     */
+    authWithPassword(credentials, onComplete) {
+        return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password).then((user) =&gt; {
+            if (onComplete) {
+                onComplete(user);
+            }
+            return user;
+        });
+    }
+
+    /**
+     * Authenticates all instances of this DataSource as an anonymous user.
+     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * On error, first argument is error message.
+     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
+     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.
+     * @returns {Promise} A promise that resolves after successful authentication.
+     */
+    authAnonymously(options) {
+        return firebase.auth().signInAnonymously();
+    }
+
+    /**
+     * Fetches the current user&apos;s authentication state.
+     * If the user is authenticated, returns an object containing at least the fields uid, provider, auth, and expires.
+     * If the user is not authenticated, returns null.
+     * @returns {Object|null} User auth object.
+     */
+    getAuth() {
+        let firebaseAuth = firebase.auth();
+        let {currentUser} = firebaseAuth;
+        if (!this._authDataPresent) {
+            if (currentUser) {
+                this._authDataPresent = true;
+                return Promise.resolve(currentUser);
+            } else {
+                return new Promise((resolve) =&gt; {
+                    firebaseAuth.onAuthStateChanged((newUser) =&gt; {
+                        this._authDataPresent = true;
+                        resolve(newUser);
+                    });
+                });
+            }
+        } else {
+            return Promise.resolve(currentUser);
+        }
+    }
+
+    /**
+     * Logs out from the datasource, allowing to re-authenticate at a later time.
+     * @returns {void}
+     */
+    unauth() {
+        return firebase.auth().signOut();
+    }
+
+    /**
+     * Subscribe to an event emitted by the DataSource.
+     * @param {String} event Event type to subscribe to. Allowed values are: &apos;value&apos;, &apos;child_changed&apos;, &apos;child_added&apos;, &apos;child_removed&apos;, &apos;child_moved&apos;.
+     * @param {Function} handler Function to call when the subscribed event is emitted.
+     * @param {Object} context Context to set &apos;this&apos; to when calling the handler function.
+     * @returns {void}
+     */
+    on(event, handler, context = this) {
+        let boundHandler = this.handlers[handler] = handler.bind(this);
+        this._orderedDataReference.on(event, boundHandler);
+    }
+
+    /**
+     * Subscribe to an event emitted by the DataSource once, and then immediately unsubscribe again once it has been emitted a single time.
+     * @param {String} event Event type to subscribe to. Allowed values are: &apos;value&apos;, &apos;child_changed&apos;, &apos;child_added&apos;, &apos;child_removed&apos;, &apos;child_moved&apos;.
+     * @param {Function} handler Function to call when the subscribed event is emitted.
+     * @param {Object} context Context to set &apos;this&apos; to when calling the handler function.
+     * @returns {void}
+     */
+    once(event, handler, context = this) {
+        function onceWrapper() {
+            handler.call(context, ...arguments);
+            this.off(event, onceWrapper);
+        }
+
+        return this.on(event, onceWrapper, this);
+    }
+
+
+    /**
+     * Unsubscribe to a previously subscribed event. If no handler or context is given, all handlers for
+     * the given event are removed. If no parameters are given at all, all event types will have their handlers removed.
+     * @param {String} event Event type to unsubscribe from. Allowed values are: &apos;value&apos;, &apos;child_changed&apos;, &apos;child_added&apos;, &apos;child_removed&apos;, &apos;child_moved&apos;.
+     * @param {Function} handler Optional: Function that was used in previous subscription.
+     * @returns {void}
+     */
+    off(event, handler) {
+        let boundHandler = this.handlers[handler];
+        this._orderedDataReference.off(event, boundHandler);
+    }
+
+    /**
+     * Sets the callback triggered when dataSource updates the data.
+     * @param {Function} callback Callback function to call when the subscribed data value changes.
+     * @deprecated Use the on() method instead.
+     * @returns {void}
+     **/
+    setValueChangedCallback(callback) {
+        this._onValueCallback = callback;
+        this.on(&apos;value&apos;, callback);
+    }
+
+    /**
+     * Removes the callback set to trigger when dataSource updates the data.
+     * @deprecated Use the off() method instead.
+     * @returns {void}
+     **/
+    removeValueChangedCallback() {
+        if (this._onValueCallback) {
+            this.off(&apos;value&apos;, this._onValueCallback);
+            this._onValueCallback = null;
+        }
+    }
+
+    /**
+     * Set the callback triggered when dataSource adds a data element.
+     * @param {Function} callback Callback function to call when a new data child is added.
+     * @deprecated Use the on() method instead.
+     * @returns {void}
+     **/
+    setChildAddedCallback(callback) {
+        this._onAddCallback = callback;
+        this.on(&apos;child_added&apos;, callback);
+    }
+
+    /**
+     * Removes the callback set to trigger when dataSource adds a data element.
+     * @deprecated Use the off() method instead.
+     * @returns {void}
+     **/
+    removeChildAddedCallback() {
+        if (this._onAddCallback) {
+            this.off(&apos;child_added&apos;, this._onAddCallback);
+            this._onAddCallback = null;
+        }
+    }
+
+    /**
+     * Set the callback triggered when dataSource changes a data element.
+     * @param {Function} callback Callback function to call when a child is changed.
+     * @deprecated Use the on() method instead.
+     * @returns {void}
+     **/
+    setChildChangedCallback(callback) {
+        this._onChangeCallback = callback;
+        this.on(&apos;child_changed&apos;, callback);
+    }
+
+    /**
+     * Removes the callback set to trigger when dataSource changes a data element.
+     * @deprecated Use the off() method instead.
+     * @returns {void}
+     **/
+    removeChildChangedCallback() {
+        if (this._onChangeCallback) {
+            this.off(&apos;child_changed&apos;, this._onChangeCallback);
+            this._onChangeCallback = null;
+        }
+    }
+
+    /**
+     * Set the callback triggered when dataSource moves a data element.
+     * @param {Function} callback Callback function to call when a child is moved.
+     * @deprecated Use the on() method instead.
+     * @returns {void}
+     **/
+    setChildMovedCallback(callback) {
+        this._onMoveCallback = callback;
+        this.on(&apos;child_moved&apos;, callback);
+    }
+
+    /**
+     * Removes the callback set to trigger when dataSource moves a data element.
+     * @deprecated Use the off() method instead.
+     * @returns {void}
+     **/
+    removeChildMovedCallback() {
+        if (this._onMoveCallback) {
+            this.off(&apos;child_moved&apos;, this._onMoveCallback);
+            this._onMoveCallback = null;
+        }
+    }
+
+    /**
+     * Set the callback triggered when dataSource removes a data element.
+     * @param {Function} callback Callback function to call when a child is removed.
+     * @deprecated Use the on() method instead.
+     * @returns {void}
+     **/
+    setChildRemovedCallback(callback) {
+        this._onRemoveCallback = callback;
+        this.on(&apos;child_removed&apos;, this._onRemoveCallback);
+    }
+
+    /**
+     * Removes the callback set to trigger when dataSource removes a data element.
+     * @deprecated Use the off() method instead.
+     * @returns {void}
+     **/
+    removeChildRemovedCallback() {
+        if (this._onRemoveCallback) {
+            this.off(&apos;child_removed&apos;, this._onRemoveCallback);
+            this._onRemoveCallback = null;
+        }
+    }
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.0-alpha)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

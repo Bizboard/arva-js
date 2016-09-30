@@ -1,0 +1,8 @@
+{
+  "source": "./src/",
+  "destination": "./docs",
+  "styles": ["./esdoc-res/styles.css"],
+  "plugins": [
+    {"name": "./esdoc-res/arvalizer.js"}
+  ]
+}

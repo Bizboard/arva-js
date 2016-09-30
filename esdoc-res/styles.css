@@ -1,0 +1,272 @@
+nav.navigation {
+    background-color: #2c3b3e;
+    color: white;
+    border-right: none;
+    padding-top: 100px;
+    margin-top:0px;
+}
+
+/* For left side links */
+.navigation span span > a {
+    color: white;
+    font-weight: 100;
+    line-height: 1.7;
+    font-size: 13px;
+    margin-left:2px;
+}
+
+.navigation span span > a:hover {
+    color: #b7a3f7;
+    /* background-color: white; */
+}
+
+.navigation .nav-dir-path {
+    color: white !important;
+    font-size: 11px !important;
+    line-height: 1.5;
+    margin-top: 20px !important;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-weight: 100;
+    text-transform: uppercase;
+}
+
+header a {
+    color:black;
+}
+
+input.search-input {
+    border-bottom: 1px solid grey;
+
+}
+
+
+span.search-input-edge {
+    opacity: 0;
+
+}
+
+header {
+    border-bottom: none !important;
+    box-shadow: 0 0px 8px 0px rgba(0, 0, 0, 0.12);
+    padding: 20px !important;
+    text-transform: uppercase;
+}
+
+header li {
+    text-transform: none;
+}
+
+.content {
+    padding-top:70px
+}
+
+.search-box {
+    padding-right: 30px;
+    padding-top: 15px;
+}
+
+.kind-class, .kind-interface, .kind-function, .kind-typedef, .kind-variable, .kind-external {
+    margin-left: 0px !important;
+}
+
+.kind-class {
+    color: #82879c;
+    background-color: #534c79;
+}
+
+.kind-function{
+    color: #bb87ce;
+    background-color: #716275;
+}
+
+.kind-variable {
+    color: #b77c5d;
+    background-color: #7b5c4c;
+}
+
+a {
+    color: #6266e6;
+}
+/*a:hover {
+    color: #b7a3f7;
+    !* background-color: white; *!
+}*/
+
+
+span.access, span.override {
+    color: black !important;
+}
+
+table.summary td {
+    border: solid 1px #dbd8de;
+    padding: 4px 10px;
+}
+
+table.summary thead, table.params thead {
+    background: rgb(55, 63, 82);
+    color: rgb(155, 165, 179) !important;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+}
+
+td.return-type {
+    text-transform: inherit;
+    letter-spacing: 0px;
+    font-size: 15px !important;
+}
+tbody td:first-child {
+    color: black;
+}
+
+table.summary tbody td:nth-child(1) {
+    text-align: left;
+    white-space: nowrap;
+    min-width: 64px;
+    vertical-align: top;
+}
+
+/* Hack for making the anchors scroll down beneath header */
+h3[data-ice="anchor"] {
+    border-top: 40px solid transparent;
+    margin-top: -40px !important;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+    box-sizing: content-box;
+}
+
+h3[data-ice="anchor"].inner-link-active {
+    background: inherit;
+    background-clip: padding-box;
+    background-color: rgb(255,255,150);
+}
+
+/* Style the 'attribute' column not to look so much like a list if there's only one item */
+
+ul:only-child li  {
+    list-style-type: none !important;
+}
+
+
+ul {
+    padding-left:0px
+}
+
+h1 {
+    font-size: 2em;
+    color: #000;
+    margin: 1em 0 .5em;
+    border-bottom:none;
+    font-weight: 800;
+    line-height: 1.5em;
+    word-wrap: break-word;
+}
+
+h2 {
+    font-size: 1.625em;
+    color: #000;
+    font-weight: 800;
+    line-height: 1.5em;
+    word-wrap: break-word;
+    border-bottom:none;
+}
+
+thead td {
+    color:white;
+    font-weight:bold;
+    padding-top:5px !important;
+    padding-bottom:5px !important;
+}
+
+/* Start here */
+
+h3[data-ice="anchor"].inner-link-active{
+    background-color: #2c3b3e;
+    color:white !important;
+    border-radius: 5px;
+    padding-top:10px;
+    padding-bottom:10px;
+}
+
+h3[data-ice="anchor"].inner-link-active span{
+    color: white !important;
+}
+
+h3[data-ice="anchor"].inner-link-active a{
+    color: #80cac3;
+}
+
+h3.inner-link-active span[data-ice="source"] span a {
+    color: #4d7073 !important;
+}
+
+h3.inner-link-active span[data-ice="source"] span a:hover {
+    color: #fb0000 !important;
+}
+
+
+/*h3.inner-link-active span[data-ice="source"] span a:hover {
+    color: #70fff1 !important;
+}*/
+
+/*h3[data-ice="anchor"].inner-link-active a:hover{
+    color: #70fff1;
+}*/
+
+.navigation a {
+    color: #d1dcdb !important;
+}
+
+/*.navigation a:hover {
+    color: #dffffc !important;
+}*/
+
+
+span.kind-class {
+    background-color: transparent !important;
+    border: 1px solid #4d7975 !important;
+    color: #64cec4 !important;
+    font-weight: 200 !important;
+    font-size: 13px !important;
+}
+
+span.kind-function {
+    background-color: transparent  !important;
+    border: 1px solid #674c86  !important;
+    color: #c692ff  !important;
+    font-weight: 200  !important;
+    font-size: 13px  !important;
+}
+
+span.kind-variable {
+    background-color: transparent  !important;
+    border: 1px solid #4b774b  !important;
+    color: #85e683  !important;
+    font-weight: 200  !important;
+    font-size: 13px  !important;
+}
+
+html {
+    font-family: Lato, sans-serif;
+}
+
+h3[data-ice="anchor"]{
+    padding:10px
+}
+
+h3 span[data-ice="source"] span a {
+    padding-right:10px;
+    color: #8c8686;
+}
+
+a:hover {
+    color: #fb0000 !important;
+}
+
+table.params tbody td:nth-child(2) {
+    min-width: 60px;
+}
+
+

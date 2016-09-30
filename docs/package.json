@@ -1,0 +1,60 @@
+{
+  "name": "arva-js",
+  "version": "1.1.0",
+  "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
+  "main": "src/main.js",
+  "homepage": "http://arva.io",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bizboard/arva-js.git"
+  },
+  "scripts": {
+    "test": "mocha --compilers js:babel/register --recursive --timeout 15000"
+  },
+  "bugs": {
+    "url": "https://github.com/bizboard/arva-js/issues"
+  },
+  "jspm": {
+    "directories": {
+      "lib": "src"
+    },
+    "dependencies": {
+      "bowser": "npm:bowser@^1.0.0",
+      "camelcase": "npm:camelcase@^2.1.0",
+      "eventemitter3": "npm:eventemitter3@^1.2.0",
+      "famous": "github:bizboard/famous@^0.3.7",
+      "famous-flex": "github:bizboard/famous-flex@master",
+      "fastclick": "npm:fastclick@^1.0.6",
+      "firebase": "github:firebase/firebase-bower@^3.0.5",
+      "fs": "github:jspm/nodelibs-fs@^0.1.2",
+      "lodash": "npm:lodash@^4.13.1",
+      "ordered-hashmap": "npm:ordered-hashmap@^1.0.0",
+      "path": "github:jspm/nodelibs-path@^0.1.0",
+      "request-animation-frame-mock": "github:erykpiast/request-animation-frame-mock@^0.1.8",
+      "xml2js": "npm:xml2js@^0.4.16"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4",
+      "traceur": "github:jmcriffey/bower-traceur@^0.0.92",
+      "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90",
+      "esdoc": "git+https://git@github.com/typhonjs-node-esdoc/esdoc.git"
+    }
+  },
+  "author": "Tom Clement <tom@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>",
+  "license": "NPOSL-3.0",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-runtime": "^6.6.1",
+    "chai": "^3.4.0",
+    "eslint": "^3.1.0",
+    "isparta": "^3.1.0",
+    "jspm": "^0.16.32",
+    "lodash": "^4.6.1",
+    "mocha": "^2.1.0",
+    "request-animation-frame-mock": "git+https://github.com/erykpiast/request-animation-frame-mock.git",
+    "sinon": "^1.17.3",
+    "systemjs": "^0.19.5"
+  }
+}
