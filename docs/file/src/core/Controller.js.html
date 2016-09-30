@@ -3,7 +3,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">src/core/Controller.js | API Document</title>
+  <title data-ice="title">src/core/Controller.js | Arva API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -35,7 +35,6 @@
     
   <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
@@ -149,7 +148,7 @@
 
  */
 
-import _                        from &apos;lodash&apos;;
+import extend                   from &apos;lodash/extend.js&apos;;
 import EventEmitter             from &apos;eventemitter3&apos;;
 import AnimationController      from &apos;famous-flex/AnimationController.js&apos;;
 
@@ -166,10 +165,24 @@ import {Router}                 from &apos;./Router.js&apos;;
 @inject(Router, AnimationController)
 export class Controller extends EventEmitter {
 
+    /**
+     * Saves the router and context to this.router and this.context, respectively.
+     * @param {Router} router. Injected globablly used router
+     * @param {AnimationController} context. Injected animationController used by the app
+     * @param {Spec} spec
+     */
     constructor(router, context, spec) {
         super();
         this.spec = spec;
+        /**
+         * The router used globally in the app
+         * @type {Router}
+         */
         this.router = router;
+        /**
+         * The AnimationController used globally in the app to change screens
+         * @type {AnimationController}
+         */
         this.context = context;
         /* The this._name property can be set by Arva&apos;s babel-plugin-transform-runtime-constructor-name plugin.
          * This allows Arva code to be minified and mangled without losing automated route creation.
@@ -212,12 +225,12 @@ export class Controller extends EventEmitter {
                 if (result instanceof Promise) { /* We can assume the method called was asynchronous from nature, therefore we await the result. */
                     result.then((delegatedresult) =&gt; {
                         /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
-                        this.context.show(delegatedresult, _.extend(route.spec, this.spec), () =&gt; { this.emit(&apos;renderend&apos;, route.method); });
+                        this.context.show(delegatedresult, extend(route.spec, this.spec), () =&gt; { this.emit(&apos;renderend&apos;, route.method); });
                         this.emit(&apos;rendering&apos;, route.method);
                     });
                 } else {
                     /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
-                    this.context.show(result, _.extend(route.spec, this.spec), () =&gt; { this.emit(&apos;renderend&apos;, route.method); });
+                    this.context.show(result, extend(route.spec, this.spec), () =&gt; { this.emit(&apos;renderend&apos;, route.method); });
                     this.emit(&apos;rendering&apos;, route.method);
                 }
                 return true;

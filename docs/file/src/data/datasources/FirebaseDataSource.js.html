@@ -3,7 +3,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../../">
-  <title data-ice="title">src/data/datasources/FirebaseDataSource.js | API Document</title>
+  <title data-ice="title">src/data/datasources/FirebaseDataSource.js | Arva API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -35,7 +35,6 @@
     
   <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
@@ -148,8 +147,8 @@
  @copyright Bizboard, 2015
 
  */
-import _                            from &apos;lodash&apos;;
 import firebase                     from &apos;firebase&apos;;
+import merge                        from &apos;lodash/merge.js&apos;;
 import {DataSource}                 from &apos;../DataSource.js&apos;;
 import {ObjectHelper}               from &apos;../../utils/ObjectHelper.js&apos;;
 import {provide}                    from &apos;../../utils/di/Decorators.js&apos;;
@@ -334,7 +333,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByChild(childKey) {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: childKey}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: childKey}));
     }
 
     /**
@@ -342,7 +341,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByKey() {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: &apos;.key&apos;}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: &apos;.key&apos;}));
     }
 
     /**
@@ -350,7 +349,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByValue() {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: &apos;.value&apos;}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: &apos;.value&apos;}));
     }
 
     /**
@@ -359,7 +358,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     limitToFirst(amount) {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {limitToFirst: amount}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {limitToFirst: amount}));
     }
 
     /**
@@ -368,7 +367,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     limitToLast(amount) {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {limitToLast: amount}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {limitToLast: amount}));
     }
 
     /**

@@ -3,7 +3,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">src/core/Model.js | API Document</title>
+  <title data-ice="title">src/core/Model.js | Arva API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -35,7 +35,6 @@
     
   <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
@@ -149,12 +148,21 @@
 
  */
 
-import _                        from &apos;lodash&apos;;
+import difference               from &apos;lodash/difference.js&apos;;
 import {Injection}              from &apos;../utils/Injection.js&apos;;
 import {ObjectHelper}           from &apos;../utils/ObjectHelper.js&apos;;
 import {PrioritisedObject}      from &apos;../data/PrioritisedObject.js&apos;;
 import {DataSource}             from &apos;../data/DataSource.js&apos;;
 
+/**
+ * A model that has attributes synced with the database.
+ *
+ * @example
+ * export class Box extends Model {
+ *  get label() {}
+ *  get articleNumber() {}
+ * }
+ */
 export class Model extends PrioritisedObject {
 
     /**
@@ -248,7 +256,7 @@ export class Model extends PrioritisedObject {
         /* If the code is minified, then this.constructor._name is defined, in that case that also goes for the inheriting classes */
         while (prototype.constructor._name || (!this.constructor._name &amp;&amp; prototype.constructor.name !== &apos;Model&apos;)) {
             /* Get all properties except the id and constructor of this model */
-            let propNames = _.difference(Object.getOwnPropertyNames(prototype), [&apos;constructor&apos;, &apos;id&apos;]);
+            let propNames = difference(Object.getOwnPropertyNames(prototype), [&apos;constructor&apos;, &apos;id&apos;]);
 
             for (let name of propNames) {
                 let descriptor = Object.getOwnPropertyDescriptor(prototype, name);
