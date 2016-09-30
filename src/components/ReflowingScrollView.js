@@ -14,6 +14,11 @@ import {ObjectHelper}   from '../utils/ObjectHelper.js';
  */
 export class ReflowingScrollView extends FlexScrollView {
 
+    /**
+     * Constructor does not add any new options.
+     *
+     * @param options
+     */
     constructor(options = {}) {
         super(options);
         ObjectHelper.bindAllMethods(this, this);
