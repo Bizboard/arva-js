@@ -3,7 +3,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">PrioritisedArray | API Document</title>
+  <title data-ice="title">PrioritisedArray | Arva API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -35,7 +35,6 @@
     
   <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
@@ -140,13 +139,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {PrioritisedArray} from &apos;<span><a href="file/src/data/PrioritisedArray.js.html#lineNumber18">arva-js/data/PrioritisedArray.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {PrioritisedArray} from &apos;<span><a href="file/src/data/PrioritisedArray.js.html#lineNumber21">./src/data/PrioritisedArray.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/data/PrioritisedArray.js.html#lineNumber18">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/data/PrioritisedArray.js.html#lineNumber21">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -166,7 +165,8 @@
 
   
   
-  
+  <div class="description" data-ice="description"><p>An array of two-way bound data Models that are automatically synced with the currentl used datasource</p>
+</div>
 
   
 
@@ -194,7 +194,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(dataType: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, dataSource: <span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span>, dataSnapshot: <span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span>
+           <span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(dataType: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, dataSource: <span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span>, dataSnapshot: <span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, modelOptions: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span>
         </p>
       </div>
       <div>
@@ -226,38 +226,14 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-get-length">length</a></span></span><span data-ice="signature">: <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-get-length">length</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>: <span>*</span></span>
         </p>
       </div>
       <div>
         
         
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      <span class="kind" data-ice="kind">set</span>
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-           <span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-set-length">length</a></span></span><span data-ice="signature">: <span>*</span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
+        <div data-ice="description"><p>The number of items in the (synchronized or local) data set.</p>
+</div>
       </div>
     </td>
     <td>
@@ -309,13 +285,14 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-method-findById">findById</a></span></span><span data-ice="signature">(id: <span>*</span>): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-method-findById">findById</a></span></span><span data-ice="signature">(id: <span>*</span>): <span><a href="class/src/core/Model.js~Model.html">Model</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Finds an item based on its Id in the datasource.</p>
+</div>
       </div>
     </td>
     <td>
@@ -439,13 +416,14 @@ of all models after the inserted position.</p>
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-method-push">push</a></span></span><span data-ice="signature">(model: <span>*</span>): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-method-push">push</a></span></span><span data-ice="signature">(model: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span> | <span><a href="class/src/core/Model.js~Model.html">Model</a></span>): <span><a href="class/src/core/Model.js~Model.html">Model</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Adds a model or object to the end of the list.</p>
+</div>
       </div>
     </td>
     <td>
@@ -496,11 +474,11 @@ of all models after the inserted position.</p>
     
     
     
-    <span data-ice="name">constructor</span><span data-ice="signature">(dataType: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, dataSource: <span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span>, dataSnapshot: <span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span>
+    <span data-ice="name">constructor</span><span data-ice="signature">(dataType: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, dataSource: <span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span>, dataSnapshot: <span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span>, options: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, modelOptions: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber42">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber47">source</a></span></span>
     </span>
   </h3>
 
@@ -529,23 +507,30 @@ of all models after the inserted position.</p>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">dataSource</td>
       <td data-ice="type"><span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Optional: dataSource to load the models from. If none is given, a new DataSource is made with a path guessed from
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>dataSource to load the models from. If none is given, a new DataSource is made with a path guessed from
 the model&apos;s DataType name.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">dataSnapshot</td>
       <td data-ice="type"><span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Optional: snapshot already containing model data. Prevents initial subscription on all values in the DataSource.</p>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>snapshot already containing model data. Prevents initial subscription on all values in the DataSource.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">options</td>
       <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Optional: options to pass to the dataSource if none is provided and a new one is constructed.</p>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>options to pass to the dataSource if none is provided and a new one is constructed.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">modelOptions</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>options to merge into the construction of every new Model.</p>
 </td>
     </tr>
 </tbody>
@@ -589,65 +574,36 @@ the model&apos;s DataType name.</p>
     <span class="kind" data-ice="kind">get</span>
     
     
-    <span data-ice="name">length</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">length</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>: <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber24">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber27">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>The number of items in the (synchronized or local) data set.</p>
+</div>
 
   
 
   <div data-ice="properties">
 </div>
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-  
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tr>
+        <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span></td>
+        
+      </tr>
+    </table>
+    <div data-ice="returnProperties">
 </div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-set-length">
-    <span class="access" data-ice="access">public</span>
-    
-    <span class="kind" data-ice="kind">set</span>
-    
-    
-    <span data-ice="name">length</span><span data-ice="signature">: <span>*</span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber28">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  
-
-  
-
-  <div data-ice="properties">
-</div>
-
-  
+  </div>
 
   
 
@@ -676,7 +632,7 @@ the model&apos;s DataType name.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber163">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber168">source</a></span></span>
     </span>
   </h3>
 
@@ -748,18 +704,19 @@ the model&apos;s DataType name.</p>
     
     
     
-    <span data-ice="name">findById</span><span data-ice="signature">(id: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">findById</span><span data-ice="signature">(id: <span>*</span>): <span><a href="class/src/core/Model.js~Model.html">Model</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber490">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber290">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Finds an item based on its Id in the datasource.</p>
+</div>
 
   
 
@@ -786,7 +743,7 @@ the model&apos;s DataType name.</p>
     <h4>Return:</h4>
     <table>
       <tr>
-        <td class="return-type" data-ice="returnType"><span>*</span></td>
+        <td class="return-type" data-ice="returnType"><span><a href="class/src/core/Model.js~Model.html">Model</a></span></td>
         
       </tr>
     </table>
@@ -818,7 +775,7 @@ the model&apos;s DataType name.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber215">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber220">source</a></span></span>
     </span>
   </h3>
 
@@ -895,7 +852,7 @@ of all models after the inserted position.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber149">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber154">source</a></span></span>
     </span>
   </h3>
 
@@ -978,7 +935,7 @@ the given event are removed. If no parameters are given at all, all event types 
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber102">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber107">source</a></span></span>
     </span>
   </h3>
 
@@ -1060,7 +1017,7 @@ the given event are removed. If no parameters are given at all, all event types 
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber131">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber136">source</a></span></span>
     </span>
   </h3>
 
@@ -1139,18 +1096,19 @@ the given event are removed. If no parameters are given at all, all event types 
     
     
     
-    <span data-ice="name">push</span><span data-ice="signature">(model: <span>*</span>): <span>*</span></span>
+    <span data-ice="name">push</span><span data-ice="signature">(model: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span> | <span><a href="class/src/core/Model.js~Model.html">Model</a></span>): <span><a href="class/src/core/Model.js~Model.html">Model</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber232">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber242">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Adds a model or object to the end of the list.</p>
+</div>
 
   
 
@@ -1164,7 +1122,7 @@ the given event are removed. If no parameters are given at all, all event types 
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">model</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span> | <span><a href="class/src/core/Model.js~Model.html">Model</a></span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -1177,8 +1135,9 @@ the given event are removed. If no parameters are given at all, all event types 
     <h4>Return:</h4>
     <table>
       <tr>
-        <td class="return-type" data-ice="returnType"><span>*</span></td>
-        
+        <td class="return-type" data-ice="returnType"><span><a href="class/src/core/Model.js~Model.html">Model</a></span></td>
+        <td class="return-desc" data-ice="returnDescription"><p>The newly inserted model</p>
+</td>
       </tr>
     </table>
     <div data-ice="returnProperties">
@@ -1209,7 +1168,7 @@ the given event are removed. If no parameters are given at all, all event types 
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber242">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber252">source</a></span></span>
     </span>
   </h3>
 

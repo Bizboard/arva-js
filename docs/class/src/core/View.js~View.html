@@ -3,7 +3,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">View | API Document</title>
+  <title data-ice="title">View | Arva API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -35,7 +35,6 @@
     
   <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
@@ -140,13 +139,13 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {View} from &apos;<span><a href="file/src/core/View.js.html#lineNumber33">arva-js/core/View.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {View} from &apos;<span><a href="file/src/core/View.js.html#lineNumber34">./src/core/View.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/core/View.js.html#lineNumber33">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/core/View.js.html#lineNumber34">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
@@ -278,11 +277,13 @@ views used by the app.</p>
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-member-layouts">layouts</a></span></span><span data-ice="signature">: <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-member-layouts">layouts</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
         </p>
       </div>
       <div>
-        
+        <div class="deprecated" data-ice="deprecated">this member was deprecated. `
+The old way of setting the spec of the renderables created by adding renderables through
+`this.renderables.myRenderable = ....</div>
         
         
       </div>
@@ -303,13 +304,14 @@ views used by the app.</p>
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-member-options">options</a></span></span><span data-ice="signature">: <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-member-options">options</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>A copy of the options that were passed in the constructor</p>
+</div>
       </div>
     </td>
     <td>
@@ -328,13 +330,14 @@ views used by the app.</p>
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-member-renderables">renderables</a></span></span><span data-ice="signature">: <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-member-renderables">renderables</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>The renderables &quot;outputted&quot; by the view that are passed to the underlying famous-flex layer</p>
+</div>
       </div>
     </td>
     <td>
@@ -470,7 +473,8 @@ views used by the app.</p>
       <div>
         
         
-        
+        <div data-ice="description"><p>Decorates a renderable with other decorators.</p>
+</div>
       </div>
     </td>
     <td>
@@ -489,13 +493,14 @@ views used by the app.</p>
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-method-getRenderableFlowState">getRenderableFlowState</a></span></span><span data-ice="signature">(renderableName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-method-getRenderableFlowState">getRenderableFlowState</a></span></span><span data-ice="signature">(renderableName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Gets the name of a flow state of a renderable.</p>
+</div>
       </div>
     </td>
     <td>
@@ -592,13 +597,14 @@ views used by the app.</p>
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-method-getViewFlowState">getViewFlowState</a></span></span><span data-ice="signature">(): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-method-getViewFlowState">getViewFlowState</a></span></span><span data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Gets the name of the flow state of a view.</p>
+</div>
       </div>
     </td>
     <td>
@@ -643,13 +649,14 @@ views used by the app.</p>
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-method-onNewSize">onNewSize</a></span></span><span data-ice="signature">(callback: <span>*</span>)</span>
+           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-method-onNewSize">onNewSize</a></span></span><span data-ice="signature">(callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>)</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Passes a callback that gets called every time the context size changes.</p>
+</div>
       </div>
     </td>
     <td>
@@ -668,13 +675,14 @@ views used by the app.</p>
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-method-onceNewSize">onceNewSize</a></span></span><span data-ice="signature">(): <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/core/View.js~View.html#instance-method-onceNewSize">onceNewSize</a></span></span><span data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Gets a (new) context size of the view.</p>
+</div>
       </div>
     </td>
     <td>
@@ -962,7 +970,7 @@ before &apos;nextRenderableName&apos;.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber57">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber58">source</a></span></span>
     </span>
   </h3>
 
@@ -1044,7 +1052,7 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber627">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber717">source</a></span></span>
     </span>
   </h3>
 
@@ -1084,7 +1092,7 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber386">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber489">source</a></span></span>
     </span>
   </h3>
 
@@ -1120,16 +1128,18 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     
     
     
-    <span data-ice="name">layouts</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">layouts</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber623">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber713">source</a></span></span>
     </span>
   </h3>
 
   
-  
+  <div class="deprecated" data-ice="deprecated">this member was deprecated. `
+The old way of setting the spec of the renderables created by adding renderables through
+`this.renderables.myRenderable = ....</div>
   
   
 
@@ -1160,18 +1170,19 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     
     
     
-    <span data-ice="name">options</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">options</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber615">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber692">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>A copy of the options that were passed in the constructor</p>
+</div>
 
   
 
@@ -1200,18 +1211,19 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     
     
     
-    <span data-ice="name">renderables</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">renderables</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber620">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber702">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>The renderables &quot;outputted&quot; by the view that are passed to the underlying famous-flex layer</p>
+</div>
 
   
 
@@ -1247,7 +1259,7 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber134">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber135">source</a></span></span>
     </span>
   </h3>
 
@@ -1330,7 +1342,7 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber84">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber85">source</a></span></span>
     </span>
   </h3>
 
@@ -1381,7 +1393,7 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber691">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber350">source</a></span></span>
     </span>
   </h3>
 
@@ -1438,7 +1450,7 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber123">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber124">source</a></span></span>
     </span>
   </h3>
 
@@ -1489,14 +1501,15 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber211">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber212">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Decorates a renderable with other decorators. Using the same decorators as used previously will override the old ones.</p>
+</div>
 
   
 
@@ -1540,9 +1553,7 @@ behaviour of the core functionality of the view. Instead, configuration of the V
     
   <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">decorateRenderable(&apos;myRenderable&apos;,layout.size(100, 100));
-
-Decorates a renderable with other decorators. Using the same decorators as used previously will override the old ones.</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">this.decorateRenderable(&apos;myRenderable&apos;,layout.size(100, 100));</code></pre>
     </div>
 </div>
 
@@ -1558,18 +1569,19 @@ Decorates a renderable with other decorators. Using the same decorators as used 
     
     
     
-    <span data-ice="name">getRenderableFlowState</span><span data-ice="signature">(renderableName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span>): <span>*</span></span>
+    <span data-ice="name">getRenderableFlowState</span><span data-ice="signature">(renderableName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber236">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber243">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Gets the name of a flow state of a renderable.</p>
+</div>
 
   
 
@@ -1583,10 +1595,10 @@ Decorates a renderable with other decorators. Using the same decorators as used 
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">renderableName</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></td>
-      <td data-ice="appendix"><ul><li>optional</li>
-<li>default: </li></ul></td>
-      <td data-ice="description"></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>the name of the renderable of which the flow state is concerned</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -1597,8 +1609,9 @@ Decorates a renderable with other decorators. Using the same decorators as used 
     <h4>Return:</h4>
     <table>
       <tr>
-        <td class="return-type" data-ice="returnType"><span>*</span></td>
-        
+        <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
+        <td class="return-desc" data-ice="returnDescription"><p>stateName the name of the state that the renderable is in</p>
+</td>
       </tr>
     </table>
     <div data-ice="returnProperties">
@@ -1629,7 +1642,7 @@ Decorates a renderable with other decorators. Using the same decorators as used 
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber100">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber101">source</a></span></span>
     </span>
   </h3>
 
@@ -1697,7 +1710,7 @@ Decorates a renderable with other decorators. Using the same decorators as used 
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber481">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber271">source</a></span></span>
     </span>
   </h3>
 
@@ -1748,7 +1761,7 @@ Decorates a renderable with other decorators. Using the same decorators as used 
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber491">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber281">source</a></span></span>
     </span>
   </h3>
 
@@ -1797,18 +1810,19 @@ is efficient and convenient]</p>
     
     
     
-    <span data-ice="name">getViewFlowState</span><span data-ice="signature">(): <span>*</span></span>
+    <span data-ice="name">getViewFlowState</span><span data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber240">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber252">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Gets the name of the flow state of a view.</p>
+</div>
 
   
 
@@ -1819,8 +1833,9 @@ is efficient and convenient]</p>
     <h4>Return:</h4>
     <table>
       <tr>
-        <td class="return-type" data-ice="returnType"><span>*</span></td>
-        
+        <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
+        <td class="return-desc" data-ice="returnDescription"><p>stateName the name of the state that this view is in.</p>
+</td>
       </tr>
     </table>
     <div data-ice="returnProperties">
@@ -1851,7 +1866,7 @@ is efficient and convenient]</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber260">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber290">source</a></span></span>
     </span>
   </h3>
 
@@ -1915,18 +1930,19 @@ is efficient and convenient]</p>
     
     
     
-    <span data-ice="name">onNewSize</span><span data-ice="signature">(callback: <span>*</span>)</span>
+    <span data-ice="name">onNewSize</span><span data-ice="signature">(callback: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber598">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber299">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Passes a callback that gets called every time the context size changes.</p>
+</div>
 
   
 
@@ -1940,9 +1956,10 @@ is efficient and convenient]</p>
     
     <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">callback</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>a callback with arguments (width, height)</p>
+</td>
     </tr>
 </tbody>
   </table>
@@ -1971,18 +1988,20 @@ is efficient and convenient]</p>
     
     
     
-    <span data-ice="name">onceNewSize</span><span data-ice="signature">(): <span>*</span></span>
+    <span data-ice="name">onceNewSize</span><span data-ice="signature">(): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber602">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber317">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Gets a (new) context size of the view. This will always happen at least once immediately after the view is constructed.
+Hence, it can safely be used in the constructor to get the (initial) size of the view.</p>
+</div>
 
   
 
@@ -1993,8 +2012,9 @@ is efficient and convenient]</p>
     <h4>Return:</h4>
     <table>
       <tr>
-        <td class="return-type" data-ice="returnType"><span>*</span></td>
-        
+        <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a></span></td>
+        <td class="return-desc" data-ice="returnDescription"><p>Resolves when there&apos;s a new size</p>
+</td>
       </tr>
     </table>
     <div data-ice="returnProperties">
@@ -2007,7 +2027,19 @@ is efficient and convenient]</p>
 
   
 
-  
+  <div data-ice="example">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">constructor(options){
+ super(options);
+ onceNewSize.then((width, height) =&gt; {
+     console.log(width, height);
+ });
+}</code></pre>
+    </div>
+</div>
 
   
 
@@ -2025,7 +2057,7 @@ is efficient and convenient]</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber170">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber171">source</a></span></span>
     </span>
   </h3>
 
@@ -2097,7 +2129,7 @@ is efficient and convenient]</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber161">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber162">source</a></span></span>
     </span>
   </h3>
 
@@ -2171,7 +2203,7 @@ before &apos;nextRenderableName&apos;.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber91">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber92">source</a></span></span>
     </span>
   </h3>
 
@@ -2212,7 +2244,7 @@ before &apos;nextRenderableName&apos;.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber149">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber150">source</a></span></span>
     </span>
   </h3>
 
@@ -2270,7 +2302,7 @@ before &apos;nextRenderableName&apos;.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber675">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber334">source</a></span></span>
     </span>
   </h3>
 
@@ -2352,7 +2384,7 @@ If false, it will be interrupted automatically by any interrput to another state
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber249">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber261">source</a></span></span>
     </span>
   </h3>
 
@@ -2416,7 +2448,7 @@ If false, it will be interrupted automatically by any interrput to another state
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber702">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber361">source</a></span></span>
     </span>
   </h3>
 
@@ -2479,7 +2511,7 @@ If false, it will be interrupted automatically by any interrput to another state
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber222">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber223">source</a></span></span>
     </span>
   </h3>
 
@@ -2554,7 +2586,7 @@ If false, it will be interrupted automatically by any interrput to another state
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber232">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber233">source</a></span></span>
     </span>
   </h3>
 
@@ -2629,7 +2661,7 @@ If false, it will be interrupted automatically by any interrput to another state
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber181">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/View.js.html#lineNumber182">source</a></span></span>
     </span>
   </h3>
 

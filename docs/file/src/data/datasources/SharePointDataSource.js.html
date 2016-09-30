@@ -3,7 +3,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../../">
-  <title data-ice="title">src/data/datasources/SharePointDataSource.js | API Document</title>
+  <title data-ice="title">src/data/datasources/SharePointDataSource.js | Arva API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -35,7 +35,6 @@
     
   <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
@@ -148,7 +147,7 @@
  @copyright Bizboard, 2015
 
  */
-import _                            from &apos;lodash&apos;;
+import extend                       from &apos;lodash&apos;;
 import {provide}                    from &apos;../../utils/di/Decorators.js&apos;;
 import {ObjectHelper}               from &apos;../../utils/ObjectHelper.js&apos;;
 import {UrlParser}                  from &apos;../../utils/request/UrlParser.js&apos;;
@@ -197,7 +196,7 @@ export class SharePointDataSource extends DataSource {
                 listName: this.key()
             };
 
-            let sharePointOptions = _.extend({}, this.options, configuration);
+            let sharePointOptions = extend({}, this.options, configuration);
 
             /* Bind the soap adapter against the datasource with given configuration */
             this._dataReference = new SharePoint(sharePointOptions);

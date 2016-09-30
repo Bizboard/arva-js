@@ -3,7 +3,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">Controller | API Document</title>
+  <title data-ice="title">Controller | Arva API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -35,7 +35,6 @@
     
   <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
@@ -140,7 +139,7 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {Controller} from &apos;<span><a href="file/src/core/Controller.js.html#lineNumber25">arva-js/core/Controller.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {Controller} from &apos;<span><a href="file/src/core/Controller.js.html#lineNumber25">./src/core/Controller.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
@@ -194,13 +193,14 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(router: <span>*</span>, context: <span>*</span>, spec: <span>*</span>)</span>
+           <span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(spec: <span>Spec</span>)</span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Saves the router and context to this.router and this.context, respectively.</p>
+</div>
       </div>
     </td>
     <td>
@@ -226,13 +226,14 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html#instance-member-context">context</a></span></span><span data-ice="signature">: <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html#instance-member-context">context</a></span></span><span data-ice="signature">: <span>AnimationController</span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>The AnimationController used globally in the app to change screens</p>
+</div>
       </div>
     </td>
     <td>
@@ -276,13 +277,14 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html#instance-member-router">router</a></span></span><span data-ice="signature">: <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html#instance-member-router">router</a></span></span><span data-ice="signature">: <span><a href="class/src/core/Router.js~Router.html">Router</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>The router used globally in the app</p>
+</div>
       </div>
     </td>
     <td>
@@ -391,18 +393,19 @@
     
     
     
-    <span data-ice="name">constructor</span><span data-ice="signature">(router: <span>*</span>, context: <span>*</span>, spec: <span>*</span>)</span>
+    <span data-ice="name">constructor</span><span data-ice="signature">(spec: <span>Spec</span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber27">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber33">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Saves the router and context to this.router and this.context, respectively.</p>
+</div>
 
   
 
@@ -414,21 +417,23 @@
     </thead>
     <tbody>
     
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">router</td>
-      <td data-ice="type"><span>*</span></td>
+    <tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">router.</td>
+      <td data-ice="type"><span><a href="class/src/core/Router.js~Router.html">Router</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>Injected globablly used router</p>
+</td>
     </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">context</td>
-      <td data-ice="type"><span>*</span></td>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">context.</td>
+      <td data-ice="type"><span>AnimationController</span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
+      <td data-ice="description"><p>Injected animationController used by the app</p>
+</td>
     </tr>
 <tr data-ice="property" data-depth="0">
       <td data-ice="name" data-depth="0">spec</td>
-      <td data-ice="type"><span>*</span></td>
+      <td data-ice="type"><span>Spec</span></td>
       <td data-ice="appendix"></td>
       <td data-ice="description"></td>
     </tr>
@@ -462,18 +467,19 @@
     
     
     
-    <span data-ice="name">context</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">context</span><span data-ice="signature">: <span>AnimationController</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber31">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber45">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>The AnimationController used globally in the app to change screens</p>
+</div>
 
   
 
@@ -506,7 +512,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber52">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber66">source</a></span></span>
     </span>
   </h3>
 
@@ -542,18 +548,19 @@
     
     
     
-    <span data-ice="name">router</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">router</span><span data-ice="signature">: <span><a href="class/src/core/Router.js~Router.html">Router</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber30">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber40">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>The router used globally in the app</p>
+</div>
 
   
 
@@ -586,7 +593,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber29">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber35">source</a></span></span>
     </span>
   </h3>
 
@@ -629,7 +636,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber51">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber65">source</a></span></span>
     </span>
   </h3>
 
@@ -686,7 +693,7 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber62">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/core/Controller.js.html#lineNumber76">source</a></span></span>
     </span>
   </h3>
 

@@ -3,7 +3,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../../../../../">
-  <title data-ice="title">src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js | API Document</title>
+  <title data-ice="title">src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js | Arva API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -35,7 +35,6 @@
     
   <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
-<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
@@ -143,7 +142,10 @@
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * Created by mysim1 on 13/06/15.
  */
-import _                from &apos;lodash&apos;;
+import pick             from &apos;lodash/pick.js&apos;;
+import pluck            from &apos;lodash/pluck.js&apos;;
+import extend           from &apos;lodash/extend.js&apos;;
+import findIndex        from &apos;lodash/findIndex.js&apos;;
 import EventEmitter     from &apos;eventemitter3&apos;;
 import {SoapClient}     from &apos;./SoapClient.js&apos;;
 import {Settings}       from &apos;../Settings.js&apos;;
@@ -279,7 +281,7 @@ export class SharePointClient extends EventEmitter {
             };
 
 
-            _.extend(resultconfig, _.pick(args, [&apos;query&apos;, &apos;limit&apos;, &apos;orderBy&apos;, &apos;pageSize&apos;]));
+            extend(resultconfig, pick(args, [&apos;query&apos;, &apos;limit&apos;, &apos;orderBy&apos;, &apos;pageSize&apos;]));
 
             return {settings: resultconfig, isChild: isChild};
         }
@@ -433,7 +435,7 @@ export class SharePointClient extends EventEmitter {
         var fieldCollection = [];
         var method = &apos;&apos;;
 
-        let isLocal = _.findIndex(tempKeys, function (key) {
+        let isLocal = findIndex(tempKeys, function (key) {
             return key.localId == newData.id;
         });
 
@@ -474,7 +476,7 @@ export class SharePointClient extends EventEmitter {
                     fieldValue = `${fieldValue.id};#`;
                 } else if (fieldValue.length !== undefined &amp;&amp; fieldValue[0] &amp;&amp; fieldValue[0].id &amp;&amp; fieldValue[0].value) {
                     /* This is a SharePoint LookupMulti field. It is specially formatted like above. */
-                    let IDs = _.pluck(fieldValue, &apos;id&apos;);
+                    let IDs = pluck(fieldValue, &apos;id&apos;);
                     fieldValue = IDs.join(&apos;;#;#&apos;);
                 } else {
                     continue;
@@ -559,7 +561,7 @@ export class SharePointClient extends EventEmitter {
 
         record.remoteId = record.id;
 
-        let isLocal = _.findIndex(tempKeys, function (key) {
+        let isLocal = findIndex(tempKeys, function (key) {
             return key.localId == record.id;
         });
 
@@ -612,7 +614,7 @@ export class SharePointClient extends EventEmitter {
             let model = data[record];
             model.remoteId = model.id;
 
-            let localIndex = _.findIndex(tempKeys, function (key) {
+            let localIndex = findIndex(tempKeys, function (key) {
                 return key.remoteId == model.id;
             });
 
@@ -625,7 +627,7 @@ export class SharePointClient extends EventEmitter {
                 model.id = shouldUseRemoteId ? model.remoteId : tempKey.localId;
             }
 
-            let cacheIndex = _.findIndex(this.cache, function (item) {
+            let cacheIndex = findIndex(this.cache, function (item) {
                 return model.id == item.id;
             });
 
@@ -714,7 +716,7 @@ export class SharePointClient extends EventEmitter {
 
                     let recordId = changes[change]._;
 
-                    let localIndex = _.findIndex(tempKeys, function (key) {
+                    let localIndex = findIndex(tempKeys, function (key) {
                         return key.remoteId == recordId;
                     });
 
@@ -724,7 +726,7 @@ export class SharePointClient extends EventEmitter {
                         recordId = isOurTempKey ? tempKey.localId : tempKey.remoteId;
                     }
 
-                    let cacheItem = _.findIndex(this.cache, function (item) {
+                    let cacheItem = findIndex(this.cache, function (item) {
                         return item.id == recordId;
                     });
 

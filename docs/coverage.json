@@ -1,16 +1,13 @@
 {
-  "coverage": "50.83%",
-  "expectCount": 478,
-  "actualCount": 243,
+  "coverage": "57.11%",
+  "expectCount": 464,
+  "actualCount": 265,
   "files": {
     "src/core/App.js": {
       "expectCount": 6,
-      "actualCount": 2,
+      "actualCount": 5,
       "undocumentLines": [
-        61,
-        58,
-        60,
-        73
+        58
       ]
     },
     "src/routers/ArvaRouter.js": {
@@ -35,16 +32,16 @@
       "expectCount": 12,
       "actualCount": 2,
       "undocumentLines": [
-        11,
-        43,
-        305,
-        332,
-        20,
-        361,
         12,
-        185,
-        334,
-        16
+        44,
+        306,
+        333,
+        362,
+        21,
+        13,
+        186,
+        335,
+        17
       ]
     },
     "src/utils/BlobHelper.js": {
@@ -80,8 +77,8 @@
         14,
         19,
         44,
-        23,
         29,
+        23,
         51,
         118,
         130,
@@ -92,33 +89,17 @@
     },
     "src/core/Controller.js": {
       "expectCount": 8,
-      "actualCount": 2,
+      "actualCount": 5,
       "undocumentLines": [
         25,
-        27,
-        31,
-        52,
-        30,
-        29
+        66,
+        35
       ]
     },
     "src/components/DataBoundScrollView.js": {
-      "expectCount": 20,
-      "actualCount": 8,
-      "undocumentLines": [
-        445,
-        124,
-        447,
-        23,
-        67,
-        66,
-        624,
-        466,
-        455,
-        116,
-        107,
-        68
-      ]
+      "expectCount": 10,
+      "actualCount": 10,
+      "undocumentLines": []
     },
     "src/data/datasources/SharePoint/DataModelGenerator.js": {
       "expectCount": 5,
@@ -216,29 +197,27 @@
     },
     "src/core/Model.js": {
       "expectCount": 3,
-      "actualCount": 2,
-      "undocumentLines": [
-        16
-      ]
+      "actualCount": 3,
+      "undocumentLines": []
     },
     "src/utils/ObjectHelper.js": {
       "expectCount": 14,
       "actualCount": 0,
       "undocumentLines": [
-        12,
-        94,
-        72,
-        79,
-        149,
-        123,
-        100,
-        194,
-        171,
-        200,
-        65,
-        16,
-        35,
-        46
+        13,
+        95,
+        73,
+        80,
+        150,
+        124,
+        101,
+        195,
+        172,
+        201,
+        66,
+        17,
+        36,
+        47
       ]
     },
     "src/utils/request/XmlParser.js": {
@@ -247,15 +226,9 @@
       "undocumentLines": []
     },
     "src/data/PrioritisedArray.js": {
-      "expectCount": 12,
-      "actualCount": 7,
-      "undocumentLines": [
-        18,
-        490,
-        28,
-        24,
-        232
-      ]
+      "expectCount": 11,
+      "actualCount": 11,
+      "undocumentLines": []
     },
     "src/data/PrioritisedObject.js": {
       "expectCount": 14,
@@ -270,10 +243,8 @@
     },
     "src/components/ReflowingScrollView.js": {
       "expectCount": 2,
-      "actualCount": 1,
-      "undocumentLines": [
-        17
-      ]
+      "actualCount": 2,
+      "undocumentLines": []
     },
     "src/utils/view/RenderableHelper.js": {
       "expectCount": 18,
@@ -293,12 +264,11 @@
     },
     "src/core/Router.js": {
       "expectCount": 9,
-      "actualCount": 5,
+      "actualCount": 6,
       "undocumentLines": [
-        19,
-        26,
-        30,
-        34
+        28,
+        32,
+        36
       ]
     },
     "src/data/datasources/SharePoint/SPSoapAdapter/Settings.js": {
@@ -329,26 +299,26 @@
       "expectCount": 20,
       "actualCount": 0,
       "undocumentLines": [
-        17,
-        33,
-        805,
-        27,
-        58,
-        205,
-        64,
-        34,
-        38,
-        31,
-        42,
-        543,
-        211,
-        19,
-        23,
-        54,
-        32,
-        50,
+        20,
+        36,
+        808,
         30,
-        84
+        61,
+        208,
+        67,
+        37,
+        41,
+        34,
+        45,
+        546,
+        214,
+        26,
+        22,
+        57,
+        35,
+        53,
+        33,
+        87
       ]
     },
     "src/data/datasources/SharePointDataSource.js": {
@@ -357,8 +327,8 @@
       "undocumentLines": [
         20,
         96,
-        26,
         22,
+        26,
         45
       ]
     },
@@ -374,15 +344,6 @@
         66,
         43,
         38
-      ]
-    },
-    "src/components/inputs/SingleLineTextInput.js": {
-      "expectCount": 3,
-      "actualCount": 0,
-      "undocumentLines": [
-        11,
-        12,
-        25
       ]
     },
     "src/utils/view/SizeResolver.js": {
@@ -454,17 +415,10 @@
     },
     "src/core/View.js": {
       "expectCount": 30,
-      "actualCount": 21,
+      "actualCount": 28,
       "undocumentLines": [
-        627,
-        236,
-        240,
-        386,
-        623,
-        598,
-        602,
-        615,
-        620
+        717,
+        489
       ]
     },
     "src/utils/CallbackHelpers.js": {
@@ -492,8 +446,8 @@
       "expectCount": 34,
       "actualCount": 32,
       "undocumentLines": [
-        950,
-        1039
+        951,
+        1040
       ]
     },
     "src/layout/FlowStates.js": {
