@@ -15,28 +15,33 @@ import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {DataSource}                 from './DataSource.js';
 import {Throttler}                  from '../utils/Throttler.js';
 
+/**
+ * An array of two-way bound data Models that are automatically synced with the currently used DataSource
+ */
 export class PrioritisedArray extends Array {
 
-    /* Extending Array does not work fluently yet. The length property always returns 0,
-     * regardless of how many entries are in the array. We'll override the length prop to determine
-     * the amount of enumerable properties in our PrioritisedArray instead of using the built-in length property.
+    /**
+     * The number of items in the (synchronized or local) data set.
+     * @returns {Number}
      */
     get length() {
+        /* Extending Array does not work fluently yet. The length property always returns 0,
+         * regardless of how many entries are in the array. We'll override the length prop to determine
+         * the amount of enumerable properties in our PrioritisedArray instead of using the built-in length property.
+         */
         return Object.keys(this).length;
     }
 
-    set length(value) {
-        return value;
-    }
 
 
     /**
      *
      * @param {Function} dataType DataType of the models being added to the PrioritisedArray.
-     * @param {DataSource} dataSource Optional: dataSource to load the models from. If none is given, a new DataSource is made with a path guessed from
+     * @param {DataSource} [dataSource] dataSource to load the models from. If none is given, a new DataSource is made with a path guessed from
      * the model's DataType name.
-     * @param {Snapshot} dataSnapshot Optional: snapshot already containing model data. Prevents initial subscription on all values in the DataSource.
-     * @param {Object} options Optional: options to pass to the dataSource if none is provided and a new one is constructed.
+     * @param {Snapshot} [dataSnapshot] snapshot already containing model data. Prevents initial subscription on all values in the DataSource.
+     * @param {Object} [options] options to pass to the dataSource if none is provided and a new one is constructed.
+     * @param {Object} [modelOptions] options to merge into the construction of every new Model.
      * @returns {PrioritisedArray} PrioritisedArray instance.
      */
     constructor(dataType, dataSource = null, dataSnapshot = null, options = null, modelOptions = {}) {
@@ -229,6 +234,11 @@ export class PrioritisedArray extends Array {
         return model;
     }
 
+    /**
+     * Adds a model or object to the end of the list.
+     * @param {Object|Model} model
+     * @returns {Model} The newly inserted model
+     */
     push(model){
         return this.insertAt(model, this.length);
     }
@@ -256,6 +266,29 @@ export class PrioritisedArray extends Array {
             }
         }
         this.splice(position, 1);
+    }
+
+
+
+    /**
+     * Return the position of model's id, saved in an associative array
+     * @param {Number} id Id field of the model we're looking for
+     * @returns {Number} Zero-based index if found, -1 otherwise
+     * @private
+     */
+    findIndexById(id) {
+        let position = this._ids[id];
+        return (position == undefined || position == null) ? -1 : position;
+    }
+
+
+    /**
+     * Finds an item based on its Id in the datasource.
+     * @param id
+     * @returns {Model}
+     */
+    findById(id) {
+        return this[this.findIndexById(id)];
     }
 
 
@@ -308,7 +341,6 @@ export class PrioritisedArray extends Array {
             }.bind(this, child));
         }.bind(this))
     }
-
 
     /**
      * Clones a dataSource (to not disturb any existing callbacks defined on the original) and uses it
@@ -454,7 +486,6 @@ export class PrioritisedArray extends Array {
             this.splice(newPosition, 0, modelToMove);
         }
     }
-
     /**
      * Called by dataSource when a child is removed.
      * @param {Snapshot} oldSnapshot Snapshot of the added child.
@@ -474,21 +505,6 @@ export class PrioritisedArray extends Array {
             this._eventEmitter.emit('child_removed', model);
             this._eventEmitter.emit('value', this);
         }
-    }
-
-    /**
-     * Return the position of model's id, saved in an associative array
-     * @param {Number} id Id field of the model we're looking for
-     * @returns {Number} Zero-based index if found, -1 otherwise
-     * @private
-     */
-    findIndexById(id) {
-        let position = this._ids[id];
-        return (position == undefined || position == null) ? -1 : position;
-    }
-
-    findById(id) {
-        return this[this.findIndexById(id)];
     }
 
 }
