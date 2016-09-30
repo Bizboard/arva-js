@@ -24,10 +24,24 @@ import {Router}                 from './Router.js';
 @inject(Router, AnimationController)
 export class Controller extends EventEmitter {
 
+    /**
+     * Saves the router and context to this.router and this.context, respectively.
+     * @param {Router} router. Injected globablly used router
+     * @param {AnimationController} context. Injected animationController used by the app
+     * @param {Spec} spec
+     */
     constructor(router, context, spec) {
         super();
         this.spec = spec;
+        /**
+         * The router used globally in the app
+         * @type {Router}
+         */
         this.router = router;
+        /**
+         * The AnimationController used globally in the app to change screens
+         * @type {AnimationController}
+         */
         this.context = context;
         /* The this._name property can be set by Arva's babel-plugin-transform-runtime-constructor-name plugin.
          * This allows Arva code to be minified and mangled without losing automated route creation.

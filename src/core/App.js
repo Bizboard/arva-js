@@ -23,7 +23,7 @@ import '../utils/hotfixes/DisableTextSelection.js';
 
 /**
  * The App class exposes the Router which can be used to configure the Application's routing settings.
- * You can specify which Route should be default by calling router.setDefault(controller, method);
+ * You can specify which Route should be default by calling `router.setDefault(controller, method);`
  */
 export class App {
 
@@ -57,7 +57,13 @@ export class App {
         /* Load controllers */
         this.controllers = Injection.getAll(...controllers);
 
+        /**
+         * The router of the application
+         */
         this.router = router;
+        /**
+         * The animationController that controls the animations between screens
+         */
         this.context = context;
         this.router.run();
 
@@ -69,7 +75,10 @@ export class App {
             try { done.call(this.constructor); } catch(error) { console.log('Caught exception in App.done():', error); }
         }
     }
-    
+
+    /**
+     * Triggers a creation of the app, by using an Injection.get
+     */
     static start(){
         /* Instantiate this App, which also instantiates the other components. */
         this.references.app = Injection.get(this);

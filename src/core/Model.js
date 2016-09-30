@@ -13,6 +13,15 @@ import {ObjectHelper}           from '../utils/ObjectHelper.js';
 import {PrioritisedObject}      from '../data/PrioritisedObject.js';
 import {DataSource}             from '../data/DataSource.js';
 
+/**
+ * A model that has attributes synced with the database.
+ *
+ * @example
+ * export class Box extends Model {
+ *  get label() {}
+ *  get articleNumber() {}
+ * }
+ */
 export class Model extends PrioritisedObject {
 
     /**
