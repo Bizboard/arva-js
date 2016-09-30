@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/data/DataSource.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+<link data-ice="userStyle" rel="stylesheet" href="user/css/0-styles.css">
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/inputs</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/inputs/SingleLineTextInput.js~SingleLineTextInput.html">SingleLineTextInput</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html">Controller</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Model.js~Model.html">Model</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Router.js~Router.html">Router</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/View.js~View.html">View</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedObject.js~PrioritisedObject.html">PrioritisedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html">FirebaseDataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html">SharePointDataSource</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/DataModelGenerator.js~DataModelGenerator.html">DataModelGenerator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SharePointSnapshot.js~SharePointSnapshot.html">SharePointSnapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Settings.js~Settings.html">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js~SharePoint.html">SharePoint</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter/Worker</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html">SharePointClient</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SoapClient.js~SoapClient.html">SoapClient</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/local</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalModel.js~LocalModel.html">LocalModel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html">LocalPrioritisedArray</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">layout</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event._subscribe">event._subscribe</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.on">event.on</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.once">event.once</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.pipe">event.pipe</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout._dockTo">layout._dockTo</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.align">layout.align</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.animate">layout.animate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.custom">layout.custom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.bottom">layout.dock.bottom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.fill">layout.dock.fill</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.left">layout.dock.left</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.none">layout.dock.none</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.right">layout.dock.right</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.top">layout.dock.top</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dockPadding">layout.dockPadding</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dockSpace">layout.dockSpace</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.draggable">layout.draggable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.flow">layout.flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.fullSize">layout.fullSize</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.opacity">layout.opacity</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.origin">layout.origin</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.renderable">layout.renderable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.rotate">layout.rotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.rotateFrom">layout.rotateFrom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.scale">layout.scale</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.scrollable">layout.scrollable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.size">layout.size</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.skew">layout.skew</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.swipable">layout.swipable</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.translate">layout.translate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.translateFrom">layout.translateFrom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-TrueSizedLayoutDockHelper">TrueSizedLayoutDockHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-event">event</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flow">flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-layout">layout</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flowStates">flowStates</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">routers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/routers/ArvaRouter.js~ArvaRouter.html">ArvaRouter</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/BlobHelper.js~BlobHelper.html">BlobHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/DialogManager.js~DialogManager.html">DialogManager</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Injection.js~Injection.html">Injection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/KeyboardHelper.js~KeyboardHelper.html">KeyboardHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/ObjectHelper.js~ObjectHelper.html">ObjectHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Throttler.js~Throttler.html">Throttler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-callbackToPromise">callbackToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-successAndErrorToPromise">successAndErrorToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-waitMilliseconds">waitMilliseconds</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-combineOptions">combineOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-limit">limit</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/di</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~ClassProvider.html">ClassProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~FactoryProvider.html">FactoryProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Inject.html">Inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Provide.html">Provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~SuperConstructor.html">SuperConstructor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~TransientScope.html">TransientScope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/injector.js~Injector.html">Injector</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-annotate">annotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-hasAnnotation">hasAnnotation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-inject">inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-provide">provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-readAnnotations">readAnnotations</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createProviderFromFnOrClass">createProviderFromFnOrClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isFunction">isFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isObject">isObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isUpperCase">isUpperCase</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-toString">toString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ownKeys">ownKeys</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/request</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ExistsRequest">ExistsRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-GetRequest">GetRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-PostRequest">PostRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-UrlParser">UrlParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ParseStringToXml">ParseStringToXml</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/view</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~BaseLayoutHelper.html">BaseLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~DockedLayoutHelper.html">DockedLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~FullSizeLayoutHelper.html">FullSizeLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~TraditionalLayoutHelper.html">TraditionalLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/RenderableHelper.js~RenderableHelper.html">RenderableHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/SizeResolver.js~SizeResolver.html">SizeResolver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/Utils.js~Utils.html">Utils</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/data/DataSource.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+
+
+ @author: Tom Clement (tjclement)
+ @license NPOSL-3.0
+ @copyright Bizboard, 2015
+
+ */
+
+export class DataSource {
+
+    /**
+     * @param {String} path Full path to resource in remote data storage.
+     * @return {DataSource} DataSource instance.
+     **/
+    constructor(path) {
+        this._dataReference = null;
+    }
+
+    /**
+     * Indicate that the DataSource can be inherited when instantiating a list of models. By
+     * default we indicate false, which should trigger data model instantiation to create unique
+     * DataSource references to each model either in array or directly.
+     *
+     * If set to false, model updates trigger creation of a new DataSource instance. (default)
+     *
+     * @returns {Boolean} Whether the DataSource is inheritable.
+     */
+    get inheritable() {
+        return false;
+    }
+
+    /**
+     * Returns the full path to this dataSource&apos;s source on the remote storage provider.
+     * @returns {String} Full resource path.
+     */
+    toString() {
+    }
+
+    /**
+     * Returns a dataSource reference to the given child branch of the current dataSource.
+     * @param {String} childName Child branch name.
+     * @param {Object} options Optional: additional options to pass to new DataSource instance.
+     * @returns {DataSource} New dataSource instance pointing to the given child branch.
+     */
+    child(childName, options = null) {
+    }
+
+    /**
+     * Returns the full URL to the path on the dataSource. Functionally identical to toString().
+     * @returns {String} Full resource path.
+     */
+    path() {
+    }
+
+    /**
+     * Returns the name of the current branch in the path on the dataSource.
+     * @returns {String} Current branch name.
+     */
+    key() {
+    }
+
+    /**
+     * Writes newData to the path this dataSource was constructed with.
+     * @param {Object} newData Data to write to dataSource.
+     * @returns {Promise} Resolves when write to server is complete.
+     */
+    set(newData) {
+        return Promise.resolve();
+    }
+
+    /**
+     * Removes the object and all underlying children that this dataSource points to.
+     * @returns {void}
+     */
+    remove() {
+    }
+
+    /**
+     * Writes newData to the path this dataSource was constructed with, appended by a random UID generated by
+     * the dataSource.
+     * @param {Object} newData New data to append to dataSource.
+     * @returns {void}
+     */
+    push(newData) {
+    }
+
+    /**
+     * Writes newData with given priority (ordering) to the path this dataSource was constructed with.
+     * @param {Object} newData New data to set.
+     * @param {String|Number} priority Priority value by which the data should be ordered.
+     * @returns {Promise} Resolves when write to server is complete.
+     */
+    setWithPriority(newData, priority) {
+        return Promise.resolve();
+    }
+
+    /**
+     * Sets the priority (ordering) of an object on a given dataSource.
+     * @param {String|Number} newPriority New priority value to order data by.
+     * @returns {void}
+     */
+    setPriority(newPriority) {
+    }
+
+    /**
+     * Orders the DataSource&apos;s childs by the value in child[key].
+     * @param {String} childKey Key of the field to order by.
+     * @returns {DataSource} New dataSource instance.
+     */
+    orderByChild(childKey) {
+    }
+
+    /**
+     * Orders the DataSource&apos;s childs by their key names, ignoring their priority.
+     * @returns {DataSource} New dataSource instance.
+     */
+    orderByKey() {
+    }
+
+    /**
+     * Orders the DataSource&apos;s childs by their values, ignoring their priority.
+     * @returns {DataSource} New dataSource instance.
+     */
+    orderByValue() {
+    }
+
+    /**
+     * Returns a new dataSource reference that will limit the subscription to only the first given amount items.
+     * @param {Number} amount Amount of items to limit the dataSource to.
+     * @returns {DataSource} New dataSource instance.
+     */
+    limitToFirst(amount) {
+    }
+
+    /**
+     * Returns a new dataSource reference that will limit the subscription to only the last given amount items.
+     * @param {Number} amount Amount of items to limit the dataSource to.
+     * @returns {DataSource} New dataSource instance.
+     */
+    limitToLast(amount) {
+    }
+
+    /**
+     * Authenticates all instances of this DataSource with the given OAuth provider and credentials.
+     * @param {String} provider google, facebook, github, or twitter
+     * @param {String|Object} credentials Access token string, or object with key/value pairs with e.g. OAuth 1.1 credentials.
+     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * On error, first argument is error message.
+     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
+     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.
+     * @returns {void}
+     */
+    authWithOAuthToken(provider, credentials, onComplete, options) {
+    }
+
+    /**
+     * Authenticates all instances of this DataSource with a custom auth token or secret.
+     * @param {String} authToken Authentication token or secret.
+     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * On error, first argument is error message.
+     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
+     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.
+     * @returns {void}
+     */
+    authWithCustomToken(authToken, onComplete, options) {
+    }
+
+    /**
+     * Authenticates all instances of this DataSource with the given email/password credentials.
+     * @param {String|Object} credentials Object with key/value pairs {email: &quot;value&quot;, password:&quot;value&quot;}.
+     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * On error, first argument is error message.
+     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
+     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.
+     * @returns {void}
+     */
+    authWithPassword(credentials, onComplete, options) {
+    }
+
+    /**
+     * Authenticates all instances of this DataSource as an anonymous user.
+     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * On error, first argument is error message.
+     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
+     * @param {Object} options Optional, additional client arguments, such as configuring session persistence.
+     * @returns {void}
+     */
+    authAnonymously(onComplete, options) {
+    }
+
+    /**
+     * Fetches the current user&apos;s authentication state.
+     * If the user is authenticated, returns an object containing at least the fields uid, provider, auth, and expires.
+     * If the user is not authenticated, returns null.
+     * @returns {Object|null} User auth object.
+     */
+    getAuth() {
+    }
+
+    /**
+     * Logs out from the datasource, allowing to re-authenticate at a later time.
+     * @returns {void}
+     */
+    unauth() {
+    }
+
+    /**
+     * Subscribe to an event emitted by the DataSource.
+     * @param {String} event Event type to subscribe to. Allowed values are: &apos;value&apos;, &apos;child_changed&apos;, &apos;child_added&apos;, &apos;child_removed&apos;, &apos;child_moved&apos;.
+     * @param {Function} handler Function to call when the subscribed event is emitted.
+     * @param {Object} context Context to set &apos;this&apos; to when calling the handler function.
+     */
+    on(event, handler, context) {
+    }
+
+    /**
+     * Subscribe to an event emitted by the DataSource once, and then immediately unsubscribe.
+     * @param {String} event Event type to subscribe to. Allowed values are: &apos;value&apos;, &apos;child_changed&apos;, &apos;child_added&apos;, &apos;child_removed&apos;, &apos;child_moved&apos;.
+     * @param {Function} handler Function to call when the subscribed event is emitted.
+     * @param {Object} context Context to set &apos;this&apos; to when calling the handler function.
+     */
+    once(event, handler, context) {
+    }
+
+
+    /**
+     * Unsubscribe to a previously subscribed event. If no handler or context is given, all handlers for
+     * the given event are removed. If no parameters are given at all, all event types will have their handlers removed.
+     * @param {String} event Event type to unsubscribe from. Allowed values are: &apos;value&apos;, &apos;child_changed&apos;, &apos;child_added&apos;, &apos;child_removed&apos;, &apos;child_moved&apos;.
+     * @param {Function} handler Optional: Function that was used in previous subscription.
+     */
+    off(event, handler) {
+    }
+
+    /**
+     * Sets the callback triggered when dataSource updates the data.
+     * @param {Function} callback Callback function to call when the subscribed data value changes.
+     * @returns {void}
+     **/
+    setValueChangedCallback(callback) {
+    }
+
+    /**
+     * Removes the callback set to trigger when dataSource updates the data.
+     * @returns {void}
+     **/
+    removeValueChangedCallback() {
+    }
+
+    /**
+     * Set the callback triggered when dataSource adds a data element.
+     * @param {Function} callback Callback function to call when a new data child is added.
+     * @returns {void}
+     **/
+    setChildAddedCallback(callback) {
+    }
+
+    /**
+     * Removes the callback set to trigger when dataSource adds a data element.
+     * @returns {void}
+     **/
+    removeChildAddedCallback() {
+    }
+
+    /**
+     * Set the callback triggered when dataSource changes a data element.
+     * @param {Function} callback Callback function to call when a child is changed.
+     * @returns {void}
+     **/
+    setChildChangedCallback(callback) {
+    }
+
+    /**
+     * Removes the callback set to trigger when dataSource changes a data element.
+     * @returns {void}
+     **/
+    removeChildChangedCallback() {
+    }
+
+    /**
+     * Set the callback triggered when dataSource moves a data element.
+     * @param {Function} callback Callback function to call when a child is moved.
+     * @returns {void}
+     **/
+    setChildMovedCallback(callback) {
+    }
+
+    /**
+     * Removes the callback set to trigger when dataSource moves a data element.
+     * @returns {void}
+     **/
+    removeChildMovedCallback() {
+    }
+
+    /**
+     * Set the callback triggered when dataSource removes a data element.
+     * @param {Function} callback Callback function to call when a child is removed.
+     * @returns {void}
+     **/
+    setChildRemovedCallback(callback) {
+    }
+
+    /**
+     * Removes the callback set to trigger when dataSource removes a data element.
+     * @returns {void}
+     **/
+    removeChildRemovedCallback() {
+    }
+
+
+    /**
+     * Resolves when the DataSource is synchronized to the server
+     * @returns {Promise} Resolves when the DataSource is synchronized
+     */
+    synced() {
+    }
+}</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.0-alpha)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

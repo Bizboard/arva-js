@@ -81,6 +81,9 @@ function prepPrototypeDecorations(prototype) {
     return decorations;
 }
 
+/**
+ * Describes a set of decorators used for layouting of a renderable in a View.
+ */
 export const layout = {
 
 
@@ -219,8 +222,8 @@ export const layout = {
          * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
          * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
          * different variations, see layout.size.
-         * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
-         * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
+         * @param {Number} [space]. Any space that should be inserted before the docked renderable
+         * @param {Number} [zIndex]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
         right: function () {
@@ -319,14 +322,14 @@ export const layout = {
     },
 
     /**
+     * Makes the renderable allowed to be dragged around. this.renderables[name] refers to a RenderNode containing this
+     * draggable along with the renderable itself.
+     *
      * @example
      * @layout.draggable({xRange: [0, 100}, yRange: [0, 200]})
      * @layout.size(100, 100)
      * // Makes a draggable square that is red
      * draggableRenderable = new Surface({properties: {backgroundColor: 'red'});
-     *
-     * Makes the renderable allowed to be dragged around. this.renderables[name] refers to a RenderNode containing this
-     * draggable along with the renderable itself.
      *
      * @param {Object} [draggableOptions]. Same options that can be passed to a Famous Draggable.
      * @param {Number} [options.snapX] grid width for snapping during drag
@@ -346,15 +349,15 @@ export const layout = {
     },
 
     /**
+     * Makes the renderable swipable with physics-like velocity after the dragging is released. Emits event
+     * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached. this.renderables[name]
+     * now refers to a a RenderNode containing a positionModifier along with the renderable itself.
+     *
      * @example
      * @layout.size(100, 100)
      * @layout.swipable({xRange: [0, 100], snapX: true})
      * //Make a red box that can slide to the right
      * swipable = new Surface({properties: {backgroundColor: 'red'});
-     *
-     * Makes the renderable swipable with physics-like velocity after the dragging is released. Emits event
-     * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached. this.renderables[name]
-     * now refers to a a RenderNode containing a positionModifier along with the renderable itself.
      *
      * @param {Object} options
      * @param {Boolean} [options.snapX] Whether to snap to the x axis
@@ -377,12 +380,24 @@ export const layout = {
 
 
     /**
-     * @example
-     * @layout.size(function(contextWidth) {return Math.max(contextWidth, this.options.maxWidth)}, ~300)
-     * // Creates a renderable where the width is equal to the text width and the height is whatever is bigger,
-     * // options.maxWidth, or the context size
-     * text = new Surface({content: 'This is some text', properties: {backgroundColor: 'red'}});
+     * Clips the renderable by creating another DOM-element with overflow: hidden. Internally, creates a Famous
+     * ContainerSurface.
+     * The two size parameters can either be a number or undefined (equals the context size).
      *
+     * @example
+     * @layout.size(40,40)
+     * @layout.clip(20, 20)
+     * // Shows a quarter of a circle
+     * renderable = new Surface({properties: {backgroundColor: 'red', borderRadius: '50%'});
+     *
+     * @param {Number} width The width of the ContainerSurface
+     * @param {Number} heigh The height of the ContainerSurface
+     * @param {Object} [properties]. Properties that will be passed to the newly created parent DOM-element.
+     * If specified, merged with {overflow: 'hidden'}
+     * @returns {Function} A decorator function
+     */
+
+    /**
      * Specifies the size of the renderable. For both of the parameters, sizes can be interpreted as follows:
      *
      * If specified as a function, then the argument passed is the context size of the specified dimension
@@ -402,6 +417,11 @@ export const layout = {
      * If a size between 0 and 1 is specified, then that will be interpreted as a proportion of the context size. For
      * example if 0.5 is specified, then the size will be half of the context size (the parent's size). Instead of
      * specifying 1 to cover the entire context size, use undefined instead.
+     * @example
+     * @layout.size(function(contextWidth) {return Math.max(contextWidth, this.options.maxWidth)}, ~300)
+     * // Creates a renderable where the width is equal to the text width and the height is whatever is bigger,
+     * // options.maxWidth, or the context size
+     * text = new Surface({content: 'This is some text', properties: {backgroundColor: 'red'}});
      *
      * @param {Number|Function} x
      * @param {Number|Function} y
@@ -416,24 +436,6 @@ export const layout = {
             renderable.decorations.size = [x, y];
         };
     },
-
-    /**
-     * @example
-     * @layout.size(40,40)
-     * @layout.clip(20, 20)
-     * // Shows a quarter of a circle
-     * renderable = new Surface({properties: {backgroundColor: 'red', borderRadius: '50%'});
-     *
-     * Clips the renderable by creating another DOM-element with overflow: hidden. Internally, creates a Famous
-     * ContainerSurface.
-     * The two size parameters can either be a number or undefined (equals the context size).
-     *
-     * @param {Number} width The width of the ContainerSurface
-     * @param {Number} heigh The height of the ContainerSurface
-     * @param {Object} [properties]. Properties that will be passed to the newly created parent DOM-element.
-     * If specified, merged with {overflow: 'hidden'}
-     * @returns {Function} A decorator function
-     */
     clip: function (width, height, properties = {}) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
@@ -442,13 +444,13 @@ export const layout = {
     },
 
     /**
+     * Rotates the renderable around any of the three axes (in radians).
+     *
      * @example
      * @layout.size(100,100)
      * @layout.rotate(0, 0, Math.PI)
      * // Writes text upside down
      * renderable = new Surface({content: 'upside down text'});
-     *
-     * Rotates the renderable around any of the three axes (in radians)
      *
      * @param {Number} x The rotation around the x axis (flips vertically)
      * @param {Number} y The rotation around the y axis (flips horizontally)
@@ -463,13 +465,13 @@ export const layout = {
     },
 
     /**
+     * Rotates the renderable around any of the three axes (in radians) relatively to the current rotation
+     *
      * @example
      * @layout.size(100,100)
      * @layout.rotate(0, 0, Math.PI)
      * // Writes text upside down
      * renderable = new Surface({content: 'upside down text'});
-     *
-     * Rotates the renderable around any of the three axes (in radians) relatively to the current rotation
      *
      * @param {Number} x The rotation around the x axis (flips vertically)
      * @param {Number} y The rotation around the y axis (flips horizontally)
@@ -486,14 +488,14 @@ export const layout = {
     },
 
     /**
+     * Sets the opacity of a renderable.
+     *
      * @example
      * @layout.opacity(0.5)
      * @layout.size(100, 10)
      * @layout.place.center()
      * // Writes text that is half invisible
      * renderable = new Surface({content: 'Half invisible'});
-     *
-     * Sets te opacity of a renderable
      *
      * @param {Number} opacity The opacity, between 0 and 1
      * @returns {Function} A decorator function
@@ -547,12 +549,12 @@ export const layout = {
         };
     },
     /**
+     * Places the renderable by settings origin/align. If nothing is set, it will default to topleft.
+     *
      * @example
      * @layout.size(100,~300)
      * @layout.stick.center()
      * renderable = new Surface({content: 'centered text'});
-     *
-     * Places the renderable by settings origin/align. If nothing is set, it will default to topleft.
      *
      * @param {String} stick. Can be either of 'center', 'left', 'right', 'bottom', 'top', 'bottomleft', 'bottomright',
      * 'topright', 'topleft'
@@ -589,6 +591,10 @@ export const layout = {
     },
 
     /**
+     * Sets the point where the renderable has its anchor from where rotation and translation will be done.
+     * You could consider it as translating the negative of the proportion times its size. The arguments are always
+     * between and including 0 and 1.
+     *
      * @example
      * @layout.origin(0.5, 0)
      * @layout.align(0.5, 0.5)
@@ -596,9 +602,6 @@ export const layout = {
      * //Displays a red box horizontically centered and displays just below the vertical mid point
      * renderable = new Surface({properties: {backgroundColor: 'red'}});
      *
-     * Sets the point where the renderable has its anchor from where rotation and translation will be done.
-     * You could consider it as translating the negative of the proportion times its size. The arguments are always
-     * between and including 0 and 1
      *
      * @param {Number} x. The x of the origin.
      * @param {Number} y. The y of the origin.
@@ -612,13 +615,13 @@ export const layout = {
     },
 
     /**
+     * Translates the renderable by a proportion of the context size.
+     *
      * @example
      * @layout.align(0.5, 0.5)
      * @layout.size(100,100)
      * //Displays a red box just below the vertical mid point and past the horizontal mid point
      * renderable = new Surface({properties: {backgroundColor: 'red'}});
-     *
-     * Translates the renderable by a proportion of the context size.
      *
      * @param {Number} x. The proportion of the context width that is going to be translated.
      * @param {Number} y. The proportion of the context height that is going to be translated.
@@ -632,6 +635,10 @@ export const layout = {
     },
 
     /**
+     * Specifies a translation of a renderable. Can be applied to every kind of renderable (docked, fullSize,
+     * and normal). Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
+     * to [0, 0, 10] in order to always increase the z space of every level of the Famous rendering tree.
+     *
      * @example
      * @layout.translate(0, 0, 20)
      * class myView extends View{
@@ -641,11 +648,6 @@ export const layout = {
      *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
      * }
      *
-     * Specifies a translation of a renderable. Can be applied to every kind of renderable (docked, fullSize,
-     * and normal).
-     *
-     * Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
-     * to [0, 0, 10] in order to always increase the z space of every level of the Famous rendering tree.
      * @param {Number} x Moves the renderable along the x axis.
      * @param {Number} y Moves the renderable along the y axis.
      * @param {Number} z Moves the renderable along the z axis.
@@ -669,6 +671,11 @@ export const layout = {
     },
 
     /**
+     * Specifies a relative translation of a renderable. Can be applied to every kind of renderable (docked, fullSize,
+     * and normal).
+     * Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
+     * to [0, 0, 10] in order to always increase the z space of every level of the Famous rendering tree.
+     *
      * @example
      * @layout.translateFrom(0, 0, 20)
      * class myView extends View{
@@ -678,11 +685,6 @@ export const layout = {
      *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
      * }
      *
-     * Specifies a relative translation of a renderable. Can be applied to every kind of renderable (docked, fullSize,
-     * and normal).
-     *
-     * Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
-     * to [0, 0, 10] in order to always increase the z space of every level of the Famous rendering tree.
      * @param {Number} x Moves the renderable along the x axis.
      * @param {Number} y Moves the renderable along the y axis.
      * @param {Number} z Moves the renderable along the z axis.
@@ -707,6 +709,8 @@ export const layout = {
     },
 
     /**
+     * Specifies the scale of a renderable. Can be applied to every kind of renderable.
+     *
      * @example
      *  class myView extends View{
      *  @layout.scale(2, 2, 2)
@@ -714,8 +718,6 @@ export const layout = {
      *  // Will scale the renderable by 2 in the x,y,z dimension
      *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
      * }
-     *
-     * Specifies the scale of a renderable. Can be applied to every kind of renderable
      *
      * @param {Number} x Scales the renderable along the x axis.
      * @param {Number} y Scales the renderable along the y axis.
@@ -733,6 +735,8 @@ export const layout = {
     },
 
     /**
+     * Specifies the skew of a renderable. Can be applied to every kind of renderable.
+     *
      * @example
      *  class myView extends View{
      *  @layout.skew(2, 2, 2)
@@ -740,8 +744,6 @@ export const layout = {
      *  // Will skew the renderable by 2 in the x,y,z dimension
      *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
      * }
-     *
-     * Specifies the skew of a renderable. Can be applied to every kind of renderable
      *
      * @param {Number} x Skews the renderable along the x axis.
      * @param {Number} y Skews the renderable along the y axis.
@@ -757,6 +759,11 @@ export const layout = {
     },
 
     /**
+     *
+     * Creates an animation controller to show/hide the renderable. Renderables can be shown by calling
+     * this.showRenderable(renderableName) and hidden using this.hideRenderable(renderableName) or
+     * this.showRenderable(renderableName, false). When a renderable has been shown, it will emit the event 'shown'.
+     *
      * @example
      * @layout.stick.center()
      * @layout.size(100,100)
@@ -764,9 +771,6 @@ export const layout = {
      * renderable = new Surface({properties: {backgroundColor: 'red'}});
      *
      *
-     * Creates an animation controller to show/hide the renderable. Renderables can be shown by calling
-     * this.showRenderable(renderableName) and hidden using this.hideRenderable(renderableName) or
-     * this.showRenderable(renderableName, false). When a renderable has been shown, it will emit the event 'shown'.
      *
      * @param {Object} [options] The same as famous-flex Animation Controller, plus 2 more:
      * @param {Boolean} [options.showInitially] Whether to show the renderable when the view is created. (Default: true).
@@ -807,13 +811,14 @@ export const layout = {
     },
 
     /**
+     * Makes the view flow by tweening all intermediate stages of a changed attribute of any renderable.
+     *
      * @example
      * @layout.flow({spring: {dampingRatio: 0.8, period: 1000}})
      * class myView extends View{
      * ...
      * }
      *
-     * Makes the view flow.
      * @param {Object} Options to pass as flowOptions to the LayoutController
      * @param {Bool} [flowOptions.transition] If specified, sets the default transition to use
      * @param {Bool} [flowOptions.reflowOnResize] Smoothly reflows renderables on resize (only used when flow = true) (default: `true`).
@@ -833,15 +838,16 @@ export const layout = {
     },
 
     /**
+     * Makes the view as scrollable. This will put the entire content in a ReflowingScrollView that uses getSize on the
+     * view to determine scrolling size. If the size cannot be determined, you might consider declaring your own
+     * getSize() on the View.
+     *
      * @example
      * @layout.scrollable()
      * class myView extends View{
      * ...
      * }
      *
-     * Makes the view as scrollable. This will put the entire content in a ReflowingScrollView that uses getSize on the
-     * view to determine scrolling size. If the size cannot be determined, you might consider declaring your own
-     * getSize() on the View.
      *
      * @returns {Function} A decorator function
      */
@@ -853,6 +859,11 @@ export const layout = {
     },
 
     /**
+     * Sets the margins for the docked content. This can be applied both to a child and a class. When in conflict,
+     * the parent will override the child's setting. If the margin is set on a Surface, then CSS padding will be set.
+     * margins can be 1, 2, or 4, parameters, which can be specified as shorthand in the same way
+     * as CSS does it.
+     *
      * @example
      * @layout.dockPadding(15)
      * //Creates a class with 15px margin on all sides for docked renderables
@@ -867,10 +878,7 @@ export const layout = {
      *  onButtom = new Surface({content: "hey hey"});
      * }
      *
-     * Sets the margins for the docked content. This can be applied both to a child and a class. When in conflict,
-     * the parent will override the child's setting. If the margin is set on a Surface, then CSS padding will be set.
-     * margins can be 1, 2, or 4, parameters, which can be specified as shorthand in the same way
-     * as CSS does it.
+
      *
      * @param {Number} firstMargin
      * @param {Number} [secondMargin]
@@ -912,6 +920,10 @@ export const layout = {
     },
 
     /**
+     *
+     * Adds a custom layout function to the view.
+     * This decorator works directly on the object so you shouldn't pass any arguments nor use parentheses.
+     *
      * @example
      * @layout.custom((context) => {
      *  context.set('myRenderable', {
@@ -924,8 +936,6 @@ export const layout = {
      *  }
      * }
      *
-     * Adds a custom layout function to the view.
-     * This decorator works directly on the object so you shouldn't pass any arguments nor use parentheses.
      *
      * @param customLayoutFunction
      * @returns {Function} A decorator function
@@ -940,7 +950,8 @@ export const layout = {
 
 export const event = {
     /**
-     * Internal function used by the event decorators to generalize the idea of on, once, and off
+     * Internal function used by the event decorators to generalize the idea of on, once, and off.
+     *
      * @param {String} subscriptionType A type of subscription function, e.g. on
      * @param {String} eventName The event name
      * @param {Function} callback that is called when event has happened
@@ -961,13 +972,15 @@ export const event = {
     },
 
     /**
+     *
+     * Adds an event listener to the renderable when specific event happened.
+     *
      * @example
      * @layout.on('click', function() {this._handleClick})
      * thing = new Surface({properties: {backgroundColor: 'red'}});
      *
      * _handleClick() { ... }
      *
-     * Adds an event listener to the renderable when specific event happened
      *
      * @param eventName
      * @param callback
@@ -979,6 +992,9 @@ export const event = {
 
 
     /**
+     *
+     * Adds an event listener to the renderable when specific event happened once.
+     *
      * @example
      * @layout.size(100,100)
      * @layout.stick.center()
@@ -987,7 +1003,6 @@ export const event = {
      *
      * _handleClick() { ... }
      *
-     * Adds an event listener to the renderable when specific event happened once
      *
      * @param eventName
      * @param callback
@@ -998,14 +1013,14 @@ export const event = {
     },
 
     /**
+     * Pipes events from one renderable to another. The other renderable has to be declared above the one that is doing
+     * the piping, otherwise an exception will be thrown.
+     *
      * @example
      * @layout.fullSize()
      * @layout.pipe('dbsv')
      * //Pipe events to another renderable declared above, called 'dbsv'
      * scrollableSurface = new Surface();
-     *
-     * Pipes events from one renderable to another. The other renderable has to be declared above the one that is doing
-     * the piping, otherwise an exception will be thrown.
      *
      * @param pipeToName
      * @returns {Function}

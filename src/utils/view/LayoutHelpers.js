@@ -121,13 +121,19 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         let inUseDockSize = this._sizeResolver.getResolvedSize(renderable);
         let innerSize;
         let {origin, align} = decorations;
+        /* If origin and align is used, we have to add this to the translate of the renderable */
         if (decorations.size || origin || align) {
-            /* If origin and align is used, we have to add this to the translate of the renderable */
-            this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: sizeWithoutMargins}, decorations.size);
-            innerSize = this._sizeResolver.getResolvedSize(renderable);
-            if (innerSize) {
-                let translateWithProportion = (proportion, size, translation, dimension, factor) =>
-                    translation[dimension] += size[dimension] ? factor * size[dimension] * proportion[dimension] : 0;
+
+            let translateWithProportion = (proportion, size, translation, dimension, factor) =>
+                translation[dimension] += size[dimension] ? factor * size[dimension] * proportion[dimension] : 0;
+
+
+            if(decorations.size){
+
+                this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: sizeWithoutMargins}, decorations.size);
+                innerSize = this._sizeResolver.getResolvedSize(renderable);
+
+
                 translate = [...translate]; //shallow copy the translation to prevent the translation for happening multiple times
 
                 /* If no docksize was specified in a certain direction, then use the context size without margins */
@@ -156,6 +162,10 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                 if (align) {
                     translateWithProportion(align, outerDockSize, translate, 0, 1);
                     translateWithProportion(align, outerDockSize, translate, 1, 1);
+                }
+            } else if (align){
+                for(let i of [0,1]){
+                    translateWithProportion(align, decorations.dock.size[i] ? dockSize : sizeWithoutMargins, translate, i, 1);
                 }
             }
         }
