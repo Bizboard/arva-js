@@ -287,12 +287,11 @@ export const layout = {
         },
 
         /**
-         * Fills the space that is left after the docking with this renderable.
+         * Fills the space that is left after the docking with this renderable. When using layout.size, it will use that
+         * size as an inner size. This works similarly to other docking, from where translate, size, origin, align, etc
+         * can be specified.
          *
          * @example
-         * When using layout.size, it will use that size as an inner size. This works similarly to other docking, from
-         * where translate, size, origin, align, etc can be specified.
-         *
          * @layout.dock.fill()
          * filledRenderable = new Surface({properties: {backgroundColor: 'red'}});
          *
