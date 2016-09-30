@@ -32,7 +32,14 @@ export class PrioritisedArray extends Array {
         return Object.keys(this).length;
     }
 
-
+    /**
+     * A setter on the length is necessary because internal methods of Array modify the lngth. It won't change the length thoough
+     * @param {Number} value
+     * @returns {*}
+     */
+    set length(value) {
+        return value;
+    }
 
     /**
      *
