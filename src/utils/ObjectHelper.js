@@ -7,7 +7,8 @@
 
  */
 
-import _ from 'lodash';
+import merge                from 'lodash/merge.js';
+import extend               from 'lodash/extend.js';
 
 export class ObjectHelper {
 
@@ -183,7 +184,7 @@ export class ObjectHelper {
         /* Recursively find prototype's methods until we hit the Object prototype. */
         let prototype = Object.getPrototypeOf(object);
         if (prototype.constructor.name !== 'Object' && prototype.constructor.name !== 'Array') {
-            methodDescriptors = _.extend(ObjectHelper.getMethodDescriptors(prototype), methodDescriptors);
+            methodDescriptors = extend(ObjectHelper.getMethodDescriptors(prototype), methodDescriptors);
         }
 
         return methodDescriptors;
@@ -242,7 +243,7 @@ export class ObjectHelper {
         let ignorableTypes = ['Object', 'Array', 'EventEmitter'];
         if (ignorableTypes.indexOf(superPrototype.constructor.name) === -1) {
             let prototypeEnumerables = ObjectHelper.getPrototypeEnumerableProperties(rootObject, superPrototype);
-            _.merge(result, prototypeEnumerables);
+            merge(result, prototypeEnumerables);
         }
 
         return result;

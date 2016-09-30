@@ -7,7 +7,8 @@
 
  */
 
-import _                            from 'lodash';
+import extend                       from 'lodash/extend.js';
+import cloneDeep                    from 'lodash/cloneDeep.js';
 import FamousView                   from 'famous/core/View.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
 
@@ -320,7 +321,7 @@ export class View extends FamousView {
                 /* Clone the decorator properties, because otherwise every view of the same type willl share them between
                  * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
                  */
-                renderable.decorations = _.cloneDeep(_.extend({}, decorations, renderable.decorations || {}));
+                renderable.decorations = cloneDeep(extend({}, decorations, renderable.decorations || {}));
 
 
                 /* Since after constructor() of this View class is called, all decorated renderables will
@@ -543,7 +544,7 @@ export class View extends FamousView {
 
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
         for (let name of ['decorationsMap', 'renderableConstructors']) {
-            this[name] = _.cloneDeep(prototype[name]) || new Map();
+            this[name] = cloneDeep(prototype[name]) || new Map();
         }
     }
 

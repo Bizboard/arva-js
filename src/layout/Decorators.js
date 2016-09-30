@@ -6,7 +6,8 @@
  @copyright Bizboard, 2016
 
  */
-import _                        from 'lodash';
+import merge                    from 'lodash/merge.js';
+import extend                   from 'lodash/extend.js';
 
 import AnimationController      from 'famous-flex/AnimationController.js';
 import LayoutUtility            from 'famous-flex/LayoutUtility.js';
@@ -138,7 +139,7 @@ export const layout = {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
             // Todo refactor also the z index to the dock
-            renderable.decorations.dock = renderable.decorations.dock ? _.extend(renderable.decorations.dock, {space}) : {space};
+            renderable.decorations.dock = renderable.decorations.dock ? extend(renderable.decorations.dock, {space}) : {space};
         };
     },
 
@@ -795,7 +796,7 @@ export const layout = {
     animate: function (options = {}) {
         return function (view, renderableName, descriptor) {
             let renderableConstructor = prepDecoratedRenderable(view, renderableName, descriptor);
-            options = _.merge({
+            options = merge({
                 showInitially: true,
                 animation: AnimationController.Animation.FadedZoom,
                 show: {transition: options.transition || {curve: Easing.outCubic, duration: 250}},

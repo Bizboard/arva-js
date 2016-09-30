@@ -8,7 +8,7 @@
 
  */
 
-import _                            from 'lodash';
+import extend                       from 'lodash/extend.js';
 import EventEmitter                 from 'eventemitter3';
 import {Injection}                  from '../utils/Injection.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
@@ -188,7 +188,7 @@ export class PrioritisedArray extends Array {
              */
 
             this._overrideChildAddedForId = this.once('local_child_added');
-            let newModel = new this._dataType(null, model, _.extend({}, this._modelOptions, options));
+            let newModel = new this._dataType(null, model, extend({}, this._modelOptions, options));
 
             this.add(newModel);
             /* Remove lock */
@@ -295,7 +295,7 @@ export class PrioritisedArray extends Array {
                     options.path = dataSnapshot.ref().toString().replace(rootPath, '/');
                 }
 
-                let newModel = new this._dataType(child.key, child.val(), _.extend({}, this._modelOptions, options));
+                let newModel = new this._dataType(child.key, child.val(), extend({}, this._modelOptions, options));
                 this.add(newModel);
 
                 /* If this is the last child, fire a ready event */
@@ -375,7 +375,7 @@ export class PrioritisedArray extends Array {
             return;
         }
 
-        let model = new this._dataType(id, null, _.extend({}, this._modelOptions, {
+        let model = new this._dataType(id, null, extend({}, this._modelOptions, {
             dataSnapshot: snapshot
         }));
         this.add(model, prevSiblingId);

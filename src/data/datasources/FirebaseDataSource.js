@@ -6,8 +6,8 @@
  @copyright Bizboard, 2015
 
  */
-import _                            from 'lodash';
 import firebase                     from 'firebase';
+import merge                        from 'lodash/merge.js';
 import {DataSource}                 from '../DataSource.js';
 import {ObjectHelper}               from '../../utils/ObjectHelper.js';
 import {provide}                    from '../../utils/di/Decorators.js';
@@ -192,7 +192,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByChild(childKey) {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: childKey}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: childKey}));
     }
 
     /**
@@ -200,7 +200,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByKey() {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: '.key'}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: '.key'}));
     }
 
     /**
@@ -208,7 +208,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByValue() {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: '.value'}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: '.value'}));
     }
 
     /**
@@ -217,7 +217,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     limitToFirst(amount) {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {limitToFirst: amount}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {limitToFirst: amount}));
     }
 
     /**
@@ -226,7 +226,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     limitToLast(amount) {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {limitToLast: amount}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {limitToLast: amount}));
     }
 
     /**
