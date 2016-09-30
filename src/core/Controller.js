@@ -7,7 +7,7 @@
 
  */
 
-import _                        from 'lodash';
+import extend                   from 'lodash/extend.js';
 import EventEmitter             from 'eventemitter3';
 import AnimationController      from 'famous-flex/AnimationController.js';
 
@@ -70,12 +70,12 @@ export class Controller extends EventEmitter {
                 if (result instanceof Promise) { /* We can assume the method called was asynchronous from nature, therefore we await the result. */
                     result.then((delegatedresult) => {
                         /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
-                        this.context.show(delegatedresult, _.extend(route.spec, this.spec), () => { this.emit('renderend', route.method); });
+                        this.context.show(delegatedresult, extend(route.spec, this.spec), () => { this.emit('renderend', route.method); });
                         this.emit('rendering', route.method);
                     });
                 } else {
                     /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
-                    this.context.show(result, _.extend(route.spec, this.spec), () => { this.emit('renderend', route.method); });
+                    this.context.show(result, extend(route.spec, this.spec), () => { this.emit('renderend', route.method); });
                     this.emit('rendering', route.method);
                 }
                 return true;

@@ -9,7 +9,8 @@
 
  */
 
-import _                            from 'lodash';
+import sortBy                       from 'lodash/sortBy.js';
+import findIndex                    from 'lodash/findIndex.js';
 import {Throttler}                  from '../utils/Throttler.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
@@ -248,7 +249,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 let foundOrderedIndex = -1;
                 if (this.isGrouped) {
 
-                    for (let group of _.sortBy(this._internalGroups, 'position')) {
+                    for (let group of sortBy(this._internalGroups, 'position')) {
                         /* Check the first and last item of every group (they're sorted) */
                         for (let position of group.itemsCount > 1 ? [group.position + 1, group.position + group.itemsCount - 1] : [group.position + 1]) {
                             let {dataId} = this._viewSequence.findByIndex(position)._value;
@@ -599,7 +600,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         if (viewIndex === -1) {
 
-            let modelIndex = _.findIndex(this.options.dataStore, function (model) {
+            let modelIndex = findIndex(this.options.dataStore, function (model) {
                 return model.id === id;
             });
 

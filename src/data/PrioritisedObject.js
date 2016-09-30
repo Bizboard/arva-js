@@ -8,7 +8,7 @@
 
  */
 
-import _                from 'lodash';
+import isEqual          from 'lodash/isEqual.js';
 import EventEmitter     from 'eventemitter3';
 import {ObjectHelper}   from '../utils/ObjectHelper.js';
 
@@ -311,7 +311,7 @@ export class PrioritisedObject extends EventEmitter {
          * this is an update triggered by a local change having been pushed
          * to the remote dataSource. We can ignore it.
          */
-        if (_.isEqual(ObjectHelper.getEnumerableProperties(this), dataSnapshot.val())) {
+        if (isEqual(ObjectHelper.getEnumerableProperties(this), dataSnapshot.val())) {
             this.emit('value', this, previousSiblingID);
             return;
         }

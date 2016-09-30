@@ -7,7 +7,7 @@
 
  */
 
-import _                        from 'lodash';
+import difference               from 'lodash/difference.js';
 import {Injection}              from '../utils/Injection.js';
 import {ObjectHelper}           from '../utils/ObjectHelper.js';
 import {PrioritisedObject}      from '../data/PrioritisedObject.js';
@@ -106,7 +106,7 @@ export class Model extends PrioritisedObject {
         /* If the code is minified, then this.constructor._name is defined, in that case that also goes for the inheriting classes */
         while (prototype.constructor._name || (!this.constructor._name && prototype.constructor.name !== 'Model')) {
             /* Get all properties except the id and constructor of this model */
-            let propNames = _.difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
+            let propNames = difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
 
             for (let name of propNames) {
                 let descriptor = Object.getOwnPropertyDescriptor(prototype, name);

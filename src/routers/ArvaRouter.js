@@ -7,7 +7,7 @@
 
  */
 
-import _                            from 'lodash';
+import isEqual                      from 'lodash/isEqual';
 import {Router}                     from '../core/Router.js';
 import {provide}                    from '../utils/di/Decorators.js';
 import Easing                       from 'famous/transitions/Easing.js';
@@ -288,7 +288,7 @@ export class ArvaRouter extends Router {
             let previousRoute = this.history[i];
             if (currentRoute.controller === previousRoute.controller &&
                 currentRoute.method === previousRoute.method &&
-                _.isEqual(currentRoute.values, previousRoute.values)) {
+                isEqual(currentRoute.values, previousRoute.values)) {
                 this.history.splice(i, this.history.length - i);
                 break;
             }
@@ -308,7 +308,7 @@ export class ArvaRouter extends Router {
             let previousRoute = this.history[i];
             if (currentRoute.controller === previousRoute.controller &&
                 currentRoute.method === previousRoute.method &&
-                _.isEqual(currentRoute.values, previousRoute.values)) {
+                isEqual(currentRoute.values, previousRoute.values)) {
                 return true;
             }
         }
@@ -338,7 +338,7 @@ export class ArvaRouter extends Router {
         /* We're on exactly the same page as before */
         if (currentRoute.controller === previousRoute.controller &&
             currentRoute.method === previousRoute.method &&
-            _.isEqual(currentRoute.values, previousRoute.values)) {
+            isEqual(currentRoute.values, previousRoute.values)) {
             return {};
         }
 

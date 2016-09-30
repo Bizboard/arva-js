@@ -1,8 +1,9 @@
 /**
  * Created by lundfall on 01/09/16.
  */
+import isEqual                      from 'lodash/isEqual.js';
+import findIndex                    from 'lodash/findIndex.js';
 import Easing                       from 'famous/transitions/Easing.js';
-import _                            from 'lodash';
 
 import {Utils}                      from './Utils.js';
 import {TrueSizedLayoutDockHelper}  from '../../layout/TrueSizedLayoutDockHelper.js';
@@ -115,7 +116,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         let horizontalMargins = margins[1] + margins[3];
         let verticalMargins = margins[0] + margins[2];
         let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
-        let dockSizeSpecified = !(_.isEqual(decorations.dock.size, [undefined, undefined]));
+        let dockSizeSpecified = !(isEqual(decorations.dock.size, [undefined, undefined]));
         let dockSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: sizeWithoutMargins}, dockSizeSpecified ? decorations.dock.size : decorations.size);
         let inUseDockSize = this._sizeResolver.getResolvedSize(renderable);
         let innerSize;
@@ -174,7 +175,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
 
     getDockType(dockMethodToGet) {
         let dockTypes = [['right', 'left'], ['top', 'bottom']];
-        return _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
+        return findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
     }
 
     /**

@@ -11,7 +11,7 @@
 
 import XML2JS               from './xmljs';
 import xmljs                from 'xml2js';
-import _                    from 'lodash';
+import template             from 'lodash/template.js';
 import {ObjectHelper}       from '../../../../../utils/ObjectHelper';
 import {PostRequest}        from '../../../../../utils/request/RequestClient';
 import {ParseStringToXml}   from '../../../../../utils/request/XmlParser';
@@ -34,7 +34,7 @@ export class SoapClient {
 
 
     _applySoapTemplate(properties) {
-        return _.template('<?xml version="1.0" encoding="utf-8"?>' +
+        return template('<?xml version="1.0" encoding="utf-8"?>' +
             '<soap:Envelope ' +
             '  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
             '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
