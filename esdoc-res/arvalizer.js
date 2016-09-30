@@ -126,4 +126,9 @@ exports.onHandleHTML = function (ev) {
     /* Remove the 'src/' in all statements that go import {layout} from 'arva-js/src/layout.Decorators.js', etc*/
     ev.data.html =  ev.data.html.replace(/(.*?import\s+\{.*?\}\s+from.*arva-js\/)src\//g, '$1');
 
+    var headIndex = ev.data.html.indexOf('<head>');
+    if(~headIndex){
+        ev.data.html =  ev.data.html.slice(0, headIndex) + `<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>` + ev.data.html.slice(headIndex);
+    }
+
 };
