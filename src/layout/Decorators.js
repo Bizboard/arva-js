@@ -850,10 +850,18 @@ export const layout = {
      *
      * @returns {Function} A decorator function
      */
+
     scrollable: function (options = {}) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
             decorations.scrollableOptions = options;
+        }
+    },
+
+    nativeScrollable: function () {
+        return function (target) {
+            let decorations = prepPrototypeDecorations(target.prototype);
+            decorations.nativeScrollable = true;
         }
     },
 

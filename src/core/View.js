@@ -489,6 +489,7 @@ export class View extends FamousView {
         this.layout = new LayoutController({
             flow: !!this.decorations.useFlow || hasFlowyRenderables,
             partialFlow: !this.decorations.useFlow,
+            nativeScroll: !!this.decorations.nativeScrollable,
             flowOptions: this.decorations.flowOptions || {spring: {period: 200}},
             layout: function (context, options) {
 
