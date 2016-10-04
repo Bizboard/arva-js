@@ -1,7 +1,7 @@
 {
-  "coverage": "57.11%",
+  "coverage": "56.89%",
   "expectCount": 464,
-  "actualCount": 265,
+  "actualCount": 264,
   "files": {
     "src/core/App.js": {
       "expectCount": 6,
@@ -264,11 +264,12 @@
     },
     "src/core/Router.js": {
       "expectCount": 9,
-      "actualCount": 6,
+      "actualCount": 5,
       "undocumentLines": [
-        28,
-        32,
-        36
+        19,
+        26,
+        30,
+        34
       ]
     },
     "src/data/datasources/SharePoint/SPSoapAdapter/Settings.js": {
@@ -446,8 +447,8 @@
       "expectCount": 34,
       "actualCount": 32,
       "undocumentLines": [
-        951,
-        1040
+        950,
+        1039
       ]
     },
     "src/layout/FlowStates.js": {
