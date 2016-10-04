@@ -905,6 +905,29 @@ export const layout = {
         };
     },
 
+    /**
+     * Like @layout.dockPadding, sets the padding between this view and its docked content.
+     * When the screen width plus this padding exceeds maxContentWidth, the padding
+     * is increased, so that the content is never wider than maxContentWidth.
+     *
+     * @example
+     * @layout.columnDockPadding(720, [16])
+     * //Creates a class with 16px margin on all sides for docked renderables
+     * class myView extends View{
+     *
+     *  //Will be displayed with margin to the top and sides, and will at max be 720px wide.
+     *  @layout.dock.top(20)
+     *  onTop = new Surface({content: "hello world"});
+     *
+     *  //Will be displayed without margin since we're using @layout.stick instead of @layout.dock
+     *  @layout.stick.bottom
+     *  onButtom = new Surface({content: "hey hey"});
+     * }
+     *
+     * @param {Number} maxContentWidth Maximum width the content should be allowed to be.
+     * @param {Array} defaultPadding A 1-D, 2-D, or 4-D array of padding numbers, just like the padding spec in CSS.
+     * @returns {Function}
+     */
     columnDockPadding: function (maxContentWidth = 720, defaultPadding = [0, 16, 0, 16]) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
