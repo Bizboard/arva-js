@@ -111,7 +111,7 @@ export class PrioritisedArray extends Array {
      * @param {Object} context Optional: context of 'this' inside the handler function when it is called.
      * @returns {void}
      */
-    on(event, handler, context) {
+    on = (event, handler, context) => {
         /* If we're already ready, fire immediately */
         if ((event === 'ready' || event === 'value') && this._dataSource && this._dataSource.ready) {
             handler.call(context, this);
