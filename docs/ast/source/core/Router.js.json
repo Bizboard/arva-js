@@ -1,28 +1,28 @@
 {
   "type": "File",
   "start": 0,
-  "end": 2669,
+  "end": 2647,
   "loc": {
     "start": {
       "line": 1,
       "column": 0
     },
     "end": {
-      "line": 79,
+      "line": 77,
       "column": 1
     }
   },
   "program": {
     "type": "Program",
     "start": 0,
-    "end": 2669,
+    "end": 2647,
     "loc": {
       "start": {
         "line": 1,
         "column": 0
       },
       "end": {
-        "line": 79,
+        "line": 77,
         "column": 1
       }
     },
@@ -226,14 +226,14 @@
       {
         "type": "ExportNamedDeclaration",
         "start": 311,
-        "end": 2669,
+        "end": 2647,
         "loc": {
           "start": {
             "line": 16,
             "column": 0
           },
           "end": {
-            "line": 79,
+            "line": 77,
             "column": 1
           }
         },
@@ -242,14 +242,14 @@
         "declaration": {
           "type": "ClassDeclaration",
           "start": 318,
-          "end": 2669,
+          "end": 2647,
           "loc": {
             "start": {
               "line": 16,
               "column": 7
             },
             "end": {
-              "line": 79,
+              "line": 77,
               "column": 1
             }
           },
@@ -291,50 +291,49 @@
           "body": {
             "type": "ClassBody",
             "start": 352,
-            "end": 2669,
+            "end": 2647,
             "loc": {
               "start": {
                 "line": 16,
                 "column": 41
               },
               "end": {
-                "line": 79,
+                "line": 77,
                 "column": 1
               }
             },
             "body": [
               {
                 "type": "ClassMethod",
-                "start": 382,
-                "end": 1081,
+                "start": 360,
+                "end": 1059,
                 "loc": {
                   "start": {
-                    "line": 21,
+                    "line": 19,
                     "column": 4
                   },
                   "end": {
-                    "line": 37,
+                    "line": 35,
                     "column": 5
                   }
                 },
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 382,
-                  "end": 393,
+                  "start": 360,
+                  "end": 371,
                   "loc": {
                     "start": {
-                      "line": 21,
+                      "line": 19,
                       "column": 4
                     },
                     "end": {
-                      "line": 21,
+                      "line": 19,
                       "column": 15
                     },
                     "identifierName": "constructor"
                   },
-                  "name": "constructor",
-                  "leadingComments": null
+                  "name": "constructor"
                 },
                 "static": false,
                 "kind": "constructor",
@@ -345,58 +344,58 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 396,
-                  "end": 1081,
+                  "start": 374,
+                  "end": 1059,
                   "loc": {
                     "start": {
-                      "line": 21,
+                      "line": 19,
                       "column": 18
                     },
                     "end": {
-                      "line": 37,
+                      "line": 35,
                       "column": 5
                     }
                   },
                   "body": [
                     {
                       "type": "ExpressionStatement",
-                      "start": 406,
-                      "end": 414,
+                      "start": 384,
+                      "end": 392,
                       "loc": {
                         "start": {
-                          "line": 22,
+                          "line": 20,
                           "column": 8
                         },
                         "end": {
-                          "line": 22,
+                          "line": 20,
                           "column": 16
                         }
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 406,
-                        "end": 413,
+                        "start": 384,
+                        "end": 391,
                         "loc": {
                           "start": {
-                            "line": 22,
+                            "line": 20,
                             "column": 8
                           },
                           "end": {
-                            "line": 22,
+                            "line": 20,
                             "column": 15
                           }
                         },
                         "callee": {
                           "type": "Super",
-                          "start": 406,
-                          "end": 411,
+                          "start": 384,
+                          "end": 389,
                           "loc": {
                             "start": {
-                              "line": 22,
+                              "line": 20,
                               "column": 8
                             },
                             "end": {
-                              "line": 22,
+                              "line": 20,
                               "column": 13
                             }
                           }
@@ -407,15 +406,15 @@
                         {
                           "type": "CommentLine",
                           "value": " make classes behave like context bound",
-                          "start": 423,
-                          "end": 464,
+                          "start": 401,
+                          "end": 442,
                           "loc": {
                             "start": {
-                              "line": 23,
+                              "line": 21,
                               "column": 8
                             },
                             "end": {
-                              "line": 23,
+                              "line": 21,
                               "column": 49
                             }
                           }
@@ -424,57 +423,57 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 473,
-                      "end": 513,
+                      "start": 451,
+                      "end": 491,
                       "loc": {
                         "start": {
-                          "line": 24,
+                          "line": 22,
                           "column": 8
                         },
                         "end": {
-                          "line": 24,
+                          "line": 22,
                           "column": 48
                         }
                       },
                       "expression": {
                         "type": "CallExpression",
-                        "start": 473,
-                        "end": 512,
+                        "start": 451,
+                        "end": 490,
                         "loc": {
                           "start": {
-                            "line": 24,
+                            "line": 22,
                             "column": 8
                           },
                           "end": {
-                            "line": 24,
+                            "line": 22,
                             "column": 47
                           }
                         },
                         "callee": {
                           "type": "MemberExpression",
-                          "start": 473,
-                          "end": 500,
+                          "start": 451,
+                          "end": 478,
                           "loc": {
                             "start": {
-                              "line": 24,
+                              "line": 22,
                               "column": 8
                             },
                             "end": {
-                              "line": 24,
+                              "line": 22,
                               "column": 35
                             }
                           },
                           "object": {
                             "type": "Identifier",
-                            "start": 473,
-                            "end": 485,
+                            "start": 451,
+                            "end": 463,
                             "loc": {
                               "start": {
-                                "line": 24,
+                                "line": 22,
                                 "column": 8
                               },
                               "end": {
-                                "line": 24,
+                                "line": 22,
                                 "column": 20
                               },
                               "identifierName": "ObjectHelper"
@@ -484,15 +483,15 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 486,
-                            "end": 500,
+                            "start": 464,
+                            "end": 478,
                             "loc": {
                               "start": {
-                                "line": 24,
+                                "line": 22,
                                 "column": 21
                               },
                               "end": {
-                                "line": 24,
+                                "line": 22,
                                 "column": 35
                               },
                               "identifierName": "bindAllMethods"
@@ -505,30 +504,30 @@
                         "arguments": [
                           {
                             "type": "ThisExpression",
-                            "start": 501,
-                            "end": 505,
+                            "start": 479,
+                            "end": 483,
                             "loc": {
                               "start": {
-                                "line": 24,
+                                "line": 22,
                                 "column": 36
                               },
                               "end": {
-                                "line": 24,
+                                "line": 22,
                                 "column": 40
                               }
                             }
                           },
                           {
                             "type": "ThisExpression",
-                            "start": 507,
-                            "end": 511,
+                            "start": 485,
+                            "end": 489,
                             "loc": {
                               "start": {
-                                "line": 24,
+                                "line": 22,
                                 "column": 42
                               },
                               "end": {
-                                "line": 24,
+                                "line": 22,
                                 "column": 46
                               }
                             }
@@ -540,15 +539,15 @@
                         {
                           "type": "CommentLine",
                           "value": " make classes behave like context bound",
-                          "start": 423,
-                          "end": 464,
+                          "start": 401,
+                          "end": 442,
                           "loc": {
                             "start": {
-                              "line": 23,
+                              "line": 21,
                               "column": 8
                             },
                             "end": {
-                              "line": 23,
+                              "line": 21,
                               "column": 49
                             }
                           }
@@ -558,15 +557,15 @@
                         {
                           "type": "CommentLine",
                           "value": " make the router aware of controllers active in the application",
-                          "start": 523,
-                          "end": 588,
+                          "start": 501,
+                          "end": 566,
                           "loc": {
                             "start": {
-                              "line": 26,
+                              "line": 24,
                               "column": 8
                             },
                             "end": {
-                              "line": 26,
+                              "line": 24,
                               "column": 73
                             }
                           }
@@ -574,15 +573,15 @@
                         {
                           "type": "CommentLine",
                           "value": " each controller will need to subscribe itself to this container.",
-                          "start": 597,
-                          "end": 664,
+                          "start": 575,
+                          "end": 642,
                           "loc": {
                             "start": {
-                              "line": 27,
+                              "line": 25,
                               "column": 8
                             },
                             "end": {
-                              "line": 27,
+                              "line": 25,
                               "column": 75
                             }
                           }
@@ -591,58 +590,58 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 673,
-                      "end": 695,
+                      "start": 651,
+                      "end": 673,
                       "loc": {
                         "start": {
-                          "line": 28,
+                          "line": 26,
                           "column": 8
                         },
                         "end": {
-                          "line": 28,
+                          "line": 26,
                           "column": 30
                         }
                       },
                       "expression": {
                         "type": "AssignmentExpression",
-                        "start": 673,
-                        "end": 694,
+                        "start": 651,
+                        "end": 672,
                         "loc": {
                           "start": {
-                            "line": 28,
+                            "line": 26,
                             "column": 8
                           },
                           "end": {
-                            "line": 28,
+                            "line": 26,
                             "column": 29
                           }
                         },
                         "operator": "=",
                         "left": {
                           "type": "MemberExpression",
-                          "start": 673,
-                          "end": 689,
+                          "start": 651,
+                          "end": 667,
                           "loc": {
                             "start": {
-                              "line": 28,
+                              "line": 26,
                               "column": 8
                             },
                             "end": {
-                              "line": 28,
+                              "line": 26,
                               "column": 24
                             }
                           },
                           "object": {
                             "type": "ThisExpression",
-                            "start": 673,
-                            "end": 677,
+                            "start": 651,
+                            "end": 655,
                             "loc": {
                               "start": {
-                                "line": 28,
+                                "line": 26,
                                 "column": 8
                               },
                               "end": {
-                                "line": 28,
+                                "line": 26,
                                 "column": 12
                               }
                             },
@@ -650,15 +649,15 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 678,
-                            "end": 689,
+                            "start": 656,
+                            "end": 667,
                             "loc": {
                               "start": {
-                                "line": 28,
+                                "line": 26,
                                 "column": 13
                               },
                               "end": {
-                                "line": 28,
+                                "line": 26,
                                 "column": 24
                               },
                               "identifierName": "controllers"
@@ -670,15 +669,15 @@
                         },
                         "right": {
                           "type": "ArrayExpression",
-                          "start": 692,
-                          "end": 694,
+                          "start": 670,
+                          "end": 672,
                           "loc": {
                             "start": {
-                              "line": 28,
+                              "line": 26,
                               "column": 27
                             },
                             "end": {
-                              "line": 28,
+                              "line": 26,
                               "column": 29
                             }
                           },
@@ -690,15 +689,15 @@
                         {
                           "type": "CommentLine",
                           "value": " make the router aware of controllers active in the application",
-                          "start": 523,
-                          "end": 588,
+                          "start": 501,
+                          "end": 566,
                           "loc": {
                             "start": {
-                              "line": 26,
+                              "line": 24,
                               "column": 8
                             },
                             "end": {
-                              "line": 26,
+                              "line": 24,
                               "column": 73
                             }
                           }
@@ -706,15 +705,15 @@
                         {
                           "type": "CommentLine",
                           "value": " each controller will need to subscribe itself to this container.",
-                          "start": 597,
-                          "end": 664,
+                          "start": 575,
+                          "end": 642,
                           "loc": {
                             "start": {
-                              "line": 27,
+                              "line": 25,
                               "column": 8
                             },
                             "end": {
-                              "line": 27,
+                              "line": 25,
                               "column": 75
                             }
                           }
@@ -724,15 +723,15 @@
                         {
                           "type": "CommentLine",
                           "value": " when a default controller is designated. The router will map every route without a",
-                          "start": 705,
-                          "end": 790,
+                          "start": 683,
+                          "end": 768,
                           "loc": {
                             "start": {
-                              "line": 30,
+                              "line": 28,
                               "column": 8
                             },
                             "end": {
-                              "line": 30,
+                              "line": 28,
                               "column": 93
                             }
                           }
@@ -740,15 +739,15 @@
                         {
                           "type": "CommentLine",
                           "value": " controller reference to the HomeController.",
-                          "start": 799,
-                          "end": 845,
+                          "start": 777,
+                          "end": 823,
                           "loc": {
                             "start": {
-                              "line": 31,
+                              "line": 29,
                               "column": 8
                             },
                             "end": {
-                              "line": 31,
+                              "line": 29,
                               "column": 54
                             }
                           }
@@ -757,58 +756,58 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 854,
-                      "end": 886,
+                      "start": 832,
+                      "end": 864,
                       "loc": {
                         "start": {
-                          "line": 32,
+                          "line": 30,
                           "column": 8
                         },
                         "end": {
-                          "line": 32,
+                          "line": 30,
                           "column": 40
                         }
                       },
                       "expression": {
                         "type": "AssignmentExpression",
-                        "start": 854,
-                        "end": 885,
+                        "start": 832,
+                        "end": 863,
                         "loc": {
                           "start": {
-                            "line": 32,
+                            "line": 30,
                             "column": 8
                           },
                           "end": {
-                            "line": 32,
+                            "line": 30,
                             "column": 39
                           }
                         },
                         "operator": "=",
                         "left": {
                           "type": "MemberExpression",
-                          "start": 854,
-                          "end": 876,
+                          "start": 832,
+                          "end": 854,
                           "loc": {
                             "start": {
-                              "line": 32,
+                              "line": 30,
                               "column": 8
                             },
                             "end": {
-                              "line": 32,
+                              "line": 30,
                               "column": 30
                             }
                           },
                           "object": {
                             "type": "ThisExpression",
-                            "start": 854,
-                            "end": 858,
+                            "start": 832,
+                            "end": 836,
                             "loc": {
                               "start": {
-                                "line": 32,
+                                "line": 30,
                                 "column": 8
                               },
                               "end": {
-                                "line": 32,
+                                "line": 30,
                                 "column": 12
                               }
                             },
@@ -816,15 +815,15 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 859,
-                            "end": 876,
+                            "start": 837,
+                            "end": 854,
                             "loc": {
                               "start": {
-                                "line": 32,
+                                "line": 30,
                                 "column": 13
                               },
                               "end": {
-                                "line": 32,
+                                "line": 30,
                                 "column": 30
                               },
                               "identifierName": "defaultController"
@@ -836,15 +835,15 @@
                         },
                         "right": {
                           "type": "StringLiteral",
-                          "start": 879,
-                          "end": 885,
+                          "start": 857,
+                          "end": 863,
                           "loc": {
                             "start": {
-                              "line": 32,
+                              "line": 30,
                               "column": 33
                             },
                             "end": {
-                              "line": 32,
+                              "line": 30,
                               "column": 39
                             }
                           },
@@ -860,15 +859,15 @@
                         {
                           "type": "CommentLine",
                           "value": " when a default controller is designated. The router will map every route without a",
-                          "start": 705,
-                          "end": 790,
+                          "start": 683,
+                          "end": 768,
                           "loc": {
                             "start": {
-                              "line": 30,
+                              "line": 28,
                               "column": 8
                             },
                             "end": {
-                              "line": 30,
+                              "line": 28,
                               "column": 93
                             }
                           }
@@ -876,15 +875,15 @@
                         {
                           "type": "CommentLine",
                           "value": " controller reference to the HomeController.",
-                          "start": 799,
-                          "end": 845,
+                          "start": 777,
+                          "end": 823,
                           "loc": {
                             "start": {
-                              "line": 31,
+                              "line": 29,
                               "column": 8
                             },
                             "end": {
-                              "line": 31,
+                              "line": 29,
                               "column": 54
                             }
                           }
@@ -894,15 +893,15 @@
                         {
                           "type": "CommentLine",
                           "value": " when a default method is designated. the router map will every route without a",
-                          "start": 896,
-                          "end": 977,
+                          "start": 874,
+                          "end": 955,
                           "loc": {
                             "start": {
-                              "line": 34,
+                              "line": 32,
                               "column": 8
                             },
                             "end": {
-                              "line": 34,
+                              "line": 32,
                               "column": 89
                             }
                           }
@@ -910,15 +909,15 @@
                         {
                           "type": "CommentLine",
                           "value": " method reference to the HomeController's method.",
-                          "start": 986,
-                          "end": 1037,
+                          "start": 964,
+                          "end": 1015,
                           "loc": {
                             "start": {
-                              "line": 35,
+                              "line": 33,
                               "column": 8
                             },
                             "end": {
-                              "line": 35,
+                              "line": 33,
                               "column": 59
                             }
                           }
@@ -927,58 +926,58 @@
                     },
                     {
                       "type": "ExpressionStatement",
-                      "start": 1046,
-                      "end": 1075,
+                      "start": 1024,
+                      "end": 1053,
                       "loc": {
                         "start": {
-                          "line": 36,
+                          "line": 34,
                           "column": 8
                         },
                         "end": {
-                          "line": 36,
+                          "line": 34,
                           "column": 37
                         }
                       },
                       "expression": {
                         "type": "AssignmentExpression",
-                        "start": 1046,
-                        "end": 1074,
+                        "start": 1024,
+                        "end": 1052,
                         "loc": {
                           "start": {
-                            "line": 36,
+                            "line": 34,
                             "column": 8
                           },
                           "end": {
-                            "line": 36,
+                            "line": 34,
                             "column": 36
                           }
                         },
                         "operator": "=",
                         "left": {
                           "type": "MemberExpression",
-                          "start": 1046,
-                          "end": 1064,
+                          "start": 1024,
+                          "end": 1042,
                           "loc": {
                             "start": {
-                              "line": 36,
+                              "line": 34,
                               "column": 8
                             },
                             "end": {
-                              "line": 36,
+                              "line": 34,
                               "column": 26
                             }
                           },
                           "object": {
                             "type": "ThisExpression",
-                            "start": 1046,
-                            "end": 1050,
+                            "start": 1024,
+                            "end": 1028,
                             "loc": {
                               "start": {
-                                "line": 36,
+                                "line": 34,
                                 "column": 8
                               },
                               "end": {
-                                "line": 36,
+                                "line": 34,
                                 "column": 12
                               }
                             },
@@ -986,15 +985,15 @@
                           },
                           "property": {
                             "type": "Identifier",
-                            "start": 1051,
-                            "end": 1064,
+                            "start": 1029,
+                            "end": 1042,
                             "loc": {
                               "start": {
-                                "line": 36,
+                                "line": 34,
                                 "column": 13
                               },
                               "end": {
-                                "line": 36,
+                                "line": 34,
                                 "column": 26
                               },
                               "identifierName": "defaultMethod"
@@ -1006,15 +1005,15 @@
                         },
                         "right": {
                           "type": "StringLiteral",
-                          "start": 1067,
-                          "end": 1074,
+                          "start": 1045,
+                          "end": 1052,
                           "loc": {
                             "start": {
-                              "line": 36,
+                              "line": 34,
                               "column": 29
                             },
                             "end": {
-                              "line": 36,
+                              "line": 34,
                               "column": 36
                             }
                           },
@@ -1030,15 +1029,15 @@
                         {
                           "type": "CommentLine",
                           "value": " when a default method is designated. the router map will every route without a",
-                          "start": 896,
-                          "end": 977,
+                          "start": 874,
+                          "end": 955,
                           "loc": {
                             "start": {
-                              "line": 34,
+                              "line": 32,
                               "column": 8
                             },
                             "end": {
-                              "line": 34,
+                              "line": 32,
                               "column": 89
                             }
                           }
@@ -1046,15 +1045,15 @@
                         {
                           "type": "CommentLine",
                           "value": " method reference to the HomeController's method.",
-                          "start": 986,
-                          "end": 1037,
+                          "start": 964,
+                          "end": 1015,
                           "loc": {
                             "start": {
-                              "line": 35,
+                              "line": 33,
                               "column": 8
                             },
                             "end": {
-                              "line": 35,
+                              "line": 33,
                               "column": 59
                             }
                           }
@@ -1065,37 +1064,19 @@
                   "directives": [],
                   "trailingComments": null
                 },
-                "leadingComments": [
-                  {
-                    "type": "CommentBlock",
-                    "value": "*\n     *\n     ",
-                    "start": 359,
-                    "end": 377,
-                    "loc": {
-                      "start": {
-                        "line": 18,
-                        "column": 4
-                      },
-                      "end": {
-                        "line": 20,
-                        "column": 7
-                      }
-                    }
-                  }
-                ],
                 "trailingComments": [
                   {
                     "type": "CommentBlock",
                     "value": "*\n     * On a route change, calls the corresponding controller method with the given parameter values.\n     * @returns {Boolean} Whether the current route was successfully ran.\n     ",
-                    "start": 1087,
-                    "end": 1273,
+                    "start": 1065,
+                    "end": 1251,
                     "loc": {
                       "start": {
-                        "line": 39,
+                        "line": 37,
                         "column": 4
                       },
                       "end": {
-                        "line": 42,
+                        "line": 40,
                         "column": 7
                       }
                     }
@@ -1104,30 +1085,30 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 1278,
-                "end": 1287,
+                "start": 1256,
+                "end": 1265,
                 "loc": {
                   "start": {
-                    "line": 43,
+                    "line": 41,
                     "column": 4
                   },
                   "end": {
-                    "line": 43,
+                    "line": 41,
                     "column": 13
                   }
                 },
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 1278,
-                  "end": 1281,
+                  "start": 1256,
+                  "end": 1259,
                   "loc": {
                     "start": {
-                      "line": 43,
+                      "line": 41,
                       "column": 4
                     },
                     "end": {
-                      "line": 43,
+                      "line": 41,
                       "column": 7
                     },
                     "identifierName": "run"
@@ -1144,15 +1125,15 @@
                 "params": [],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 1284,
-                  "end": 1287,
+                  "start": 1262,
+                  "end": 1265,
                   "loc": {
                     "start": {
-                      "line": 43,
+                      "line": 41,
                       "column": 10
                     },
                     "end": {
-                      "line": 43,
+                      "line": 41,
                       "column": 13
                     }
                   },
@@ -1165,15 +1146,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n     * On a route change, calls the corresponding controller method with the given parameter values.\n     * @returns {Boolean} Whether the current route was successfully ran.\n     ",
-                    "start": 1087,
-                    "end": 1273,
+                    "start": 1065,
+                    "end": 1251,
                     "loc": {
                       "start": {
-                        "line": 39,
+                        "line": 37,
                         "column": 4
                       },
                       "end": {
-                        "line": 42,
+                        "line": 40,
                         "column": 7
                       }
                     }
@@ -1183,15 +1164,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n     * Sets the initial controller and method to be activated whenever the controllers are activated.\n     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.\n     * @param {String} method Default method to call in given controller.\n     * @returns {void}\n     ",
-                    "start": 1294,
-                    "end": 1640,
+                    "start": 1272,
+                    "end": 1618,
                     "loc": {
                       "start": {
-                        "line": 46,
+                        "line": 44,
                         "column": 4
                       },
                       "end": {
-                        "line": 51,
+                        "line": 49,
                         "column": 7
                       }
                     }
@@ -1200,30 +1181,30 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 1645,
-                "end": 1679,
+                "start": 1623,
+                "end": 1657,
                 "loc": {
                   "start": {
-                    "line": 52,
+                    "line": 50,
                     "column": 4
                   },
                   "end": {
-                    "line": 52,
+                    "line": 50,
                     "column": 38
                   }
                 },
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 1645,
-                  "end": 1655,
+                  "start": 1623,
+                  "end": 1633,
                   "loc": {
                     "start": {
-                      "line": 52,
+                      "line": 50,
                       "column": 4
                     },
                     "end": {
-                      "line": 52,
+                      "line": 50,
                       "column": 14
                     },
                     "identifierName": "setDefault"
@@ -1240,15 +1221,15 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 1656,
-                    "end": 1666,
+                    "start": 1634,
+                    "end": 1644,
                     "loc": {
                       "start": {
-                        "line": 52,
+                        "line": 50,
                         "column": 15
                       },
                       "end": {
-                        "line": 52,
+                        "line": 50,
                         "column": 25
                       },
                       "identifierName": "controller"
@@ -1257,15 +1238,15 @@
                   },
                   {
                     "type": "Identifier",
-                    "start": 1668,
-                    "end": 1674,
+                    "start": 1646,
+                    "end": 1652,
                     "loc": {
                       "start": {
-                        "line": 52,
+                        "line": 50,
                         "column": 27
                       },
                       "end": {
-                        "line": 52,
+                        "line": 50,
                         "column": 33
                       },
                       "identifierName": "method"
@@ -1275,15 +1256,15 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 1676,
-                  "end": 1679,
+                  "start": 1654,
+                  "end": 1657,
                   "loc": {
                     "start": {
-                      "line": 52,
+                      "line": 50,
                       "column": 35
                     },
                     "end": {
-                      "line": 52,
+                      "line": 50,
                       "column": 38
                     }
                   },
@@ -1296,15 +1277,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n     * Sets the initial controller and method to be activated whenever the controllers are activated.\n     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.\n     * @param {String} method Default method to call in given controller.\n     * @returns {void}\n     ",
-                    "start": 1294,
-                    "end": 1640,
+                    "start": 1272,
+                    "end": 1618,
                     "loc": {
                       "start": {
-                        "line": 46,
+                        "line": 44,
                         "column": 4
                       },
                       "end": {
-                        "line": 51,
+                        "line": 49,
                         "column": 7
                       }
                     }
@@ -1314,15 +1295,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n     * Registers a single controller.\n     * @param {String} route Route to trigger handler on.\n     * @param {Function} handler Method to call on given route.\n     * @returns {void}\n     ",
-                    "start": 1685,
-                    "end": 1879,
+                    "start": 1663,
+                    "end": 1857,
                     "loc": {
                       "start": {
-                        "line": 54,
+                        "line": 52,
                         "column": 4
                       },
                       "end": {
-                        "line": 59,
+                        "line": 57,
                         "column": 7
                       }
                     }
@@ -1331,30 +1312,30 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 1884,
-                "end": 1907,
+                "start": 1862,
+                "end": 1885,
                 "loc": {
                   "start": {
-                    "line": 60,
+                    "line": 58,
                     "column": 4
                   },
                   "end": {
-                    "line": 60,
+                    "line": 58,
                     "column": 27
                   }
                 },
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 1884,
-                  "end": 1887,
+                  "start": 1862,
+                  "end": 1865,
                   "loc": {
                     "start": {
-                      "line": 60,
+                      "line": 58,
                       "column": 4
                     },
                     "end": {
-                      "line": 60,
+                      "line": 58,
                       "column": 7
                     },
                     "identifierName": "add"
@@ -1371,15 +1352,15 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 1888,
-                    "end": 1893,
+                    "start": 1866,
+                    "end": 1871,
                     "loc": {
                       "start": {
-                        "line": 60,
+                        "line": 58,
                         "column": 8
                       },
                       "end": {
-                        "line": 60,
+                        "line": 58,
                         "column": 13
                       },
                       "identifierName": "route"
@@ -1388,15 +1369,15 @@
                   },
                   {
                     "type": "Identifier",
-                    "start": 1895,
-                    "end": 1902,
+                    "start": 1873,
+                    "end": 1880,
                     "loc": {
                       "start": {
-                        "line": 60,
+                        "line": 58,
                         "column": 15
                       },
                       "end": {
-                        "line": 60,
+                        "line": 58,
                         "column": 22
                       },
                       "identifierName": "handler"
@@ -1406,15 +1387,15 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 1904,
-                  "end": 1907,
+                  "start": 1882,
+                  "end": 1885,
                   "loc": {
                     "start": {
-                      "line": 60,
+                      "line": 58,
                       "column": 24
                     },
                     "end": {
-                      "line": 60,
+                      "line": 58,
                       "column": 27
                     }
                   },
@@ -1427,15 +1408,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n     * Registers a single controller.\n     * @param {String} route Route to trigger handler on.\n     * @param {Function} handler Method to call on given route.\n     * @returns {void}\n     ",
-                    "start": 1685,
-                    "end": 1879,
+                    "start": 1663,
+                    "end": 1857,
                     "loc": {
                       "start": {
-                        "line": 54,
+                        "line": 52,
                         "column": 4
                       },
                       "end": {
-                        "line": 59,
+                        "line": 57,
                         "column": 7
                       }
                     }
@@ -1445,15 +1426,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n     * Triggers navigation to one of the controllers\n     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.\n     * @param {String} method The method to call in given controller.\n     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: \"yes\"})\n     * @returns {void}\n     ",
-                    "start": 1913,
-                    "end": 2316,
+                    "start": 1891,
+                    "end": 2294,
                     "loc": {
                       "start": {
-                        "line": 62,
+                        "line": 60,
                         "column": 4
                       },
                       "end": {
-                        "line": 68,
+                        "line": 66,
                         "column": 7
                       }
                     }
@@ -1462,30 +1443,30 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 2321,
-                "end": 2355,
+                "start": 2299,
+                "end": 2333,
                 "loc": {
                   "start": {
-                    "line": 69,
+                    "line": 67,
                     "column": 4
                   },
                   "end": {
-                    "line": 69,
+                    "line": 67,
                     "column": 38
                   }
                 },
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 2321,
-                  "end": 2323,
+                  "start": 2299,
+                  "end": 2301,
                   "loc": {
                     "start": {
-                      "line": 69,
+                      "line": 67,
                       "column": 4
                     },
                     "end": {
-                      "line": 69,
+                      "line": 67,
                       "column": 6
                     },
                     "identifierName": "go"
@@ -1502,15 +1483,15 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 2324,
-                    "end": 2334,
+                    "start": 2302,
+                    "end": 2312,
                     "loc": {
                       "start": {
-                        "line": 69,
+                        "line": 67,
                         "column": 7
                       },
                       "end": {
-                        "line": 69,
+                        "line": 67,
                         "column": 17
                       },
                       "identifierName": "controller"
@@ -1519,15 +1500,15 @@
                   },
                   {
                     "type": "Identifier",
-                    "start": 2336,
-                    "end": 2342,
+                    "start": 2314,
+                    "end": 2320,
                     "loc": {
                       "start": {
-                        "line": 69,
+                        "line": 67,
                         "column": 19
                       },
                       "end": {
-                        "line": 69,
+                        "line": 67,
                         "column": 25
                       },
                       "identifierName": "method"
@@ -1536,15 +1517,15 @@
                   },
                   {
                     "type": "Identifier",
-                    "start": 2344,
-                    "end": 2350,
+                    "start": 2322,
+                    "end": 2328,
                     "loc": {
                       "start": {
-                        "line": 69,
+                        "line": 67,
                         "column": 27
                       },
                       "end": {
-                        "line": 69,
+                        "line": 67,
                         "column": 33
                       },
                       "identifierName": "params"
@@ -1554,15 +1535,15 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 2352,
-                  "end": 2355,
+                  "start": 2330,
+                  "end": 2333,
                   "loc": {
                     "start": {
-                      "line": 69,
+                      "line": 67,
                       "column": 35
                     },
                     "end": {
-                      "line": 69,
+                      "line": 67,
                       "column": 38
                     }
                   },
@@ -1575,15 +1556,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n     * Triggers navigation to one of the controllers\n     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.\n     * @param {String} method The method to call in given controller.\n     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: \"yes\"})\n     * @returns {void}\n     ",
-                    "start": 1913,
-                    "end": 2316,
+                    "start": 1891,
+                    "end": 2294,
                     "loc": {
                       "start": {
-                        "line": 62,
+                        "line": 60,
                         "column": 4
                       },
                       "end": {
-                        "line": 68,
+                        "line": 66,
                         "column": 7
                       }
                     }
@@ -1593,15 +1574,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n     * Executes the controller handler associated with a given route, passing the route as a parameter.\n     * @param {Object} rule Rule handler to execute.\n     * @param {Object} route Route object to pass as parameter.\n     * @returns {void}\n     * @private\n     ",
-                    "start": 2361,
-                    "end": 2632,
+                    "start": 2339,
+                    "end": 2610,
                     "loc": {
                       "start": {
-                        "line": 71,
+                        "line": 69,
                         "column": 4
                       },
                       "end": {
-                        "line": 77,
+                        "line": 75,
                         "column": 7
                       }
                     }
@@ -1610,30 +1591,30 @@
               },
               {
                 "type": "ClassMethod",
-                "start": 2637,
-                "end": 2667,
+                "start": 2615,
+                "end": 2645,
                 "loc": {
                   "start": {
-                    "line": 78,
+                    "line": 76,
                     "column": 4
                   },
                   "end": {
-                    "line": 78,
+                    "line": 76,
                     "column": 34
                   }
                 },
                 "computed": false,
                 "key": {
                   "type": "Identifier",
-                  "start": 2637,
-                  "end": 2650,
+                  "start": 2615,
+                  "end": 2628,
                   "loc": {
                     "start": {
-                      "line": 78,
+                      "line": 76,
                       "column": 4
                     },
                     "end": {
-                      "line": 78,
+                      "line": 76,
                       "column": 17
                     },
                     "identifierName": "_executeRoute"
@@ -1650,15 +1631,15 @@
                 "params": [
                   {
                     "type": "Identifier",
-                    "start": 2651,
-                    "end": 2655,
+                    "start": 2629,
+                    "end": 2633,
                     "loc": {
                       "start": {
-                        "line": 78,
+                        "line": 76,
                         "column": 18
                       },
                       "end": {
-                        "line": 78,
+                        "line": 76,
                         "column": 22
                       },
                       "identifierName": "rule"
@@ -1667,15 +1648,15 @@
                   },
                   {
                     "type": "Identifier",
-                    "start": 2657,
-                    "end": 2662,
+                    "start": 2635,
+                    "end": 2640,
                     "loc": {
                       "start": {
-                        "line": 78,
+                        "line": 76,
                         "column": 24
                       },
                       "end": {
-                        "line": 78,
+                        "line": 76,
                         "column": 29
                       },
                       "identifierName": "route"
@@ -1685,15 +1666,15 @@
                 ],
                 "body": {
                   "type": "BlockStatement",
-                  "start": 2664,
-                  "end": 2667,
+                  "start": 2642,
+                  "end": 2645,
                   "loc": {
                     "start": {
-                      "line": 78,
+                      "line": 76,
                       "column": 31
                     },
                     "end": {
-                      "line": 78,
+                      "line": 76,
                       "column": 34
                     }
                   },
@@ -1704,15 +1685,15 @@
                   {
                     "type": "CommentBlock",
                     "value": "*\n     * Executes the controller handler associated with a given route, passing the route as a parameter.\n     * @param {Object} rule Rule handler to execute.\n     * @param {Object} route Route object to pass as parameter.\n     * @returns {void}\n     * @private\n     ",
-                    "start": 2361,
-                    "end": 2632,
+                    "start": 2339,
+                    "end": 2610,
                     "loc": {
                       "start": {
-                        "line": 71,
+                        "line": 69,
                         "column": 4
                       },
                       "end": {
-                        "line": 77,
+                        "line": 75,
                         "column": 7
                       }
                     }
@@ -1798,33 +1779,17 @@
       }
     },
     {
-      "type": "CommentBlock",
-      "value": "*\n     *\n     ",
-      "start": 359,
-      "end": 377,
-      "loc": {
-        "start": {
-          "line": 18,
-          "column": 4
-        },
-        "end": {
-          "line": 20,
-          "column": 7
-        }
-      }
-    },
-    {
       "type": "CommentLine",
       "value": " make classes behave like context bound",
-      "start": 423,
-      "end": 464,
+      "start": 401,
+      "end": 442,
       "loc": {
         "start": {
-          "line": 23,
+          "line": 21,
           "column": 8
         },
         "end": {
-          "line": 23,
+          "line": 21,
           "column": 49
         }
       }
@@ -1832,15 +1797,15 @@
     {
       "type": "CommentLine",
       "value": " make the router aware of controllers active in the application",
-      "start": 523,
-      "end": 588,
+      "start": 501,
+      "end": 566,
       "loc": {
         "start": {
-          "line": 26,
+          "line": 24,
           "column": 8
         },
         "end": {
-          "line": 26,
+          "line": 24,
           "column": 73
         }
       }
@@ -1848,15 +1813,15 @@
     {
       "type": "CommentLine",
       "value": " each controller will need to subscribe itself to this container.",
-      "start": 597,
-      "end": 664,
+      "start": 575,
+      "end": 642,
       "loc": {
         "start": {
-          "line": 27,
+          "line": 25,
           "column": 8
         },
         "end": {
-          "line": 27,
+          "line": 25,
           "column": 75
         }
       }
@@ -1864,15 +1829,15 @@
     {
       "type": "CommentLine",
       "value": " when a default controller is designated. The router will map every route without a",
-      "start": 705,
-      "end": 790,
+      "start": 683,
+      "end": 768,
       "loc": {
         "start": {
-          "line": 30,
+          "line": 28,
           "column": 8
         },
         "end": {
-          "line": 30,
+          "line": 28,
           "column": 93
         }
       }
@@ -1880,15 +1845,15 @@
     {
       "type": "CommentLine",
       "value": " controller reference to the HomeController.",
-      "start": 799,
-      "end": 845,
+      "start": 777,
+      "end": 823,
       "loc": {
         "start": {
-          "line": 31,
+          "line": 29,
           "column": 8
         },
         "end": {
-          "line": 31,
+          "line": 29,
           "column": 54
         }
       }
@@ -1896,15 +1861,15 @@
     {
       "type": "CommentLine",
       "value": " when a default method is designated. the router map will every route without a",
-      "start": 896,
-      "end": 977,
+      "start": 874,
+      "end": 955,
       "loc": {
         "start": {
-          "line": 34,
+          "line": 32,
           "column": 8
         },
         "end": {
-          "line": 34,
+          "line": 32,
           "column": 89
         }
       }
@@ -1912,15 +1877,15 @@
     {
       "type": "CommentLine",
       "value": " method reference to the HomeController's method.",
-      "start": 986,
-      "end": 1037,
+      "start": 964,
+      "end": 1015,
       "loc": {
         "start": {
-          "line": 35,
+          "line": 33,
           "column": 8
         },
         "end": {
-          "line": 35,
+          "line": 33,
           "column": 59
         }
       }
@@ -1928,15 +1893,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n     * On a route change, calls the corresponding controller method with the given parameter values.\n     * @returns {Boolean} Whether the current route was successfully ran.\n     ",
-      "start": 1087,
-      "end": 1273,
+      "start": 1065,
+      "end": 1251,
       "loc": {
         "start": {
-          "line": 39,
+          "line": 37,
           "column": 4
         },
         "end": {
-          "line": 42,
+          "line": 40,
           "column": 7
         }
       }
@@ -1944,15 +1909,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n     * Sets the initial controller and method to be activated whenever the controllers are activated.\n     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.\n     * @param {String} method Default method to call in given controller.\n     * @returns {void}\n     ",
-      "start": 1294,
-      "end": 1640,
+      "start": 1272,
+      "end": 1618,
       "loc": {
         "start": {
-          "line": 46,
+          "line": 44,
           "column": 4
         },
         "end": {
-          "line": 51,
+          "line": 49,
           "column": 7
         }
       }
@@ -1960,15 +1925,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n     * Registers a single controller.\n     * @param {String} route Route to trigger handler on.\n     * @param {Function} handler Method to call on given route.\n     * @returns {void}\n     ",
-      "start": 1685,
-      "end": 1879,
+      "start": 1663,
+      "end": 1857,
       "loc": {
         "start": {
-          "line": 54,
+          "line": 52,
           "column": 4
         },
         "end": {
-          "line": 59,
+          "line": 57,
           "column": 7
         }
       }
@@ -1976,15 +1941,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n     * Triggers navigation to one of the controllers\n     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.\n     * @param {String} method The method to call in given controller.\n     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: \"yes\"})\n     * @returns {void}\n     ",
-      "start": 1913,
-      "end": 2316,
+      "start": 1891,
+      "end": 2294,
       "loc": {
         "start": {
-          "line": 62,
+          "line": 60,
           "column": 4
         },
         "end": {
-          "line": 68,
+          "line": 66,
           "column": 7
         }
       }
@@ -1992,15 +1957,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n     * Executes the controller handler associated with a given route, passing the route as a parameter.\n     * @param {Object} rule Rule handler to execute.\n     * @param {Object} route Route object to pass as parameter.\n     * @returns {void}\n     * @private\n     ",
-      "start": 2361,
-      "end": 2632,
+      "start": 2339,
+      "end": 2610,
       "loc": {
         "start": {
-          "line": 71,
+          "line": 69,
           "column": 4
         },
         "end": {
-          "line": 77,
+          "line": 75,
           "column": 7
         }
       }
@@ -2517,22 +2482,6 @@
       }
     },
     {
-      "type": "CommentBlock",
-      "value": "*\n     *\n     ",
-      "start": 359,
-      "end": 377,
-      "loc": {
-        "start": {
-          "line": 18,
-          "column": 4
-        },
-        "end": {
-          "line": 20,
-          "column": 7
-        }
-      }
-    },
-    {
       "type": {
         "label": "name",
         "beforeExpr": false,
@@ -2545,15 +2494,15 @@
         "binop": null
       },
       "value": "constructor",
-      "start": 382,
-      "end": 393,
+      "start": 360,
+      "end": 371,
       "loc": {
         "start": {
-          "line": 21,
+          "line": 19,
           "column": 4
         },
         "end": {
-          "line": 21,
+          "line": 19,
           "column": 15
         }
       }
@@ -2570,15 +2519,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 393,
-      "end": 394,
+      "start": 371,
+      "end": 372,
       "loc": {
         "start": {
-          "line": 21,
+          "line": 19,
           "column": 15
         },
         "end": {
-          "line": 21,
+          "line": 19,
           "column": 16
         }
       }
@@ -2595,15 +2544,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 394,
-      "end": 395,
+      "start": 372,
+      "end": 373,
       "loc": {
         "start": {
-          "line": 21,
+          "line": 19,
           "column": 16
         },
         "end": {
-          "line": 21,
+          "line": 19,
           "column": 17
         }
       }
@@ -2620,15 +2569,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 396,
-      "end": 397,
+      "start": 374,
+      "end": 375,
       "loc": {
         "start": {
-          "line": 21,
+          "line": 19,
           "column": 18
         },
         "end": {
-          "line": 21,
+          "line": 19,
           "column": 19
         }
       }
@@ -2648,15 +2597,15 @@
         "updateContext": null
       },
       "value": "super",
-      "start": 406,
-      "end": 411,
+      "start": 384,
+      "end": 389,
       "loc": {
         "start": {
-          "line": 22,
+          "line": 20,
           "column": 8
         },
         "end": {
-          "line": 22,
+          "line": 20,
           "column": 13
         }
       }
@@ -2673,15 +2622,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 411,
-      "end": 412,
+      "start": 389,
+      "end": 390,
       "loc": {
         "start": {
-          "line": 22,
+          "line": 20,
           "column": 13
         },
         "end": {
-          "line": 22,
+          "line": 20,
           "column": 14
         }
       }
@@ -2698,15 +2647,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 412,
-      "end": 413,
+      "start": 390,
+      "end": 391,
       "loc": {
         "start": {
-          "line": 22,
+          "line": 20,
           "column": 14
         },
         "end": {
-          "line": 22,
+          "line": 20,
           "column": 15
         }
       }
@@ -2724,15 +2673,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 413,
-      "end": 414,
+      "start": 391,
+      "end": 392,
       "loc": {
         "start": {
-          "line": 22,
+          "line": 20,
           "column": 15
         },
         "end": {
-          "line": 22,
+          "line": 20,
           "column": 16
         }
       }
@@ -2740,15 +2689,15 @@
     {
       "type": "CommentLine",
       "value": " make classes behave like context bound",
-      "start": 423,
-      "end": 464,
+      "start": 401,
+      "end": 442,
       "loc": {
         "start": {
-          "line": 23,
+          "line": 21,
           "column": 8
         },
         "end": {
-          "line": 23,
+          "line": 21,
           "column": 49
         }
       }
@@ -2766,15 +2715,15 @@
         "binop": null
       },
       "value": "ObjectHelper",
-      "start": 473,
-      "end": 485,
+      "start": 451,
+      "end": 463,
       "loc": {
         "start": {
-          "line": 24,
+          "line": 22,
           "column": 8
         },
         "end": {
-          "line": 24,
+          "line": 22,
           "column": 20
         }
       }
@@ -2792,15 +2741,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 485,
-      "end": 486,
+      "start": 463,
+      "end": 464,
       "loc": {
         "start": {
-          "line": 24,
+          "line": 22,
           "column": 20
         },
         "end": {
-          "line": 24,
+          "line": 22,
           "column": 21
         }
       }
@@ -2818,15 +2767,15 @@
         "binop": null
       },
       "value": "bindAllMethods",
-      "start": 486,
-      "end": 500,
+      "start": 464,
+      "end": 478,
       "loc": {
         "start": {
-          "line": 24,
+          "line": 22,
           "column": 21
         },
         "end": {
-          "line": 24,
+          "line": 22,
           "column": 35
         }
       }
@@ -2843,15 +2792,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 500,
-      "end": 501,
+      "start": 478,
+      "end": 479,
       "loc": {
         "start": {
-          "line": 24,
+          "line": 22,
           "column": 35
         },
         "end": {
-          "line": 24,
+          "line": 22,
           "column": 36
         }
       }
@@ -2871,15 +2820,15 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 501,
-      "end": 505,
+      "start": 479,
+      "end": 483,
       "loc": {
         "start": {
-          "line": 24,
+          "line": 22,
           "column": 36
         },
         "end": {
-          "line": 24,
+          "line": 22,
           "column": 40
         }
       }
@@ -2897,15 +2846,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 505,
-      "end": 506,
+      "start": 483,
+      "end": 484,
       "loc": {
         "start": {
-          "line": 24,
+          "line": 22,
           "column": 40
         },
         "end": {
-          "line": 24,
+          "line": 22,
           "column": 41
         }
       }
@@ -2925,15 +2874,15 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 507,
-      "end": 511,
+      "start": 485,
+      "end": 489,
       "loc": {
         "start": {
-          "line": 24,
+          "line": 22,
           "column": 42
         },
         "end": {
-          "line": 24,
+          "line": 22,
           "column": 46
         }
       }
@@ -2950,15 +2899,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 511,
-      "end": 512,
+      "start": 489,
+      "end": 490,
       "loc": {
         "start": {
-          "line": 24,
+          "line": 22,
           "column": 46
         },
         "end": {
-          "line": 24,
+          "line": 22,
           "column": 47
         }
       }
@@ -2976,15 +2925,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 512,
-      "end": 513,
+      "start": 490,
+      "end": 491,
       "loc": {
         "start": {
-          "line": 24,
+          "line": 22,
           "column": 47
         },
         "end": {
-          "line": 24,
+          "line": 22,
           "column": 48
         }
       }
@@ -2992,15 +2941,15 @@
     {
       "type": "CommentLine",
       "value": " make the router aware of controllers active in the application",
-      "start": 523,
-      "end": 588,
+      "start": 501,
+      "end": 566,
       "loc": {
         "start": {
-          "line": 26,
+          "line": 24,
           "column": 8
         },
         "end": {
-          "line": 26,
+          "line": 24,
           "column": 73
         }
       }
@@ -3008,15 +2957,15 @@
     {
       "type": "CommentLine",
       "value": " each controller will need to subscribe itself to this container.",
-      "start": 597,
-      "end": 664,
+      "start": 575,
+      "end": 642,
       "loc": {
         "start": {
-          "line": 27,
+          "line": 25,
           "column": 8
         },
         "end": {
-          "line": 27,
+          "line": 25,
           "column": 75
         }
       }
@@ -3036,15 +2985,15 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 673,
-      "end": 677,
+      "start": 651,
+      "end": 655,
       "loc": {
         "start": {
-          "line": 28,
+          "line": 26,
           "column": 8
         },
         "end": {
-          "line": 28,
+          "line": 26,
           "column": 12
         }
       }
@@ -3062,15 +3011,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 677,
-      "end": 678,
+      "start": 655,
+      "end": 656,
       "loc": {
         "start": {
-          "line": 28,
+          "line": 26,
           "column": 12
         },
         "end": {
-          "line": 28,
+          "line": 26,
           "column": 13
         }
       }
@@ -3088,15 +3037,15 @@
         "binop": null
       },
       "value": "controllers",
-      "start": 678,
-      "end": 689,
+      "start": 656,
+      "end": 667,
       "loc": {
         "start": {
-          "line": 28,
+          "line": 26,
           "column": 13
         },
         "end": {
-          "line": 28,
+          "line": 26,
           "column": 24
         }
       }
@@ -3115,15 +3064,15 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 690,
-      "end": 691,
+      "start": 668,
+      "end": 669,
       "loc": {
         "start": {
-          "line": 28,
+          "line": 26,
           "column": 25
         },
         "end": {
-          "line": 28,
+          "line": 26,
           "column": 26
         }
       }
@@ -3141,15 +3090,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 692,
-      "end": 693,
+      "start": 670,
+      "end": 671,
       "loc": {
         "start": {
-          "line": 28,
+          "line": 26,
           "column": 27
         },
         "end": {
-          "line": 28,
+          "line": 26,
           "column": 28
         }
       }
@@ -3167,15 +3116,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 693,
-      "end": 694,
+      "start": 671,
+      "end": 672,
       "loc": {
         "start": {
-          "line": 28,
+          "line": 26,
           "column": 28
         },
         "end": {
-          "line": 28,
+          "line": 26,
           "column": 29
         }
       }
@@ -3193,15 +3142,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 694,
-      "end": 695,
+      "start": 672,
+      "end": 673,
       "loc": {
         "start": {
-          "line": 28,
+          "line": 26,
           "column": 29
         },
         "end": {
-          "line": 28,
+          "line": 26,
           "column": 30
         }
       }
@@ -3209,15 +3158,15 @@
     {
       "type": "CommentLine",
       "value": " when a default controller is designated. The router will map every route without a",
-      "start": 705,
-      "end": 790,
+      "start": 683,
+      "end": 768,
       "loc": {
         "start": {
-          "line": 30,
+          "line": 28,
           "column": 8
         },
         "end": {
-          "line": 30,
+          "line": 28,
           "column": 93
         }
       }
@@ -3225,15 +3174,15 @@
     {
       "type": "CommentLine",
       "value": " controller reference to the HomeController.",
-      "start": 799,
-      "end": 845,
+      "start": 777,
+      "end": 823,
       "loc": {
         "start": {
-          "line": 31,
+          "line": 29,
           "column": 8
         },
         "end": {
-          "line": 31,
+          "line": 29,
           "column": 54
         }
       }
@@ -3253,15 +3202,15 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 854,
-      "end": 858,
+      "start": 832,
+      "end": 836,
       "loc": {
         "start": {
-          "line": 32,
+          "line": 30,
           "column": 8
         },
         "end": {
-          "line": 32,
+          "line": 30,
           "column": 12
         }
       }
@@ -3279,15 +3228,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 858,
-      "end": 859,
+      "start": 836,
+      "end": 837,
       "loc": {
         "start": {
-          "line": 32,
+          "line": 30,
           "column": 12
         },
         "end": {
-          "line": 32,
+          "line": 30,
           "column": 13
         }
       }
@@ -3305,15 +3254,15 @@
         "binop": null
       },
       "value": "defaultController",
-      "start": 859,
-      "end": 876,
+      "start": 837,
+      "end": 854,
       "loc": {
         "start": {
-          "line": 32,
+          "line": 30,
           "column": 13
         },
         "end": {
-          "line": 32,
+          "line": 30,
           "column": 30
         }
       }
@@ -3332,15 +3281,15 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 877,
-      "end": 878,
+      "start": 855,
+      "end": 856,
       "loc": {
         "start": {
-          "line": 32,
+          "line": 30,
           "column": 31
         },
         "end": {
-          "line": 32,
+          "line": 30,
           "column": 32
         }
       }
@@ -3359,15 +3308,15 @@
         "updateContext": null
       },
       "value": "Home",
-      "start": 879,
-      "end": 885,
+      "start": 857,
+      "end": 863,
       "loc": {
         "start": {
-          "line": 32,
+          "line": 30,
           "column": 33
         },
         "end": {
-          "line": 32,
+          "line": 30,
           "column": 39
         }
       }
@@ -3385,15 +3334,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 885,
-      "end": 886,
+      "start": 863,
+      "end": 864,
       "loc": {
         "start": {
-          "line": 32,
+          "line": 30,
           "column": 39
         },
         "end": {
-          "line": 32,
+          "line": 30,
           "column": 40
         }
       }
@@ -3401,15 +3350,15 @@
     {
       "type": "CommentLine",
       "value": " when a default method is designated. the router map will every route without a",
-      "start": 896,
-      "end": 977,
+      "start": 874,
+      "end": 955,
       "loc": {
         "start": {
-          "line": 34,
+          "line": 32,
           "column": 8
         },
         "end": {
-          "line": 34,
+          "line": 32,
           "column": 89
         }
       }
@@ -3417,15 +3366,15 @@
     {
       "type": "CommentLine",
       "value": " method reference to the HomeController's method.",
-      "start": 986,
-      "end": 1037,
+      "start": 964,
+      "end": 1015,
       "loc": {
         "start": {
-          "line": 35,
+          "line": 33,
           "column": 8
         },
         "end": {
-          "line": 35,
+          "line": 33,
           "column": 59
         }
       }
@@ -3445,15 +3394,15 @@
         "updateContext": null
       },
       "value": "this",
-      "start": 1046,
-      "end": 1050,
+      "start": 1024,
+      "end": 1028,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 34,
           "column": 8
         },
         "end": {
-          "line": 36,
+          "line": 34,
           "column": 12
         }
       }
@@ -3471,15 +3420,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1050,
-      "end": 1051,
+      "start": 1028,
+      "end": 1029,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 34,
           "column": 12
         },
         "end": {
-          "line": 36,
+          "line": 34,
           "column": 13
         }
       }
@@ -3497,15 +3446,15 @@
         "binop": null
       },
       "value": "defaultMethod",
-      "start": 1051,
-      "end": 1064,
+      "start": 1029,
+      "end": 1042,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 34,
           "column": 13
         },
         "end": {
-          "line": 36,
+          "line": 34,
           "column": 26
         }
       }
@@ -3524,15 +3473,15 @@
         "updateContext": null
       },
       "value": "=",
-      "start": 1065,
-      "end": 1066,
+      "start": 1043,
+      "end": 1044,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 34,
           "column": 27
         },
         "end": {
-          "line": 36,
+          "line": 34,
           "column": 28
         }
       }
@@ -3551,15 +3500,15 @@
         "updateContext": null
       },
       "value": "Index",
-      "start": 1067,
-      "end": 1074,
+      "start": 1045,
+      "end": 1052,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 34,
           "column": 29
         },
         "end": {
-          "line": 36,
+          "line": 34,
           "column": 36
         }
       }
@@ -3577,15 +3526,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1074,
-      "end": 1075,
+      "start": 1052,
+      "end": 1053,
       "loc": {
         "start": {
-          "line": 36,
+          "line": 34,
           "column": 36
         },
         "end": {
-          "line": 36,
+          "line": 34,
           "column": 37
         }
       }
@@ -3602,15 +3551,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1080,
-      "end": 1081,
+      "start": 1058,
+      "end": 1059,
       "loc": {
         "start": {
-          "line": 37,
+          "line": 35,
           "column": 4
         },
         "end": {
-          "line": 37,
+          "line": 35,
           "column": 5
         }
       }
@@ -3618,15 +3567,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n     * On a route change, calls the corresponding controller method with the given parameter values.\n     * @returns {Boolean} Whether the current route was successfully ran.\n     ",
-      "start": 1087,
-      "end": 1273,
+      "start": 1065,
+      "end": 1251,
       "loc": {
         "start": {
-          "line": 39,
+          "line": 37,
           "column": 4
         },
         "end": {
-          "line": 42,
+          "line": 40,
           "column": 7
         }
       }
@@ -3644,15 +3593,15 @@
         "binop": null
       },
       "value": "run",
-      "start": 1278,
-      "end": 1281,
+      "start": 1256,
+      "end": 1259,
       "loc": {
         "start": {
-          "line": 43,
+          "line": 41,
           "column": 4
         },
         "end": {
-          "line": 43,
+          "line": 41,
           "column": 7
         }
       }
@@ -3669,15 +3618,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1281,
-      "end": 1282,
+      "start": 1259,
+      "end": 1260,
       "loc": {
         "start": {
-          "line": 43,
+          "line": 41,
           "column": 7
         },
         "end": {
-          "line": 43,
+          "line": 41,
           "column": 8
         }
       }
@@ -3694,15 +3643,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1282,
-      "end": 1283,
+      "start": 1260,
+      "end": 1261,
       "loc": {
         "start": {
-          "line": 43,
+          "line": 41,
           "column": 8
         },
         "end": {
-          "line": 43,
+          "line": 41,
           "column": 9
         }
       }
@@ -3719,15 +3668,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1284,
-      "end": 1285,
+      "start": 1262,
+      "end": 1263,
       "loc": {
         "start": {
-          "line": 43,
+          "line": 41,
           "column": 10
         },
         "end": {
-          "line": 43,
+          "line": 41,
           "column": 11
         }
       }
@@ -3744,15 +3693,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1286,
-      "end": 1287,
+      "start": 1264,
+      "end": 1265,
       "loc": {
         "start": {
-          "line": 43,
+          "line": 41,
           "column": 12
         },
         "end": {
-          "line": 43,
+          "line": 41,
           "column": 13
         }
       }
@@ -3760,15 +3709,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n     * Sets the initial controller and method to be activated whenever the controllers are activated.\n     * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.\n     * @param {String} method Default method to call in given controller.\n     * @returns {void}\n     ",
-      "start": 1294,
-      "end": 1640,
+      "start": 1272,
+      "end": 1618,
       "loc": {
         "start": {
-          "line": 46,
+          "line": 44,
           "column": 4
         },
         "end": {
-          "line": 51,
+          "line": 49,
           "column": 7
         }
       }
@@ -3786,15 +3735,15 @@
         "binop": null
       },
       "value": "setDefault",
-      "start": 1645,
-      "end": 1655,
+      "start": 1623,
+      "end": 1633,
       "loc": {
         "start": {
-          "line": 52,
+          "line": 50,
           "column": 4
         },
         "end": {
-          "line": 52,
+          "line": 50,
           "column": 14
         }
       }
@@ -3811,15 +3760,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1655,
-      "end": 1656,
+      "start": 1633,
+      "end": 1634,
       "loc": {
         "start": {
-          "line": 52,
+          "line": 50,
           "column": 14
         },
         "end": {
-          "line": 52,
+          "line": 50,
           "column": 15
         }
       }
@@ -3837,15 +3786,15 @@
         "binop": null
       },
       "value": "controller",
-      "start": 1656,
-      "end": 1666,
+      "start": 1634,
+      "end": 1644,
       "loc": {
         "start": {
-          "line": 52,
+          "line": 50,
           "column": 15
         },
         "end": {
-          "line": 52,
+          "line": 50,
           "column": 25
         }
       }
@@ -3863,15 +3812,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1666,
-      "end": 1667,
+      "start": 1644,
+      "end": 1645,
       "loc": {
         "start": {
-          "line": 52,
+          "line": 50,
           "column": 25
         },
         "end": {
-          "line": 52,
+          "line": 50,
           "column": 26
         }
       }
@@ -3889,15 +3838,15 @@
         "binop": null
       },
       "value": "method",
-      "start": 1668,
-      "end": 1674,
+      "start": 1646,
+      "end": 1652,
       "loc": {
         "start": {
-          "line": 52,
+          "line": 50,
           "column": 27
         },
         "end": {
-          "line": 52,
+          "line": 50,
           "column": 33
         }
       }
@@ -3914,15 +3863,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1674,
-      "end": 1675,
+      "start": 1652,
+      "end": 1653,
       "loc": {
         "start": {
-          "line": 52,
+          "line": 50,
           "column": 33
         },
         "end": {
-          "line": 52,
+          "line": 50,
           "column": 34
         }
       }
@@ -3939,15 +3888,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1676,
-      "end": 1677,
+      "start": 1654,
+      "end": 1655,
       "loc": {
         "start": {
-          "line": 52,
+          "line": 50,
           "column": 35
         },
         "end": {
-          "line": 52,
+          "line": 50,
           "column": 36
         }
       }
@@ -3964,15 +3913,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1678,
-      "end": 1679,
+      "start": 1656,
+      "end": 1657,
       "loc": {
         "start": {
-          "line": 52,
+          "line": 50,
           "column": 37
         },
         "end": {
-          "line": 52,
+          "line": 50,
           "column": 38
         }
       }
@@ -3980,15 +3929,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n     * Registers a single controller.\n     * @param {String} route Route to trigger handler on.\n     * @param {Function} handler Method to call on given route.\n     * @returns {void}\n     ",
-      "start": 1685,
-      "end": 1879,
+      "start": 1663,
+      "end": 1857,
       "loc": {
         "start": {
-          "line": 54,
+          "line": 52,
           "column": 4
         },
         "end": {
-          "line": 59,
+          "line": 57,
           "column": 7
         }
       }
@@ -4006,15 +3955,15 @@
         "binop": null
       },
       "value": "add",
-      "start": 1884,
-      "end": 1887,
+      "start": 1862,
+      "end": 1865,
       "loc": {
         "start": {
-          "line": 60,
+          "line": 58,
           "column": 4
         },
         "end": {
-          "line": 60,
+          "line": 58,
           "column": 7
         }
       }
@@ -4031,15 +3980,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1887,
-      "end": 1888,
+      "start": 1865,
+      "end": 1866,
       "loc": {
         "start": {
-          "line": 60,
+          "line": 58,
           "column": 7
         },
         "end": {
-          "line": 60,
+          "line": 58,
           "column": 8
         }
       }
@@ -4057,15 +4006,15 @@
         "binop": null
       },
       "value": "route",
-      "start": 1888,
-      "end": 1893,
+      "start": 1866,
+      "end": 1871,
       "loc": {
         "start": {
-          "line": 60,
+          "line": 58,
           "column": 8
         },
         "end": {
-          "line": 60,
+          "line": 58,
           "column": 13
         }
       }
@@ -4083,15 +4032,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 1893,
-      "end": 1894,
+      "start": 1871,
+      "end": 1872,
       "loc": {
         "start": {
-          "line": 60,
+          "line": 58,
           "column": 13
         },
         "end": {
-          "line": 60,
+          "line": 58,
           "column": 14
         }
       }
@@ -4109,15 +4058,15 @@
         "binop": null
       },
       "value": "handler",
-      "start": 1895,
-      "end": 1902,
+      "start": 1873,
+      "end": 1880,
       "loc": {
         "start": {
-          "line": 60,
+          "line": 58,
           "column": 15
         },
         "end": {
-          "line": 60,
+          "line": 58,
           "column": 22
         }
       }
@@ -4134,15 +4083,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1902,
-      "end": 1903,
+      "start": 1880,
+      "end": 1881,
       "loc": {
         "start": {
-          "line": 60,
+          "line": 58,
           "column": 22
         },
         "end": {
-          "line": 60,
+          "line": 58,
           "column": 23
         }
       }
@@ -4159,15 +4108,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1904,
-      "end": 1905,
+      "start": 1882,
+      "end": 1883,
       "loc": {
         "start": {
-          "line": 60,
+          "line": 58,
           "column": 24
         },
         "end": {
-          "line": 60,
+          "line": 58,
           "column": 25
         }
       }
@@ -4184,15 +4133,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 1906,
-      "end": 1907,
+      "start": 1884,
+      "end": 1885,
       "loc": {
         "start": {
-          "line": 60,
+          "line": 58,
           "column": 26
         },
         "end": {
-          "line": 60,
+          "line": 58,
           "column": 27
         }
       }
@@ -4200,15 +4149,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n     * Triggers navigation to one of the controllers\n     * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.\n     * @param {String} method The method to call in given controller.\n     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: \"yes\"})\n     * @returns {void}\n     ",
-      "start": 1913,
-      "end": 2316,
+      "start": 1891,
+      "end": 2294,
       "loc": {
         "start": {
-          "line": 62,
+          "line": 60,
           "column": 4
         },
         "end": {
-          "line": 68,
+          "line": 66,
           "column": 7
         }
       }
@@ -4226,15 +4175,15 @@
         "binop": null
       },
       "value": "go",
-      "start": 2321,
-      "end": 2323,
+      "start": 2299,
+      "end": 2301,
       "loc": {
         "start": {
-          "line": 69,
+          "line": 67,
           "column": 4
         },
         "end": {
-          "line": 69,
+          "line": 67,
           "column": 6
         }
       }
@@ -4251,15 +4200,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2323,
-      "end": 2324,
+      "start": 2301,
+      "end": 2302,
       "loc": {
         "start": {
-          "line": 69,
+          "line": 67,
           "column": 6
         },
         "end": {
-          "line": 69,
+          "line": 67,
           "column": 7
         }
       }
@@ -4277,15 +4226,15 @@
         "binop": null
       },
       "value": "controller",
-      "start": 2324,
-      "end": 2334,
+      "start": 2302,
+      "end": 2312,
       "loc": {
         "start": {
-          "line": 69,
+          "line": 67,
           "column": 7
         },
         "end": {
-          "line": 69,
+          "line": 67,
           "column": 17
         }
       }
@@ -4303,15 +4252,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2334,
-      "end": 2335,
+      "start": 2312,
+      "end": 2313,
       "loc": {
         "start": {
-          "line": 69,
+          "line": 67,
           "column": 17
         },
         "end": {
-          "line": 69,
+          "line": 67,
           "column": 18
         }
       }
@@ -4329,15 +4278,15 @@
         "binop": null
       },
       "value": "method",
-      "start": 2336,
-      "end": 2342,
+      "start": 2314,
+      "end": 2320,
       "loc": {
         "start": {
-          "line": 69,
+          "line": 67,
           "column": 19
         },
         "end": {
-          "line": 69,
+          "line": 67,
           "column": 25
         }
       }
@@ -4355,15 +4304,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2342,
-      "end": 2343,
+      "start": 2320,
+      "end": 2321,
       "loc": {
         "start": {
-          "line": 69,
+          "line": 67,
           "column": 25
         },
         "end": {
-          "line": 69,
+          "line": 67,
           "column": 26
         }
       }
@@ -4381,15 +4330,15 @@
         "binop": null
       },
       "value": "params",
-      "start": 2344,
-      "end": 2350,
+      "start": 2322,
+      "end": 2328,
       "loc": {
         "start": {
-          "line": 69,
+          "line": 67,
           "column": 27
         },
         "end": {
-          "line": 69,
+          "line": 67,
           "column": 33
         }
       }
@@ -4406,15 +4355,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2350,
-      "end": 2351,
+      "start": 2328,
+      "end": 2329,
       "loc": {
         "start": {
-          "line": 69,
+          "line": 67,
           "column": 33
         },
         "end": {
-          "line": 69,
+          "line": 67,
           "column": 34
         }
       }
@@ -4431,15 +4380,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2352,
-      "end": 2353,
+      "start": 2330,
+      "end": 2331,
       "loc": {
         "start": {
-          "line": 69,
+          "line": 67,
           "column": 35
         },
         "end": {
-          "line": 69,
+          "line": 67,
           "column": 36
         }
       }
@@ -4456,15 +4405,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2354,
-      "end": 2355,
+      "start": 2332,
+      "end": 2333,
       "loc": {
         "start": {
-          "line": 69,
+          "line": 67,
           "column": 37
         },
         "end": {
-          "line": 69,
+          "line": 67,
           "column": 38
         }
       }
@@ -4472,15 +4421,15 @@
     {
       "type": "CommentBlock",
       "value": "*\n     * Executes the controller handler associated with a given route, passing the route as a parameter.\n     * @param {Object} rule Rule handler to execute.\n     * @param {Object} route Route object to pass as parameter.\n     * @returns {void}\n     * @private\n     ",
-      "start": 2361,
-      "end": 2632,
+      "start": 2339,
+      "end": 2610,
       "loc": {
         "start": {
-          "line": 71,
+          "line": 69,
           "column": 4
         },
         "end": {
-          "line": 77,
+          "line": 75,
           "column": 7
         }
       }
@@ -4498,15 +4447,15 @@
         "binop": null
       },
       "value": "_executeRoute",
-      "start": 2637,
-      "end": 2650,
+      "start": 2615,
+      "end": 2628,
       "loc": {
         "start": {
-          "line": 78,
+          "line": 76,
           "column": 4
         },
         "end": {
-          "line": 78,
+          "line": 76,
           "column": 17
         }
       }
@@ -4523,15 +4472,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2650,
-      "end": 2651,
+      "start": 2628,
+      "end": 2629,
       "loc": {
         "start": {
-          "line": 78,
+          "line": 76,
           "column": 17
         },
         "end": {
-          "line": 78,
+          "line": 76,
           "column": 18
         }
       }
@@ -4549,15 +4498,15 @@
         "binop": null
       },
       "value": "rule",
-      "start": 2651,
-      "end": 2655,
+      "start": 2629,
+      "end": 2633,
       "loc": {
         "start": {
-          "line": 78,
+          "line": 76,
           "column": 18
         },
         "end": {
-          "line": 78,
+          "line": 76,
           "column": 22
         }
       }
@@ -4575,15 +4524,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2655,
-      "end": 2656,
+      "start": 2633,
+      "end": 2634,
       "loc": {
         "start": {
-          "line": 78,
+          "line": 76,
           "column": 22
         },
         "end": {
-          "line": 78,
+          "line": 76,
           "column": 23
         }
       }
@@ -4601,15 +4550,15 @@
         "binop": null
       },
       "value": "route",
-      "start": 2657,
-      "end": 2662,
+      "start": 2635,
+      "end": 2640,
       "loc": {
         "start": {
-          "line": 78,
+          "line": 76,
           "column": 24
         },
         "end": {
-          "line": 78,
+          "line": 76,
           "column": 29
         }
       }
@@ -4626,15 +4575,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2662,
-      "end": 2663,
+      "start": 2640,
+      "end": 2641,
       "loc": {
         "start": {
-          "line": 78,
+          "line": 76,
           "column": 29
         },
         "end": {
-          "line": 78,
+          "line": 76,
           "column": 30
         }
       }
@@ -4651,15 +4600,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2664,
-      "end": 2665,
+      "start": 2642,
+      "end": 2643,
       "loc": {
         "start": {
-          "line": 78,
+          "line": 76,
           "column": 31
         },
         "end": {
-          "line": 78,
+          "line": 76,
           "column": 32
         }
       }
@@ -4676,15 +4625,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2666,
-      "end": 2667,
+      "start": 2644,
+      "end": 2645,
       "loc": {
         "start": {
-          "line": 78,
+          "line": 76,
           "column": 33
         },
         "end": {
-          "line": 78,
+          "line": 76,
           "column": 34
         }
       }
@@ -4701,15 +4650,15 @@
         "postfix": false,
         "binop": null
       },
-      "start": 2668,
-      "end": 2669,
+      "start": 2646,
+      "end": 2647,
       "loc": {
         "start": {
-          "line": 79,
+          "line": 77,
           "column": 0
         },
         "end": {
-          "line": 79,
+          "line": 77,
           "column": 1
         }
       }
@@ -4727,15 +4676,15 @@
         "binop": null,
         "updateContext": null
       },
-      "start": 2669,
-      "end": 2669,
+      "start": 2647,
+      "end": 2647,
       "loc": {
         "start": {
-          "line": 79,
+          "line": 77,
           "column": 1
         },
         "end": {
-          "line": 79,
+          "line": 77,
           "column": 1
         }
       }
