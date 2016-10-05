@@ -934,7 +934,7 @@ export const layout = {
      * }
      *
      * @param {Number} maxContentWidth Maximum width the content should be allowed to be.
-     * @param {Array} defaultPadding A 1-D, 2-D, or 4-D array of padding numbers, just like the padding spec in CSS.
+     * @param {Array.Number} defaultPadding A 1-D, 2-D, or 4-D array of padding numbers, just like the padding spec in CSS.
      * @returns {Function}
      */
     columnDockPadding: function (maxContentWidth = 720, defaultPadding = [0, 16, 0, 16]) {
@@ -1077,6 +1077,22 @@ export const event = {
 };
 
 export const flow = {
+    /**
+     * Sets the default flow options for a View. These options will be overridden by
+     * each of its renderables, if they have flow options defined through e.g. flow.stateStep()
+     *
+     * @example
+     * @flow.defaultOptions({ transition: { curve: Easing.outCubic, duration: 200 } })
+     * class MyView extends View {
+     * }
+     *
+     * @param {Object} flowOptions Options to set as default.
+     * @param {Object} [flowOptions.delay] The amount of milliseconds to wait in between state transitions.
+     * @param {Object} [flowOptions.transition] A Famo.us-compatible transition object defining the animation specifics.
+     * @param {Object} [flowOptions.transition.curve] The animation curve to use when flowing from one state to another, e.g. Easing.outCubic.
+     * @param {Object} [flowOptions.transition.duration] The amount of milliseconds a flow animation should take.
+     * @returns {Function}
+     */
     defaultOptions: function (flowOptions = {}) {
         return function (target, renderableName, descriptor) {
             let decorations = prepDecoratedRenderable(...arguments).decorations;
@@ -1087,6 +1103,25 @@ export const flow = {
         }
     },
 
+    /**
+     * Functions the same as @flow.stateStep(), and additionally also immediately applies the decorators passed into the 'transformations' argument.
+     * Used to define a state step, without having to also manually apply the same decorators to the renderable to ensure it is rendered this way
+     * on initial show.
+     *
+     * @example
+     * // Initial size is [100, 100], and rendered at center of parent.
+     * @flow.defaultState('active', {}, layout.size(100, 100), layout.stick.center())
+     * myRenderable = new Surface();
+     *
+     * @param {String} stateName The state name to assign to this state step.
+     * @param {Object} [stateOptions] Flow options to use in the state step.
+     * @param {Object} [stateOptions.delay] The amount of milliseconds to wait in between state transitions.
+     * @param {Object} [stateOptions.transition] A Famo.us-compatible transition object defining the animation specifics.
+     * @param {Object} [stateOptions.transition.curve] The animation curve to use when flowing from one state to another, e.g. Easing.outCubic.
+     * @param {Object} [stateOptions.transition.duration] The amount of milliseconds a flow animation should take.
+     * @param {Array.Function} transformations Decorators to assign to this state, and to apply initially, passed in as regular comma-separated arguments.
+     * @returns {Function}
+     */
     defaultState: function (stateName = '', stateOptions = {}, ...transformations) {
         return function (target, renderableName, descriptor) {
             flow.stateStep(stateName, stateOptions, ...transformations)(target, renderableName, descriptor);
@@ -1096,6 +1131,25 @@ export const flow = {
         }
     },
 
+    /**
+     * Used to define a state that the renderable is able to flow to. When multiple state steps with the same state name
+     * are defined, flowing into that state will sequentially execute all defined steps with that state name.
+     *
+     * @example
+     * // Initial size is [0, 0], and rendered at top left of parent, because no @flow.defaultStep() was done,
+     * // and no other decorators are applied to the renderable.
+     * @flow.stateStep('active', {}, layout.size(100, 100), layout.stick.center())
+     * myRenderable = new Surface();
+     *
+     * @param {String} stateName The state name to assign to this state step.
+     * @param {Object} [stateOptions] Flow options to use in the state step.
+     * @param {Object} [stateOptions.delay] The amount of milliseconds to wait in between state transitions.
+     * @param {Object} [stateOptions.transition] A Famo.us-compatible transition object defining the animation specifics.
+     * @param {Object} [stateOptions.transition.curve] The animation curve to use when flowing from one state to another, e.g. Easing.outCubic.
+     * @param {Object} [stateOptions.transition.duration] The amount of milliseconds a flow animation should take.
+     * @param {Array.Function} transformations Decorators to assign to this state, and to apply initially, passed in as regular comma-separated arguments.
+     * @returns {Function}
+     */
     stateStep: function (stateName = '', stateOptions = {}, ...transformations) {
         return function (target, renderableName, descriptor) {
             let decorations = prepDecoratedRenderable(...arguments).decorations;
@@ -1109,6 +1163,31 @@ export const flow = {
         }
     },
 
+    /**
+     * Defines the View-level states, that exist of concurrently and sequentially executed renderable-level states.
+     * When e.g. View.setViewFlowState('active') is called, the renderable states defined in the view-level state 'active' are executed.
+     *
+     * @example
+     * // Calling setViewFlowState('active') will first hide the loader, and when that is completed, show both buttons at the same time.
+     * @flow.viewStates({ 'active': [{loader: 'hidden'}, { button1: 'active', button2: 'active' }] })
+     * class MyView extends View {
+     *
+     *   @flow.defaultState('shown', {}, layout.opacity(1), layout.fullSize())
+     *   @flow.stateStep('hidden', {}, layout.opacity(0))
+     *   loader = new Surface();
+     *
+     *   @flow.defaultState('inactive', {}, layout.opacity(0), layout.size(100, 100), layout.stick.top())
+     *   @flow.stateStep('active', {}, layout.opacity(1))
+     *   button1 = new Surface();
+     *
+     *   @flow.defaultState('inactive', {}, layout.opacity(0), layout.size(100, 100), layout.stick.bottom())
+     *   @flow.stateStep('active', {}, layout.opacity(1))
+     *   button1 = new Surface();
+     * }
+     *
+     * @param {Object} states An object keyed by View-level state names, with values of arrays of objects.
+     * @returns {Function}
+     */
     viewStates: function (states = {}) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
@@ -1119,6 +1198,14 @@ export const flow = {
         }
     },
 
+    /**
+     * A wrapper around @flow.stateStep, to allow defining multiple steps with the same state name.
+     *
+     * @param {String} stateName State name to assign states to.
+     * @param {Array.Object} states An array of {stateOptions: [..], transformations: [..]} objects, with stateOptions and transformations
+     * being the same usage as @flow.stateStep().
+     * @returns {Function}
+     */
     multipleStateStep: function(stateName = '', states = []){
         return function (target, renderableName, descriptor) {
             for(let {stateOptions, transformations} of states){
