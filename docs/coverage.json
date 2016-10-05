@@ -1,7 +1,7 @@
 {
-  "coverage": "57.11%",
-  "expectCount": 464,
-  "actualCount": 265,
+  "coverage": "57.62%",
+  "expectCount": 472,
+  "actualCount": 272,
   "files": {
     "src/core/App.js": {
       "expectCount": 6,
@@ -40,8 +40,8 @@
         21,
         13,
         186,
-        335,
-        17
+        17,
+        335
       ]
     },
     "src/utils/BlobHelper.js": {
@@ -55,8 +55,8 @@
       "undocumentLines": [
         15,
         24,
-        16,
-        20
+        20,
+        16
       ]
     },
     "src/components/logic/branding/BrandingEngineSingleton.js": {
@@ -226,8 +226,8 @@
       "undocumentLines": []
     },
     "src/data/PrioritisedArray.js": {
-      "expectCount": 11,
-      "actualCount": 11,
+      "expectCount": 12,
+      "actualCount": 12,
       "undocumentLines": []
     },
     "src/data/PrioritisedObject.js": {
@@ -236,8 +236,8 @@
       "undocumentLines": [
         15,
         30,
-        17,
         21,
+        17,
         34
       ]
     },
@@ -264,11 +264,12 @@
     },
     "src/core/Router.js": {
       "expectCount": 9,
-      "actualCount": 6,
+      "actualCount": 5,
       "undocumentLines": [
-        28,
-        32,
-        36
+        19,
+        26,
+        30,
+        34
       ]
     },
     "src/data/datasources/SharePoint/SPSoapAdapter/Settings.js": {
@@ -327,8 +328,8 @@
       "undocumentLines": [
         20,
         96,
-        22,
         26,
+        22,
         45
       ]
     },
@@ -417,8 +418,8 @@
       "expectCount": 30,
       "actualCount": 28,
       "undocumentLines": [
-        717,
-        489
+        736,
+        498
       ]
     },
     "src/utils/CallbackHelpers.js": {
@@ -443,11 +444,11 @@
       ]
     },
     "src/layout/Decorators.js": {
-      "expectCount": 34,
-      "actualCount": 32,
+      "expectCount": 41,
+      "actualCount": 39,
       "undocumentLines": [
-        951,
-        1040
+        990,
+        1079
       ]
     },
     "src/layout/FlowStates.js": {

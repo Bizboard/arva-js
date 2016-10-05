@@ -60,9 +60,15 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.on">event.on</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.once">event.once</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.pipe">event.pipe</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-flow.defaultOptions">flow.defaultOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-flow.defaultState">flow.defaultState</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-flow.multipleStateStep">flow.multipleStateStep</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-flow.stateStep">flow.stateStep</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-flow.viewStates">flow.viewStates</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout._dockTo">layout._dockTo</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.align">layout.align</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.animate">layout.animate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.columnDockPadding">layout.columnDockPadding</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.custom">layout.custom</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.bottom">layout.dock.bottom</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.fill">layout.dock.fill</a></span></span></li>
@@ -75,6 +81,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.draggable">layout.draggable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.flow">layout.flow</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.fullSize">layout.fullSize</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.nativeScrollable">layout.nativeScrollable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.opacity">layout.opacity</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.origin">layout.origin</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.renderable">layout.renderable</a></span></span></li>
@@ -151,10 +158,13 @@
 import extend                       from &apos;lodash/extend.js&apos;;
 import cloneDeep                    from &apos;lodash/cloneDeep.js&apos;;
 import FamousView                   from &apos;famous/core/View.js&apos;;
+import Surface                      from &apos;famous/core/Surface.js&apos;;
 import LayoutController             from &apos;famous-flex/LayoutController.js&apos;;
+import Engine                       from &apos;famous/core/Engine.js&apos;;
 
 import {limit}                      from &apos;arva-js/utils/Limiter.js&apos;;
 
+import {layout}                     from &apos;../layout/Decorators.js&apos;;
 import {ObjectHelper}               from &apos;../utils/ObjectHelper.js&apos;;
 import {SizeResolver}               from &apos;../utils/view/SizeResolver.js&apos;;
 import {Utils}                      from &apos;../utils/view/Utils.js&apos;;
@@ -615,6 +625,12 @@ export class View extends FamousView {
 
     _layoutDecoratedRenderables(context, options) {
         let dockedRenderables = this._renderableHelper;
+        let nativeScrollableOptions = this.decorations.nativeScrollable;
+        if(nativeScrollableOptions) {
+            let thisSize  = this.getSize();
+            context.size = context.size.map((size, index) =&gt;
+            (nativeScrollableOptions[`scroll${index === 0 ? &apos;X&apos; : &apos;Y&apos;}`] &amp;&amp; Math.max(thisSize[index],size)) || size);
+        }
         this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup(&apos;docked&apos;), dockedRenderables.getRenderableGroup(&apos;filled&apos;), context, this.decorations);
         this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup(&apos;fullSize&apos;), context, this.decorations);
         this._traditionalLayoutHelper.layout(dockedRenderables.getRenderableGroup(&apos;traditional&apos;), context, this.decorations);
@@ -630,6 +646,7 @@ export class View extends FamousView {
         this.layout = new LayoutController({
             flow: !!this.decorations.useFlow || hasFlowyRenderables,
             partialFlow: !this.decorations.useFlow,
+            nativeScroll: !!this.decorations.nativeScrollable,
             flowOptions: this.decorations.flowOptions || {spring: {period: 200}},
             layout: function (context, options) {
 
@@ -673,6 +690,11 @@ export class View extends FamousView {
 
         /* Add the layoutController to this View&apos;s rendering context. */
         this._prepareLayoutController();
+
+
+        if((this.decorations.scrollable || this.decorations.nativeScrollable) &amp;&amp; !this._renderableHelper.getRenderableGroup(&apos;fullSize&apos;)){
+            this.addRenderable(new Surface(), &apos;_fullScreenTouchArea&apos;, layout.fullSize(), layout.translate(0, 0, -10));
+        }
     }
 
     /**
@@ -794,6 +816,10 @@ export class View extends FamousView {
 
         if (!this.decorations.extraTranslate) {
             this.decorations.extraTranslate = [0, 0, 10];
+        }
+
+        if (this.decorations.nativeScrollable){
+            Engine.enableTouchMove();
         }
 
     }

@@ -60,9 +60,15 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.on">event.on</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.once">event.once</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-event.pipe">event.pipe</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-flow.defaultOptions">flow.defaultOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-flow.defaultState">flow.defaultState</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-flow.multipleStateStep">flow.multipleStateStep</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-flow.stateStep">flow.stateStep</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-flow.viewStates">flow.viewStates</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout._dockTo">layout._dockTo</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.align">layout.align</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.animate">layout.animate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.columnDockPadding">layout.columnDockPadding</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.custom">layout.custom</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.bottom">layout.dock.bottom</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.dock.fill">layout.dock.fill</a></span></span></li>
@@ -75,6 +81,7 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.draggable">layout.draggable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.flow">layout.flow</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.fullSize">layout.fullSize</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.nativeScrollable">layout.nativeScrollable</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.opacity">layout.opacity</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.origin">layout.origin</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-layout.renderable">layout.renderable</a></span></span></li>
@@ -139,7 +146,7 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {PrioritisedArray} from &apos;<span><a href="file/src/data/PrioritisedArray.js.html#lineNumber21">./src/data/PrioritisedArray.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {PrioritisedArray} from &apos;<span><a href="file/src/data/PrioritisedArray.js.html#lineNumber21">arva-js/data/PrioritisedArray.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
@@ -165,7 +172,7 @@
 
   
   
-  <div class="description" data-ice="description"><p>An array of two-way bound data Models that are automatically synced with the currentl used datasource</p>
+  <div class="description" data-ice="description"><p>An array of two-way bound data Models that are automatically synced with the currently used DataSource</p>
 </div>
 
   
@@ -233,6 +240,32 @@
         
         
         <div data-ice="description"><p>The number of items in the (synchronized or local) data set.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      <span class="kind" data-ice="kind">set</span>
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+           <span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-set-length">length</a></span></span><span data-ice="signature">(value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>): <span>*</span>: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>A setter on the length is necessary because internal methods of Array modify the lngth.</p>
 </div>
       </div>
     </td>
@@ -478,7 +511,7 @@ of all models after the inserted position.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber47">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber54">source</a></span></span>
     </span>
   </h3>
 
@@ -618,6 +651,57 @@ the model&apos;s DataType name.</p>
   
   
 </div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-set-length">
+    <span class="access" data-ice="access">public</span>
+    
+    <span class="kind" data-ice="kind">set</span>
+    
+    
+    <span data-ice="name">length</span><span data-ice="signature">(value: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>): <span>*</span>: <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber40">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>A setter on the length is necessary because internal methods of Array modify the lngth. It won&apos;t change the length thoough</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tr>
+        <td class="return-type" data-ice="returnType"><span>*</span></td>
+        
+      </tr>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
 </div>
 <div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
@@ -632,7 +716,7 @@ the model&apos;s DataType name.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber168">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber175">source</a></span></span>
     </span>
   </h3>
 
@@ -708,7 +792,7 @@ the model&apos;s DataType name.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber290">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber297">source</a></span></span>
     </span>
   </h3>
 
@@ -775,7 +859,7 @@ the model&apos;s DataType name.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber220">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber227">source</a></span></span>
     </span>
   </h3>
 
@@ -852,7 +936,7 @@ of all models after the inserted position.</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber154">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber161">source</a></span></span>
     </span>
   </h3>
 
@@ -935,7 +1019,7 @@ the given event are removed. If no parameters are given at all, all event types 
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber107">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber114">source</a></span></span>
     </span>
   </h3>
 
@@ -1017,7 +1101,7 @@ the given event are removed. If no parameters are given at all, all event types 
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber136">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber143">source</a></span></span>
     </span>
   </h3>
 
@@ -1100,7 +1184,7 @@ the given event are removed. If no parameters are given at all, all event types 
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber242">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber249">source</a></span></span>
     </span>
   </h3>
 
@@ -1168,7 +1252,7 @@ the given event are removed. If no parameters are given at all, all event types 
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber252">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/data/PrioritisedArray.js.html#lineNumber259">source</a></span></span>
     </span>
   </h3>
 
