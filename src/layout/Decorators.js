@@ -858,10 +858,19 @@ export const layout = {
         }
     },
 
-    nativeScrollable: function () {
+    /**
+     * Experimental feature of scrolling natively.
+     *
+     * @param {Object} [options] Options on how to scroll
+     * @param {Boolean} [options.scrollY] Defaults to true
+     * @param {Boolean} [options.scrollX] Defaults to false
+     * @returns {Function} A decorator function
+     */
+    nativeScrollable: function (options = {}) {
+        let {scrollY = true, scrollX= false} = options;
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
-            decorations.nativeScrollable = true;
+            decorations.nativeScrollable = {scrollY, scrollX};
         }
     },
 

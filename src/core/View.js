@@ -10,10 +10,13 @@
 import extend                       from 'lodash/extend.js';
 import cloneDeep                    from 'lodash/cloneDeep.js';
 import FamousView                   from 'famous/core/View.js';
+import Surface                      from 'famous/core/Surface.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
+import Engine                       from 'famous/core/Engine.js';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
 
+import {layout}                     from '../layout/Decorators.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {SizeResolver}               from '../utils/view/SizeResolver.js';
 import {Utils}                      from '../utils/view/Utils.js';
@@ -474,6 +477,12 @@ export class View extends FamousView {
 
     _layoutDecoratedRenderables(context, options) {
         let dockedRenderables = this._renderableHelper;
+        let nativeScrollableOptions = this.decorations.nativeScrollable;
+        if(nativeScrollableOptions) {
+            let thisSize  = this.getSize();
+            context.size = context.size.map((size, index) =>
+            (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index],size)) || size);
+        }
         this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations);
         this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations);
         this._traditionalLayoutHelper.layout(dockedRenderables.getRenderableGroup('traditional'), context, this.decorations);
@@ -533,6 +542,11 @@ export class View extends FamousView {
 
         /* Add the layoutController to this View's rendering context. */
         this._prepareLayoutController();
+
+
+        if((this.decorations.scrollable || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')){
+            this.addRenderable(new Surface(), '_fullScreenTouchArea', layout.fullSize(), layout.translate(0, 0, -10));
+        }
     }
 
     /**
@@ -654,6 +668,10 @@ export class View extends FamousView {
 
         if (!this.decorations.extraTranslate) {
             this.decorations.extraTranslate = [0, 0, 10];
+        }
+
+        if (this.decorations.nativeScrollable){
+            Engine.enableTouchMove();
         }
 
     }
