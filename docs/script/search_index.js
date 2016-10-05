@@ -354,6 +354,36 @@ window.esdocSearchIndex = [
     "variable"
   ],
   [
+    "arva-js/src/layout/decorators.js~flow.defaultoptions",
+    "function/index.html#static-function-flow.defaultOptions",
+    "<span>flow.defaultOptions</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~flow.defaultstate",
+    "function/index.html#static-function-flow.defaultState",
+    "<span>flow.defaultState</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~flow.multiplestatestep",
+    "function/index.html#static-function-flow.multipleStateStep",
+    "<span>flow.multipleStateStep</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~flow.statestep",
+    "function/index.html#static-function-flow.stateStep",
+    "<span>flow.stateStep</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~flow.viewstates",
+    "function/index.html#static-function-flow.viewStates",
+    "<span>flow.viewStates</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
     "arva-js/src/layout/decorators.js~flow",
     "variable/index.html#static-variable-flow",
     "<span>flow</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
@@ -411,6 +441,12 @@ window.esdocSearchIndex = [
     "arva-js/src/layout/decorators.js~layout.animate",
     "function/index.html#static-function-layout.animate",
     "<span>layout.animate</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.columndockpadding",
+    "function/index.html#static-function-layout.columnDockPadding",
+    "<span>layout.columnDockPadding</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
     "function"
   ],
   [
@@ -483,6 +519,12 @@ window.esdocSearchIndex = [
     "arva-js/src/layout/decorators.js~layout.fullsize",
     "function/index.html#static-function-layout.fullSize",
     "<span>layout.fullSize</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "function"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout.nativescrollable",
+    "function/index.html#static-function-layout.nativeScrollable",
+    "<span>layout.nativeScrollable</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
     "function"
   ],
   [
@@ -1033,13 +1075,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
@@ -1680,6 +1722,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/data/prioritisedarray.js~prioritisedarray#on",
+    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-method-on",
+    "src/data/PrioritisedArray.js~PrioritisedArray#on",
+    "method"
+  ],
+  [
     "src/data/prioritisedarray.js~prioritisedarray#once",
     "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-method-once",
     "src/data/PrioritisedArray.js~PrioritisedArray#once",
@@ -1729,13 +1777,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#id",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-id",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-id",
     "src/data/PrioritisedObject.js~PrioritisedObject#id",
     "member"
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#id",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-id",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-id",
     "src/data/PrioritisedObject.js~PrioritisedObject#id",
     "member"
   ],
@@ -1873,13 +1921,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#datareference",
-    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-get-dataReference",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-set-dataReference",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#dataReference",
     "member"
   ],
   [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#datareference",
-    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-set-dataReference",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-get-dataReference",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#dataReference",
     "member"
   ],
