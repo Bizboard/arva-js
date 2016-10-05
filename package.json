@@ -9,7 +9,7 @@
     "url": "git://github.com/bizboard/arva-js.git"
   },
   "scripts": {
-    "test": "mocha --compilers js:babel/register --recursive --timeout 15000"
+    "test": "mocha --compilers js:babel-register --recursive --timeout 15000"
   },
   "bugs": {
     "url": "https://github.com/bizboard/arva-js/issues"
@@ -19,6 +19,7 @@
       "lib": "src"
     },
     "dependencies": {
+      "babel-plugin-transform-decorators-legacy": "npm:babel-plugin-transform-decorators-legacy@^1.3.4",
       "bowser": "npm:bowser@^1.0.0",
       "camelcase": "npm:camelcase@^2.1.0",
       "eventemitter3": "npm:eventemitter3@^1.2.0",
@@ -32,21 +33,81 @@
       "xml2js": "npm:xml2js@^0.4.16"
     },
     "devDependencies": {
-      "babel": "npm:babel-core@^5.8.24",
+      "babel": "npm:babel@^6.0.0",
+      "babel-plugin-transform-builtin-extend": "npm:babel-plugin-transform-builtin-extend@^1.1.0",
+      "babel-plugin-transform-class-properties": "npm:babel-plugin-transform-class-properties@^6.16.0",
+      "babel-plugin-transform-es2015-for-of": "npm:babel-plugin-transform-es2015-for-of@^6.8.0",
+      "babel-plugin-transform-es2015-spread": "npm:babel-plugin-transform-es2015-spread@^6.8.0",
       "babel-runtime": "npm:babel-runtime@^5.8.24",
       "core-js": "npm:core-js@^1.1.4",
-      "fs": "github:jspm/nodelibs-fs@^0.1.2",
-      "path": "github:jspm/nodelibs-path@^0.1.0",
-      "process": "github:jspm/nodelibs-process@^0.2.0-alpha",
       "traceur": "github:jmcriffey/bower-traceur@^0.0.92",
-      "esdoc": "git+https://git@github.com/typhonjs-node-esdoc/esdoc.git",
       "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90"
+    },
+    "peerDependencies": {
+      "assert": "github:jspm/nodelibs-assert@^0.2.0-alpha",
+      "buffer": "github:jspm/nodelibs-buffer@^0.2.0-alpha",
+      "constants": "github:jspm/nodelibs-constants@^0.2.0-alpha",
+      "crypto": "github:jspm/nodelibs-crypto@^0.2.0-alpha",
+      "events": "github:jspm/nodelibs-events@^0.2.0-alpha",
+      "fs": "npm:fs@^0.0.1-security",
+      "os": "github:jspm/nodelibs-os@^0.2.0-alpha",
+      "path": "github:jspm/nodelibs-path@^0.2.0-alpha",
+      "process": "github:jspm/nodelibs-process@^0.2.0-alpha",
+      "stream": "github:jspm/nodelibs-stream@^0.2.0-alpha",
+      "string_decoder": "github:jspm/nodelibs-string_decoder@^0.2.0-alpha",
+      "util": "github:jspm/nodelibs-util@^0.2.0-alpha",
+      "vm": "github:jspm/nodelibs-vm@^0.2.0-alpha"
+    },
+    "overrides": {
+      "npm:debug@2.2.0": {
+        "main": "browser.js",
+        "jspmNodeConversion": false,
+        "format": "cjs",
+        "map": {
+          "./browser.js": {
+            "node": "./node.js"
+          },
+          "./node.js": {
+            "browser": "./browser.js"
+          },
+          "fs": "@node/fs",
+          "net": "@node/net",
+          "tty": "@node/tty",
+          "util": "@node/util"
+        }
+      },
+      "npm:inherits@2.0.3": {
+        "ignore": [
+          "test.js"
+        ]
+      },
+      "npm:lodash@4.16.3": {
+        "map": {
+          "buffer": "@empty",
+          "process": "@empty"
+        }
+      },
+      "npm:ms@0.7.1": {
+        "jspmNodeConversion": false,
+        "format": "cjs"
+      }
     }
   },
   "author": "Tom Clement <tom@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>",
   "license": "NPOSL-3.0",
   "devDependencies": {
-    "babel": "^5.8.23",
+    "babel": "^6.5.2",
+    "babel-plugin-transform-async-to-generator": "^6.16.0",
+    "babel-plugin-transform-builtin-extend": "^1.1.0",
+    "babel-plugin-transform-class-properties": "^6.16.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-es2015-destructuring": "^6.16.0",
+    "babel-plugin-transform-es2015-for-of": "^6.8.0",
+    "babel-plugin-transform-es2015-spread": "^6.8.0",
+    "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "babel-plugin-transform-regenerator": "^6.16.1",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-es2015": "^6.16.0",
     "babel-runtime": "^6.6.1",
     "chai": "^3.4.0",
     "eslint": "^3.1.0",

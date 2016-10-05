@@ -7,9 +7,9 @@
 
  */
 
-import {inject}         from 'di';
 import {DataSource}     from '../../../data/DataSource.js';
 import {ObjectHelper}   from '../../../utils/ObjectHelper.js';
+import {inject}         from '../../../utils/di/Decorators.js';
 
 @inject(DataSource)
 export class BrandingEngine {

@@ -45,7 +45,7 @@ describe('CombineOptions', () => {
         });
 
         it('doesn\'t merge instances of classes', () => {
-            class Example {};
+            class Example {}
             expect(imports.combineOptions({theClass: new Example()}, {theClass: {override: true}})).to.deep.equal({theClass: {override: true}});
         });
 
@@ -56,7 +56,7 @@ describe('CombineOptions', () => {
         });
 
         it('handles a complex situation', () => {
-            class Example {};
+            class Example {}
             let exampleInstance = new Example();
             let result = imports.combineOptions({defaultOpt: '444', camelCaseChild: {'dash-case-property': 1, nested: {a:{a:2, b:2}, b: 2}}}, {
                 'camel-case-child': {

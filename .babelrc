@@ -1,4 +1,32 @@
 {
-  "stage": 0,
-  "optional": ["es7.decorators"]
+  "presets": ["es2015"],
+  "plugins": [
+    "transform-regenerator",
+    "transform-async-to-generator",
+    "transform-decorators-legacy",
+    "transform-class-properties",
+    "transform-es2015-destructuring",
+    "transform-object-rest-spread",
+    [
+      "transform-builtin-extend",
+      {
+        "globals": [
+          "Array"
+        ],
+        "approximate": true
+      }
+    ],
+    [
+      "transform-es2015-spread",
+      {
+        "loose": true
+      }
+    ],
+    [
+      "transform-es2015-for-of",
+      {
+        "loose": true
+      }
+    ]
+  ]
 }

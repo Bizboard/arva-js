@@ -2,10 +2,13 @@
  * Created by tom on 23/10/15.
  */
 
-import System                   from 'systemjs';
+import 'babel-polyfill';
 import sinon                    from 'sinon';
-import '../../config.js';
-import requestAnimationFrame        from 'request-animation-frame-mock';
+import System                   from 'systemjs';
+import requestAnimationFrame    from 'request-animation-frame-mock';
+import '../../jspm.config.js';
+
+// System.map = {...System.devConfig.map};
 
 export function mockDependency(dependency, replacement) {
 

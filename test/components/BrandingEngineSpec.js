@@ -12,7 +12,7 @@ describe('BrandingEngine', () => {
 
     before(() => {
         return loadDependencies({
-            Context: './src/utils/Context.js',
+            Injection: './src/utils/Injection.js',
             BrandingEngine: './src/components/logic/branding/BrandingEngine.js',
             BrandingEngineSingleton: './src/components/logic/branding/BrandingEngineSingleton.js'
         }).then((importedObjects) => { imports = importedObjects; });
