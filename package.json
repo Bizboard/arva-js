@@ -19,7 +19,11 @@
       "lib": "src"
     },
     "dependencies": {
+      "babel-plugin-transform-builtin-extend": "npm:babel-plugin-transform-builtin-extend@^1.1.0",
+      "babel-plugin-transform-class-properties": "npm:babel-plugin-transform-class-properties@^6.16.0",
       "babel-plugin-transform-decorators-legacy": "npm:babel-plugin-transform-decorators-legacy@^1.3.4",
+      "babel-plugin-transform-es2015-for-of": "npm:babel-plugin-transform-es2015-for-of@^6.8.0",
+      "babel-plugin-transform-es2015-spread": "npm:babel-plugin-transform-es2015-spread@^6.8.0",
       "bowser": "npm:bowser@^1.0.0",
       "camelcase": "npm:camelcase@^2.1.0",
       "eventemitter3": "npm:eventemitter3@^1.2.0",
@@ -34,12 +38,15 @@
     },
     "devDependencies": {
       "babel": "npm:babel@^6.0.0",
-      "babel-plugin-transform-builtin-extend": "npm:babel-plugin-transform-builtin-extend@^1.1.0",
-      "babel-plugin-transform-class-properties": "npm:babel-plugin-transform-class-properties@^6.16.0",
-      "babel-plugin-transform-es2015-for-of": "npm:babel-plugin-transform-es2015-for-of@^6.8.0",
-      "babel-plugin-transform-es2015-spread": "npm:babel-plugin-transform-es2015-spread@^6.8.0",
+      "babel-polyfill": "npm:babel-polyfill@^6.16.0",
       "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "chai": "npm:chai@^3.5.0",
+      "child_process": "github:jspm/nodelibs-child_process@^0.2.0-alpha",
       "core-js": "npm:core-js@^1.1.4",
+      "extend": "npm:extend@^3.0.0",
+      "fs": "github:jspm/nodelibs-fs@^0.1.2",
+      "sinon": "npm:sinon@^1.17.6",
+      "systemjs": "npm:systemjs@^0.19.39",
       "traceur": "github:jmcriffey/bower-traceur@^0.0.92",
       "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90"
     },
@@ -49,7 +56,6 @@
       "constants": "github:jspm/nodelibs-constants@^0.2.0-alpha",
       "crypto": "github:jspm/nodelibs-crypto@^0.2.0-alpha",
       "events": "github:jspm/nodelibs-events@^0.2.0-alpha",
-      "fs": "npm:fs@^0.0.1-security",
       "os": "github:jspm/nodelibs-os@^0.2.0-alpha",
       "path": "github:jspm/nodelibs-path@^0.2.0-alpha",
       "process": "github:jspm/nodelibs-process@^0.2.0-alpha",
@@ -75,6 +81,11 @@
           "tty": "@node/tty",
           "util": "@node/util"
         }
+      },
+      "npm:inherits@2.0.1": {
+        "ignore": [
+          "test.js"
+        ]
       },
       "npm:inherits@2.0.3": {
         "ignore": [
@@ -115,6 +126,9 @@
     "jspm": "^0.16.32",
     "lodash": "^4.6.1",
     "mocha": "^2.1.0",
+    "path": "^0.12.7",
+    "phantom": "^2.1.21",
+    "phantomjs-prebuilt": "^2.1.13",
     "request-animation-frame-mock": "git+https://github.com/erykpiast/request-animation-frame-mock.git",
     "sinon": "^1.17.3",
     "systemjs": "^0.19.5"

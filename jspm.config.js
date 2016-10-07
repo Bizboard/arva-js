@@ -1,31 +1,4 @@
 SystemJS.config({
-  babelOptions: {
-    "plugins": [
-      "babel-plugin-transform-decorators-legacy",
-      "babel-plugin-transform-class-properties",
-      [
-        "babel-plugin-transform-builtin-extend",
-        {
-          "globals": [
-            "Array"
-          ],
-          "approximate": true
-        }
-      ],
-      [
-        "babel-plugin-transform-es2015-spread",
-        {
-          "loose": true
-        }
-      ],
-      [
-        "babel-plugin-transform-es2015-for-of",
-        {
-          "loose": true
-        }
-      ]
-    ]
-  },
   paths: {
     "github:": "jspm_packages/github/",
     "npm:": "jspm_packages/npm/",
@@ -41,10 +14,13 @@ SystemJS.config({
       "traceur": "github:jmcriffey/bower-traceur@0.0.92",
       "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90",
       "babel": "npm:babel@6.0.0",
-      "babel-plugin-transform-es2015-spread": "npm:babel-plugin-transform-es2015-spread@6.8.0",
-      "babel-plugin-transform-es2015-for-of": "npm:babel-plugin-transform-es2015-for-of@6.8.0",
-      "babel-plugin-transform-builtin-extend": "npm:babel-plugin-transform-builtin-extend@1.1.0",
-      "babel-plugin-transform-class-properties": "npm:babel-plugin-transform-class-properties@6.16.0"
+      "chai": "npm:chai@3.5.0",
+      "sinon": "npm:sinon@1.17.6",
+      "child_process": "github:jspm/nodelibs-child_process@0.2.0-alpha",
+      "babel-polyfill": "npm:babel-polyfill@6.16.0",
+      "systemjs": "npm:systemjs@0.19.39",
+      "extend": "npm:extend@3.0.0",
+      "fs": "github:jspm/nodelibs-fs@0.1.2"
     },
     "packages": {
       "npm:babel-runtime@5.8.38": {
@@ -55,42 +31,46 @@ SystemJS.config({
           "systemjs-json": "github:systemjs/plugin-json@0.1.2"
         }
       },
-      "npm:babel-plugin-transform-class-properties@6.16.0": {
+      "npm:sinon@1.17.6": {
         "map": {
-          "babel-plugin-syntax-class-properties": "npm:babel-plugin-syntax-class-properties@6.13.0",
-          "babel-runtime": "npm:babel-runtime@6.11.6",
-          "babel-helper-function-name": "npm:babel-helper-function-name@6.8.0"
+          "util": "npm:util@0.10.3",
+          "samsam": "npm:samsam@1.1.2",
+          "formatio": "npm:formatio@1.1.1",
+          "lolex": "npm:lolex@1.3.2"
         }
       },
-      "npm:babel-plugin-transform-es2015-spread@6.8.0": {
+      "npm:chai@3.5.0": {
         "map": {
+          "assertion-error": "npm:assertion-error@1.0.2",
+          "deep-eql": "npm:deep-eql@0.1.3",
+          "type-detect": "npm:type-detect@1.0.0"
+        }
+      },
+      "npm:deep-eql@0.1.3": {
+        "map": {
+          "type-detect": "npm:type-detect@0.1.1"
+        }
+      },
+      "npm:formatio@1.1.1": {
+        "map": {
+          "samsam": "npm:samsam@1.1.3"
+        }
+      },
+      "npm:util@0.10.3": {
+        "map": {
+          "inherits": "npm:inherits@2.0.1"
+        }
+      },
+      "npm:babel-polyfill@6.16.0": {
+        "map": {
+          "regenerator-runtime": "npm:regenerator-runtime@0.9.5",
+          "core-js": "npm:core-js@2.4.1",
           "babel-runtime": "npm:babel-runtime@6.11.6"
         }
       },
-      "npm:babel-plugin-transform-es2015-for-of@6.8.0": {
+      "npm:systemjs@0.19.39": {
         "map": {
-          "babel-runtime": "npm:babel-runtime@6.11.6"
-        }
-      },
-      "npm:babel-plugin-transform-builtin-extend@1.1.0": {
-        "map": {
-          "babel-runtime": "npm:babel-runtime@6.11.6",
-          "babel-template": "npm:babel-template@6.16.0"
-        }
-      },
-      "npm:babel-helper-function-name@6.8.0": {
-        "map": {
-          "babel-traverse": "npm:babel-traverse@6.16.0",
-          "babel-types": "npm:babel-types@6.16.0",
-          "babel-runtime": "npm:babel-runtime@6.11.6",
-          "babel-template": "npm:babel-template@6.16.0",
-          "babel-helper-get-function-arity": "npm:babel-helper-get-function-arity@6.8.0"
-        }
-      },
-      "npm:babel-helper-get-function-arity@6.8.0": {
-        "map": {
-          "babel-runtime": "npm:babel-runtime@6.11.6",
-          "babel-types": "npm:babel-types@6.16.0"
+          "when": "npm:when@3.7.7"
         }
       }
     }
@@ -128,13 +108,16 @@ SystemJS.config({
     "github:*/*.json"
   ],
   map: {
+    "babel-plugin-transform-builtin-extend": "npm:babel-plugin-transform-builtin-extend@1.1.0",
+    "babel-plugin-transform-class-properties": "npm:babel-plugin-transform-class-properties@6.16.0",
+    "babel-plugin-transform-es2015-for-of": "npm:babel-plugin-transform-es2015-for-of@6.8.0",
+    "babel-plugin-transform-es2015-spread": "npm:babel-plugin-transform-es2015-spread@6.8.0",
     "assert": "github:jspm/nodelibs-assert@0.2.0-alpha",
     "babel-plugin-transform-decorators-legacy": "npm:babel-plugin-transform-decorators-legacy@1.3.4",
     "buffer": "github:jspm/nodelibs-buffer@0.2.0-alpha",
     "constants": "github:jspm/nodelibs-constants@0.2.0-alpha",
     "crypto": "github:jspm/nodelibs-crypto@0.2.0-alpha",
     "events": "github:jspm/nodelibs-events@0.2.0-alpha",
-    "fs": "github:jspm/nodelibs-fs@0.2.0-alpha",
     "os": "github:jspm/nodelibs-os@0.2.0-alpha",
     "path": "github:jspm/nodelibs-path@0.2.0-alpha",
     "process": "github:jspm/nodelibs-process@0.2.0-alpha",
@@ -521,6 +504,44 @@ SystemJS.config({
         "bn.js": "npm:bn.js@4.11.6",
         "inherits": "npm:inherits@2.0.3",
         "minimalistic-assert": "npm:minimalistic-assert@1.0.0"
+      }
+    },
+    "npm:babel-plugin-transform-class-properties@6.16.0": {
+      "map": {
+        "babel-plugin-syntax-class-properties": "npm:babel-plugin-syntax-class-properties@6.13.0",
+        "babel-runtime": "npm:babel-runtime@6.11.6",
+        "babel-helper-function-name": "npm:babel-helper-function-name@6.8.0"
+      }
+    },
+    "npm:babel-plugin-transform-es2015-spread@6.8.0": {
+      "map": {
+        "babel-runtime": "npm:babel-runtime@6.11.6"
+      }
+    },
+    "npm:babel-plugin-transform-es2015-for-of@6.8.0": {
+      "map": {
+        "babel-runtime": "npm:babel-runtime@6.11.6"
+      }
+    },
+    "npm:babel-plugin-transform-builtin-extend@1.1.0": {
+      "map": {
+        "babel-runtime": "npm:babel-runtime@6.11.6",
+        "babel-template": "npm:babel-template@6.16.0"
+      }
+    },
+    "npm:babel-helper-function-name@6.8.0": {
+      "map": {
+        "babel-traverse": "npm:babel-traverse@6.16.0",
+        "babel-types": "npm:babel-types@6.16.0",
+        "babel-runtime": "npm:babel-runtime@6.11.6",
+        "babel-template": "npm:babel-template@6.16.0",
+        "babel-helper-get-function-arity": "npm:babel-helper-get-function-arity@6.8.0"
+      }
+    },
+    "npm:babel-helper-get-function-arity@6.8.0": {
+      "map": {
+        "babel-runtime": "npm:babel-runtime@6.11.6",
+        "babel-types": "npm:babel-types@6.16.0"
       }
     }
   }
