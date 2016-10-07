@@ -14,12 +14,13 @@ import findIndex                    from 'lodash/findIndex.js';
 import {Throttler}                  from '../utils/Throttler.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
+import {ScrollController}           from '../core/ScrollController.js';
 import Timer                        from 'famous/utilities/Timer.js';
 
 /**
  * A FlexScrollView with enhanced functionality for maintaining a two-way connection with a PrioritisedArray.
  */
-export class DataBoundScrollView extends ReflowingScrollView {
+export class DataBoundScrollView extends ScrollController {
 
 
     /**
@@ -227,10 +228,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
     _replace(indexOrId, renderable, noAnimation) {
         super.replace(indexOrId, renderable, noAnimation);
         // Auto pipe events
-        if (this.options.autoPipeEvents && renderable && renderable.pipe) {
+        /*if (this.options.autoPipeEvents && renderable && renderable.pipe) {
             renderable.pipe(this);
             renderable.pipe(this._eventOutput);
-        }
+        }*/
     }
 
     _handleNewFilterResult(shouldShow, alreadyExists, entry) {
@@ -407,14 +408,12 @@ export class DataBoundScrollView extends ReflowingScrollView {
             let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
             if (this.options.chatScrolling) {
                 if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) {
-                    this.ensureVisible(newSurface)
+                    this.goToLastPage();
                 }
             } else if (shouldEnsureVisible) {
                 this.ensureVisible(newSurface);
             }
         }
-
-        super._addItem(child, previousSiblingID);
     }
 
     _replaceItem(child) {
@@ -501,7 +500,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     _getZeroIndex() {
-        return this._header ? 1 : 0;
+        return this._header ? 2 : 1;
     }
 
     _removePlaceholder() {
