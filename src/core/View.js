@@ -669,10 +669,7 @@ export class View extends FamousView {
         if (!this.decorations.extraTranslate) {
             this.decorations.extraTranslate = [0, 0, 10];
         }
-
-        if (this.decorations.nativeScrollable){
-            Engine.enableTouchMove();
-        }
+        
 
     }
 
