@@ -53,7 +53,7 @@ export class ScrollController extends FamousView {
         this.options = combineOptions({
             /* Previously called this._configuredDirection in famous-flex/ScrollController.js */
             layoutDirection: FamousUtility.Direction.Y,
-            extraBoundsSpace: [1000, 1000],
+            extraBoundsSpace: [0, 0],
             dataSource: [],
             autoPipeEvents: true,
             layoutAll: false,
@@ -76,7 +76,7 @@ export class ScrollController extends FamousView {
         this._maxKnownTranslate = this.options.initialHeight;
         let bottomScroller = new Surface();
         bottomScroller.setSize([1, 1]);
-        this._otherNodes = {bottomScroller: new Surface(1, 1)};
+        this._otherNodes = {bottomScroller: new Surface(1,1)};
 
         this._ensureVisibleNode = null;
         this._commitActions = [];
@@ -90,7 +90,7 @@ export class ScrollController extends FamousView {
         // Create groupt for faster rendering
         this._group = new NativeScrollGroup();
         this._group.add({render: this._innerRender});
-        this._group.setProperties({[`overflow${this.options.layoutDirection === 0 ? 'Y' : 'X'}`]: 'hidden'});
+        this._group.setProperties({[`overflow${this.options.layoutDirection === 0 ? 'Y' : 'X'}`]:'hidden'});
         /* TODO: Remove duplicates this._viewSequence, this._dataSource. Kept for DBSV compatibility */
         this._dataSource = this._viewSequence = new LinkedListViewSequence(this.options.dataSource);
     }
@@ -200,7 +200,7 @@ export class ScrollController extends FamousView {
         }
     }
 
-    _enqueueCommitAction(actionToPerform) {
+    _enqueueCommitAction(actionToPerform){
         this._commitActions.push(actionToPerform);
     }
 
@@ -218,7 +218,7 @@ export class ScrollController extends FamousView {
         // Prepare for layout
         let layoutContext = this._layoutNodeManager.prepareForLayout(
             this._viewSequence, /* first node to layout */
-            this._otherNodes, /* Nodes by id */
+            this._otherNodes,   /* Nodes by id */
             {
                 size,
                 direction: this.options.layoutDirection,
@@ -268,10 +268,10 @@ export class ScrollController extends FamousView {
     _adjustTotalHeight() {
         /* Determine what the point furthest away was */
         let lastNode = this._layoutNodeManager.getLastRenderedNode();
-        if (lastNode) {
+        if(lastNode){
             let bottomPosition = lastNode.getTranslate()[this.options.layoutDirection] + lastNode.scrollLength;
             /* If we are seeing the last node, then redefine the bottom position. It can have been (over/under)estimated previously */
-            if (lastNode.renderNode === this._layoutNodeManager.getLastRenderNodeInSequence()) {
+            if(lastNode.renderNode === this._layoutNodeManager.getLastRenderNodeInSequence()){
                 this._maxKnownTranslate = bottomPosition;
             } else {
                 this._maxKnownTranslate = Math.max(this._maxKnownTranslate, bottomPosition);
@@ -285,8 +285,14 @@ export class ScrollController extends FamousView {
      * @private
      */
     _normalizeSequence() {
+        let sequenceHead = this._viewSequence.getHead();
+        if(this._layoutNodeManager._contextState.nextGetIndex ===  0 && sequenceHead){
+            this._viewSequence = sequenceHead;
+            this._scrollVoidHeight = 0;
+            return;
+        }
 
-        if (this._layoutNodeManager.isSequenceMoved()) {
+        if(this._layoutNodeManager.isSequenceMoved()){
             let isForwards = this._layoutNodeManager.getMovedSequenceDirection() === 1;
             /* Normalize scroll offset so that the current viewsequence node is as close to the
              * top as possible and the layout function will need to process the least amount
@@ -296,36 +302,26 @@ export class ScrollController extends FamousView {
                 let node = this._layoutNodeManager.getStartEnumNode(isForwards);
                 while (node.renderNode !== normalizedStartSequence.get()) {
                     /* If there is no scrollLength, then it must be the bottomScroller, skip it */
-                    if (!node.scrollLength) {
+                    if(!node.scrollLength){
                         continue;
                     }
-                    if (isForwards) {
+                    if(isForwards) {
                         this._scrollVoidHeight += node.scrollLength;
                     } else {
                         this._scrollVoidHeight -= node.scrollLength;
                     }
                     node = isForwards ? node._next : node._prev;
                 }
-                if (!isForwards && node) {
+                if(!isForwards && node){
                     this._scrollVoidHeight -= node.scrollLength;
                 }
                 this._viewSequence = normalizedStartSequence;
             }
             this._scrollVoidHeight = Math.max(0, this._scrollVoidHeight);
-        }
-        /* Special case: If we are at the very top of the sequence, then we must reset the first node to be node 0,
-         * otherwise the top margin can be wrong if content has changed around
-         */
-        let sequenceHead = this._viewSequence.getHead();
-        if (this._layoutNodeManager._contextState.nextGetIndex === 0 && sequenceHead) {
-            this._resetViewSequence();
+            return true;
         }
 
-    }
 
-    _resetViewSequence() {
-        this._viewSequence = this._viewSequence.getHead();
-        this._scrollVoidHeight = 0;
     }
 
     _innerRender() {
@@ -396,7 +392,7 @@ export class ScrollController extends FamousView {
             });
         }
 
-        for (let action of this._commitActions) {
+        for(let action of this._commitActions){
             action();
         }
         this._commitActions = [];
