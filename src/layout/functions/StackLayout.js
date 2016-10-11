@@ -153,16 +153,9 @@ export function StackLayout(context, options) {
     // Process all next nodes
     //
     offset = context.scrollOffset + margin[alignment];
-    bound = context.scrollEnd + margin[alignment];
-
-    context.set('bottomScroller', {
-        translate: [0, context.scrollLength + margins[alignment + 2], 0],
-        size: [10,10],
-        origin: [0, 0]
-    });
+    bound = context.scrollEnd;
 
     var scrollStart = context.scrollStart + margin[alignment];
-
     while (offset < (bound + spacing)) {
         lastNode = node;
         node = context.next();
@@ -177,17 +170,21 @@ export function StackLayout(context, options) {
         nodeSize = getItemSize ? getItemSize(node.renderNode, context.size) : itemSize;
         nodeSize = (nodeSize === true) ? context.resolveSize(node, size)[direction] : nodeSize;
 
+
         //
         // Position node
         //
         set.size[direction] = nodeSize;
         set.translate[direction] = offset + (alignment ? spacing : 0);
         set.scrollLength = nodeSize + spacing;
+
         offset += set.scrollLength;
 
-        if (offset < scrollStart) {
-            context.markStartSequence();
+        if (offset < context.scrollStart) {
+            /* We scrolled down so that the start sequence changed */
+            context.moveStartSequence(true);
         }
+
         context.set(node, set);
 
 
@@ -214,11 +211,12 @@ export function StackLayout(context, options) {
             firstVisibleCell = node;
         }
     }
-    if (lastNode && !node && !alignment) {
-        set.scrollLength = nodeSize + margin[0] + -margin[1];
-        context.set(lastNode, set);
-    }
 
+    context.set('bottomScroller', {
+        translate: [0, context.scrollLength + margins[alignment + 2], 0],
+        size: [10,10],
+        origin: [0, 1]
+    });
 
     //
     // Process previous nodes
@@ -226,7 +224,7 @@ export function StackLayout(context, options) {
     lastNode = undefined;
     node = undefined;
     offset = context.scrollOffset + margin[alignment];
-    bound = context.scrollStart + margin[alignment];
+    bound = context.scrollStart;
 
     while (offset > (bound - spacing)) {
         lastNode = node;
@@ -234,6 +232,7 @@ export function StackLayout(context, options) {
         if (!node) {
             break;
         }
+
 
         //
         // Get node size
@@ -248,7 +247,13 @@ export function StackLayout(context, options) {
         offset -= set.scrollLength;
         set.size[direction] = nodeSize;
         set.translate[direction] = offset + (alignment ? spacing : 0);
+        if(offset > context.scrollEnd || offset < 0) {
+            context.moveStartSequence(false);
+        }
+
         context.set(node, set);
+
+
 
         //
         // Keep track of the last section before the first visible cell

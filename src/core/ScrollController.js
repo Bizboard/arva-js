@@ -53,7 +53,7 @@ export class ScrollController extends FamousView {
         this.options = combineOptions({
             /* Previously called this._configuredDirection in famous-flex/ScrollController.js */
             layoutDirection: FamousUtility.Direction.Y,
-            extraBoundsSpace: [100, 100],
+            extraBoundsSpace: [1000, 1000],
             dataSource: [],
             autoPipeEvents: true,
             layoutAll: false,
@@ -76,9 +76,10 @@ export class ScrollController extends FamousView {
         this._maxKnownTranslate = this.options.initialHeight;
         let bottomScroller = new Surface();
         bottomScroller.setSize([1, 1]);
-        this._otherNodes = {bottomScroller: new Surface(1,1)}
+        this._otherNodes = {bottomScroller: new Surface(1, 1)};
 
         this._ensureVisibleNode = null;
+        this._commitActions = [];
 
         this._layoutNodeManager = new LayoutNodeManager(FlowLayoutNode, (node, spec) => {
             if (!spec && this.options.flowOptions.insertSpec) {
@@ -89,7 +90,7 @@ export class ScrollController extends FamousView {
         // Create groupt for faster rendering
         this._group = new NativeScrollGroup();
         this._group.add({render: this._innerRender});
-        this._group.setProperties({[`overflow${this.options.layoutDirection === 0 ? 'Y' : 'X'}`]:'hidden'});
+        this._group.setProperties({[`overflow${this.options.layoutDirection === 0 ? 'Y' : 'X'}`]: 'hidden'});
         /* TODO: Remove duplicates this._viewSequence, this._dataSource. Kept for DBSV compatibility */
         this._dataSource = this._viewSequence = new LinkedListViewSequence(this.options.dataSource);
     }
@@ -118,7 +119,12 @@ export class ScrollController extends FamousView {
         return this;
     };
 
+    scrollToBottom() {
+        this._enqueueCommitAction(() => this._group.scrollToBottom());
+    }
+
     remove(position) {
+
         // Remove the renderable
         let sequence = this._viewSequence.findByIndex(position);
         if (!sequence) {
@@ -194,11 +200,15 @@ export class ScrollController extends FamousView {
         }
     }
 
+    _enqueueCommitAction(actionToPerform) {
+        this._commitActions.push(actionToPerform);
+    }
+
     _layout(size, scrollOffset) {
 
         // Determine start & end
-        let scrollStart = 0 - Math.max(this.options.extraBoundsSpace[0], 1) + scrollOffset;
-        let scrollEnd = size[this.options.layoutDirection] + Math.max(this.options.extraBoundsSpace[1], 1) + scrollOffset;
+        let scrollStart = scrollOffset - this.options.extraBoundsSpace[0];
+        let scrollEnd = size[this.options.layoutDirection] + this.options.extraBoundsSpace[1] + scrollOffset;
 
         if (this.options.layoutAll) {
             scrollStart = -1000000;
@@ -208,7 +218,7 @@ export class ScrollController extends FamousView {
         // Prepare for layout
         let layoutContext = this._layoutNodeManager.prepareForLayout(
             this._viewSequence, /* first node to layout */
-            this._otherNodes,   /* Nodes by id */
+            this._otherNodes, /* Nodes by id */
             {
                 size,
                 direction: this.options.layoutDirection,
@@ -231,39 +241,10 @@ export class ScrollController extends FamousView {
         /* Mark non-invalidated nodes for removal */
         this._layoutNodeManager.removeNonInvalidatedNodes(this.options.flowOptions.removeSpec);
 
+        this._normalizeSequence();
+        this._adjustTotalHeight();
 
-        let lastNode = this._layoutNodeManager.getLastNode();
-        if(lastNode){
-            this._maxKnownTranslate = Math.max(this._maxKnownTranslate, lastNode.getTranslate()[this.options.layoutDirection]);
-        }
-
-        /* Normalize scroll offset so that the current viewsequence node is as close to the
-         * top as possible and the layout function will need to process the least amount
-         of renderables.  */
-        let normalizedStartSequence = this._layoutNodeManager.getStartSequence();
-        if (normalizedStartSequence) {
-            let node = this._layoutNodeManager.getStartEnumNode(true);
-            while (node.renderNode !== normalizedStartSequence.get() && node) {
-                this.options.extraBoundsSpace[0] += node.scrollLength;
-                this._scrollVoidHeight += node.scrollLength;
-                node = node._next;
-            }
-            console.log("New base");
-            this._viewSequence = normalizedStartSequence;
-        }
-
-
-        // If the bounds have changed, and the scroll-offset would be different
-        // than before, then re-layout entirely using the new offset.
-        /*var newScrollOffset = _calcScrollOffset.call(this, true);
-         if (!nested && (newScrollOffset !== scrollOffset)) {
-         //_log.call(this, 'offset changed, re-layouting... (', scrollOffset, ' != ', newScrollOffset, ')');
-         return _layout.call(this, size, newScrollOffset, true);
-         }*/
-        // Update spring
-        /*_updateSpring.call(this);*/
-
-        // Cleanup any nodes in case of a VirtualViewSequence
+        /* Cleanup nodes */
         this._layoutNodeManager.removeVirtualViewSequenceNodes();
 
         this._updateThisSizeCache();
@@ -282,6 +263,69 @@ export class ScrollController extends FamousView {
 
         this._size = [undefined, undefined];
         this._size[this.options.layoutDirection] = scrollLength;
+    }
+
+    _adjustTotalHeight() {
+        /* Determine what the point furthest away was */
+        let lastNode = this._layoutNodeManager.getLastRenderedNode();
+        if (lastNode) {
+            let bottomPosition = lastNode.getTranslate()[this.options.layoutDirection] + lastNode.scrollLength;
+            /* If we are seeing the last node, then redefine the bottom position. It can have been (over/under)estimated previously */
+            if (lastNode.renderNode === this._layoutNodeManager.getLastRenderNodeInSequence()) {
+                this._maxKnownTranslate = bottomPosition;
+            } else {
+                this._maxKnownTranslate = Math.max(this._maxKnownTranslate, bottomPosition);
+            }
+        }
+    }
+
+    /**
+     * Normalizes the viewsequence so that the layout function doens't have to loop through more nodes than necessary
+     * @returns {boolean}
+     * @private
+     */
+    _normalizeSequence() {
+
+        if (this._layoutNodeManager.isSequenceMoved()) {
+            let isForwards = this._layoutNodeManager.getMovedSequenceDirection() === 1;
+            /* Normalize scroll offset so that the current viewsequence node is as close to the
+             * top as possible and the layout function will need to process the least amount
+             of renderables. TODO: Optimise further. We shouldn't have to call the layout function all the time, but only when the scroll exceeded the options.extrabounds */
+            let normalizedStartSequence = this._layoutNodeManager.getStartSequence();
+            if (normalizedStartSequence) {
+                let node = this._layoutNodeManager.getStartEnumNode(isForwards);
+                while (node.renderNode !== normalizedStartSequence.get()) {
+                    /* If there is no scrollLength, then it must be the bottomScroller, skip it */
+                    if (!node.scrollLength) {
+                        continue;
+                    }
+                    if (isForwards) {
+                        this._scrollVoidHeight += node.scrollLength;
+                    } else {
+                        this._scrollVoidHeight -= node.scrollLength;
+                    }
+                    node = isForwards ? node._next : node._prev;
+                }
+                if (!isForwards && node) {
+                    this._scrollVoidHeight -= node.scrollLength;
+                }
+                this._viewSequence = normalizedStartSequence;
+            }
+            this._scrollVoidHeight = Math.max(0, this._scrollVoidHeight);
+        }
+        /* Special case: If we are at the very top of the sequence, then we must reset the first node to be node 0,
+         * otherwise the top margin can be wrong if content has changed around
+         */
+        let sequenceHead = this._viewSequence.getHead();
+        if (this._layoutNodeManager._contextState.nextGetIndex === 0 && sequenceHead) {
+            this._resetViewSequence();
+        }
+
+    }
+
+    _resetViewSequence() {
+        this._viewSequence = this._viewSequence.getHead();
+        this._scrollVoidHeight = 0;
     }
 
     _innerRender() {
@@ -352,6 +396,10 @@ export class ScrollController extends FamousView {
             });
         }
 
+        for (let action of this._commitActions) {
+            action();
+        }
+        this._commitActions = [];
 
         /* Reset variables */
         this._isDirty = false;
