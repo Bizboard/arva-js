@@ -6,9 +6,12 @@
 
 import chai                         from 'chai';
 import sinon                        from 'sinon';
-import {loadDependencies,
-        restoreDOMGlobals,
-        mockArvaViewDependencies}   from '../meta/TestBootstrap.js';
+import {
+    loadDependencies,
+    restoreDOMGlobals,
+    mockDependency,
+    restoreDependency,
+    mockArvaViewDependencies }      from '../meta/TestBootstrap.js';
 
 let should = chai.should();
 
@@ -16,12 +19,20 @@ describe('DataBoundScrollView', () => {
     let imports = {};
     let on, once, off;
 
-    before(async function() {
+    before(async function () {
         await mockArvaViewDependencies();
+
+        mockDependency('./src/data/DataSource.js', { DataSource: class DataSource {on(){} once(){} off(){} child(){return this;}} });
+        mockDependency('./src/components/ReflowingScrollView.js', {
+            ReflowingScrollView: class ReflowingScrollView {
+                constructor(options = {}) { this.options = options; }
+            }
+        });
 
         imports = await loadDependencies({
             DataBoundScrollView: './src/components/DataBoundScrollView.js',
-            PrioritisedArray: './src/data/PrioritisedArray.js'});
+            PrioritisedArray: './src/data/PrioritisedArray.js'
+        });
     });
 
     beforeEach(() => {
@@ -32,6 +43,7 @@ describe('DataBoundScrollView', () => {
 
     after(() => {
         restoreDOMGlobals();
+        restoreDependency('./src/data/DataSource.js');
     });
 
     describe('#constructor', () => {

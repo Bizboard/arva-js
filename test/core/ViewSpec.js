@@ -8,6 +8,7 @@ import {mockDOMGlobals, loadDependencies, restoreDOMGlobals,
 import requestAnimationFrame        from 'request-animation-frame-mock';
 
 let should = chai.should();
+let expect = chai.expect;
 let imports = {};
 
 let fakeCommit = (view)=> {
@@ -52,7 +53,7 @@ describe('View', () => {
 
         return loadDependencies({
             View: System.normalizeSync('./src/core/View.js'),
-            decorators: System.normalizeSync('./src/layout/decorators.js'),
+            decorators: System.normalizeSync('./src/layout/Decorators.js'),
             Surface: System.normalizeSync('famous/core/Surface.js'),
             Engine: System.normalizeSync('famous/core/Engine.js'),
             RenderNode: System.normalizeSync('famous/core/RenderNode.js'),
@@ -80,23 +81,23 @@ describe('View', () => {
         let layout = imports.decorators.layout;
         let {Surface, View} = imports;
         class DecoratedView extends View {
-            @layout.dock('top', 50)
+            @layout.dock.top(50)
             top1 = new Surface({});
 
-            @layout.dock('top', 50)
+            @layout.dock.top(50)
             top2 = new Surface({});
 
-            @layout.dock('fill')
+            @layout.dock.fill()
             fill = new Surface({});
 
             @layout.size(50, 50)
-            @layout.place('center')
+            @layout.stick.center()
             center = new Surface({});
 
-            @layout.renderable
+            @layout.renderable()
             ignored = new Surface({});
 
-            @layout.fullscreen
+            @layout.fullSize()
             fullscreen = new Surface({});
         }
         return new DecoratedView();
@@ -135,12 +136,12 @@ describe('View', () => {
 
             let runTimeDecoratedView = new RunTimeDecoratedView();
             let decoratedView = createDecoratedView();
-            runTimeDecoratedView.addRenderable(decoratedView.top1, 'top1', imports.decorators.layout.dock('top', 50));
-            runTimeDecoratedView.addRenderable(decoratedView.top2, 'top2', imports.decorators.layout.dock('top', 50));
-            runTimeDecoratedView.addRenderable(decoratedView.fill, 'fill', imports.decorators.layout.dock('fill'));
-            runTimeDecoratedView.addRenderable(decoratedView.center, 'center', imports.decorators.layout.size(50, 50), imports.decorators.layout.place('center'));
-            runTimeDecoratedView.addRenderable(decoratedView.ignored, 'ignored', imports.decorators.layout.renderable);
-            runTimeDecoratedView.addRenderable(decoratedView.fullscreen, 'fullscreen', imports.decorators.layout.fullscreen);
+            runTimeDecoratedView.addRenderable(decoratedView.top1, 'top1', imports.decorators.layout.dock.top(50));
+            runTimeDecoratedView.addRenderable(decoratedView.top2, 'top2', imports.decorators.layout.dock.top(50));
+            runTimeDecoratedView.addRenderable(decoratedView.fill, 'fill', imports.decorators.layout.dock.fill());
+            runTimeDecoratedView.addRenderable(decoratedView.center, 'center', imports.decorators.layout.size(50, 50), imports.decorators.layout.stick.center());
+            runTimeDecoratedView.addRenderable(decoratedView.ignored, 'ignored', imports.decorators.layout.renderable());
+            runTimeDecoratedView.addRenderable(decoratedView.fullscreen, 'fullscreen', imports.decorators.layout.fullSize());
             decoratedView.renderables.should.deep.equal(runTimeDecoratedView.renderables);
         });
 
@@ -161,11 +162,9 @@ describe('View', () => {
 
         it('allows manipulation of the rendering order of renderables', () => {
             let decoratedView = createDecoratedView();
-            decoratedView._groupedRenderables.should.include.keys('docked');
-            
-            decoratedView.prioritiseDockBefore('top2', 'top1').should.be.ok;
-
-            decoratedView._groupedRenderables.docked.keys().should.deep.equal(['top2', 'top1']);
+            expect(decoratedView._groupedRenderables).to.include.keys('docked');
+            expect(decoratedView.prioritiseDockBefore('top2', 'top1')).to.be.ok;
+            expect(decoratedView._groupedRenderables.docked.keys()).to.deep.equal(['top2', 'top1']);
         });
     });
 
@@ -205,7 +204,7 @@ describe('View', () => {
             }
             
             class MyView2 extends imports.View {
-                @imports.decorators.layout.dock('top', 50)
+                @imports.decorators.layout.dock.top(50)
                 inside = new MyView1();
             }
             let parentView = new MyView2();
@@ -254,11 +253,11 @@ describe('View', () => {
             let isVerticalDirection = !!~['top', 'bottom'].indexOf(direction);
             it(`sizes automatically when stacked in direction ${direction}`, () => {
                 class StackedView extends imports.View {
-                    @imports.decorators.layout.dock(direction, 50)
+                    @imports.decorators.layout.dock[direction](50)
                     a = new imports.Surface();
-                    @imports.decorators.layout.dock(direction, 50)
+                    @imports.decorators.layout.dock[direction](50)
                     b = new imports.Surface();
-                    @imports.decorators.layout.dock(direction, 50)
+                    @imports.decorators.layout.dock[direction](50)
                     c = new imports.Surface();
                 }
                 new StackedView().getSize().should.deep.equal(isVerticalDirection ? [undefined, 150] : [150, undefined]);
@@ -266,23 +265,23 @@ describe('View', () => {
             it(`calculates the bounding box when stacked in direction ${direction}, also when the other dimension is specified`, () => {
                 class StackedView extends imports.View {
                     @imports.decorators.layout.size(...(isVerticalDirection ? [40, 50] : [50, 40]))
-                    @imports.decorators.layout.dock(direction)
+                    @imports.decorators.layout.dock[direction]()
                     a = new imports.Surface();
                     @imports.decorators.layout.size(...(isVerticalDirection ? [30, 50] : [50, 30]))
-                    @imports.decorators.layout.dock(direction)
+                    @imports.decorators.layout.dock[direction]()
                     b = new imports.Surface();
                     @imports.decorators.layout.size(50, 50)
-                    @imports.decorators.layout.dock(direction)
+                    @imports.decorators.layout.dock[direction]()
                     c = new imports.Surface();
                 }
                 new StackedView().getSize().should.deep.equal(isVerticalDirection ? [50, 150] : [150, 50]);
             });
             it(`can also let the fill determine the size in other dimension of ${direction}`, () => {
                 class StackedView extends imports.View {
-                    @imports.decorators.layout.dock(direction, 50)
+                    @imports.decorators.layout.dock[direction](50)
                     a = new imports.Surface();
                     @imports.decorators.layout.size(...(isVerticalDirection ? [400, undefined] : [undefined, 400]))
-                    @imports.decorators.layout.dock('fill')
+                    @imports.decorators.layout.dock.fill()
                     b = new imports.Surface();
                 }
                 new StackedView().getSize().should.deep.equal(isVerticalDirection ? [400, undefined] : [undefined, 400]);
@@ -292,11 +291,11 @@ describe('View', () => {
         it('handles a difficult sizing situation', () => {
             class DifficultView extends imports.View {
                 @imports.decorators.layout.size(100,100)
-                @imports.decorators.layout.dock('top')
+                @imports.decorators.layout.dock.top()
                 a = new imports.Surface();
 
                 @imports.decorators.layout.size(100,100)
-                @imports.decorators.layout.dock('bottom')
+                @imports.decorators.layout.dock.bottom()
                 b = new imports.Surface();
 
                 @imports.decorators.layout.size(70,300)
@@ -323,27 +322,27 @@ describe('View', () => {
             let context = imports.Engine.createContext({style: {}, appendChild: new Function()});
             requestAnimationFrame.setMode(requestAnimationFrame.modes.MANUAL);
             class SubSubView extends imports.View {
-                @imports.decorators.layout.dock('top', 50)
+                @imports.decorators.layout.dock.top(50)
                 renderable1 = new imports.Surface();
-                @imports.decorators.layout.dock('top', 50)
+                @imports.decorators.layout.dock.top(50)
                 renderable2 = new imports.Surface();
             }
 
             class SubView extends imports.View {
-                @imports.decorators.layout.dock('top', 50)
+                @imports.decorators.layout.dock.top(50)
                 subView = new SubSubView();
-                @imports.decorators.layout.dock('top', 50)
+                @imports.decorators.layout.dock.top(50)
                 renderable = new imports.Surface();
             }
 
             class MyView extends imports.View {
-                @imports.decorators.layout.dock('top', 50)
+                @imports.decorators.layout.dock.top(50)
                 subView = new SubView();
-                @imports.decorators.layout.dock('top', 50)
+                @imports.decorators.layout.dock.top(50)
                 subView2 = new SubView();
-                @imports.decorators.layout.dock('top', 50)
+                @imports.decorators.layout.dock.top(50)
                 subsubView = new SubSubView();
-                @imports.decorators.layout.dock('top', 50)
+                @imports.decorators.layout.dock.top(50)
                 renderable = new imports.Surface();
             }
             let myView = new MyView();

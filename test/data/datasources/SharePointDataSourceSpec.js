@@ -16,33 +16,15 @@ let should = chai.should();
 describe('SharePointDataSource', () => {
     let imports = {};
 
-    before(() => {
+    before(async function() {
         /* Mock web workers for the SharePoint client if we're running tests from nodejs */
         if (typeof Worker === 'undefined') { global.Worker = class Worker { postMessage() {} }; }
 
-        return loadDependencies({
-            SharePoint: './src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js'
-        }).then((importedObjects) => {
-            let originalSharePoint = importedObjects.SharePoint;
+        mockDependency('./src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js',
+            { SharePoint: class SharePoint {on(){} once(){} off(){} set(){ return {'_temporary-identifier': `${Date.now()}`} }} });
 
-            mockDependency('./src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js', {
-                SharePoint: class SharePoint extends originalSharePoint {
-                    constructor(options) {
-                        super(options);
-                        sinon.spy(this, 'on');
-                        sinon.spy(this, 'once');
-                        sinon.spy(this, 'off');
-                        sinon.spy(this, 'set');
-                    }
-                }
-            });
-        }).then(() => {
-                return loadDependencies({
-                    SharePointDataSource: './src/data/datasources/SharePointDataSource.js'
-                });
-            }
-        ).then((importedObjects) => {
-            imports = importedObjects;
+        imports = await loadDependencies({
+            SharePointDataSource: './src/data/datasources/SharePointDataSource.js'
         });
     });
 
