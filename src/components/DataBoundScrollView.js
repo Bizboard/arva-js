@@ -191,14 +191,8 @@ export class DataBoundScrollView extends ScrollController {
         }
     }
 
-    /**
-     * Determines whether the last element showing is the actual last element
-     * @returns {boolean} True if the last element showing is the actual last element
-     */
-    isAtBottom() {
-        let lastVisibleItem = this.getLastVisibleItem();
-        return (lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value);
-    }
+    
+    
 
     /**
      * Returns the currently active group elements, or an empty object of none are present.
@@ -408,7 +402,7 @@ export class DataBoundScrollView extends ScrollController {
             let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
             if (this.options.chatScrolling) {
                 if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) {
-                    this.goToLastPage();
+                    this.stickToBottom();
                 }
             } else if (shouldEnsureVisible) {
                 this.ensureVisible(newSurface);

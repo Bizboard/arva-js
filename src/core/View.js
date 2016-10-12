@@ -367,6 +367,10 @@ export class View extends FamousView {
         }
     }
 
+    isDisplaying() {
+        return this.layout.isDisplaying();
+    }
+
     /**
      * Inits the utils that are used as helper classes for the view
      * @private
