@@ -2,6 +2,8 @@
  * Created by tom on 14/03/16.
  */
 
+/* global describe, it, before, beforeEach, after, afterEach */
+
 import chai                         from 'chai';
 import {loadDependencies}           from '../meta/TestBootstrap.js';
 
@@ -24,7 +26,6 @@ describe('BrandingEngine', () => {
             should.exist(instance);
         });
         it('returns singleton without exceptions', () => {
-            imports.Context.buildContext();
             let instance = imports.BrandingEngineSingleton.getInstance();
             should.exist(instance);
         });

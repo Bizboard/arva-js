@@ -2,6 +2,8 @@
  * Created by tom on 26/03/16.
  */
 
+/* global describe, it, before, beforeEach, after, afterEach */
+
 import sinon                        from 'sinon';
 import chai                         from 'chai';
 import {loadDependencies,

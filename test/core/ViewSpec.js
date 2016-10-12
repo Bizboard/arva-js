@@ -1,4 +1,6 @@
-import _                            from 'lodash';
+/* global describe, it, before, beforeEach, after, afterEach */
+
+
 import chai                         from 'chai';
 import sinon                        from 'sinon';
 import {mockDOMGlobals, loadDependencies, restoreDOMGlobals,

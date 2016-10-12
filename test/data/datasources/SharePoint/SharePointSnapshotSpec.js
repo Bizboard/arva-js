@@ -2,6 +2,7 @@
  * Created by lundfall on 3/24/16.
  */
 
+/* global describe, it, before, beforeEach, after, afterEach */
 
 import chai                         from 'chai';
 import {loadDependencies,

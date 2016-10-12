@@ -2,11 +2,13 @@
  * Created by tom on 14/03/16.
  */
 
-import _                            from 'lodash';
+/* global describe, it, before, beforeEach, after, afterEach */
+
 import chai                         from 'chai';
 import sinon                        from 'sinon';
-import {loadDependencies, mockDependency,
-    mockDOMGlobals, restoreDOMGlobals}           from '../meta/TestBootstrap.js';
+import {loadDependencies,
+        restoreDOMGlobals,
+        mockArvaViewDependencies}   from '../meta/TestBootstrap.js';
 
 let should = chai.should();
 
@@ -15,22 +17,7 @@ describe('DataBoundScrollView', () => {
     let on, once, off;
 
     before(async function() {
-        mockDOMGlobals();
-
-        let ElementOutput = await System.import('famous/core/ElementOutput');
-        //Mock for the Famous Surface
-        mockDependency('./ElementOutput.js', ElementOutput);
-        mockDependency('famous/utilities/Timer.js');
-        mockDependency('famous-flex/LayoutUtility.js', {registerHelper: function(){}, combineOptions: (one, two) => _.merge(one, two)});
-
-
-        mockDependency('./src/utils/Context.js', {
-            Context: {
-                getContext: () => ({
-                    'get': () => ({on, once, off, child: () => ({on, once, off})})
-                })
-            }
-        });
+        await mockArvaViewDependencies();
 
         imports = await loadDependencies({
             DataBoundScrollView: './src/components/DataBoundScrollView.js',

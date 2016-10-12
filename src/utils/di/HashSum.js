@@ -56,4 +56,4 @@ function sum(o) {
     return pad(foldValue(0, o, '', []).toString(16), 8);
 }
 
-module.exports = sum;
+export default sum;

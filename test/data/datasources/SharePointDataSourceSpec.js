@@ -2,6 +2,8 @@
  * Created by tom on 23/10/15.
  */
 
+/* global describe, it, before, beforeEach, after, afterEach */
+
 import chai                         from 'chai';
 import sinon                        from 'sinon';
 import {

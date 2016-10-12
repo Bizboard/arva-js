@@ -83,7 +83,7 @@ export class Injection {
      */
     static addProviders(...classConstructors) {
         for (let constructor of classConstructors) {
-            this.injector._loadFnOrClass(constructor);
+            if(constructor) { this.injector._loadFnOrClass(constructor); }
         }
     }
 }

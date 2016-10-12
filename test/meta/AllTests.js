@@ -2,7 +2,6 @@
  * Created by tom on 06/10/16.
  */
 
-import '../components/inputs/SingleLineTextInputSpec.js';
 import '../components/BrandingEngineSpec.js';
 import '../components/DataBoundScrollViewSpec.js';
 import '../core/AppSpec.js';

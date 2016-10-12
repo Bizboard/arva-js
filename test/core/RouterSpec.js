@@ -1,3 +1,5 @@
+/* global describe, it, before, beforeEach, after, afterEach */
+
 import chai                         from 'chai';
 import {loadDependencies}           from '../meta/TestBootstrap.js';
 

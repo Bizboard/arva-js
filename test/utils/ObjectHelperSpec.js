@@ -2,6 +2,8 @@
  * Created by tom on 4/12/15.
  */
 
+/* global describe, it, before, beforeEach, after, afterEach */
+
 import chai                         from 'chai';
 import {loadDependencies}           from '../meta/TestBootstrap.js';
 

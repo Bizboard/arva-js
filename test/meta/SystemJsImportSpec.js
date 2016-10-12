@@ -2,6 +2,8 @@
  * Created by tom on 15/03/16.
  */
 
+/* global describe, it, before, beforeEach, after, afterEach */
+
 import chai                         from 'chai';
 import sinon                        from 'sinon';
 import System                       from '../../node_modules/systemjs/index.js';

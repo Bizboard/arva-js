@@ -4,11 +4,10 @@
 
 import 'babel-polyfill';
 import sinon                    from 'sinon';
-import System                   from 'systemjs';
+import mockBrowser              from 'mock-browser';
 import requestAnimationFrame    from 'request-animation-frame-mock';
-import '../../jspm.config.js';
 
-// System.map = {...System.devConfig.map};
+let onSystemReady = SystemJS.import('./test/meta/DummyFile.js');
 
 export function mockDependency(dependency, replacement) {
 
@@ -19,49 +18,60 @@ export function mockDependency(dependency, replacement) {
         replacement = {default: replacement};
     }
 
-    System.delete(System.normalizeSync(dependency));
-    System.set(System.normalizeSync(dependency), System.newModule(replacement));
+    SystemJS.delete(SystemJS.normalizeSync(dependency));
+    SystemJS.set(SystemJS.normalizeSync(dependency), SystemJS.newModule(replacement));
+}
+
+export async function mockArvaViewDependencies() {
+    mockDependency('famous/surfaces/ImageSurface.js');
+    mockDependency('famous/Surfaces/ContainerSurface.js', () => ({add: () => {}}));
+    mockDependency('famous/core/Engine.js', { default: class Engine { static createContext(){} } } );
+    mockDependency('famous/core/Context.js', () => ({add: () => {}}) );
+    mockDependency('css', {fetch: () => 'export default "";'});
+
+    await mockDOMGlobals();
+    let ElementOutput = await SystemJS.import('famous/core/ElementOutput.js');
+    let Decorators = await SystemJS.import('arva-js/layout/decorators.js');
+    Decorators.layout.margins = () => (() => {});
+
+    //Mock for the Famous Surface
+    mockDependency('./ElementOutput.js', ElementOutput);
+    mockDependency('famous/core/Group.js');
+    mockDependency('famous/utilities/Timer.js');
+    mockDependency('arva-js/layout/decorators.js', Decorators);
+    mockDependency('famous-flex/LayoutUtility.js', { registerHelper: () => {} });
+    mockDependency('famous-flex/FlexScrollView.js', () => ({ options: {} }));
+    mockDependency('famous-flex/ScrollController.js', () => ({ pipe: () => {} }));
 }
 
 export function restoreDependency(dependency) {
-    System.delete(System.normalizeSync(dependency));
+    SystemJS.delete(SystemJS.normalizeSync(dependency));
 }
 
-export function mockDOMGlobals() {
+export async function mockDOMGlobals() {
+    await onSystemReady;
     if (global) {
-        global['history'] = [];
-        history.pushState = function(){
-            let newHash = Array.from(arguments).splice(-1)[0];
-            window.location.hash  = newHash;
-        };
-        global['document'] = {
-            documentElement: {style: {}},
-            createElement: sinon.stub().returns({
-                style: {},
-                addEventListener: new Function(),
-                classList: {add: sinon.stub()}
-            }),
-            createDocumentFragment: sinon.stub().returns({
-                appendChild: sinon.stub()
-            })
-        };
-        global['window'] = {
-            requestAnimationFrame: requestAnimationFrame.mock.requestAnimationFrame,
-            addEventListener: new Function(),
-            location: {hash: ''}
-        };
-        global['Node'] = sinon.stub();
+        let browser = new (mockBrowser.mocks.MockBrowser)();
+        global.document = browser.getDocument();
+        global.window = browser.getWindow();
+        global.window.requestAnimationFrame = requestAnimationFrame.mock.requestAnimationFrame;
+        global.location = browser.getLocation();
+        global.navigator = browser.getNavigator();
+        global.history = browser.getHistory();
+        global.Node = sinon.stub();
     }
     else {
-        window['Node'] = sinon.stub();
+        window.Node = sinon.stub();
     }
 }
 
 
 export function restoreDOMGlobals() {
-    if (global && (global['window'] || global['document'])) {
-        delete global['document'];
-        delete global['window'];
+    if (global && (global.window || global.document)) {
+        delete global.document;
+        delete global.window;
+        delete global.history;
+        delete global.Node;
     }
 
 }
@@ -73,7 +83,7 @@ export function loadDependencies(dependencies) {
 
     for (let key in dependencies) {
         let dependencyLocation = dependencies[key];
-        promises.push(System.import(dependencyLocation).then((importedObject) => {
+        promises.push(SystemJS.import(dependencyLocation).then((importedObject) => {
             imports[key] = importedObject[key] || importedObject.default || importedObject;
         }));
     }

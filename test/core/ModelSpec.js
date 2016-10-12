@@ -1,3 +1,5 @@
+/* global describe, it, before, beforeEach, after, afterEach */
+
 import _                            from 'lodash';
 import sinon                        from 'sinon';
 import chai                         from 'chai';

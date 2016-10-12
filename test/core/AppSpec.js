@@ -2,10 +2,15 @@
  * Created by tom on 15/03/16.
  */
 
+/* global describe, it, before, beforeEach, after, afterEach */
+
 import chai                         from 'chai';
 import sinon                        from 'sinon';
-import {loadDependencies, restoreDependency,
-    mockDependency}                 from '../meta/TestBootstrap.js';
+import {loadDependencies,
+    restoreDependency,
+    mockDependency,
+    restoreDOMGlobals,
+    mockArvaViewDependencies}       from '../meta/TestBootstrap.js';
 
 let should = chai.should();
 let expect = chai.expect;
@@ -13,12 +18,13 @@ let expect = chai.expect;
 describe('App', () => {
     let imports = {};
 
-    before(() => {
+    before(async function() {
 
+        await mockArvaViewDependencies();
         mockDependency('famous/core/Context.js');
         mockDependency('./src/utils/hotfixes/Polyfills.js');
 
-        return loadDependencies({
+        return await loadDependencies({
             App: System.normalizeSync('./src/core/App.js')
         }).then((importedObjects) => {
             imports = importedObjects;
@@ -26,6 +32,7 @@ describe('App', () => {
     });
 
     after(() => {
+        restoreDOMGlobals();
         restoreDependency('famous/core/Context.js');
         restoreDependency('./src/utils/hotfixes/Polyfills.js');
     });
