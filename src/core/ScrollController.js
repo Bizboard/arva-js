@@ -53,7 +53,7 @@ export class ScrollController extends FamousView {
         this.options = combineOptions({
             /* Previously called this._configuredDirection in famous-flex/ScrollController.js */
             layoutDirection: FamousUtility.Direction.Y,
-            extraBoundsSpace: [0, 0],
+            extraBoundsSpace: [1000, 1000],
             dataSource: [],
             autoPipeEvents: true,
             layoutAll: false,
