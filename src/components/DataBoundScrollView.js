@@ -191,8 +191,6 @@ export class DataBoundScrollView extends ScrollController {
         }
     }
 
-    
-    
 
     /**
      * Returns the currently active group elements, or an empty object of none are present.
@@ -370,7 +368,7 @@ export class DataBoundScrollView extends ScrollController {
         }
 
         let newSurface = this.options.itemTemplate(child);
-        if(newSurface instanceof Promise) {
+        if (newSurface instanceof Promise) {
             newSurface = await newSurface;
         }
 
@@ -378,13 +376,11 @@ export class DataBoundScrollView extends ScrollController {
         this._subscribeToClicks(newSurface, child);
 
         /* If we're scrolling as with a chat window, then scroll to last child if we're at the bottom */
-        if (this.options.chatScrolling && insertIndex === this._dataSource.getLength()) {
-            if (this.isAtBottom() || !this._allChildrenAdded) {
-                this._lastChild = child;
-            }
+        if (this.options.chatScrolling && (insertIndex === this._dataSource.getLength() || this._initialLoad) && !this.isAtBottom()) {
+            this.stickToBottom();
         }
         let insertSpec;
-        if(this.options.customInsertSpec){
+        if (this.options.customInsertSpec) {
             insertSpec = this.options.customInsertSpec(child);
         }
 
@@ -443,7 +439,9 @@ export class DataBoundScrollView extends ScrollController {
         if (this._isGrouped) {
             let groupByValue = this._getGroupByValue(child);
             let group = this._internalGroups[groupByValue];
-            if(group){ group.itemsCount--; }
+            if (group) {
+                group.itemsCount--;
+            }
 
 
             this._removeGroupIfNecessary(groupByValue);
@@ -512,7 +510,9 @@ export class DataBoundScrollView extends ScrollController {
             return;
         }
         if (this.options.chatScrolling) {
-            this.options.dataStore.on('ready', () => this._allChildrenAdded = true);
+            this._initialLoad = true;
+            this.once('userScroll', () => this._initialLoad = false);
+            this.options.dataStore.on('ready', () => this._initialLoad = false);
         }
 
 
