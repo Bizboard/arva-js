@@ -221,11 +221,6 @@ export class DataBoundScrollView extends ScrollController {
      */
     _replace(indexOrId, renderable, noAnimation) {
         super.replace(indexOrId, renderable, noAnimation);
-        // Auto pipe events
-        /*if (this.options.autoPipeEvents && renderable && renderable.pipe) {
-            renderable.pipe(this);
-            renderable.pipe(this._eventOutput);
-        }*/
     }
 
     _handleNewFilterResult(shouldShow, alreadyExists, entry) {
