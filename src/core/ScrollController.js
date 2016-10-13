@@ -25,6 +25,7 @@ import Engine                  from 'famous/core/Engine.js';
 import Spring                  from 'famous/physics/forces/Spring';
 import Drag                    from 'famous/physics/forces/Drag';
 import ScrollSync              from 'famous/inputs/ScrollSync';
+import TouchSync               from 'famous/inputs/TouchSync.js';
 import EventHandler            from 'famous/core/EventHandler';
 import Transform               from 'famous/core/Transform';
 import Entity                  from 'famous/core/Entity';
@@ -57,7 +58,7 @@ export class ScrollController extends FamousView {
             dataSource: [],
             autoPipeEvents: true,
             layoutAll: false,
-            alwaysLayout: true,             //TODO: Change to false, for debugging for now
+            alwaysLayout: false,             //TODO: Change to false, for debugging for now
             layout: StackLayout,
             layoutOptions: {margins: LayoutUtility.normalizeMargins(options.layoutOptions ? (options.layoutOptions.margins || [100]) : [100])},
             flow: true,
@@ -73,6 +74,17 @@ export class ScrollController extends FamousView {
             contextSize: [0, 0],
             scrollOffset: 0
         };
+        this._physicsEngine = new PhysicsEngine(this.options.scrollPhysicsEngine);
+        this._overScrollSpring = new Spring({
+            dampingRatio: 1.5,
+            period: 750,
+            anchor: new Vector([0, 0, 0])
+        });
+        // this._overScrollSpring.setOptions({anchor: 0});
+        this._scrollParticle = new Particle(this.options.scrollParticle);
+        this._physicsEngine.addBody(this._scrollParticle);
+        this._physicsEngine.attach(this._overScrollSpring, this._scrollParticle);
+
 
         this._maxKnownTranslate = this.options.initialHeight;
         let bottomScroller = new Surface();
@@ -93,10 +105,11 @@ export class ScrollController extends FamousView {
         this._group = new NativeScrollGroup();
         this._group.add({render: this._innerRender});
         this._group.setProperties({[`overflow${this.options.layoutDirection === 0 ? 'Y' : 'X'}`]: 'hidden'});
-        this._group.on('scroll', () => {
-            if(this._shouldIgnoreScrollEvent){
+        this._group.on('scroll', (e) => {
+            if (this._shouldIgnoreScrollEvent) {
                 this._shouldIgnoreScrollEvent = false;
             } else {
+                this._eventOutput.emit('userScroll', e);
                 this._stickBottom = false;
             }
         });
@@ -111,10 +124,15 @@ export class ScrollController extends FamousView {
     insert(position, renderable, insertSpec) {
         insertSpec = insertSpec || this.options.flowOptions.insertSpec;
 
-
         /* Insert data */
         this._viewSequence.insert(position, renderable);
 
+
+        this._pipeRenderableAsNecessary();
+
+        if (position < this._firstNodeIndex || position > this._lastNodeIndex) {
+            return this;
+        }
 
         /* When a custom insert-spec was specified, store that in the layout-node */
         if (insertSpec) {
@@ -123,7 +141,6 @@ export class ScrollController extends FamousView {
             this._layoutNodeManager.insertNode(newNode);
         }
 
-        this._pipeRenderableAsNecessary();
 
         this.reflow();
         this._dirtyRenderables.push(renderable);
@@ -134,6 +151,7 @@ export class ScrollController extends FamousView {
         this.scrollToBottom();
         this._stickBottom = true;
     }
+
 
     scrollToBottom() {
         this._shouldIgnoreScrollEvent = true;
@@ -195,10 +213,11 @@ export class ScrollController extends FamousView {
 
     _isLayoutNecessary(newSize, newScrollOffset) {
         // When the size or layout function has changed, reflow the layout
-        /* TODO Add check for if physics engine is doing stuff (prolly) */
-        return this._isReflowNecessary() || !isEqual(newSize, this._previousValues.size) ||
-            newScrollOffset !== this._previousValues.scrollOffset ||
-            this._reLayout ||
+
+        return this._isReflowNecessary() ||
+            this._reLayout || !isEqual(newSize, this._previousValues.contextSize) ||
+            this._previousValues.normalizedScrollOffset === undefined ||
+            Math.abs(this._previousValues.normalizedScrollOffset - newScrollOffset) > newSize[this.options.layoutDirection] * 0.8 ||
             this.options.alwaysLayout
     }
 
@@ -223,9 +242,10 @@ export class ScrollController extends FamousView {
 
     _layout(size, scrollOffset) {
 
+        let scrollSize = size[this.options.layoutDirection];
         // Determine start & end
-        let scrollStart = scrollOffset - this.options.extraBoundsSpace[0];
-        let scrollEnd = size[this.options.layoutDirection] + this.options.extraBoundsSpace[1] + scrollOffset;
+        let scrollStart = scrollOffset - scrollSize;
+        let scrollEnd = scrollSize * 2 + scrollOffset;
 
         if (this.options.layoutAll) {
             scrollStart = -1000000;
@@ -258,7 +278,7 @@ export class ScrollController extends FamousView {
         /* Mark non-invalidated nodes for removal */
         this._layoutNodeManager.removeNonInvalidatedNodes(this.options.flowOptions.removeSpec);
 
-        this._normalizeSequence(scrollOffset);
+        this._normalizeSequence(scrollOffset, scrollSize);
         this._adjustTotalHeight();
 
         /* Cleanup nodes */
@@ -289,7 +309,10 @@ export class ScrollController extends FamousView {
             let bottomPosition = lastNode.getTranslate()[this.options.layoutDirection] + lastNode.scrollLength;
             /* If we are seeing the last node, then redefine the bottom position. It can have been (over/under)estimated previously */
             if (lastNode.renderNode === this._layoutNodeManager.getLastRenderNodeInSequence()) {
-                this._maxKnownTranslate = bottomPosition;
+                if(bottomPosition !== this._maxKnownTranslate){
+                    this._enqueueCommitAction(this.invalidateLayout);
+                    this._maxKnownTranslate = bottomPosition;
+                }
             } else {
                 this._maxKnownTranslate = Math.max(this._maxKnownTranslate, bottomPosition);
             }
@@ -307,12 +330,18 @@ export class ScrollController extends FamousView {
 
     /**
      * Normalizes the viewsequence so that the layout function doens't have to loop through more nodes than necessary
+     * @param {Integer} scrollOffset
+     * @param {Integer} scrollSize
      * @returns {boolean}
      * @private
      */
-    _normalizeSequence(scrollOffset) {
+    _normalizeSequence(scrollOffset, scrollSize) {
+        this._previousValues.normalizedScrollOffset = scrollOffset;
+        this._firstNodeIndex = this._layoutNodeManager.getFirstRenderedNodeIndex();
+        this._lastNodeIndex = this._layoutNodeManager.getLastRenderedNodeIndex();
         let sequenceHead = this._viewSequence.getHead();
-        if (sequenceHead && scrollOffset < this.options.extraBoundsSpace[0] + this.options.layoutOptions.margins[0]) {
+        /* Normalize to top to make sure that the top margin is correct */
+        if (sequenceHead && scrollOffset < scrollSize + this.options.layoutOptions.margins[0]) {
             this._viewSequence = sequenceHead;
             this._scrollVoidHeight = 0;
             return;
@@ -371,7 +400,14 @@ export class ScrollController extends FamousView {
         let {size, transform} = context;
         let scrollOffset = this._group.getScrollOffset();
         let eventData;
-        //TODO: Add events scrollstart and scrollend
+
+        let actionsToPerform = [...this._commitActions];
+        this._commitActions = [];
+        for (let action of actionsToPerform) {
+            action();
+        }
+
+        //TODO: Add events scrollstart and scrollend, or maybe not. Not sure if needed
         if (this._isLayoutNecessary(size, scrollOffset)) {
 
             // Prepare event data
@@ -404,6 +440,8 @@ export class ScrollController extends FamousView {
                     node = node._next;
                 }
             }
+
+
         } else {
             /* Reset the ensureVisibleRenderNode to prevent unwanted behaviour when doing replace and not finding the renderable */
             this._ensureVisibleNode = null;
@@ -419,26 +457,41 @@ export class ScrollController extends FamousView {
             });
         }
 
-        let actionsToPerform = [...this._commitActions];
-        this._commitActions = [];
-        for (let action of actionsToPerform) {
-            action();
-        }
 
-        if(this._stickBottom && !this.isAtBottom()) {
+        if (this._stickBottom && !this.isAtBottom()) {
             this.scrollToBottom();
         }
-
 
         /* Reset variables */
         this._isDirty = false;
         this._reLayout = false;
-        this._previousValues = {
-            scrollOffset,
-            contextSize: size,
-            resultModified: result.modified,
-            maxKnownTranslate: this._maxKnownTranslate
-        };
+        this._previousValues.scrollDelta = this._previousValues.scrollOffset ? this._previousValues.scrollOffset - scrollOffset : 0;
+        this._previousValues.scrollOffset = scrollOffset;
+        this._previousValues.contextSize = size;
+        this._previousValues.resultModified = result.modified;
+        this._previousValues.maxKnownTranslate = this._maxKnownTranslate;
+
+
+
+        if(this._physicsEngine.isSleeping()){
+            if (scrollOffset === 0 && this._previousValues.scrollDelta > 3){
+                this._scrollParticle.setVelocity1D(Math.min(this._previousValues.scrollDelta, 10));
+                this._physicsEngine.wake();
+            } else if(this.isAtBottom()){
+                this._overScrollSpring.setOptions({anchor: this._group.getMaxScrollOffset()});
+                this._scrollParticle.setVelocity1D(Math.min(this._previousValues.scrollDelta, 10));
+                this._physicsEngine.wake();
+            }
+        } else if(!this.isAtBottom() && scrollOffset !== 0){
+            this._physicsEngine.sleep();
+        }
+
+
+        if (!this._physicsEngine.isSleeping()) {
+            let bounceTranslate = [0, 0, 0];
+            bounceTranslate[this.options.layoutDirection] = this._scrollParticle.getPosition1D();
+            transform = Transform.thenMove(transform, bounceTranslate);
+        }
 
         if (eventData) { /* eventData is only used here to check whether there has been a re-layout */
             this._eventOutput.emit('layoutend', eventData);
