@@ -216,6 +216,7 @@ export class ScrollController extends FamousView {
     }
 
     _initOverScrollPhysics() {
+        /* These are used for overscrolling */
         this._physicsEngine = new PhysicsEngine(this.options.scrollPhysicsEngine);
         this._overScrollSpring = new Spring({
             dampingRatio: 1,
@@ -515,7 +516,7 @@ export class ScrollController extends FamousView {
         /* Do the paper-work for creating the entire spec for the nodes */
         //TODO See if we have to add a translate here
         let result;
-        if(this._previousValues.modified || didLayout){
+        if(this._previousValues.resultModified || didLayout){
             result = this._layoutNodeManager.buildSpecAndDestroyUnrenderedNodes();
             this._specs = result.specs;
         }
@@ -539,7 +540,7 @@ export class ScrollController extends FamousView {
         this._previousValues.scrollDelta = this._previousValues.scrollOffset ? this._previousValues.scrollOffset - scrollOffset : 0;
         this._previousValues.scrollOffset = scrollOffset;
         this._previousValues.contextSize = size;
-        this._previousValues.resultModified = result && result.modified;
+        this._previousValues.resultModified = (result && result.modified) || didLayout;
         this._previousValues.maxKnownTranslate = this._maxKnownTranslate;
 
 
