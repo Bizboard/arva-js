@@ -273,6 +273,13 @@ export class DataBoundScrollView extends ScrollController {
             if (groupIndex != undefined && groupIndex !== -1) {
                 for (insertIndex = groupIndex + 1; insertIndex <= (groupIndex + groupData.itemsCount); insertIndex++) {
                     if (this.options.orderBy) {
+                        let sequence = this._viewSequence.findByIndex(insertIndex);
+                        if(!sequence){
+                            /* Internal error, this should never happen. Reduce the number of items in the group */
+                            console.log("Internal error in DataBoundScrollView. Inconsistent groupData");
+                            groupData.itemsCount = insertIndex - 1;
+                            break;
+                        }
                         let dataId = this._viewSequence.findByIndex(insertIndex)._value.dataId;
                         if (dataId && this.options.orderBy(child, this._internalDataSource[dataId])) {
                             break;
@@ -376,7 +383,7 @@ export class DataBoundScrollView extends ScrollController {
         this._subscribeToClicks(newSurface, child);
 
         /* If we're scrolling as with a chat window, then scroll to last child if we're at the bottom */
-        if (this.options.chatScrolling && (insertIndex === this._dataSource.getLength() || this._initialLoad) && !this.isAtBottom()) {
+        if (this.options.chatScrolling && (insertIndex === this._dataSource.getLength() || this._initialLoad) && this.isAtBottom()) {
             this.stickToBottom();
         }
         let insertSpec;

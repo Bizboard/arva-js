@@ -9,12 +9,9 @@ import isEqual                 from 'lodash/isEqual.js';
 
 /* Famous-flex */
 import LinkedListViewSequence  from 'famous-flex/LinkedListViewSequence.js';
-import ListLayout              from 'famous-flex/layouts/ListLayout.js';
-import LayoutController        from 'famous-flex/LayoutController.js';
 import LayoutNodeManager       from 'famous-flex/LayoutNodeManager.js';
 import FlowLayoutNode          from 'famous-flex/FlowLayoutNode.js';
 import LayoutUtility           from 'famous-flex/LayoutUtility.js';
-import LayoutNode              from 'famous-flex/LayoutNode.js';
 
 /* Famous */
 import Particle                from 'famous/physics/bodies/Particle';
@@ -44,7 +41,6 @@ import {StackLayout}           from '../layout/functions/StackLayout.js';
 
 /**
  * Only supports linkedListViews as dataSource. Meant to be used with the dbsv.
- * TODO: Look at insert specs, layout normalize logic and registered remove function
  */
 export class ScrollController extends FamousView {
     constructor(options = {}) {
@@ -54,71 +50,61 @@ export class ScrollController extends FamousView {
         this.options = combineOptions({
             /* Previously called this._configuredDirection in famous-flex/ScrollController.js */
             layoutDirection: FamousUtility.Direction.Y,
-            extraBoundsSpace: [1000, 1000],
+            /*The extra bounds space make up for a smooth insertion and deletion of the nodes at the edges */
+            extraBoundsSpace: [0, 0],
             dataSource: [],
             autoPipeEvents: true,
             layoutAll: false,
-            alwaysLayout: false,             //TODO: Change to false, for debugging for now
+            alwaysLayout: false,
+            /* Own layout function that isn't compatible with famous-flex. TODO: Make a collectionlayout equivalent */
             layout: StackLayout,
-            layoutOptions: {margins: LayoutUtility.normalizeMargins(options.layoutOptions ? (options.layoutOptions.margins || [100]) : [100])},
+            layoutOptions: {
+                /* Margins are specified with css*/
+                margins: LayoutUtility.normalizeMargins(options.layoutOptions ? (options.layoutOptions.margins || [10]) : [10])},
+            /* Currently only flow: true is supported. TODO: Make flow: false work */
             flow: true,
+            /* Set animation option of the flow */
             flowOptions: {},
-            initialHeight: 0                // Set to have some extra estimated scrolling opportunity
+            /* Set to have some extra estimated scrolling opportunity */
+            initialHeight: 0
         }, options);
         this._id = Entity.register(this);
         this._isDirty = true;
-        this._dirtyRenderables = [];
-        /* The distance before the first visible node */
+        /* The distance before the first node, e.g. the translate before this._viewSequence.get() */
         this._scrollVoidHeight = 0;
         this._previousValues = {
             contextSize: [0, 0],
             scrollOffset: 0
         };
-        this._physicsEngine = new PhysicsEngine(this.options.scrollPhysicsEngine);
-        this._overScrollSpring = new Spring({
-            dampingRatio: 1.5,
-            period: 750,
-            anchor: new Vector([0, 0, 0])
-        });
-        // this._overScrollSpring.setOptions({anchor: 0});
-        this._scrollParticle = new Particle(this.options.scrollParticle);
-        this._physicsEngine.addBody(this._scrollParticle);
-        this._physicsEngine.attach(this._overScrollSpring, this._scrollParticle);
+        this._initOverScrollPhysics();
+        this.on('touchmove', this._onTouchMove);
 
 
         this._maxKnownTranslate = this.options.initialHeight;
-        let bottomScroller = new Surface();
-        bottomScroller.setSize([1, 1]);
-        this._otherNodes = {bottomScroller: new Surface(1, 1)};
+        this._otherNodes = {bottomScroller: new Surface()};
 
+        /* TODO: Implement functionality for ensurevisible */
         this._ensureVisibleNode = null;
+        /* Actions for doing before the layout function */
         this._commitActions = [];
 
+        /* The thing that provides us the context for the layout function */
         this._layoutNodeManager = new LayoutNodeManager(FlowLayoutNode, (node, spec) => {
             if (!spec && this.options.flowOptions.insertSpec) {
                 node.setSpec(this.options.flowOptions.insertSpec);
             }
         });
         this._layoutNodeManager.setNodeOptions(this.options.flowOptions);
+        /* Enable touch move. TODO: When stable and tested, remove this */
         Engine.enableTouchMove();
-        // Create groupt for faster rendering
-        this._group = new NativeScrollGroup();
-        this._group.add({render: this._innerRender});
-        this._group.setProperties({[`overflow${this.options.layoutDirection === 0 ? 'Y' : 'X'}`]: 'hidden'});
-        this._group.on('scroll', (e) => {
-            if (this._shouldIgnoreScrollEvent) {
-                this._shouldIgnoreScrollEvent = false;
-            } else {
-                this._eventOutput.emit('userScroll', e);
-                this._stickBottom = false;
-            }
-        });
+        this._initNativeScrollGroup();
+
         /* TODO: Remove duplicates this._viewSequence, this._dataSource. Kept for DBSV compatibility */
         this._dataSource = this._viewSequence = new LinkedListViewSequence(this.options.dataSource);
-    }
-
-    setOptions() {
-        //TODO: Implement
+        this.on('recursiveReflow', () => {
+            this.reflow();
+            console.log("RecursiveReflow"); //TODO Remove
+        })
     }
 
     insert(position, renderable, insertSpec) {
@@ -141,9 +127,7 @@ export class ScrollController extends FamousView {
             this._layoutNodeManager.insertNode(newNode);
         }
 
-
         this.reflow();
-        this._dirtyRenderables.push(renderable);
         return this;
     };
 
@@ -151,7 +135,6 @@ export class ScrollController extends FamousView {
         this.scrollToBottom();
         this._stickBottom = true;
     }
-
 
     scrollToBottom() {
         this._shouldIgnoreScrollEvent = true;
@@ -166,6 +149,7 @@ export class ScrollController extends FamousView {
             Utils.warn(`Cannot remove non-existent index: ${position}`);
             return;
         }
+
 
         this._viewSequence = this._viewSequence.remove(sequence);
         let renderNode = sequence.get();
@@ -200,6 +184,7 @@ export class ScrollController extends FamousView {
                 this.reflow();
             }
         }
+        /* Else, the renderable is the same as the old one, do nothing */
 
     }
 
@@ -211,18 +196,56 @@ export class ScrollController extends FamousView {
         this._reLayout = true;
     }
 
-    _isLayoutNecessary(newSize, newScrollOffset) {
-        // When the size or layout function has changed, reflow the layout
-
-        return this._isReflowNecessary() ||
-            this._reLayout || !isEqual(newSize, this._previousValues.contextSize) ||
-            this._previousValues.normalizedScrollOffset === undefined ||
-            Math.abs(this._previousValues.normalizedScrollOffset - newScrollOffset) > newSize[this.options.layoutDirection] * 0.8 ||
-            this.options.alwaysLayout
-    }
-
     reflow() {
         this._isDirty = true;
+    }
+
+    _initNativeScrollGroup() {
+        this._group = new NativeScrollGroup();
+        this._group.add({render: this._innerRender});
+        /* Prevent scrolling in the opposite direction */
+        this._group.setProperties({[`overflow${this.options.layoutDirection === 0 ? 'Y' : 'X'}`]: 'hidden'});
+        this._group.on('scroll', (e) => {
+            if (this._shouldIgnoreScrollEvent) {
+                this._shouldIgnoreScrollEvent = false;
+            } else {
+                this._eventOutput.emit('userScroll', e);
+                this._stickBottom = false;
+            }
+        });
+    }
+
+    _initOverScrollPhysics() {
+        this._physicsEngine = new PhysicsEngine(this.options.scrollPhysicsEngine);
+        this._overScrollSpring = new Spring({
+            dampingRatio: 1,
+            period: 400,
+            anchor: new Vector([0, 0, 0])
+        });
+        this._scrollParticle = new Particle(this.options.scrollParticle);
+        this._physicsEngine.addBody(this._scrollParticle);
+        this._physicsEngine.attach(this._overScrollSpring, this._scrollParticle);
+    }
+
+    _isLayoutNecessary(newSize, newScrollOffset) {
+
+        let upperMargin = this.options.layoutOptions.margins[0];
+        let lowerMargin = this.options.layoutOptions.margins[2];
+        let lastNormalizedScrollOffset = this._previousValues.normalizedScrollOffset;
+        let scrollHeight = this._group.getMaxScrollOffset();
+        return this._isReflowNecessary() || /* Changes have been made that means that a new flow animation will take place */
+            /* Changes have been made that aren't as big as starting new flow animation but still need new layout */
+            this._reLayout ||
+            /* Size has changed */ !isEqual(newSize, this._previousValues.contextSize) ||
+            /* There is no normalizedScollOffset */
+            lastNormalizedScrollOffset === undefined ||
+            /* The scrolling has changed too much since last normalization */
+            Math.abs(lastNormalizedScrollOffset - newScrollOffset) > newSize[this.options.layoutDirection] * 0.8 ||
+            (newScrollOffset < upperMargin && lastNormalizedScrollOffset >= upperMargin) ||
+            (scrollHeight - newScrollOffset < lowerMargin && scrollHeight - lastNormalizedScrollOffset >= lowerMargin) ||
+            /* We should always layout */
+            this.options.alwaysLayout;
+
     }
 
     _isReflowNecessary() {
@@ -243,16 +266,17 @@ export class ScrollController extends FamousView {
     _layout(size, scrollOffset) {
 
         let scrollSize = size[this.options.layoutDirection];
-        // Determine start & end
+        /* Display elements that are one screen above and one screen below */
         let scrollStart = scrollOffset - scrollSize;
         let scrollEnd = scrollSize * 2 + scrollOffset;
 
+        /* If everything should be layouted, then are bounds should be infinite */
         if (this.options.layoutAll) {
             scrollStart = -1000000;
             scrollEnd = 1000000;
         }
 
-        // Prepare for layout
+        /* Prepare for layout */
         let layoutContext = this._layoutNodeManager.prepareForLayout(
             this._viewSequence, /* first node to layout */
             this._otherNodes, /* Nodes by id */
@@ -260,10 +284,10 @@ export class ScrollController extends FamousView {
                 size,
                 direction: this.options.layoutDirection,
                 reverse: false,
-                scrollOffset: this._scrollVoidHeight,
+                scrollOffset: this._scrollVoidHeight + this.options.extraBoundsSpace[0],
                 scrollStart,
                 scrollEnd,
-                scrollLength: this._maxKnownTranslate
+                scrollLength: this._maxKnownTranslate + this.options.extraBoundsSpace[1]
             },
         );
 
@@ -285,7 +309,6 @@ export class ScrollController extends FamousView {
         this._layoutNodeManager.removeVirtualViewSequenceNodes();
 
         this._updateThisSizeCache();
-        return scrollOffset;
     }
 
     _updateThisSizeCache() {
@@ -303,13 +326,22 @@ export class ScrollController extends FamousView {
     }
 
     _adjustTotalHeight() {
+
+        let firstNode = this._layoutNodeManager.getFirstRenderedNode();
+        /* If there is an incorrect first node, then we have to adjust for that. This could mean a small flicker if the
+        * extraBounds + margin is smaller than the node size
+         */
+        if (firstNode && this._firstNodeIndex === 0 && firstNode.getTranslate()[this.options.layoutDirection] > (this.options.layoutOptions.margins[0] + this.options.extraBoundsSpace[0])) {
+            this._resetSequenceToFirstNode();
+            this._enqueueCommitAction(this.invalidateLayout);
+        }
         /* Determine what the point furthest away was */
         let lastNode = this._layoutNodeManager.getLastRenderedNode();
         if (lastNode) {
             let bottomPosition = lastNode.getTranslate()[this.options.layoutDirection] + lastNode.scrollLength;
             /* If we are seeing the last node, then redefine the bottom position. It can have been (over/under)estimated previously */
             if (lastNode.renderNode === this._layoutNodeManager.getLastRenderNodeInSequence()) {
-                if(bottomPosition !== this._maxKnownTranslate){
+                if (bottomPosition !== this._maxKnownTranslate) {
                     this._enqueueCommitAction(this.invalidateLayout);
                     this._maxKnownTranslate = bottomPosition;
                 }
@@ -335,53 +367,84 @@ export class ScrollController extends FamousView {
      * @returns {boolean}
      * @private
      */
-    _normalizeSequence(scrollOffset, scrollSize) {
+    _normalizeSequence(scrollOffset) {
         this._previousValues.normalizedScrollOffset = scrollOffset;
         this._firstNodeIndex = this._layoutNodeManager.getFirstRenderedNodeIndex();
         this._lastNodeIndex = this._layoutNodeManager.getLastRenderedNodeIndex();
+
         let sequenceHead = this._viewSequence.getHead();
+        let sequenceTail = this._viewSequence.getTail();
         /* Normalize to top to make sure that the top margin is correct */
-        if (sequenceHead && scrollOffset < scrollSize + this.options.layoutOptions.margins[0]) {
-            this._viewSequence = sequenceHead;
-            this._scrollVoidHeight = 0;
-            return;
+
+        if (sequenceHead && scrollOffset <= this.options.layoutOptions.margins[0]) {
+            if (this._viewSequence !== sequenceHead) {
+                this._resetSequenceToFirstNode();
+                this._enqueueCommitAction(this.invalidateLayout);
+                return;
+            }
+        }
+        /* Normalize to bottom to make sure that the bottom margin is correct */
+        else if (sequenceTail && this._group.getMaxScrollOffset() - scrollOffset <= this.options.layoutOptions.margins[1] &&
+                /* Make sure that we're seeing the last node and just not temporary hitting bottom*/
+            (this._lastNodeIndex === Infinity || this._lastNodeIndex === sequenceTail.getIndex())) {
+            if (sequenceTail !== this._viewSequence) {
+                this._moveSequence(sequenceTail, true);
+                this._enqueueCommitAction(this.invalidateLayout);
+                return;
+            }
         }
 
+        /* Normalize if we are somewhere in the middle */
         if (this._layoutNodeManager.isSequenceMoved()) {
             let isForwards = this._layoutNodeManager.getMovedSequenceDirection() === 1;
             /* Normalize scroll offset so that the current viewsequence node is as close to the
              * top as possible and the layout function will need to process the least amount
-             of renderables. TODO: Optimise further. We shouldn't have to call the layout function all the time, but only when the scroll exceeded the options.extrabounds */
+             * of renderables.*/
             let normalizedStartSequence = this._layoutNodeManager.getStartSequence();
             if (normalizedStartSequence) {
-                this._normalizeSequenceToNode(normalizedStartSequence, isForwards);
+                this._moveSequence(normalizedStartSequence, isForwards);
             }
             this._scrollVoidHeight = Math.max(0, this._scrollVoidHeight);
         }
+
+
     }
 
-    _normalizeSequenceToNode(nodeToNormalize, isForwards) {
+    /**
+     * Resets the sequence to the first node, as it started out
+     * @private
+     */
+    _resetSequenceToFirstNode() {
+        this._viewSequence = this._viewSequence.getHead();
+        this._scrollVoidHeight = 0;
+    }
+
+    /**
+     * Moves the sequence to the specific node
+     * @param newSequence
+     * @param isForwards
+     * @private
+     */
+    _moveSequence(newSequence, isForwards) {
         let node = this._layoutNodeManager.getStartEnumNode(isForwards);
-        while (node.renderNode !== nodeToNormalize.get()) {
+        while (node && node.renderNode !== newSequence.get()) {
             /* If there is no scrollLength, then it must be the bottomScroller, skip it */
-            if (!node.scrollLength) {
-                continue;
-            }
-            if (isForwards) {
-                this._scrollVoidHeight += node.scrollLength;
-            } else {
-                this._scrollVoidHeight -= node.scrollLength;
+            if (node.scrollLength) {
+                if (isForwards) {
+                    this._scrollVoidHeight += node.scrollLength;
+                } else {
+                    this._scrollVoidHeight -= node.scrollLength;
+                }
             }
             node = isForwards ? node._next : node._prev;
         }
         if (!isForwards && node) {
             this._scrollVoidHeight -= node.scrollLength;
         }
-        this._viewSequence = nodeToNormalize;
-        console.log(`this._viewSequence.getIndex(): ${this._viewSequence.getIndex()}`);
+        this._viewSequence = newSequence;
     }
 
-
+    /* Used to return the specs by the native group */
     _innerRender() {
         for (let spec of this._specs) {
             if (spec.renderNode) {
@@ -392,42 +455,44 @@ export class ScrollController extends FamousView {
         return this._specs;
     }
 
+    /**
+     *  Gets the size of the scrollcontroller
+     *  */
     getSize() {
         return this._size || [undefined, undefined];
     }
 
-    commit(context) {
-        let {size, transform} = context;
-        let scrollOffset = this._group.getScrollOffset();
-        let eventData;
+    /**
+     * Performs enqueued functions
+      */
 
+    _performEnqueuedCommitActions() {
         let actionsToPerform = [...this._commitActions];
         this._commitActions = [];
         for (let action of actionsToPerform) {
             action();
         }
+    }
+
+    commit(context) {
+        let {size, transform} = context;
+
+        let scrollOffset = this._group.getScrollOffset();
+        let eventData= {
+            target: this,
+            oldSize: this._previousValues.contextSize,
+            size,
+            oldScrollOffset: this._previousValues.scrollOffset,
+            scrollOffset
+        };
+        let didLayout = false;
+        this._performEnqueuedCommitActions();
 
         //TODO: Add events scrollstart and scrollend, or maybe not. Not sure if needed
         if (this._isLayoutNecessary(size, scrollOffset)) {
 
-            // Prepare event data
-            eventData = {
-                target: this,
-                oldSize: this._previousValues.contextSize,
-                size,
-                oldScrollOffset: this._previousValues.scrollOffset,
-                scrollOffset
-            };
+            didLayout = true;
             this._eventOutput.emit('layoutstart', eventData);
-
-            /* Perform layout */
-            scrollOffset = this._layout(size, scrollOffset);
-
-            /* Depending on whether an inserted node is in view or not, we might have to enable flowing mode */
-            if (this._dirtyRenderables.length) {
-                this._isDirty = !this._dirtyRenderables.every((dirtyRenderable) => !this._layoutNodeManager.isNodeInCurrentBuild(dirtyRenderable));
-                this._dirtyRenderables = [];
-            }
 
             /* When the layout has changed, and we are not just scrolling,
              * disable the locked state of the layout-nodes so that they
@@ -441,17 +506,22 @@ export class ScrollController extends FamousView {
                 }
             }
 
-
+            /* Perform layout */
+            this._layout(size, scrollOffset);
         } else {
             /* Reset the ensureVisibleRenderNode to prevent unwanted behaviour when doing replace and not finding the renderable */
             this._ensureVisibleNode = null;
         }
         /* Do the paper-work for creating the entire spec for the nodes */
         //TODO See if we have to add a translate here
-        var result = this._layoutNodeManager.buildSpecAndDestroyUnrenderedNodes(undefined);
-        this._specs = result.specs;
+        let result;
+        if(this._previousValues.modified || didLayout){
+            result = this._layoutNodeManager.buildSpecAndDestroyUnrenderedNodes();
+            this._specs = result.specs;
+        }
 
-        if (result.modified) {
+
+        if (result && result.modified) {
             this._eventOutput.emit('reflow', {
                 target: this
             });
@@ -462,51 +532,56 @@ export class ScrollController extends FamousView {
             this.scrollToBottom();
         }
 
+
         /* Reset variables */
         this._isDirty = false;
         this._reLayout = false;
         this._previousValues.scrollDelta = this._previousValues.scrollOffset ? this._previousValues.scrollOffset - scrollOffset : 0;
         this._previousValues.scrollOffset = scrollOffset;
         this._previousValues.contextSize = size;
-        this._previousValues.resultModified = result.modified;
+        this._previousValues.resultModified = result && result.modified;
         this._previousValues.maxKnownTranslate = this._maxKnownTranslate;
 
 
-
-        if(this._physicsEngine.isSleeping()){
-            if (scrollOffset === 0 && this._previousValues.scrollDelta > 3){
-                this._scrollParticle.setVelocity1D(Math.min(this._previousValues.scrollDelta, 10));
-                this._physicsEngine.wake();
-            } else if(this.isAtBottom()){
-                this._overScrollSpring.setOptions({anchor: this._group.getMaxScrollOffset()});
-                this._scrollParticle.setVelocity1D(Math.min(this._previousValues.scrollDelta, 10));
-                this._physicsEngine.wake();
+        if (this._physicsEngine.isSleeping()) {
+            if (scrollOffset === 0 || this.isAtBottom()) {
+                this._startOverscrollAnimation();
             }
-        } else if(!this.isAtBottom() && scrollOffset !== 0){
+        } else if (!this.isAtBottom() && scrollOffset !== 0) {
             this._physicsEngine.sleep();
         }
+        let extraTranslate = [0, 0, 0];
+        /* Adjust transform and size to extra bounds */
+        extraTranslate[this.options.layoutDirection] = -this.options.extraBoundsSpace[0];
+        let expandedSize = [...size];
+        expandedSize[this.options.layoutDirection] += this.options.extraBoundsSpace[0] + this.options.extraBoundsSpace[1];
 
 
         if (!this._physicsEngine.isSleeping()) {
-            let bounceTranslate = [0, 0, 0];
-            bounceTranslate[this.options.layoutDirection] = this._scrollParticle.getPosition1D();
-            transform = Transform.thenMove(transform, bounceTranslate);
+            extraTranslate[this.options.layoutDirection] += this._scrollParticle.getPosition1D();
         }
 
-        if (eventData) { /* eventData is only used here to check whether there has been a re-layout */
+        transform = Transform.thenMove(transform, extraTranslate);
+
+        if (didLayout) {
             this._eventOutput.emit('layoutend', eventData);
             /* Removed the logic for emitting pagechange, for now. TODO: Possibly, add it back */
         }
-        /*this._group.setScrollOffset(scrollOffset);*/
 
         // Return the spec
         return {
-            transform: transform,
-            size: size,
+            transform,
+            size: expandedSize,
             opacity: context.opacity,
             origin: context.origin,
             target: this._group.render()
         };
+    }
+
+    _startOverscrollAnimation() {
+        let scrollVelocity = this._previousValues.scrollDelta/Engine.getFrameTimeDelta();
+        this._scrollParticle.setVelocity1D(Math.min(scrollVelocity, 10));
+        this._physicsEngine.wake();
     }
 
     render() {
