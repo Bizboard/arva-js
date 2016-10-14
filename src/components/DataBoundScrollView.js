@@ -494,7 +494,7 @@ export class DataBoundScrollView extends ScrollController {
     }
 
     _getZeroIndex() {
-        return this._header ? 2 : 1;
+        return this._header ? 1 : 0;
     }
 
     _removePlaceholder() {
