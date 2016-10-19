@@ -255,7 +255,7 @@ export class FirebaseWorkerDataSource extends DataSource {
      */
     authWithOAuthToken(provider, credentials, onComplete) {
         credentials.provider = provider;
-        return firebase.auth().signInWithCredential(credentials).then((user) => { // todo
+        return this._dataReference.auth().signInWithCredential(credentials).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
@@ -272,7 +272,7 @@ export class FirebaseWorkerDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithCustomToken(authToken, onComplete) {
-        return firebase.auth().signInWithCustomToken(authToken).then((user) => { // todo
+        return this._dataReference.auth().signInWithCustomToken(authToken).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
@@ -289,7 +289,7 @@ export class FirebaseWorkerDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithPassword(credentials, onComplete) {
-        return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password).then((user) => { // todo
+        return this._dataReference.auth().signInWithEmailAndPassword(credentials.email, credentials.password).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
@@ -306,7 +306,7 @@ export class FirebaseWorkerDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authAnonymously(options) {
-        return firebase.auth().signInAnonymously(); // todo
+        return this._dataReference.auth().signInAnonymously();
     }
 
     /**
@@ -316,7 +316,7 @@ export class FirebaseWorkerDataSource extends DataSource {
      * @returns {Object|null} User auth object.
      */
     getAuth() { // todo
-        let firebaseAuth = firebase.auth();
+        let firebaseAuth = this._dataReference.auth();
         let {currentUser} = firebaseAuth;
         if (!this._authDataPresent) {
             if (currentUser) {
@@ -341,7 +341,7 @@ export class FirebaseWorkerDataSource extends DataSource {
      * @returns {void}
      */
     unauth() {
-        return firebase.auth().signOut(); // todo
+        return this._dataReference.auth().signOut();
     }
 
     /**

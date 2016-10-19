@@ -109,6 +109,45 @@ class FirebaseWorker {
         options.result = 'completed';
         FirebaseWorker.postMessage(options);
     }
+
+    static auth(options = {}){
+          options.result= firebase.auth().currentUser;
+          FirebaseWorker.postMessage(options);
+    }
+
+    static signOut(options = {}){
+        firebaseApp.auth().signOut();
+        options.result = 'completed';
+        FirebaseWorker.postMessage(options);
+    }
+
+    static signInWithCredential(options = {}){
+        options.result = firebaseApp.auth().authWithOAuthToken(options.data);
+        FirebaseWorker.postMessage(options);
+    }
+
+    static signInWithCustomToken(options = {}){
+        options.result = firebaseApp.auth().signInWithCustomToken(options.data);
+        FirebaseWorker.postMessage(options);
+    }
+
+    static signInWithEmailAndPassword(options = {}){
+        options.result = firebaseApp.auth().signInWithEmailAndPassword(options.data.email, options.data.password);
+        FirebaseWorker.postMessage(options);
+    }
+
+    static signInAnonymously(options = {}){
+        options.result = firebaseApp.auth().signInAnonymously();
+        FirebaseWorker.postMessage(options);
+    }
+
+    static onAuthStateChanged(options = {}){
+        firebaseApp.auth().onAuthStateChanged((result)=>{
+            options.result = result;
+            FirebaseWorker.postMessage(options);
+        });
+    }
+
 }
 
 self.onmessage = (event)=>{

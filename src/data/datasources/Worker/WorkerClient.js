@@ -27,7 +27,7 @@ export class WorkerClient extends EventEmitter {
         }
     }
 
-    static onWorkerMessage({data}){
+    static onWorkerMessage({data}) {
         data = JSON.parse(data);
         if (data && data.subscriberID) {
             if (WorkerClient.deferredTasks[data.subscriberID] instanceof Promise) {
@@ -57,7 +57,8 @@ export class WorkerClient extends EventEmitter {
         return WorkerClient.deferredTasks[WorkerClient.subscriberID];
     }
 
-    on(event = '', handler = ()=> {}, context = this) {
+    on(event = '', handler = ()=> {
+    }, context = this) {
         WorkerClient.deferredTasks[++WorkerClient.subscriberID] = this._emitEvent.bind(this);
         let options = {
             action: 'subscribe',
@@ -159,17 +160,48 @@ export class WorkerClient extends EventEmitter {
         });
     }
 
-    auth() {
+    async auth() {
+        let currentUser = await this._sendMessage({
+            action: 'auth'
+        });
+
         return {
-            signInWithCustomToken(){
+            currentUser,
+            signInWithCredential(credentials){
+                return this._sendMessage({
+                    action: 'signInWithCredential',
+                    data: credentials
+                });
             },
-            signInWithEmailAndPassword(){
+            signInWithCustomToken(authToken){
+                return this._sendMessage({
+                    action: 'signInWithCustomToken',
+                    data: authToken
+                });
             },
-            signInWithCredential(){
+            signInWithEmailAndPassword(email, password){
+                return this._sendMessage({
+                    action: 'signInWithEmailAndPassword',
+                    data: {email, password}
+                });
             },
             signInAnonymously(){
+                return this._sendMessage({
+                    action: 'signInAnonymously'
+                });
+            },
+            onAuthStateChanged: async function (callback) {
+                WorkerClient.deferredTasks[++WorkerClient.subscriberID] = callback;
+                let options = {
+                    action: 'onAuthStateChanged'
+                };
+                options.subscriberID = WorkerClient.subscriberID;
+                FBWorker.postMessage([JSON.stringify(combineOptions(options, this.options))]);
             },
             signOut(){
+                return this._sendMessage({
+                    action: 'signOut'
+                });
             }
         }
     }
