@@ -268,7 +268,7 @@ export class ScrollController extends FamousView {
 
     _cancelStickBottom() {
         if(this._stickBottom){
-            this._group.forceScrollOffsetInvalidation();
+
             this._stickBottom = false;
         }
     }
@@ -388,21 +388,19 @@ export class ScrollController extends FamousView {
     }
 
     _adjustTotalHeight(scrollOffset, scrollSize) {
-
         this._adjustDistanceToTop(scrollOffset, scrollSize);
         this._adjustDistanceToBottom(scrollOffset, scrollSize);
-
     }
 
     _adjustDistanceToTop(scrollOffset, scrollSize) {
         let firstNode = this._layoutNodeManager.getFirstRenderedNode();
         /* Determine the position of the first node */
-        if (firstNode && !this._stickBottom) {
+        if (firstNode) {
             /* If this if clause is true, we need to allocate more space to scroll upwards */
-            if (this._firstNodeIndex !== 0 && scrollOffset <= this.options.layoutOptions.margins[0] && this._group.getMaxScrollOffset()) {
+            if (this._firstNodeIndex !== 0 && scrollOffset <= this.options.layoutOptions.margins[0] && this._group.getMaxScrollOffset() && !this._stickBottom) {
                 this._allocateExtraHeightAtTop(scrollSize);
                 /* If we are the first node, then redefine the top position. It can have been (over/under)estimated previously */
-            } else if (this._firstNodeIndex === 0  && firstNode.getTranslate()[this.options.layoutDirection] + this._scrollTopHeight < this.options.layoutOptions.margins[0]) {
+            } else if (this._firstNodeIndex === 0  && firstNode.getTranslate()[this.options.layoutDirection] + this._scrollTopHeight !== this.options.layoutOptions.margins[0]) {
                 let newScrollTopHeight = this.options.layoutOptions.margins[0] - firstNode.getTranslate()[this.options.layoutDirection];
                 if(newScrollTopHeight > this._scrollTopHeight){
                     let scrollTopHeightDiff = newScrollTopHeight - this._scrollTopHeight;
@@ -514,7 +512,7 @@ export class ScrollController extends FamousView {
         }
 
         /* Normalize if we are somewhere in the middle */
-        if (this._layoutNodeManager.isSequenceMoved()) {
+        if (this._layoutNodeManager.isSequenceMoved() && !this._stickBottom) {
             let isForwards = this._layoutNodeManager.getMovedSequenceDirection() === 1;
             /* Normalize scroll offset so that the current viewsequence node is as close to the
              * top as possible and the layout function will need to process the least amount
@@ -561,10 +559,6 @@ export class ScrollController extends FamousView {
             if (node) {
                 this._scrollVoidHeight -= node.scrollLength;
             }
-            /* else {
-             this._scrollVoidHeight = 0;
-             }*/
-
         }
         this._viewSequence = newSequence;
         return oldScrollVoidHeight - this._scrollVoidHeight;
