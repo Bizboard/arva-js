@@ -154,6 +154,13 @@ export function StackLayout(context, options) {
     //
     offset = context.scrollOffset + margin[alignment];
     bound = context.scrollEnd;
+    if(context.scrollTopHeight){
+        context.set('topScroller', {
+            translate: [0, 0, 0],
+            size: [0,context.scrollTopHeight]
+        });
+    }
+
 
     var scrollStart = context.scrollStart + margin[alignment];
     while (offset < (bound + spacing)) {
@@ -211,12 +218,14 @@ export function StackLayout(context, options) {
             firstVisibleCell = node;
         }
     }
+    if(context.scrollLength){
+        context.set('bottomScroller', {
+            translate: [0, context.scrollLength + margins[alignment + 2], 0],
+            size: [10,10],
+            origin: [0, 1]
+        });
+    }
 
-    context.set('bottomScroller', {
-        translate: [0, context.scrollLength + margins[alignment + 2], 0],
-        size: [10,10],
-        origin: [0, 1]
-    });
 
     //
     // Process previous nodes
@@ -247,7 +256,7 @@ export function StackLayout(context, options) {
         offset -= set.scrollLength;
         set.size[direction] = nodeSize;
         set.translate[direction] = offset + (alignment ? spacing : 0);
-        if(offset > context.scrollEnd || offset < 0) {
+        if(offset > context.scrollEnd) {
             context.moveStartSequence(false);
         }
 
