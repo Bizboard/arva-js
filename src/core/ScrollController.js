@@ -332,8 +332,8 @@ export class ScrollController extends FamousView {
 
         /* If everything should be layouted, then are bounds should be infinite */
         if (this.options.layoutAll) {
-            scrollStart = 0;
-            scrollEnd = scrollLength;
+            scrollStart = - this._scrollTopHeight;
+            scrollEnd = 10000;
         }
 
 
@@ -395,12 +395,13 @@ export class ScrollController extends FamousView {
     _adjustDistanceToTop(scrollOffset, scrollSize) {
         let firstNode = this._layoutNodeManager.getFirstRenderedNode();
         /* Determine the position of the first node */
-        if (firstNode) {
+        if (firstNode && !this._stickBottom) {
             /* If this if clause is true, we need to allocate more space to scroll upwards */
             if (this._firstNodeIndex !== 0 && scrollOffset <= this.options.layoutOptions.margins[0] && this._group.getMaxScrollOffset() && !this._stickBottom) {
                 this._allocateExtraHeightAtTop(scrollSize);
                 /* If we are the first node, then redefine the top position. It can have been (over/under)estimated previously */
-            } else if (this._firstNodeIndex === 0  && firstNode.getTranslate()[this.options.layoutDirection] + this._scrollTopHeight !== this.options.layoutOptions.margins[0]) {
+            } else if (this._firstNodeIndex === 0  && firstNode.getTranslate()[this.options.layoutDirection] + this._scrollTopHeight !== this.options.layoutOptions.margins[0]
+            ) {
                 let newScrollTopHeight = this.options.layoutOptions.margins[0] - firstNode.getTranslate()[this.options.layoutDirection];
                 if(newScrollTopHeight > this._scrollTopHeight){
                     let scrollTopHeightDiff = newScrollTopHeight - this._scrollTopHeight;
@@ -488,11 +489,10 @@ export class ScrollController extends FamousView {
         let sequenceTail = this._viewSequence.getTail();
         /* Normalize to top to make sure that the top margin is correct */
 
-        if (sequenceHead && scrollOffset <= this.options.layoutOptions.margins[0]) {
+        if (sequenceHead && scrollOffset <= this.options.layoutOptions.margins[0] && this._stickBottom) {
             /* Make sure that we're seeing the first node and just not temporary hitting bottom*/
-            if(this._stickBottom) {
-                this._scrollVoidHeight = scrollSize;
-            }
+            this._scrollVoidHeight = scrollSize;
+
         }
 
 

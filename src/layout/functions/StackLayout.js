@@ -220,9 +220,9 @@ export function StackLayout(context, options) {
     }
     if(context.scrollLength){
         context.set('bottomScroller', {
-            translate: [0, context.scrollLength + margins[alignment + 2], 0],
-            size: [10,10],
-            origin: [0, 1]
+            translate: [0, 0, 0],
+            size: [10,context.scrollLength + margins[alignment + 2]],
+            origin: [0, 0]
         });
     }
 
