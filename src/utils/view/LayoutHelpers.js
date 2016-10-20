@@ -170,7 +170,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
             }
         }
         for (let i = 0; i < 2; i++) {
-            if (dockSize[i] == true) {
+            if (dockSize[i] === true) {
                 /* If a true size is used, do a tilde on it in order for the dockhelper to recognize it as true-sized */
                 dockSize[i] = ~inUseDockSize[i];
             }
