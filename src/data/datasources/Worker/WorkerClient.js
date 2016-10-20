@@ -160,32 +160,33 @@ export class WorkerClient extends EventEmitter {
         });
     }
 
-    async auth() {
-        let currentUser = await this._sendMessage({
+    async getCurrentUser(){
+        return await this._sendMessage({
             action: 'auth'
         });
+    }
 
+    auth() {
         return {
-            currentUser,
-            signInWithCredential(credentials){
+            signInWithCredential: (credentials)=>{
                 return this._sendMessage({
                     action: 'signInWithCredential',
                     data: credentials
                 });
             },
-            signInWithCustomToken(authToken){
+            signInWithCustomToken: (authToken)=>{
                 return this._sendMessage({
                     action: 'signInWithCustomToken',
                     data: authToken
                 });
             },
-            signInWithEmailAndPassword(email, password){
+            signInWithEmailAndPassword: (email, password)=>{
                 return this._sendMessage({
                     action: 'signInWithEmailAndPassword',
                     data: {email, password}
                 });
             },
-            signInAnonymously(){
+            signInAnonymously: ()=>{
                 return this._sendMessage({
                     action: 'signInAnonymously'
                 });
@@ -198,7 +199,7 @@ export class WorkerClient extends EventEmitter {
                 options.subscriberID = WorkerClient.subscriberID;
                 FBWorker.postMessage([JSON.stringify(combineOptions(options, this.options))]);
             },
-            signOut(){
+            signOut: ()=>{
                 return this._sendMessage({
                     action: 'signOut'
                 });

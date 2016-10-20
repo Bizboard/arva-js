@@ -315,9 +315,8 @@ export class FirebaseWorkerDataSource extends DataSource {
      * If the user is not authenticated, returns null.
      * @returns {Object|null} User auth object.
      */
-    getAuth() { // todo
-        let firebaseAuth = this._dataReference.auth();
-        let {currentUser} = firebaseAuth;
+    async getAuth() {
+        let currentUser = await this._dataReference.getCurrentUser();
         if (!this._authDataPresent) {
             if (currentUser) {
                 this._authDataPresent = true;
@@ -325,7 +324,7 @@ export class FirebaseWorkerDataSource extends DataSource {
             } else
                 {
                 return new Promise((resolve) => {
-                    firebaseAuth.onAuthStateChanged((newUser) => {
+                    this._dataReference.auth().onAuthStateChanged((newUser) => {
                         this._authDataPresent = true;
                         resolve(newUser);
                     });

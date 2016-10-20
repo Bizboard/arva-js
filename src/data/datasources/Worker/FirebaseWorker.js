@@ -111,7 +111,7 @@ class FirebaseWorker {
     }
 
     static auth(options = {}){
-          options.result= firebase.auth().currentUser;
+          options.result = firebase.auth().currentUser;
           FirebaseWorker.postMessage(options);
     }
 
@@ -122,28 +122,34 @@ class FirebaseWorker {
     }
 
     static signInWithCredential(options = {}){
-        options.result = firebaseApp.auth().authWithOAuthToken(options.data);
+        let result = firebaseApp.auth().authWithOAuthToken(options.data);
+        options.result = {uid: result.uid};
         FirebaseWorker.postMessage(options);
     }
 
     static signInWithCustomToken(options = {}){
-        options.result = firebaseApp.auth().signInWithCustomToken(options.data);
+        let result = firebaseApp.auth().signInWithCustomToken(options.data);
+        options.result = {uid: result.uid};
         FirebaseWorker.postMessage(options);
     }
 
     static signInWithEmailAndPassword(options = {}){
-        options.result = firebaseApp.auth().signInWithEmailAndPassword(options.data.email, options.data.password);
+        let result = firebaseApp.auth().signInWithEmailAndPassword(options.data.email, options.data.password);
+        options.result = {
+            uid: result.uid, profile: {email: result.email, password: result.password}
+        };
         FirebaseWorker.postMessage(options);
     }
 
-    static signInAnonymously(options = {}){
-        options.result = firebaseApp.auth().signInAnonymously();
+    static async signInAnonymously(options = {}){
+        let result = await firebaseApp.auth().signInAnonymously();
+        options.result = {uid: result.uid};
         FirebaseWorker.postMessage(options);
     }
 
     static onAuthStateChanged(options = {}){
-        firebaseApp.auth().onAuthStateChanged((result)=>{
-            options.result = result;
+        firebaseApp.auth().onAuthStateChanged(({uid})=>{
+            options.result = uid;
             FirebaseWorker.postMessage(options);
         });
     }
