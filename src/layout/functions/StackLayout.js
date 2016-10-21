@@ -157,6 +157,7 @@ export function StackLayout(context, options) {
     if(context.scrollTopHeight){
         context.set('topScroller', {
             translate: [0, 0, 0],
+            opacity: 0,
             size: [0,context.scrollTopHeight]
         });
     }
@@ -221,6 +222,7 @@ export function StackLayout(context, options) {
     if(context.scrollLength){
         context.set('bottomScroller', {
             translate: [0, 0, 0],
+            opacity: 0,
             size: [10,context.scrollLength + margins[alignment + 2]],
             origin: [0, 0]
         });

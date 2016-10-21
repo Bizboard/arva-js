@@ -40,6 +40,7 @@ import {ObjectHelper}          from '../utils/ObjectHelper.js';
 import {StackLayout}           from '../layout/functions/StackLayout.js';
 import {PushDownSurface}       from './PushDownSurface.js';
 
+//TODO: There should still be some more forceScrollOffsetInvlaidation being done
 /**
  * Only supports linkedListViews as dataSource. Meant to be used with the dbsv.
  */
@@ -80,6 +81,7 @@ export class ScrollController extends FamousView {
             contextSize: [0, 0],
             scrollOffset: 0
         };
+        this._cachedSpecs = {};
         this._scrollToTransitionable = new Transitionable();
         this._initOverScrollPhysics();
         this.on('touchmove', this._onTouchMove);
@@ -98,7 +100,7 @@ export class ScrollController extends FamousView {
             if (!spec && this.options.flowOptions.insertSpec) {
                 node.setSpec(this.options.flowOptions.insertSpec);
             }
-        });
+        }, true);
         this._layoutNodeManager.setNodeOptions(this.options.flowOptions);
         /* Enable touch move. TODO: When stable and tested, remove this */
         Engine.enableTouchMove();
@@ -121,10 +123,14 @@ export class ScrollController extends FamousView {
 
         this._pipeRenderableAsNecessary(renderable);
 
+        /* Mark as flowy renderable for the layoutnodemanager */
+        renderable.isFlowy = true;
+
         if (this._isPositionOutsideCurrentView(position)) {
             return this;
         }
         this._accountForModificationsHappeningAtStart();
+
 
         /* When a custom insert-spec was specified, store that in the layout-node */
         if (insertSpec) {
@@ -132,6 +138,7 @@ export class ScrollController extends FamousView {
             newNode.executeInsertSpec();
             this._layoutNodeManager.insertNode(newNode);
         }
+
 
         this.reflow();
         return this;
@@ -145,7 +152,6 @@ export class ScrollController extends FamousView {
             Utils.warn(`Cannot remove non-existent index: ${position}`);
             return;
         }
-
 
 
         this._viewSequence = this._viewSequence.remove(sequence);
@@ -178,13 +184,15 @@ export class ScrollController extends FamousView {
         sequence.set(renderable);
         if (oldRenderable !== renderable) {
             this._pipeRenderableAsNecessary(renderable);
+            /* Mark as flowy renderable for the layoutnodemanager */
+            renderable.isFlowy = true;
             if (noAnimation && oldRenderable) {
                 let node = this._layoutNodeManager.getNodeByRenderNode(oldRenderable);
                 if (node) {
                     node.setRenderNode(renderable);
                 }
             } else {
-                if(!this._isPositionOutsideCurrentView(indexOrId)){
+                if (!this._isPositionOutsideCurrentView(indexOrId)) {
                     this.reflow();
                 }
             }
@@ -198,26 +206,28 @@ export class ScrollController extends FamousView {
         if (this._viewSequence !== this._viewSequence.getTail()) {
             this._moveSequence(this._viewSequence.getTail(), true);
         }
-        this.scrollToBottom();
+        this.animateToBottom();
         this._stickBottom = true;
     }
 
     animateToBottom() {
-        this._scrollToTransitionable.set(this._group.getScrollOffset());
-        this._moveSequence(this._viewSequence.getTail(), true);
-        this._scrollToTransitionable.set(this._group.getMaxScrollOffset(), {
-            curve: function linear(x) {
-                return x;
-            }, duration: 300
-        }, () => {
+        if (!this._scrollToTransitionable.isActive()) {
+            this._scrollToTransitionable.set(this._group.getScrollOffset());
+            this._moveSequence(this._viewSequence.getTail(), true);
+            this._scrollToTransitionable.set(this._group.getMaxScrollOffset(), {
+                curve: function linear(x) {
+                    return x;
+                }, duration: 300
+            }, () => {
+                this._group.forceScrollOffsetInvalidation();
+            });
+        }
 
-        });
     }
 
     scrollToBottom() {
         this._shouldIgnoreScrollEvent = true;
         this._group.scrollToBottom();
-
     }
 
     _isPositionOutsideCurrentView(position) {
@@ -228,7 +238,7 @@ export class ScrollController extends FamousView {
         /* If we're doing modifications and we're at the beginning, we should be sure to reset the sequence to the first node
          * in order to to update the layout in a faulty way
          */
-        if(this._firstNodeIndex === 0){
+        if (this._firstNodeIndex === 0) {
             // this._resetSequenceToFirstNode();
         }
     }
@@ -243,6 +253,8 @@ export class ScrollController extends FamousView {
 
     reflow() {
         this._isDirty = true;
+        /* Reset the cached specs */
+        this._cachedSpecs = {};
     }
 
     _initNativeScrollGroup() {
@@ -250,9 +262,9 @@ export class ScrollController extends FamousView {
         this._group.add({render: this._innerRender});
         /* Prevent scrolling in the opposite direction */
         this._group.setProperties({[`overflow${this.options.layoutDirection === 0 ? 'Y' : 'X'}`]: 'hidden'});
-        this._eventInput.on('mousewheel', this._cancelStickBottom);
-        this._eventInput.on('wheel', this._cancelStickBottom);
-        this._eventInput.on('touchmove', this._cancelStickBottom);
+        this._group.on('mousewheel', this._onManualScrollAttempt);
+        this._group.on('wheel', this._onManualScrollAttempt);
+        this._group.on('touchmove', this._onManualScrollAttempt);
         this._group.on('scroll', (e) => {
             if (!this._shouldIgnoreScrollEvent) {
                 this._shouldIgnoreScrollEvent = false;
@@ -266,9 +278,9 @@ export class ScrollController extends FamousView {
         }
     }
 
-    _cancelStickBottom() {
-        if(this._stickBottom){
-
+    _onManualScrollAttempt() {
+        this._didManualScroll = true;
+        if (this._stickBottom) {
             this._stickBottom = false;
         }
     }
@@ -332,10 +344,9 @@ export class ScrollController extends FamousView {
 
         /* If everything should be layouted, then are bounds should be infinite */
         if (this.options.layoutAll) {
-            scrollStart = - this._scrollTopHeight;
+            scrollStart = -this._scrollTopHeight;
             scrollEnd = 10000;
         }
-
 
         /* Prepare for layout */
         let layoutContext = this._layoutNodeManager.prepareForLayout(
@@ -398,12 +409,16 @@ export class ScrollController extends FamousView {
         if (firstNode && !this._stickBottom) {
             /* If this if clause is true, we need to allocate more space to scroll upwards */
             if (this._firstNodeIndex !== 0 && scrollOffset <= this.options.layoutOptions.margins[0] && this._group.getMaxScrollOffset() && !this._stickBottom) {
-                this._allocateExtraHeightAtTop(scrollSize);
+                /* If we can't scroll that much, we also can't allocate too much space at the top since
+                 * allocating space at top also implies scrolling down with the same amount.
+                 */
+                let extraSpaceToAllocate = Math.min(scrollSize, this._group.getMaxScrollOffset());
+                this._allocateExtraHeightAtTop(extraSpaceToAllocate);
                 /* If we are the first node, then redefine the top position. It can have been (over/under)estimated previously */
-            } else if (this._firstNodeIndex === 0  && firstNode.getTranslate()[this.options.layoutDirection] + this._scrollTopHeight !== this.options.layoutOptions.margins[0]
+            } else if (this._firstNodeIndex === 0 && firstNode.getTranslate()[this.options.layoutDirection] + this._scrollTopHeight !== this.options.layoutOptions.margins[0]
             ) {
                 let newScrollTopHeight = this.options.layoutOptions.margins[0] - firstNode.getTranslate()[this.options.layoutDirection];
-                if(newScrollTopHeight > this._scrollTopHeight){
+                if (newScrollTopHeight > this._scrollTopHeight) {
                     let scrollTopHeightDiff = newScrollTopHeight - this._scrollTopHeight;
                     this._allocateExtraHeightAtTop(scrollTopHeightDiff);
                 } else {
@@ -435,8 +450,9 @@ export class ScrollController extends FamousView {
 
     _scrollWhenPossibleTo(targetScrollOffset) {
 
+
         /* don't do if stick bottom because otherwise it will conflict with the new scroll directive */
-        if(this._tryingToScrollTo === undefined && !this._stickBottom){
+        if (this._tryingToScrollTo === undefined && !this._stickBottom) {
             this._tryingToScrollTo = targetScrollOffset;
             this._enqueueCommitAction(function changeScroll() {
                 if (this._group.getScrollOffset() !== this._tryingToScrollTo) {
@@ -446,7 +462,7 @@ export class ScrollController extends FamousView {
                 } else {
                     this._tryingToScrollTo = undefined;
                     /* Chrome tends to get stuck on a certain scrolloffset after performing this function.
-                    * We can invalidate the scrollOffset by calling this function */
+                     * We can invalidate the scrollOffset by calling this function */
                     this._group.forceScrollOffsetInvalidation();
                 }
             }.bind(this));
@@ -454,14 +470,24 @@ export class ScrollController extends FamousView {
     }
 
     _allocateExtraHeightAtTop(space) {
-        this._setScrollTopHeight(this._scrollTopHeight + space);
-        this._scrollWhenPossibleTo(space);
+        if (!this._allocationLock) {
+            this._allocationLock = true;
+            this._setScrollTopHeight(this._scrollTopHeight + space);
+            this._otherNodes.topScroller.once('resize', () => {
+                this._group.setScrollOffset(space);
+                this._allocationLock = false;
+            })
+        }
+
     }
 
     _setScrollTopHeight(scrollTopHeight) {
+        /* TODO: Investigate why we have to do this and see if it's really necessary every time this happens */
+        this._cachedSpecs = {};
         this._scrollTopHeight = scrollTopHeight;
         /* Negative height exists in CSS if done as negative margin-top */
         this._otherNodes.topScroller.setProperties({'margin-top': `${scrollTopHeight < 0 ? scrollTopHeight : 0}px`});
+        this._enqueueCommitAction(this.invalidateLayout.bind(this));
     }
 
     /**
@@ -570,9 +596,13 @@ export class ScrollController extends FamousView {
             if (spec.renderNode) {
                 spec.target = spec.renderNode.render();
             }
+            if(spec.renderNode === this._otherNodes.bottomScroller || spec.renderNode )
+            this._cachedSpecs[spec.target] = spec;
         }
+
+        let specs = Object.keys(this._cachedSpecs).map((target) => this._cachedSpecs[target]);
         /* Removed cleanup registration code. TODO: Examine whether the cleanup registration is still necessary to add here */
-        return this._specs;
+        return specs;
     }
 
     /**
@@ -630,7 +660,9 @@ export class ScrollController extends FamousView {
                 /* TODO Refactor linkedViewList to support symbol.iterator so we can do for of */
                 let node = this._layoutNodeManager.getStartEnumNode();
                 while (node) {
-                    node.releaseLock(true);
+                    if (node.releaseLock) {
+                        node.releaseLock(true);
+                    }
                     node = node._next;
                 }
             }
@@ -657,24 +689,26 @@ export class ScrollController extends FamousView {
         }
 
 
-        if (this._stickBottom && !this.isAtBottom() ) {
-            this.scrollToBottom();
-        }
-
-
         /* Reset variables */
         this._isDirty = false;
         this._reLayout = false;
+
         this._previousValues.scrollDelta = this._previousValues.scrollOffset ? this._previousValues.scrollOffset - scrollOffset : 0;
         this._previousValues.scrollOffset = scrollOffset;
         this._previousValues.contextSize = size;
         this._previousValues.resultModified = (result && result.modified) || didLayout;
         this._previousValues.maxKnownTranslate = this._maxKnownTranslate;
 
+        if (this._stickBottom && !this.isAtBottom()) {
+            this.animateToBottom();
+        }
+
+        this._didManualScroll = false;
+
         /* Check if we can scroll anywhere at all, and if the physics engine is sleeping. In that case make an overscroll
          * animation */
         if (this._physicsEngine.isSleeping() && this._group.getMaxScrollOffset()) {
-            if (scrollOffset === 0 || this.isAtBottom()) {
+            if ((scrollOffset === 0 && this._firstNodeIndex === 0) || (this.isAtBottom() && this._lastNodeIndex === Infinity)) {
                 this._startOverscrollAnimation();
             }
         } else if (!this.isAtBottom() && scrollOffset !== 0) {
