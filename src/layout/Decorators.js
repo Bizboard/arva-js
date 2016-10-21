@@ -123,7 +123,7 @@ export const layout = {
     /**
      * Specifies the space that should come before the docked renderable. Useful when not specifying the size in the
      * layout.dock function. Note that the space does not appear if there isn't any renderable with a size greater than
-     * zero before it.
+     * zero before it. Can also be specified for the view
      *
      * @example
      * // there's a 20px space before this box
@@ -136,10 +136,14 @@ export const layout = {
      * @returns {Function} A decorator function
      */
     dockSpace: function (space) {
-        return function (view, renderableName, descriptor) {
-            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            // Todo refactor also the z index to the dock
-            renderable.decorations.dock = renderable.decorations.dock ? extend(renderable.decorations.dock, {space}) : {space};
+        return function (target, renderableName, descriptor) {
+            if (typeof target == 'function') {
+                prepPrototypeDecorations(target.prototype).dockSpacing = space;
+            } else {
+                let renderable = prepDecoratedRenderable(target, renderableName, descriptor);
+                // Todo refactor also the z index to the dock
+                renderable.decorations.dock = renderable.decorations.dock ? extend(renderable.decorations.dock, {space}) : {space};
+            }
         };
     },
 
@@ -152,7 +156,7 @@ export const layout = {
      * @param zIndex
      * @returns {Function}
      */
-    _dockTo: function (dockMethod, size, space = 0, zIndex) {
+    _dockTo: function (dockMethod, size, space, zIndex) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
 

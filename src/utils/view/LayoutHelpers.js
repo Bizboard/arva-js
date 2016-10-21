@@ -66,7 +66,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
         for (let renderableName of dockedNames) {
             let [renderable, renderableCounterpart] = dockedRenderables.get(renderableName);
-            let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
+            let {dockSize, translate, innerSize, space = (ownDecorations.dockSpacing || 0)} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
             let {dock, rotate, opacity, origin, scale, skew} = renderable.decorations; // todo add scaling/skew
             let {dockMethod} = dock;
@@ -214,7 +214,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         }
         let dockSize = [...fillSize];
         if (dockedRenderables) {
-            dockSize = this._getDockedRenderablesBoundingBox(dockedRenderables);
+            dockSize = this._getDockedRenderablesBoundingBox(dockedRenderables, ownDecorations);
             if (fillSize) {
                 for (let [dimension, singleFillSize] of fillSize.entries()) {
                     if (singleFillSize !== undefined) {
@@ -241,7 +241,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         return dockSize;
     }
 
-    _getDockedRenderablesBoundingBox(dockedRenderables) {
+    _getDockedRenderablesBoundingBox(dockedRenderables, ownDecorations) {
         let {dockMethod} = dockedRenderables.get(dockedRenderables.keyAt(0))[0].decorations.dock;
         /* Gets the dock type where, 0 is right or left (horizontal) and 1 is top or bottom (vertical) */
         let dockType = this.getDockType(dockMethod);
@@ -281,7 +281,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                     newResult[dockingDirection] = NaN;
                 } else {
                     /* If this or the previous renderable size is 0, don't add the space */
-                    let spaceSize = (resolvedSize[dockingDirection] === 0 || previousDockSize === 0) ? 0 : decorations.dock.space;
+                    let spaceSize = (resolvedSize[dockingDirection] === 0 || previousDockSize === 0)
+                        ? 0
+                        : decorations.dock.space || ownDecorations.dockSpacing || 0;
                     newResult[dockingDirection] = resolvedSize[dockingDirection] + spaceSize + result[dockingDirection];
                     previousDockSize = resolvedSize[dockingDirection];
                 }
