@@ -110,6 +110,7 @@ export class ScrollController extends FamousView {
         this._dataSource = this._viewSequence = new LinkedListViewSequence(this.options.dataSource);
         this.on('recursiveReflow', () => {
             this.invalidateLayout();
+            this._cachedSpecs = {};
             // console.log("RecursiveReflow"); //TODO Remove
         })
     }
@@ -213,7 +214,6 @@ export class ScrollController extends FamousView {
     animateToBottom() {
         if (!this._scrollToTransitionable.isActive()) {
             this._scrollToTransitionable.set(this._group.getScrollOffset());
-            this._moveSequence(this._viewSequence.getTail(), true);
             this._scrollToTransitionable.set(this._group.getMaxScrollOffset(), {
                 curve: function linear(x) {
                     return x;
