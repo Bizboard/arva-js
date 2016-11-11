@@ -30,8 +30,8 @@ export class FirebaseDataSource extends DataSource {
      * @param {Object} options Optional: options to construct the DataSource with.
      * @param {String} [options.orderBy] Optional, order all items received through the dataSource.
      *                                   Options are: '.priority', '.value', or a string containing the child key to order by (e.g. 'MyModelProperty')
-     * @param {Number} [options.limitToFirst] Optional, only subscribe to the first amount of entries.
-     * @param {Number} [options.limitToLast] Optional, only subscribe to the last amount of entries.
+     * @param {Number} [options.limitToFirst]   Optional, only subscribe to the first amount of entries.
+     * @param {Number} [options.limitToLast]    Optional, only subscribe to the last amount of entries.
      * @param {Promise} [options.synced] Optional, a promise to tell the data source that it is only synchronized after this promise is resolved
      **/
     constructor(path, options = {orderBy: '.priority'}) {
@@ -239,8 +239,14 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithOAuthToken(provider, credentials, onComplete) {
-        credentials.provider = provider;
-        return firebase.auth().signInWithCredential(credentials).then((user) => {
+        let providerObject;
+        switch(provider){
+            case 'facebook':
+                providerObject = firebase.auth.FacebookAuthProvider.credential(credentials);
+                break;
+                //TODO: Add more here
+        }
+        return firebase.auth().signInWithCredential(providerObject).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
