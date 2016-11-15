@@ -239,7 +239,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithOAuthToken(provider, credentials, onComplete) {
-        let providerObject = this.generateProviderFromCredential(provider, credentials);
+        let providerObject = this.createProviderFromCredential(provider, credentials);
         return firebase.auth().signInWithCredential(providerObject).then((user) => {
             if (onComplete) {
                 onComplete(user);
