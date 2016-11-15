@@ -239,19 +239,44 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithOAuthToken(provider, credentials, onComplete) {
-        let providerObject;
-        switch(provider){
-            case 'facebook':
-                providerObject = firebase.auth.FacebookAuthProvider.credential(credentials);
-                break;
-                //TODO: Add more here
-        }
+        let providerObject = this.generateProviderFromCredential(provider, credentials);
         return firebase.auth().signInWithCredential(providerObject).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
             return user;
         });
+    }
+
+    /**
+     * Creates a provider with the specified type
+     *
+     * @param {String} providerType Can be 'password' or 'facebook'
+     * @param {String|Object} credential if 'password' providerType, then an object {email:String,password:String}. If
+     * 'facebook' providerType, then a string containing the API token.
+     * @returns {Provider}
+     */
+    createProviderFromCredential(providerType, credential) {
+        let providerObject;
+        switch(providerType){
+            case 'password':
+                providerObject = firebase.auth.EmailAuthProvider.credential(credential.email, credential.password);
+                break;
+            case 'facebook':
+                providerObject = firebase.auth.FacebookAuthProvider.credential(credential);
+                break;
+            //TODO: Add more here
+        }
+        return providerObject;
+    }
+
+    /**
+     * Merges the current user with the specified provider.
+     * @param {Provider} provider
+     * @returns {Authentication}
+     */
+    linkCurrentUserWithProvider(provider) {
+        return firebase.auth().currentUser.link(provider);
     }
 
     /**

@@ -155,6 +155,26 @@ export class DataSource {
     }
 
     /**
+     * Merges the current user with the specified provider.
+     * @param provider
+     * @returns {Authentication}
+     */
+    linkCurrentUserWithProvider(provider) {
+    }
+
+
+    /**
+     * Creates a provider with the specified type
+     *
+     * @param {String} providerType Can be 'password' or 'facebook'
+     * @param {String|Object} credential if 'password' providerType, then an object {email:String,password:String}. If
+     * 'facebook' providerType, then a string containing the API token.
+     * @returns {Provider}
+     */
+    createProviderFromCredential(providerType, credential) {
+    }
+
+    /**
      * Authenticates all instances of this DataSource with a custom auth token or secret.
      * @param {String} authToken Authentication token or secret.
      * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
