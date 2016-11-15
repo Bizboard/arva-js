@@ -70,6 +70,8 @@ function famousMerge(defaultParam, specifiedParam) {
             /* If there is an array present in one place but not the other, we need to be sure to place an empty
             *  array in the other object in order to prevent the contents in that array from being copied unpromptedly */
             if(Array.isArray(value) && ((key in specifiedParam) !== (key in defaultParam))){
+                /* TODO: Sometimes an array seems to errorounesly getting overriden by an empty array. This might
+                 * be fixed by removing the 'if' here and keeping the 'else' */
                 if(!key in specifiedParam){
                     specifiedParam[key] = [];
                 } else {
