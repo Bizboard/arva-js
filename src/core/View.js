@@ -12,7 +12,6 @@ import cloneDeep                    from 'lodash/cloneDeep.js';
 import FamousView                   from 'famous/core/View.js';
 import Surface                      from 'famous/core/Surface.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
-import Engine                       from 'famous/core/Engine.js';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
 
