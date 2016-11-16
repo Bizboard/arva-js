@@ -64,7 +64,7 @@ export class PrioritisedArray extends Array {
         this._modelOptions = modelOptions;
         /* Flag to determine when we're reordering so we don't listen to move updates */
         this._eventEmitter = new EventEmitter();
-        this._childAddedThrottler = new Throttler(1, true, this, true);
+        this._childAddedThrottler = new Throttler(typeof window === 'undefined' ? 0 : 1, true, this, true);
         this._overrideChildAddedForId = null;
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
