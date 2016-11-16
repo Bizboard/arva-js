@@ -41,7 +41,9 @@ export class FirebaseDataSource extends DataSource {
         this._onChangeCallback = null;
         this._onMoveCallback = null;
         this._onRemoveCallback = null;
-        this._dataReference = firebase.database().ref(path);
+        this._firebase = options.customFirebase || firebase;
+
+        this._dataReference = this._firebase.database().ref(path);
         this.handlers = {};
         this.options = combineOptions({synced: Promise.resolve()},options);
         this._synced = this.options.synced;
@@ -94,7 +96,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance pointing to the given child branch.
      */
     child(childName, options = {}) {
-        return new FirebaseDataSource(`${this.path()}/${childName}`, options);
+        return new FirebaseDataSource(`${this.path()}/${childName}`, {customFirebase: this.options.customFirebase, ...options});
     }
 
     /**
@@ -161,7 +163,7 @@ export class FirebaseDataSource extends DataSource {
      */
     push(newData) {
         let pushResult = this._dataReference.push(newData);
-        return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {synced: pushResult});
+        return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {synced: pushResult, customFirebase: this.options.customFirebase});
     }
 
     /**
@@ -192,7 +194,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByChild(childKey) {
-        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: childKey}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: childKey, customFirebase: this.options.customFirebase}));
     }
 
     /**
@@ -200,7 +202,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByKey() {
-        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: '.key'}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: '.key', customFirebase: this.options.customFirebase}));
     }
 
     /**
@@ -208,7 +210,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByValue() {
-        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: '.value'}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: '.value', customFirebase: this.options.customFirebase}));
     }
 
     /**
@@ -217,7 +219,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     limitToFirst(amount) {
-        return new FirebaseDataSource(this.path(), merge({}, this.options, {limitToFirst: amount}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {limitToFirst: amount, customFirebase: this.options.customFirebase}));
     }
 
     /**
@@ -240,7 +242,7 @@ export class FirebaseDataSource extends DataSource {
      */
     authWithOAuthToken(provider, credentials, onComplete) {
         let providerObject = this.createProviderFromCredential(provider, credentials);
-        return firebase.auth().signInWithCredential(providerObject).then((user) => {
+        return this._firebase.auth().signInWithCredential(providerObject).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
@@ -260,10 +262,10 @@ export class FirebaseDataSource extends DataSource {
         let providerObject;
         switch(providerType){
             case 'password':
-                providerObject = firebase.auth.EmailAuthProvider.credential(credential.email, credential.password);
+                providerObject = this._firebase.auth.EmailAuthProvider.credential(credential.email, credential.password);
                 break;
             case 'facebook':
-                providerObject = firebase.auth.FacebookAuthProvider.credential(credential);
+                providerObject = this._firebase.auth.FacebookAuthProvider.credential(credential);
                 break;
             //TODO: Add more here
         }
@@ -276,7 +278,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Authentication}
      */
     linkCurrentUserWithProvider(provider) {
-        return firebase.auth().currentUser.link(provider);
+        return this._firebase.auth().currentUser.link(provider);
     }
 
     /**
@@ -288,7 +290,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithCustomToken(authToken, onComplete) {
-        return firebase.auth().signInWithCustomToken(authToken).then((user) => {
+        return this._firebase.auth().signInWithCustomToken(authToken).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
@@ -305,7 +307,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithPassword(credentials, onComplete) {
-        return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password).then((user) => {
+        return this._firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
@@ -322,7 +324,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authAnonymously(options) {
-        return firebase.auth().signInAnonymously();
+        return this._firebase.auth().signInAnonymously();
     }
 
     /**
@@ -332,7 +334,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Object|null} User auth object.
      */
     getAuth() {
-        let firebaseAuth = firebase.auth();
+        let firebaseAuth = this._firebase.auth();
         let {currentUser} = firebaseAuth;
         if (!this._authDataPresent) {
             if (currentUser) {
@@ -356,7 +358,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {void}
      */
     unauth() {
-        return firebase.auth().signOut();
+        return this._firebase.auth().signOut();
     }
 
     /**
