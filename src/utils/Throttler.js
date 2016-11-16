@@ -40,15 +40,20 @@ export class Throttler {
      * @returns {void}
      */
     add(action) {
-        /* If we're not queueing, clear the previous action if present. The new action will replace the old one. */
-        if (!this.shouldQueue) {
-            this.queue.pop();
+        if(this.delay === 0){
+            action.call(this.actionContext);
+        } else {
+            /* If we're not queueing, clear the previous action if present. The new action will replace the old one. */
+            if (!this.shouldQueue) {
+                this.queue.pop();
+            }
+
+            this.queue.push(action);
+            if (!this.timer) {
+                this.timer = this._timerFunction(this._executeTopAction, this.delay);
+            }
         }
 
-        this.queue.push(action);
-        if (!this.timer) {
-            this.timer = this._timerFunction(this._executeTopAction, this.delay);
-        }
     }
 
     /**
