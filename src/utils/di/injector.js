@@ -51,18 +51,14 @@ class Injector {
     }
 
     _retrieveToken(classConstructor, constructionParams = []) {
-        if (!this._tokenCache.has(classConstructor)) {
-            this._tokenCache.set(classConstructor, new Map());
-        }
 
-        let paramsHash = hash(constructionParams);
-        let cachedClass = this._tokenCache.get(classConstructor);
-        if (!cachedClass.has(paramsHash)) {
+        let totalHash = hash([classConstructor, ...constructionParams]);
+        if (!this._tokenCache.has(totalHash)) {
             /* Generate a new token */
-            cachedClass.set(paramsHash, `${Date.now()}${Math.random()}`);
+            this._tokenCache.set(totalHash, `${Date.now()}${Math.random()}`);
         }
 
-        let foundHash = cachedClass.get(paramsHash);
+        let foundHash = this._tokenCache.get(totalHash);
         return classConstructor.name ? `${classConstructor.name}-${foundHash}` : foundHash;
     }
 
@@ -166,7 +162,6 @@ class Injector {
             provider = this._providers.get(token);
             return instance;
         }
-
         provider = this._providers.get(token);
 
         // No provider defined (overridden), use the default provider (token).
