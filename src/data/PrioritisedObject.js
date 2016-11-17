@@ -103,6 +103,9 @@ export class PrioritisedObject extends EventEmitter {
      * @returns {void}
      */
     once(event, handler, context = this) {
+        if (!handler) {
+            return new Promise((resolve) => this.once(event, resolve, context));
+        }
         return this.on(event, function onceWrapper() {
             handler.call(context, ...arguments);
             this.off(event, onceWrapper, context);
