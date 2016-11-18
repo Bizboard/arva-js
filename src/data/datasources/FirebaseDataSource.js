@@ -173,9 +173,11 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} Resolves when write to server is complete.
      */
     setWithPriority(newData, priority) {
-        let completionPromise = this.dataReference.setWithPriority(newData, priority);
-        /* Append another promise to the chain to keep track of whether it's still synchronized */
-        this._synced = this._synced.then(() => completionPromise);
+        /* Rethrow the error in order to be able to catch it higher up */
+        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((err) => {throw new Error(err)});
+        /* Append another promise to the chain to keep track of whether it's still synchronized. Fail silently
+         * since we already have error handling above */
+        this._synced = this._synced.then(() => completionPromise).catch(() => {});
         return completionPromise;
     }
 
