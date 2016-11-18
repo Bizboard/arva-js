@@ -87,9 +87,13 @@ export class Model extends PrioritisedObject {
         } else {
             this._buildFromDataSource(this._dataSource);
         }
+        if(!options.noInitialSync){
+            /* Write local data to model, if any data is present. */
+            this._writeLocalDataToModel(data).then(this._dataIsSynced);
+        } else {
+            this._dataIsSynced();
+        }
 
-        /* Write local data to model, if any data is present. */
-        this._writeLocalDataToModel(data).then(this._dataIsSynced);
     }
 
     /**

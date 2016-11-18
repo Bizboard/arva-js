@@ -321,7 +321,7 @@ export class PrioritisedArray extends Array {
         dataSnapshot.forEach(function (child) {
             this._childAddedThrottler.add(function (child) {
                 /* Create a new instance of the given data type and prefill it with the snapshot data. */
-                let options = {dataSnapshot: child};
+                let options = {dataSnapshot: child, noInitialSync: true};
                 let childRef = this._dataSource.child(child.key);
 
                 /* whenever the ref() is a datasource, we can bind that source to the model.
@@ -415,6 +415,7 @@ export class PrioritisedArray extends Array {
         }
 
         let model = new this._dataType(id, null, extend({}, this._modelOptions, {
+            noInitialSync: true,
             dataSnapshot: snapshot
         }));
         this.add(model, prevSiblingId);
