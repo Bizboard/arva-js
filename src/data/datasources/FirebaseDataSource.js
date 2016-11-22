@@ -28,6 +28,7 @@ export class FirebaseDataSource extends DataSource {
      * @param {String} path Full path to resource in remote data storage.
      * @return {FirebaseDataSource} FirebaseDataSource instance.
      * @param {Object} options Optional: options to construct the DataSource with.
+     * @param {[key: String, value: String]} [options.equalTo] Optional, only subscribe to items with a certain value.
      * @param {String} [options.orderBy] Optional, order all items received through the dataSource.
      *                                   Options are: '.priority', '.value', or a string containing the child key to order by (e.g. 'MyModelProperty')
      * @param {Number} [options.limitToFirst]   Optional, only subscribe to the first amount of entries.
@@ -52,15 +53,21 @@ export class FirebaseDataSource extends DataSource {
          * defined. This needs to be saved seperately, because methods like child() and key() can't be called
          * from the ordered reference, and must instead be performed on the standard reference. */
 
-        if (this.options.orderBy && this.options.orderBy === '.priority') {
+        if (this.options.orderBy && this.options.orderBy === '.priority' && !this.options.equalTo) {
             this._orderedDataReference = this._dataReference.orderByPriority();
         } else if (this.options.orderBy && this.options.orderBy === '.value') {
             this._orderedDataReference = this._dataReference.orderByValue();
         } else if (this.options.orderBy && this.options.orderBy !== '') {
             this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+        } else if(this.options.equalTo) {
+            let [key, value] = this.options.equalTo;
+            this._orderedDataReference = this._dataReference.orderByChild(key).equalTo(value);
         } else {
             this._orderedDataReference = this._dataReference;
         }
+
+
+
 
         if (this.options.limitToFirst !== undefined) {
             this._orderedDataReference = this._orderedDataReference.limitToFirst(this.options.limitToFirst);
