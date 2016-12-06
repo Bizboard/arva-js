@@ -7,6 +7,7 @@
 
  */
 import extend                       from 'lodash';
+import _                            from 'lodash';
 import {provide}                    from '../../utils/di/Decorators.js';
 import {ObjectHelper}               from '../../utils/ObjectHelper.js';
 import {UrlParser}                  from '../../utils/request/UrlParser.js';
@@ -55,7 +56,7 @@ export class SharePointDataSource extends DataSource {
                 listName: this.key()
             };
 
-            let sharePointOptions = extend({}, this.options, configuration);
+            let sharePointOptions = _.merge({}, this.options, configuration);
 
             /* Bind the soap adapter against the datasource with given configuration */
             this._dataReference = new SharePoint(sharePointOptions);
