@@ -446,7 +446,6 @@ export class PrioritisedArray extends Array {
 
         let model = this[previousPosition];
         model._onChildValue(snapshot, prevSiblingId);
-        model.emit('changed');
         let newPosition = this.findIndexById(prevSiblingId) + 1;
 
         this._moveItem(previousPosition, newPosition, model);

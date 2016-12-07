@@ -9,8 +9,11 @@
  */
 
 import isEqual          from 'lodash/isEqual.js';
+import every            from 'lodash/every.js';
 import EventEmitter     from 'eventemitter3';
 import {ObjectHelper}   from '../utils/ObjectHelper.js';
+import {Injection}      from '../utils/Injection.js';
+import {DataSource}     from '../data/DataSource.js';
 
 export class PrioritisedObject extends EventEmitter {
 
@@ -60,6 +63,7 @@ export class PrioritisedObject extends EventEmitter {
         this._dataSource = dataSource;
         this._priority = 0; // Priority of this object on remote dataSource
         this._isBeingWrittenByDatasource = false; // Flag to determine when dataSource is updating object
+        this._childChangedListeners  = {};
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
@@ -83,6 +87,13 @@ export class PrioritisedObject extends EventEmitter {
         } else {
             this._buildFromDataSource(dataSource);
         }
+    }
+
+    _getParentDataSource() {
+        if(!this._parentDataSource){
+            return this._parentDataSource = Injection.get(DataSource, this._dataSource.parent());
+        }
+        return this._parentDataSource;
     }
 
     /**
@@ -120,7 +131,7 @@ export class PrioritisedObject extends EventEmitter {
      * @returns {void}
      */
     on(event, handler, context = this) {
-        let haveListeners = this.listeners(event, true);
+        let haveListeners = this._hasListenersOfType(event);
         super.on(event, handler, context);
 
         switch (event) {
@@ -142,8 +153,15 @@ export class PrioritisedObject extends EventEmitter {
                 }
                 break;
             case 'added':
-                if (!haveListeners) {
+
+                if (haveListeners) {
                     this._dataSource.setChildAddedCallback(this._onChildAdded);
+                }
+                break;
+            case 'changed':
+                /* We include the changed event in the value callback */
+                if (!this._hasListenersOfType('value')) {
+                    this._dataSource.setValueChangedCallback(this._onChildValue);
                 }
                 break;
             case 'moved':
@@ -177,12 +195,17 @@ export class PrioritisedObject extends EventEmitter {
         }
 
         /* If we have no more listeners of this event type, remove dataSource callback. */
-        if (!this.listeners(event, true)) {
+        if (!this._hasListenersOfType(event)) {
             switch (event) {
                 case 'ready':
                     break;
                 case 'value':
-                    this._dataSource.removeValueChangedCallback();
+                    /* Value and changed have the same callback, due to the ability to be able to detect all property
+                     * changes at once.
+                     */
+                    if(!this._hasListenersOfType('changed')){
+                        this._dataSource.removeValueChangedCallback();
+                    }
                     break;
                 case 'added':
                     this._dataSource.removeChildAddedCallback();
@@ -191,7 +214,12 @@ export class PrioritisedObject extends EventEmitter {
                     this._dataSource.removeChildMovedCallback();
                     break;
                 case 'removed':
-                    this._dataSource.removeChildRemovedCallback();
+                    if(!this._hasListenersOfType('value')){
+                        this._dataSource.removeValueChangedCallback();
+                    }
+                    break;
+                case 'changed':
+                    this._dataSource.removeChildChangedCallback();
                     break;
                 default:
                     break;
@@ -297,6 +325,7 @@ export class PrioritisedObject extends EventEmitter {
      */
     _onSetterTriggered() {
         if (!this._isBeingWrittenByDatasource) {
+            console.log(JSON.stringify(ObjectHelper.getEnumerableProperties(this)));
             return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this), this._priority);
         }
     }
@@ -314,17 +343,30 @@ export class PrioritisedObject extends EventEmitter {
          * this is an update triggered by a local change having been pushed
          * to the remote dataSource. We can ignore it.
          */
-        if (isEqual(ObjectHelper.getEnumerableProperties(this), dataSnapshot.val())) {
-            this.emit('value', this, previousSiblingID);
-            return;
-        }
-
-        /* Make sure we don't trigger pushes to dataSource whilst repopulating with new dataSource data */
-        this._isBeingWrittenByDatasource = true;
-        this._buildFromSnapshot(dataSnapshot);
-        this._isBeingWrittenByDatasource = false;
+        let incomingData = dataSnapshot.val();
 
         this.emit('value', this, previousSiblingID);
+        if (every(ObjectHelper.getEnumerableProperties(this), (val, key) => isEqual(incomingData[key], val) || incomingData[key] === undefined)) {
+            return;
+        }
+        
+        this._buildFromSnapshotWithoutSynchronizing(dataSnapshot);
+
+        if(this._hasListenersOfType('changed')){
+            this.emit('changed', this, previousSiblingID);
+        }
+
+    }
+
+    _hasListenersOfType(type){
+        return this.listeners(type, true);
+    }
+
+    _buildFromSnapshotWithoutSynchronizing(dataSnapshot) {
+        /* Make sure we don't trigger pushes to dataSource whilst repopulating with new dataSource data */
+        this.disableChangeListener();
+        this._buildFromSnapshot(dataSnapshot);
+        this.enableChangeListener();
     }
 
     /* TODO: implement partial updates of model */
@@ -338,5 +380,12 @@ export class PrioritisedObject extends EventEmitter {
 
     _onChildRemoved(dataSnapshot, previousSiblingID) {
         this.emit('removed', this, previousSiblingID);
+    }
+
+    _onSelfChanged(dataSnapshot, previousSiblingID) {
+        if(dataSnapshot.val().id == this.id){
+            this._buildFromSnapshotWithoutSynchronizing(dataSnapshot);
+            this.emit('changed', this, previousSiblingID);
+        }
     }
 }
