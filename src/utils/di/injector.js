@@ -50,16 +50,30 @@ class Injector {
         this._loadModules(modules);
     }
 
-    _retrieveToken(classConstructor, constructionParams = []) {
+    _retrieveTokens(classConstructor, constructionParams = []) {
+        /* The class constructor needs to be hashed due to problems with equality of constructors when importing from
+         * non-jspm modules.
+         */
+        let hashedClassConstructor = hash(classConstructor);
 
-        let totalHash = hash([classConstructor, ...constructionParams]);
-        if (!this._tokenCache.has(totalHash)) {
-            /* Generate a new token */
-            this._tokenCache.set(totalHash, `${Date.now()}${Math.random()}`);
+        if (!this._tokenCache.has(hashedClassConstructor)) {
+            this._tokenCache.set(hashedClassConstructor, new Map());
         }
 
-        let foundHash = this._tokenCache.get(totalHash);
-        return classConstructor.name ? `${classConstructor.name}-${foundHash}` : foundHash;
+        let paramsHash = hash(constructionParams);
+        let cachedClass = this._tokenCache.get(hashedClassConstructor);
+        if (!cachedClass.has(paramsHash)) {
+            /* Generate a new token */
+            cachedClass.set(paramsHash, `${Date.now()}${Math.random()}`);
+        }
+
+        // let foundHash = cachedClass.get(paramsHash);
+        // return classConstructor.name ? `${classConstructor.name}-${foundHash}` : foundHash;
+        return {
+            classToken: classConstructor.name ? 
+                `${classConstructor.name}-${hashedClassConstructor}` : hashedClassConstructor,
+            paramsToken: paramsHash
+        };
     }
 
 
@@ -95,12 +109,12 @@ class Injector {
 
     // Load a function or class.
     // This mutates `this._providers`, but it is only called during the constructor.
-    _loadFnOrClass(classConstructor, constructionParams = []) {
+    _loadFnOrClass(classConstructor) {
         var annotations = readAnnotations(classConstructor);
-        var token = this._retrieveToken(annotations.provide.token || classConstructor, constructionParams);
+        var {classToken} = this._retrieveTokens(annotations.provide.token || classConstructor, []);
         var provider = createProviderFromFnOrClass(classConstructor, annotations);
 
-        this._providers.set(token, provider);
+        this._providers.set(classToken, provider);
     }
 
 
@@ -144,47 +158,37 @@ class Injector {
         var resolvingMsg = '';
         var provider;
         var instance;
-        var token = this._retrieveToken(classConstructor, constructionParams);
-
-        if (token === null || token === undefined) {
-            resolvingMsg = constructResolvingMessage(resolving, token);
-            throw new Error(`Invalid token "${token}" requested!${resolvingMsg}`);
-        }
-
-        // Special case, return itself.
-        if (token === Injector) {
-            return this;
-        }
+        var {classToken, paramsToken} = this._retrieveTokens(classConstructor, constructionParams);
+        var combinedToken = `${classToken}${paramsToken}`;
 
         // Check if there is a cached instance already.
-        if (this._cache.has(token)) {
-            instance = this._cache.get(token);
-            provider = this._providers.get(token);
+        if (this._cache.has(combinedToken)) {
+            instance = this._cache.get(combinedToken);
             return instance;
         }
-        provider = this._providers.get(token);
+        provider = this._providers.get(classToken);
 
         // No provider defined (overridden), use the default provider (token).
-        if (!provider && isFunction(classConstructor) && !this._hasProviderFor(token)) {
+        if (!provider && isFunction(classConstructor) && !this._hasProviderFor(classToken)) {
             provider = createProviderFromFnOrClass(classConstructor, readAnnotations(classConstructor));
-            return this._instantiateDefaultProvider(provider, token, classConstructor, constructionParams, resolving);
+            return this._instantiateDefaultProvider(provider, classToken, classConstructor, constructionParams, resolving);
         }
 
         if (!provider) {
             if (!this._parent) {
-                resolvingMsg = constructResolvingMessage(resolving, token);
-                throw new Error(`No provider for ${toString(token)}!${resolvingMsg}`);
+                resolvingMsg = constructResolvingMessage(resolving, classToken);
+                throw new Error(`No provider for ${toString(classToken)}!${resolvingMsg}`);
             }
 
-            return this._parent.get(token, resolving);
+            return this._parent.get(combinedToken, resolving);
         }
 
-        if (resolving.indexOf(token) !== -1) {
-            resolvingMsg = constructResolvingMessage(resolving, token);
+        if (resolving.indexOf(combinedToken) !== -1) {
+            resolvingMsg = constructResolvingMessage(resolving, combinedToken);
             throw new Error(`Cannot instantiate cyclic dependency!${resolvingMsg}`);
         }
 
-        resolving.push(token);
+        resolving.push(combinedToken);
 
         var args = provider.params.map((param) => {
             return this.get(param.token, undefined, resolving);
@@ -198,12 +202,12 @@ class Injector {
         } catch (e) {
             resolvingMsg = constructResolvingMessage(resolving);
             var originalMsg = 'ORIGINAL ERROR: ' + e.message;
-            e.message = `Error during instantiation of ${toString(token)}!${resolvingMsg}\n${originalMsg}`;
+            e.message = `Error during instantiation of ${toString(combinedToken)}!${resolvingMsg}\n${originalMsg}`;
             throw e;
         }
 
         if (!hasAnnotation(provider.provider, TransientScopeAnnotation)) {
-            this._cache.set(token, instance);
+            this._cache.set(combinedToken, instance);
         }
 
         resolving.pop();
