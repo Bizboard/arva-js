@@ -491,4 +491,25 @@ export class SharePointDataSource extends DataSource {
     atomicTransaction(transactionFunction) {
         throw new Error("Not supported");
     }
+
+    /**
+     * Merges the current user with the specified provider.
+     * @param provider
+     * @returns {Authentication}
+     */
+    linkCurrentUserWithProvider(provider) {
+        throw new Error("Not supported");
+    }
+
+    /**
+     * Creates a provider with the specified type
+     *
+     * @param {String} providerType Can be 'password' or 'facebook'
+     * @param {String|Object} credential if 'password' providerType, then an object {email:String,password:String}. If
+     * 'facebook' providerType, then a string containing the API token.
+     * @returns {Provider}
+     */
+    createProviderFromCredential(providerType, credential) {
+        throw new Error("Not supported");
+    }
 }
