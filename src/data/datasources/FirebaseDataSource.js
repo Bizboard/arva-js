@@ -33,7 +33,9 @@ export class FirebaseDataSource extends DataSource {
      *                                   Options are: '.priority', '.value', or a string containing the child key to order by (e.g. 'MyModelProperty')
      * @param {Number} [options.limitToFirst]   Optional, only subscribe to the first amount of entries.
      * @param {Number} [options.limitToLast]    Optional, only subscribe to the last amount of entries.
-     * @param {Promise} [options.synced] Optional, a promise to tell the data source that it is only synchronized after this promise is resolved
+     * @param {Number} [options.startAt]        Optional, only subscribe to the entries from a certain value onwards
+     * @param {Number} [options.endAt]          Optional, only subscribe to the entries towards a certain value
+     * @param {Promise} [options.synced]        Optional, a promise to tell the data source that it is only synchronized after this promise is resolved
      **/
     constructor(path, options = {orderBy: '.priority'}) {
         super(path);
@@ -66,8 +68,12 @@ export class FirebaseDataSource extends DataSource {
             this._orderedDataReference = this._dataReference;
         }
 
-
-
+        if(this.options.startAt !== undefined){
+            this._orderedDataReference = this._orderedDataReference.startAt(this.options.startAt);
+        }
+        if(this.options.endAt !== undefined){
+            this._orderedDataReference = this._orderedDataReference.endAt(this.options.endAt);
+        }
 
         if (this.options.limitToFirst !== undefined) {
             this._orderedDataReference = this._orderedDataReference.limitToFirst(this.options.limitToFirst);
