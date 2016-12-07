@@ -363,7 +363,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
                  */
             } else if (previousSiblingID !== undefined && previousSiblingID != null) {
                 /* We don't have an orderBy method, but do have a previousSiblingID we can use to find the correct insertion index. */
-                let siblingIndex = this._findData(previousSiblingID).position;
+                let childData = this._findData(previousSiblingID) || {};
+
+                let siblingIndex = childData.position || -1;
                 if (siblingIndex !== -1) {
                     insertIndex = siblingIndex + 1;
                 }
