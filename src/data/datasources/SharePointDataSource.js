@@ -482,4 +482,13 @@ export class SharePointDataSource extends DataSource {
         newPath += endPoint;
         return newPath;
     }
+    /**
+     * Performs an atomic transaction
+     * @param {Function} transactionFunction A function that takes the current value as a single argument, and
+     * returns the new value.
+     * @returns {Promise} Resolves the new value when the transaction is finished
+     */
+    atomicTransaction(transactionFunction) {
+        throw new Error("Not supported");
+    }
 }

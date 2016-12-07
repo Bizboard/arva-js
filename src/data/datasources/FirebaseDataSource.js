@@ -525,4 +525,26 @@ export class FirebaseDataSource extends DataSource {
             this._onRemoveCallback = null;
         }
     }
+
+
+    /**
+     * Performs an atomic transaction
+     * @param {Function} transactionFunction A function that takes the current value as a single argument, and
+     * returns the new value.
+     * @returns {Promise} Resolves the new value when the transaction is finished
+     */
+    atomicTransaction(transactionFunction) {
+        return new Promise((resolve, reject) => {
+            this._dataReference.transaction(transactionFunction, (error, wasSuccessfullyCommited, snapshot) => {
+                if(error){
+                    return reject(error);
+                }
+                if (!wasSuccessfullyCommited) {
+                    console.log(`Transaction failed, retrying`);
+                    return this.atomicTransaction(transactionFunction);
+                }
+                resolve(snapshot.val());
+            });
+        });
+    }
 }
