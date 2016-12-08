@@ -48,7 +48,7 @@ export class FirebaseDataSource extends DataSource {
 
         this._dataReference = this._firebase.database().ref(path);
         this.handlers = {};
-        this.options = combineOptions({synced: Promise.resolve()},options);
+        this.options = combineOptions({synced: Promise.resolve()}, options);
         this._synced = this.options.synced;
 
         /* Populate the orderedReference, which is the standard Firebase reference with an optional ordering
@@ -61,17 +61,17 @@ export class FirebaseDataSource extends DataSource {
             this._orderedDataReference = this._dataReference.orderByValue();
         } else if (this.options.orderBy && this.options.orderBy !== '') {
             this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
-        } else if(this.options.equalTo) {
+        } else if (this.options.equalTo) {
             let [key, value] = this.options.equalTo;
             this._orderedDataReference = this._dataReference.orderByChild(key).equalTo(value);
         } else {
             this._orderedDataReference = this._dataReference;
         }
 
-        if(this.options.startAt !== undefined){
+        if (this.options.startAt !== undefined) {
             this._orderedDataReference = this._orderedDataReference.startAt(this.options.startAt);
         }
-        if(this.options.endAt !== undefined){
+        if (this.options.endAt !== undefined) {
             this._orderedDataReference = this._orderedDataReference.endAt(this.options.endAt);
         }
 
@@ -80,6 +80,7 @@ export class FirebaseDataSource extends DataSource {
         } else if (this.options.limitToLast !== undefined) {
             this._orderedDataReference = this._orderedDataReference.limitToLast(this.options.limitToLast);
         }
+
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers. */
@@ -176,7 +177,10 @@ export class FirebaseDataSource extends DataSource {
      */
     push(newData) {
         let pushResult = this._dataReference.push(newData);
-        return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {synced: pushResult, customFirebase: this.options.customFirebase});
+        return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {
+            synced: pushResult,
+            customFirebase: this.options.customFirebase
+        });
     }
 
     /**
@@ -187,10 +191,13 @@ export class FirebaseDataSource extends DataSource {
      */
     setWithPriority(newData, priority) {
         /* Rethrow the error in order to be able to catch it higher up */
-        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((err) => {throw new Error(err)});
+        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((err) => {
+            throw new Error(err)
+        });
         /* Append another promise to the chain to keep track of whether it's still synchronized. Fail silently
          * since we already have error handling above */
-        this._synced = this._synced.then(() => completionPromise).catch(() => {});
+        this._synced = this._synced.then(() => completionPromise).catch(() => {
+        });
         return completionPromise;
     }
 
@@ -209,7 +216,10 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByChild(childKey) {
-        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: childKey, customFirebase: this.options.customFirebase}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {
+            orderBy: childKey,
+            customFirebase: this.options.customFirebase
+        }));
     }
 
     /**
@@ -217,7 +227,10 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByKey() {
-        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: '.key', customFirebase: this.options.customFirebase}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {
+            orderBy: '.key',
+            customFirebase: this.options.customFirebase
+        }));
     }
 
     /**
@@ -225,7 +238,10 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByValue() {
-        return new FirebaseDataSource(this.path(), merge({}, this.options, {orderBy: '.value', customFirebase: this.options.customFirebase}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {
+            orderBy: '.value',
+            customFirebase: this.options.customFirebase
+        }));
     }
 
     /**
@@ -234,7 +250,10 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     limitToFirst(amount) {
-        return new FirebaseDataSource(this.path(), merge({}, this.options, {limitToFirst: amount, customFirebase: this.options.customFirebase}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {
+            limitToFirst: amount,
+            customFirebase: this.options.customFirebase
+        }));
     }
 
     /**
@@ -275,7 +294,7 @@ export class FirebaseDataSource extends DataSource {
      */
     createProviderFromCredential(providerType, credential) {
         let providerObject;
-        switch(providerType){
+        switch (providerType) {
             case 'password':
                 providerObject = this._firebase.auth.EmailAuthProvider.credential(credential.email, credential.password);
                 break;
