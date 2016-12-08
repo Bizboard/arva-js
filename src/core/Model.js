@@ -68,7 +68,9 @@ export class Model extends PrioritisedObject {
         } else if (options.path && id) {
             this._dataSource = dataSource.child(options.path + '/' + id || '', dataSourceOptions);
         } else if (options.dataSnapshot) {
-            this._dataSource = dataSource.child(options.dataSnapshot.ref.path().toString(), dataSourceOptions);
+            let {ref} = options.dataSnapshot;
+            /* Getting the path from a snapshot requires some string modifications */
+            this._dataSource = dataSource.child(ref.toString().substring(ref.root.toString().length), dataSourceOptions);
         } else if (id) {
             /* If an id is present, use it to locate our model. */
             this._dataSource = dataSource.child(pathRoot + '/' + id, dataSourceOptions);
