@@ -67,9 +67,9 @@ export function PostRequest(options) {
         var req = new XMLHttpRequest();
         req.open('POST', options.url, true);
 
-        for (var entry of options.headers.entries())
-            req.setRequestHeader(entry[0], entry[1]);
-
+        options.headers.forEach(function(value, key){
+            req.setRequestHeader(key, value);
+        });
 
         req.onload = function () {
             // This is called even on 404 etc
@@ -87,7 +87,8 @@ export function PostRequest(options) {
 
 
         // Handle network errors
-        req.onerror = function () {
+        req.onerror = function (error) {
+            console.error('A network Error has occured: ' + error);
             reject(Error('Network Error'));
         };
 
@@ -100,9 +101,17 @@ export function PostRequest(options) {
 export function ExistsRequest(url) {
 
     // Do the usual XHR stuff
-    var req = new XMLHttpRequest();
-    req.open('OPTIONS', url, false);
-    req.send();
+    // var req = new XMLHttpRequest();
+    // req.open('OPTIONS', url, false);
+    //
+    // // Handle network errors
+    // req.onerror = function (error) {
+    //     console.log('A network Error has occurred: ' + error);
+    // };
+    //
+    // req.send();
+    var req = {};
+    req.status = 200;
 
     return req.status !== 404;
 }

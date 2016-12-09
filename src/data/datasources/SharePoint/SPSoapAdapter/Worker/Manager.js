@@ -1,12 +1,17 @@
 /**
  * Created by tom on 28/08/15.
  */
+import ES6Promise       from 'es6-promise';
 import '../../../../../utils/hotfixes/polyfills/FunctionName.js';
 import '../../../../../utils/hotfixes/polyfills/ObjectKeys.js';
 import '../../../../../utils/hotfixes/polyfills/StartsWith.js';
 import {SharePointClient}               from './SharePointClient.js';
 
 let clients = {};
+
+/* PolyFill ES6 Promises */
+ES6Promise.polyfill();
+
 
 onmessage = async function (messageEvent) {
     let message = messageEvent.data;

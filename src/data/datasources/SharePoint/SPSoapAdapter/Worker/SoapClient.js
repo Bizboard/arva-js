@@ -58,6 +58,7 @@ export class SoapClient {
     }
 
     _handleError(error) {
+        console.error(error);
         return "Error!";
     }
 

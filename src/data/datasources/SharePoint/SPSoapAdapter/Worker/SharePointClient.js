@@ -2,8 +2,9 @@
  * Created by mysim1 on 13/06/15.
  */
 import pick             from 'lodash/pick.js';
-import pluck            from 'lodash/pluck.js';
+import map              from 'lodash/map.js';
 import extend           from 'lodash/extend.js';
+
 import findIndex        from 'lodash/findIndex.js';
 import EventEmitter     from 'eventemitter3';
 import {SoapClient}     from './SoapClient.js';
@@ -335,7 +336,7 @@ export class SharePointClient extends EventEmitter {
                     fieldValue = `${fieldValue.id};#`;
                 } else if (fieldValue.length !== undefined && fieldValue[0] && fieldValue[0].id && fieldValue[0].value) {
                     /* This is a SharePoint LookupMulti field. It is specially formatted like above. */
-                    let IDs = pluck(fieldValue, 'id');
+                    let IDs = map(fieldValue, 'id');
                     fieldValue = IDs.join(';#;#');
                 } else {
                     continue;
@@ -720,15 +721,17 @@ export class SharePointClient extends EventEmitter {
      * @private
      */
     _updateListItemsDefaultConfiguration() {
+
+        let headerMap = new Map();
+        headerMap.set('SOAPAction', 'http://schemas.microsoft.com/sharepoint/soap/UpdateListItems');
+        headerMap.set('Content-Type', 'text/xml');
+
         return {
             url: '',
             service: 'Lists',
             method: 'UpdateListItems',
             params: '',
-            headers: new Map([
-                ['SOAPAction', 'http://schemas.microsoft.com/sharepoint/soap/UpdateListItems'],
-                ['Content-Type', 'text/xml']
-            ])
+            headers: headerMap
         };
     }
 
@@ -739,15 +742,15 @@ export class SharePointClient extends EventEmitter {
      * @private
      */
     _getListItemsDefaultConfiguration() {
+        let headerMap = new Map();
+        headerMap.set('SOAPAction', 'http://schemas.microsoft.com/sharepoint/soap/GetListItemChangesSinceToken');
+        headerMap.set('Content-Type', 'text/xml');
         return {
             url: '',
             service: 'Lists',
             method: 'GetListItemChangesSinceToken',
             params: '',
-            headers: new Map([
-                ['SOAPAction', 'http://schemas.microsoft.com/sharepoint/soap/GetListItemChangesSinceToken'],
-                ['Content-Type', 'text/xml']
-            ])
+            headers: headerMap
         };
     }
 
@@ -758,15 +761,17 @@ export class SharePointClient extends EventEmitter {
      * @private
      */
     _getUserGroupDefaultConfiguration() {
+
+        let headerMap = new Map();
+        headerMap.set('SOAPAction', 'http://schemas.microsoft.com/sharepoint/soap/directory/GetCurrentUserInfo');
+        headerMap.set('Content-Type', 'text/xml');
+
         return {
             url: '',
             service: 'UserGroup',
             method: 'GetCurrentUserInfo',
             params: '',
-            headers: new Map([
-                ['SOAPAction', 'http://schemas.microsoft.com/sharepoint/soap/directory/GetCurrentUserInfo'],
-                ['Content-Type', 'text/xml']
-            ])
+            headers: headerMap
         };
     }
 
