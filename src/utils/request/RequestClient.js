@@ -101,17 +101,14 @@ export function PostRequest(options) {
 export function ExistsRequest(url) {
 
     // Do the usual XHR stuff
-    // var req = new XMLHttpRequest();
-    // req.open('OPTIONS', url, false);
-    //
-    // // Handle network errors
-    // req.onerror = function (error) {
-    //     console.log('A network Error has occurred: ' + error);
-    // };
-    //
-    // req.send();
-    var req = {};
-    req.status = 200;
+    var req = new XMLHttpRequest();
+    req.open('GET', url, false);
 
+    // Handle network errors
+    req.onerror = function (error) {
+        console.log('A network Error has occurred: ' + error);
+    };
+
+    req.send();
     return req.status !== 404;
 }
