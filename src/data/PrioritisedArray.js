@@ -51,7 +51,7 @@ export class PrioritisedArray extends Array {
      * @param {Object} [modelOptions] options to merge into the construction of every new Model.
      * @returns {PrioritisedArray} PrioritisedArray instance.
      */
-    constructor(dataType, dataSource = null, dataSnapshot = null, options = null, modelOptions = {}) {
+    constructor(dataType, dataSource = null, dataSnapshot = null, options = null, modelOptions = {}, sharePointOptions = {}) {
         super();
         /**** Callbacks ****/
         this._valueChangedCallback = null;
@@ -88,9 +88,9 @@ export class PrioritisedArray extends Array {
             dataSource = Injection.get(DataSource);
 
             if (options) {
-                dataSource = dataSource.child(options.path || path, options);
+                dataSource = dataSource.child(options.path || path, options, sharePointOptions);
             } else {
-                dataSource = dataSource.child(path);
+                dataSource = dataSource.child(path, {}, sharePointOptions);
             }
 
             this._dataSource = dataSource;
@@ -442,7 +442,7 @@ export class PrioritisedArray extends Array {
             /* The model doesn't exist, so we won't emit a changed event. */
             return;
         }
-        
+
 
         let model = this[previousPosition];
         model._onChildValue(snapshot, prevSiblingId);

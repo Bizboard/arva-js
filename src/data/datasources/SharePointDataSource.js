@@ -90,18 +90,18 @@ export class SharePointDataSource extends DataSource {
      * @param {Object} options Optional: additional options to pass to new DataSource instance.
      * @returns {DataSource} New dataSource instance pointing to the given child branch.
      */
-    child(childName, options = this.options) {
-        return SharePointDataSource.createFromChild(this._originalPath, childName, options);
+    child(childName, options = this.options, sharepointOptions = {}) {
+        return SharePointDataSource.createFromChild(this._originalPath, childName, options, sharepointOptions);
     }
 
-    static createFromChild(path, childName, options = {}) {
+    static createFromChild(path, childName, options = {}, sharepointOptions = {}) {
         let childPath = '';
         if (childName.indexOf('http') !== -1) {
             childPath = childName.substring(1);
         } else {
             childPath += path + '/' + childName;
         }
-        return new SharePointDataSource(childPath, options);
+        return new SharePointDataSource(childPath, _.merge(sharepointOptions, options));
     }
 
     /**

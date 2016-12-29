@@ -32,7 +32,7 @@ export class SharePointClient extends EventEmitter {
         super();
 
         this.settings = options;
-        this.interval = 3000;
+        this.interval = options.interval || 3000;
         this.retriever = null;
         this.cache = [];
         this.hasNoServerResponse = true;
