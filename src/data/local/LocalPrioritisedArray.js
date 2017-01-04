@@ -9,6 +9,13 @@ export class LocalPrioritisedArray extends PrioritisedArray {
         this._dataSource = {ready: true};
     }
 
+    remove(index) {
+        if(this[index]){
+            this._eventEmitter.emit('child_removed', this[index]);
+        }
+        super.remove(index);
+    }
+
     _buildFromDataSource() {
     }
 }
