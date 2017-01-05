@@ -11,6 +11,7 @@ import extend                       from 'lodash/extend.js';
 import cloneDeep                    from 'lodash/cloneDeep.js';
 import FamousView                   from 'famous/core/View.js';
 import Surface                      from 'famous/core/Surface.js';
+import Engine                       from 'famous/core/Engine.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
@@ -482,6 +483,7 @@ export class View extends FamousView {
             context.size = context.size.map((size, index) =>
             (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index],size)) || size);
         }
+        Engine.enableTouchMove();
         this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations);
         this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations);
         this._traditionalLayoutHelper.layout(dockedRenderables.getRenderableGroup('traditional'), context, this.decorations);
