@@ -155,7 +155,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                             /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
                              *  to make up for this.
                              */
-                            translate[dimension] += 1;
+                            if(origin[dimension] === 1){
+                                translate[dimension] += 1;
+                            }
                         }
                     });
                 }
