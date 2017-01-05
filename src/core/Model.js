@@ -42,7 +42,7 @@ export class Model extends PrioritisedObject {
         /* Retrieve dataSource from the DI context */
         let dataSource = options.dataSource || Injection.get(DataSource);
         super();
-
+        this._id = id;
         /* Replace all stub data fields of any subclass of Model with databinding accessors.
          * This causes changes to be synched to and from the dataSource. */
         this._replaceModelAccessorsWithDatabinding();
