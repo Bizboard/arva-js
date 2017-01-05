@@ -513,4 +513,8 @@ export class SharePointDataSource extends DataSource {
     createProviderFromCredential(providerType, credential) {
         throw new Error("Not supported");
     }
+
+    registerWithPassword(credentials, onComplete, options) {
+        throw new Error("Not Supported")
+    }
 }

@@ -198,6 +198,18 @@ export class DataSource {
     authWithPassword(credentials, onComplete, options) {
     }
 
+
+    /**
+     * Registers a user with instances of this DataSource with the given email/password credentials.
+     * @param {String|Object} credentials Object with key/value pairs {email: "value", password:"value"}.
+     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * On error, first argument is error message.
+     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
+     * @returns {Promise}
+     */
+    registerWithPassword(credential) {
+    }
+
     /**
      * Authenticates all instances of this DataSource as an anonymous user.
      * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
