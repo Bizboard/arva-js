@@ -479,11 +479,11 @@ export class View extends FamousView {
         let dockedRenderables = this._renderableHelper;
         let nativeScrollableOptions = this.decorations.nativeScrollable;
         if(nativeScrollableOptions) {
+            Engine.enableTouchMove();
             let thisSize  = this.getSize();
             context.size = context.size.map((size, index) =>
             (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index],size)) || size);
         }
-        Engine.enableTouchMove();
         this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations);
         this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations);
         this._traditionalLayoutHelper.layout(dockedRenderables.getRenderableGroup('traditional'), context, this.decorations);
