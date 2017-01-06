@@ -13,6 +13,9 @@ import {provide}                    from '../utils/di/Decorators.js';
 import Easing                       from 'famous/transitions/Easing.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
 
+/**
+ * Emits the event 'routechange' with {url,controller,controllerObject,method,keys,values} when the route has changed
+ */
 @provide(Router)
 export class ArvaRouter extends Router {
 
@@ -78,8 +81,12 @@ export class ArvaRouter extends Router {
         let controllerName = this._getControllerName(controller);
 
         let routeRoot = controllerName
-            .replace(this.defaultController, '')
             .replace('Controller', '');
+
+        //TODO Can we skip this code?
+        if(routeRoot === this.defaultController){
+            routeRoot = '';
+        }
 
         let hash = '#' + (routeRoot.length > 0 ? '/' + routeRoot : '') + ('/' + method);
         if (params !== null) {
