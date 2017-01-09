@@ -36,6 +36,7 @@ export class Injection {
             functionOrConstructedObject : (() => functionOrConstructedObject);
         provide(classConstructor)(providerFunction);
         this.addProviders(providerFunction);
+
     }
 
 

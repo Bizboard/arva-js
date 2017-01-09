@@ -111,9 +111,10 @@ class Injector {
     // This mutates `this._providers`, but it is only called during the constructor.
     _loadFnOrClass(classConstructor) {
         var annotations = readAnnotations(classConstructor);
-        var {classToken} = this._retrieveTokens(annotations.provide.token || classConstructor, []);
+        var {classToken, paramsToken} = this._retrieveTokens(annotations.provide.token || classConstructor, []);
         var provider = createProviderFromFnOrClass(classConstructor, annotations);
-
+        /* Delete the cache so we try to retrieve it again if replacing an old provider */
+        this._cache.delete(`${classToken}${paramsToken}`);
         this._providers.set(classToken, provider);
     }
 
