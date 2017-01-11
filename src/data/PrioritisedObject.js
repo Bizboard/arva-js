@@ -342,13 +342,15 @@ export class PrioritisedObject extends EventEmitter {
          * this is an update triggered by a local change having been pushed
          * to the remote dataSource. We can ignore it.
          */
-        let incomingData = dataSnapshot.val();
+        let incomingData = dataSnapshot.val() || {};
 
-        this.emit('value', this, previousSiblingID);
         if (every(ObjectHelper.getEnumerableProperties(this), (val, key) => isEqual(incomingData[key], val) || incomingData[key] === undefined)) {
+            this.emit('value', this, previousSiblingID);
             return;
         }
-        
+
+        this.emit('value', this, previousSiblingID);
+
         this._buildFromSnapshotWithoutSynchronizing(dataSnapshot);
 
         if(this._hasListenersOfType('changed')){
