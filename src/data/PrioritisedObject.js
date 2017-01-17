@@ -63,7 +63,7 @@ export class PrioritisedObject extends EventEmitter {
         this._dataSource = dataSource;
         this._priority = 0; // Priority of this object on remote dataSource
         this._isBeingWrittenByDatasource = false; // Flag to determine when dataSource is updating object
-        this._childChangedListeners  = {};
+        this._childChangedListeners = {};
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
@@ -90,7 +90,7 @@ export class PrioritisedObject extends EventEmitter {
     }
 
     _getParentDataSource() {
-        if(!this._parentDataSource){
+        if (!this._parentDataSource) {
             return this._parentDataSource = Injection.get(DataSource, this._dataSource.parent());
         }
         return this._parentDataSource;
@@ -203,7 +203,7 @@ export class PrioritisedObject extends EventEmitter {
                     /* Value and changed have the same callback, due to the ability to be able to detect all property
                      * changes at once.
                      */
-                    if(!this._hasListenersOfType('changed')){
+                    if (!this._hasListenersOfType('changed')) {
                         this._dataSource.removeValueChangedCallback();
                     }
                     break;
@@ -214,7 +214,7 @@ export class PrioritisedObject extends EventEmitter {
                     this._dataSource.removeChildMovedCallback();
                     break;
                 case 'removed':
-                    if(!this._hasListenersOfType('value')){
+                    if (!this._hasListenersOfType('value')) {
                         this._dataSource.removeValueChangedCallback();
                     }
                     break;
@@ -325,6 +325,7 @@ export class PrioritisedObject extends EventEmitter {
      */
     _onSetterTriggered() {
         if (!this._isBeingWrittenByDatasource) {
+            console.log(JSON.stringify(ObjectHelper.getEnumerableProperties(this)));
             return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this), this._priority);
         }
     }
@@ -344,22 +345,29 @@ export class PrioritisedObject extends EventEmitter {
          */
         let incomingData = dataSnapshot.val() || {};
 
-        if (every(ObjectHelper.getEnumerableProperties(this), (val, key) => isEqual(incomingData[key], val) || incomingData[key] === undefined)) {
+        if (every(incomingData, (val, key) => {
+                let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
+                if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
+                    return isEqual(this[key], val);
+                } else {
+                    return true;
+                }
+            })) {
             this.emit('value', this, previousSiblingID);
             return;
         }
 
-        this.emit('value', this, previousSiblingID);
-
         this._buildFromSnapshotWithoutSynchronizing(dataSnapshot);
 
-        if(this._hasListenersOfType('changed')){
+        this.emit('value', this, previousSiblingID);
+
+        if (this._hasListenersOfType('changed')) {
             this.emit('changed', this, previousSiblingID);
         }
 
     }
 
-    _hasListenersOfType(type){
+    _hasListenersOfType(type) {
         return this.listeners(type, true);
     }
 
@@ -384,7 +392,7 @@ export class PrioritisedObject extends EventEmitter {
     }
 
     _onSelfChanged(dataSnapshot, previousSiblingID) {
-        if(dataSnapshot.val().id == this.id){
+        if (dataSnapshot.val().id == this.id) {
             this._buildFromSnapshotWithoutSynchronizing(dataSnapshot);
             this.emit('changed', this, previousSiblingID);
         }
