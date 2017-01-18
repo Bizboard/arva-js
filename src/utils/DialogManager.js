@@ -102,9 +102,9 @@ export class DialogManager extends View {
 
     /**
      *
-     * @param dialog
-     * @param canCancel
-     * @param killOldDialog
+     * @param {Dialog} options.dialog dialog
+     * @param {Boolean} [options.canCancel=true]
+     * @param {Boolean} [options.killOldDialog=true]
      * @returns {*}
      */
     show({dialog, canCancel = true, killOldDialog = true}) {
@@ -150,6 +150,10 @@ export class DialogManager extends View {
         return this.dialogComplete();
     }
 
+
+    getOpenDialog() {
+        return this.dialog.dialog;
+    }
 
     _onClose() {
         if (this._canCancel) {
