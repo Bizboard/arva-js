@@ -14,6 +14,7 @@ import {Injection}                  from '../utils/Injection.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {DataSource}                 from './DataSource.js';
 import {Throttler}                  from '../utils/Throttler.js';
+import {Model}                      from '../core/Model.js';
 
 /**
  * An array of two-way bound data Models that are automatically synced with the currently used DataSource
@@ -66,6 +67,10 @@ export class PrioritisedArray extends Array {
         this._eventEmitter = new EventEmitter();
         this._childAddedThrottler = new Throttler(typeof window === 'undefined' ? 0 : 1, true, this, true);
         this._overrideChildAddedForId = null;
+
+        if(!(dataType.prototype instanceof Model)){
+            throw new Error(`${dataType.constructor.name} passed to PrioritisedArray is not an instance of a model`);
+        }
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */

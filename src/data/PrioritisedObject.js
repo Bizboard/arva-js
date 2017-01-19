@@ -325,7 +325,6 @@ export class PrioritisedObject extends EventEmitter {
      */
     _onSetterTriggered() {
         if (!this._isBeingWrittenByDatasource) {
-            console.log(JSON.stringify(ObjectHelper.getEnumerableProperties(this)));
             return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this), this._priority);
         }
     }
