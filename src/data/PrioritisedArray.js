@@ -68,7 +68,7 @@ export class PrioritisedArray extends Array {
         this._childAddedThrottler = new Throttler(typeof window === 'undefined' ? 0 : 1, true, this, true);
         this._overrideChildAddedForId = null;
 
-        if(!(dataType.prototype instanceof Model)){
+        if(dataType && !(dataType.prototype instanceof Model)){
             throw new Error(`${dataType.constructor.name} passed to PrioritisedArray is not an instance of a model`);
         }
 
