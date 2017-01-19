@@ -61,7 +61,7 @@ export class Router extends EventEmitter {
      * Triggers navigation to one of the controllers
      * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.
      * @param {String} method The method to call in given controller.
-     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: "yes"})
+     * @param {Object} [params] Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: "yes"})
      * @returns {void}
      */
     go(controller, method, params) { }
