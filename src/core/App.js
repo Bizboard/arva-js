@@ -13,6 +13,7 @@ import Context                  from 'famous/core/Context.js';
 import AnimationController      from 'famous-flex/AnimationController.js';
 
 import {provide}                from '../utils/di/Decorators.js';
+import {DialogManager}          from '../utils/DialogManager.js';
 import {ArvaRouter}             from '../routers/ArvaRouter.js';
 import {Injection}              from '../utils/Injection.js';
 import {Router}                 from './Router.js';
@@ -66,6 +67,10 @@ export class App {
          */
         this.context = context;
         this.router.run();
+        /**
+         * The dialog manager used to show and hide dialogs
+         */
+        this.dialogManager = Injection.get(DialogManager);
 
         /* Hide splash screen */
         if(navigator && navigator.splashscreen && !options.keepSplashScreen) { navigator.splashscreen.hide(); }

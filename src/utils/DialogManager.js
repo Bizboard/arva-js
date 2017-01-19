@@ -36,6 +36,11 @@ class DialogWrapper extends View {
         this._parentSize = parentSize;
     }
 
+    /**
+     * The getSize function is used to determine the size by the scrolling behaviour. It will try to make sure that
+     * a too big dialog can be scrolled. If this isn't possible, it let's the dialog capture the entire screen
+     * @returns {*}
+     */
     getSize() {
         if (!this._parentSize) {
             return [undefined, undefined];
@@ -141,7 +146,9 @@ export class DialogManager extends View {
         }
 
         /* Show the dialog */
-        this.showRenderable('dialog');
+        this.showRenderable('dialog').then(() => {
+            this._eventOutput.emit('dialogShown');
+        });
 
         this.dialog.on('closeDialog', (function () {
             /* Forward the arguments coming from the event emitter when closing */

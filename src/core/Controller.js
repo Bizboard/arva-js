@@ -11,6 +11,8 @@ import extend                   from 'lodash/extend.js';
 import EventEmitter             from 'eventemitter3';
 import AnimationController      from 'famous-flex/AnimationController.js';
 
+import {Dialog}                 from '../components/Dialog.js';
+import {DialogManager}          from '../utils/DialogManager.js';
 import {inject}                 from '../utils/di/Decorators.js';
 import {ObjectHelper}           from '../utils/ObjectHelper.js';
 import {Router}                 from './Router.js';
@@ -21,18 +23,18 @@ import {Router}                 from './Router.js';
  * each method will registered to receive calls from the Routing engine. With direct access to the Famo.us Context, every method can
  * control the creation of Views and Transitions.
  */
-@inject(Router, AnimationController)
+@inject(Router, AnimationController, DialogManager)
 export class Controller extends EventEmitter {
 
     /**
      * Saves the router and context to this.router and this.context, respectively.
-     * @param {Router} router. Injected globablly used router
-     * @param {AnimationController} context. Injected animationController used by the app
-     * @param {Spec} spec
+     * @param {Router} router Injected globally used router
+     * @param {AnimationController} context Injected animationController used by the app
+     * @param {DialogManager} dialogManager The dialog manager that shows and hides dialogs
      */
-    constructor(router, context, spec) {
+    constructor(router, context, dialogManager) {
         super();
-        this.spec = spec;
+
         /**
          * The router used globally in the app
          * @type {Router}
@@ -43,6 +45,11 @@ export class Controller extends EventEmitter {
          * @type {AnimationController}
          */
         this.context = context;
+        /**
+         * The dialogmanager used to show and hide dialogs. If a controller returns a Dialog, this will be used
+         */
+        this.dialogManager = dialogManager;
+
         /* The this._name property can be set by Arva's babel-plugin-transform-runtime-constructor-name plugin.
          * This allows Arva code to be minified and mangled without losing automated route creation.
          * If the plugin is not set up to run, which is done e.g. when not minifying your code, we default back to the runtime constructor name.*/
@@ -80,17 +87,12 @@ export class Controller extends EventEmitter {
 
             if (result) {
                 this.emit('renderstart', route.method);
-
                 if (result instanceof Promise) { /* We can assume the method called was asynchronous from nature, therefore we await the result. */
                     result.then((delegatedresult) => {
-                        /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
-                        this.context.show(delegatedresult, extend(route.spec, this.spec), () => { this.emit('renderend', route.method); });
-                        this.emit('rendering', route.method);
+                        this._showView(delegatedresult, route);
                     });
                 } else {
-                    /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
-                    this.context.show(result, extend(route.spec, this.spec), () => { this.emit('renderend', route.method); });
-                    this.emit('rendering', route.method);
+                    this._showView(result, route);
                 }
                 return true;
             } else {
@@ -101,5 +103,28 @@ export class Controller extends EventEmitter {
             console.log('Route does not exist!');
             return false;
         }
+    }
+
+    /**
+     * Shows a view that was returned from a child controller
+     * @param {View} iew
+     * @param {Object} route
+     * @private
+     */
+    _showView(view, route) {
+        if(view instanceof Dialog){
+            if(this.dialogManager.getOpenDialog() !== view){
+                this.dialogManager.show({dialog: view});
+                this.dialogManager.once('dialogShown', () => {
+                    this.emit('renderend', route.method);
+                });
+            } else {
+                this.emit('renderend', route.method);
+            }
+        } else {
+            /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
+            this.context.show(view, route.spec, () => { this.emit('renderend', route.method); });
+        }
+        this.emit('rendering', route.method);
     }
 }
