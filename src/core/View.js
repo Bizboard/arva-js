@@ -184,6 +184,10 @@ export class View extends FamousView {
      */
     showRenderable(renderableName, show = true) {
         let renderable = this[renderableName];
+        if(!renderable){
+            Utils.warn(`Trying to show renderable ${renderableName} which does not exist!`);
+            return;
+        }
         if (!renderable.animationController) {
             Utils.warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
             return;
