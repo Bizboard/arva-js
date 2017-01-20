@@ -15,6 +15,7 @@ import {Throttler}                  from '../utils/Throttler.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
 import Timer                        from 'famous/utilities/Timer.js';
+import ListLayout                    from 'famous-flex/layouts/ListLayout.js';
 
 /**
  * A FlexScrollView with enhanced functionality for maintaining a two-way connection with a PrioritisedArray.
@@ -578,6 +579,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         if (itemCount === 0) {
             this._addPlaceholder();
         }
+        super._removeItem(child, dataStoreIndex);
     }
 
     /**
@@ -936,5 +938,37 @@ export class DataBoundScrollView extends ReflowingScrollView {
         surface.on('click', function () {
             this._eventOutput.emit('child_click', {renderNode: surface, dataObject: model});
         }.bind(this));
+    }
+
+    /**
+     * Guesses that layout is listlayout
+     * @returns {number}
+     */
+    getSize() {
+        let item = this._dataSource._.head;
+        let {layoutOptions} = this.options;
+        if(this.options.layout !== ListLayout || (this.options.layoutOptions.direction && this.options.layoutOptions.direction !== 1)){
+            console.log(`'Trying to calculate the size of a DataBoundSrollView, which can't be done in the current configuration`);
+            return [undefined, undefined];
+        }
+        let height = layoutOptions && layoutOptions.margins ? layoutOptions.margins[0] + layoutOptions.margins[2] : 0;
+
+        if(item){
+            do {
+                let renderable = item._value;
+                let itemSize;
+                if(renderable.getSize && (itemSize = renderable.getSize())){
+                    height += itemSize[1];
+                } else {
+                    console.log('Trying to calculate the size of a DataBoundSrollView, but all elements cannot be calculated');
+                }
+                if(layoutOptions && layoutOptions.spacing){
+                    height += layoutOptions.spacing;
+                }
+
+            } while(item = item._next)
+        }
+
+        return [undefined, height];
     }
 }
