@@ -122,6 +122,8 @@ export class Controller extends EventEmitter {
                 this.emit('renderend', route.method);
             }
         } else {
+            /* Close if there's currently an open dialog */
+            this.dialogManager.close();
             /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
             this.context.show(view, route.spec, () => { this.emit('renderend', route.method); });
         }
