@@ -56,10 +56,6 @@ export class App {
          */
         this.dialogManager = Injection.get(DialogManager);
 
-
-        /* Load controllers */
-        this.controllers = Injection.getAll(...controllers);
-
         /**
          * The router of the application
          */
@@ -72,6 +68,9 @@ export class App {
         if(this.constructor.loaded && typeof this.constructor.loaded === 'function') {
             try { this.constructor.loaded(); } catch(error) { console.log('Caught exception in App.loaded():', error); }
         }
+
+        /* Load controllers */
+        this.controllers = Injection.getAll(...controllers);
 
         this.router.run();
 
