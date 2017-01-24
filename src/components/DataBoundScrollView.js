@@ -40,6 +40,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * the groupTemplate option also needs to be set.
      * @param {Function} [options.groupTemplate] A function that takes as a single argument the groupBy value and returns
      * a renderable to insert before a group belonging to that value.
+     * @param {function} [options.dataFilter] Filter what data is relevant to the view. Should be a function taking as
+     * an argument a model and from there returning a boolean.
      * @param {Boolean} [options.stickHeaders] If set to true, then the group headers will stick to the top when scrolling.
      * Beware that this is slightly buggy as of now and might require some fine tuning to provide a better UX.
      * @param {Function} [options.customInsertSpec] A function that takes as a single argument a model and returns a spec
