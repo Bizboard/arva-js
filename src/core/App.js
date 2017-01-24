@@ -50,13 +50,11 @@ export class App {
         
         /* Request instances of a Router and a Famous Context. */
         let [router, context] = Injection.getAll(Router, Context);
-        
-        if(this.constructor.loaded && typeof this.constructor.loaded === 'function') {
-            try { this.constructor.loaded(); } catch(error) { console.log('Caught exception in App.loaded():', error); }
-        }
 
-        /* Load controllers */
-        this.controllers = Injection.getAll(...controllers);
+        /**
+         * The dialog manager used to show and hide dialogs
+         */
+        this.dialogManager = Injection.get(DialogManager);
 
         /**
          * The router of the application
@@ -66,11 +64,15 @@ export class App {
          * The animationController that controls the animations between screens
          */
         this.context = context;
+
+        if(this.constructor.loaded && typeof this.constructor.loaded === 'function') {
+            try { this.constructor.loaded(); } catch(error) { console.log('Caught exception in App.loaded():', error); }
+        }
+
+        /* Load controllers */
+        this.controllers = Injection.getAll(...controllers);
+
         this.router.run();
-        /**
-         * The dialog manager used to show and hide dialogs
-         */
-        this.dialogManager = Injection.get(DialogManager);
 
         /* Hide splash screen */
         if(navigator && navigator.splashscreen && !options.keepSplashScreen) { navigator.splashscreen.hide(); }

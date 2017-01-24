@@ -132,7 +132,7 @@ export class RenderableHelper {
      * @private
      */
     _unpipeRenderable(renderableName) {
-        if(this._pipeToView(this._pipedRenderables[renderableName]), false){
+        if(this._pipeToView(this._pipedRenderables[renderableName], false)){
             delete this._pipedRenderables[renderableName];
         }
     }
