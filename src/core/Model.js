@@ -66,10 +66,7 @@ export class Model extends PrioritisedObject {
         } else if (options.dataSource) {
             /* No id is present, generate a random one by pushing a new entry to the dataSource. */
             dataWasPushed = true;
-            let dataSource = options.dataSource.push(data);
-            /* Get the last part of the path and set to the ID */
-            this._id = dataSource.path().toString().substring(dataSource.root().toString().length);
-            this._dataSource = dataSource;
+            this._dataSource = options.dataSource.push(data);
         } else if (options.path && id) {
             this._dataSource = dataSource.child(options.path + '/' + id || '', dataSourceOptions);
         } else if (options.dataSnapshot) {
@@ -87,6 +84,8 @@ export class Model extends PrioritisedObject {
             } else {
                 this._dataSource = dataSource.child(pathRoot).push(data);
             }
+            /* Get the last part of the path and set to the ID */
+            this._id = dataSource.key();
         }
 
         /* Re-construct core PrioritisedObject with new dataSource */
