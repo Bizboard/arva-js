@@ -167,7 +167,7 @@ export class DialogManager extends View {
 
 
     getOpenDialog() {
-        return this.dialog.dialog;
+        return this.hasOpenDialog() && this.dialog.dialog;
     }
 
     _onClose() {
