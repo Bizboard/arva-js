@@ -114,7 +114,7 @@ export class Controller extends EventEmitter {
     _showView(view, route) {
         if(view instanceof Dialog){
             if(this.dialogManager.getOpenDialog() !== view){
-                this.dialogManager.show({dialog: view});
+                this.dialogManager.show({dialog: view, canCancel: false});
                 this.dialogManager.once('dialogShown', () => {
                     this.emit('renderend', route.method);
                 });
