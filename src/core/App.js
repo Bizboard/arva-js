@@ -88,7 +88,7 @@ export class App {
      */
     static start(){
         /* Instantiate this App, which also instantiates the other components. */
-        this.references.app = Injection.get(this);
+        this.app = Injection.get(this);
     }
 }
 
