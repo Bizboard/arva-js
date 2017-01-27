@@ -293,7 +293,7 @@ export class PrioritisedObject extends EventEmitter {
             let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
             if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
                 /* If child is a primitive, listen to changes so we can synch with Firebase */
-                ObjectHelper.addPropertyToObject(this, key, data[key], true, true, this._onSetterTriggered);
+                ObjectHelper.addPropertyToObject(this, key, data[key], true, true, this._onSetterTriggered.bind(this, key));
             }
 
         }
@@ -325,6 +325,7 @@ export class PrioritisedObject extends EventEmitter {
      */
     _onSetterTriggered() {
         if (!this._isBeingWrittenByDatasource) {
+            this.emit('changed', this);
             return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this), this._priority);
         }
     }
@@ -388,12 +389,5 @@ export class PrioritisedObject extends EventEmitter {
 
     _onChildRemoved(dataSnapshot, previousSiblingID) {
         this.emit('removed', this, previousSiblingID);
-    }
-
-    _onSelfChanged(dataSnapshot, previousSiblingID) {
-        if (dataSnapshot.val().id == this.id) {
-            this._buildFromSnapshotWithoutSynchronizing(dataSnapshot);
-            this.emit('changed', this, previousSiblingID);
-        }
     }
 }
