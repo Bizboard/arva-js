@@ -682,7 +682,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         dataStore.on('child_removed', this._onChildRemoved.bind(this, index));
         /* Only listen for child_moved if there is one single dataStore. TODO: See if we want to change this behaviour */
         if(!this.options.dataStores){
-            dataStore.on('child_moved', this._onChildMoved.bind(this, index));
+            dataStore.on('child_moved', this._onChildMoved.bind(this, 0));
         }
     }
 
@@ -731,7 +731,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     //TODO: This won't reorder children, which is a problem
     _onChildChanged(dataStoreIndex, child, previousSiblingID) {
-        let changedItemIndex = this._getDataSourceIndex(child.id);
+        let internalDataSourceData = this._findData(child.id, dataStoreIndex) || {};
+        let changedItemIndex = internalDataSourceData.position || -1;
 
         if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
 
@@ -766,12 +767,13 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
     /**
      *
+     * @param {Number} dataStoreIndex The index of the data store that is being modified
      * @param child
      * @param previousSiblingID
      * @private
      */
-    _onChildMoved(child, previousSiblingID) {
-        let current = this._getDataSourceIndex(child.id);
+    _onChildMoved(dataStoreIndex, child, previousSiblingID) {
+        let current = this._findData(child.id, dataStoreIndex);
         this._throttler.add(() => {
             this._moveItem(current, previousSiblingID);
         });
@@ -790,17 +792,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             this._removeItem(child, dataStoreIndex);
         });
     };
-
-    /**
-     *
-     * @param id
-     * @returns {number}
-     * @private
-     */
-    _getDataSourceIndex(id) {
-        let data = this._findData(id);
-        return data ? data.position : -1;
-    }
+    
 
     /**
      *
@@ -811,7 +803,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     _getNextVisibleIndex(id, dataStoreIndex) {
         let viewIndex = -1;
-        let viewData = this._findData(id, dataStoreIndex);
+        let viewData = this._findData(dataStoreIndex, id);
 
         if (viewData) {
             viewIndex = viewData.position

@@ -57,6 +57,7 @@ export class Model extends PrioritisedObject {
 
         let pathRoot = modelName + 's';
 
+        let dataWasPushed = false;
         let dataIsSynced = new Promise((resolve) => this._dataIsSynced = resolve);
         let dataSourceOptions = {synced: dataIsSynced};
 
@@ -64,6 +65,7 @@ export class Model extends PrioritisedObject {
             this._dataSource = options.dataSource;
         } else if (options.dataSource) {
             /* No id is present, generate a random one by pushing a new entry to the dataSource. */
+            dataWasPushed = true;
             this._dataSource = options.dataSource.push(data);
         } else if (options.path && id) {
             this._dataSource = dataSource.child(options.path + '/' + id || '', dataSourceOptions);
@@ -75,12 +77,15 @@ export class Model extends PrioritisedObject {
             /* If an id is present, use it to locate our model. */
             this._dataSource = dataSource.child(pathRoot + '/' + id, dataSourceOptions);
         } else {
+            dataWasPushed = true;
             /* No id is present, generate a random one by pushing a new entry to the dataSource. */
             if (options.path) {
                 this._dataSource = dataSource.child(options.path).push(data);
             } else {
                 this._dataSource = dataSource.child(pathRoot).push(data);
             }
+            /* Get the last part of the path and set to the ID */
+            this._id = dataSource.key();
         }
 
         /* Re-construct core PrioritisedObject with new dataSource */
@@ -89,14 +94,15 @@ export class Model extends PrioritisedObject {
         } else {
             this._buildFromDataSource(this._dataSource);
         }
-        if(!options.noInitialSync){
+        if(!options.noInitialSync && !dataWasPushed){
             /* Write local data to model, if any data is present. */
             this._writeLocalDataToModel(data).then(this._dataIsSynced);
         } else {
             this._dataIsSynced();
         }
-
     }
+
+
 
     /**
      * Check if the model has been synchonized with the database
@@ -168,4 +174,5 @@ export class Model extends PrioritisedObject {
         }
         return Promise.resolve();
     }
+
 }
