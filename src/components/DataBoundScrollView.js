@@ -14,8 +14,7 @@ import findIndex                    from 'lodash/findIndex.js';
 import {Throttler}                  from '../utils/Throttler.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
-import Timer                        from 'famous/utilities/Timer.js';
-import ListLayout                    from 'famous-flex/layouts/ListLayout.js';
+import ListLayout                   from 'famous-flex/layouts/ListLayout.js';
 
 /**
  * A FlexScrollView with enhanced functionality for maintaining a two-way connection with a PrioritisedArray.
@@ -29,7 +28,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      *
      * @param {Object} options The options passed inherit from previous classes. Avoid using the dataSource option since
      * the DataBoundScrollView creates its own dataSource from options.dataStore.
-     * @param {PrioriisedArray} [options.dataStore] The data that should be read to create entries.
+     * @param {PrioritisedArray} [options.dataStore] The data that should be read to create entries.
      * @param {Function} [options.itemTemplate] A function that returns a renderable representing each data item.
      * @param {Function} [options.placeholderTemplate] A function that returns a renderable to display when there are
      * no items present.
@@ -38,7 +37,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * If it returns true, then model1 should go before model2.
      * @param {Function} [options.groupBy] A function that takes a model and returns a value to group by. If set, then
      * the groupTemplate option also needs to be set.
-     * @param {Function} [options.groupTemplate] A function that takes as a single argument the groupBy value and returns
+     * @param {Function} [options.groupTemplate] A function that takes as a single argument, the groupBy value, and returns
      * a renderable to insert before a group belonging to that value.
      * @param {function} [options.dataFilter] Filter what data is relevant to the view. Should be a function taking as
      * an argument a model and from there returning a boolean.
@@ -367,7 +366,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                         }
 
                         let {dataId, dataStoreIndex} = sequence._value;
-                        if (dataId && this.options.orderBy(child, this._internalDataSource[`${dataId}${dataStoreIndex}`])) {
+                        if (dataId && this.options.orderBy(child, this._internalDataSource[`${dataId}${dataStoreIndex}`].model)) {
                             break;
                         }
                     } else {
@@ -389,7 +388,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                         /* Check the first and last item of every group (they're sorted) */
                         for (let position of group.itemsCount > 1 ? [group.position + 1, group.position + group.itemsCount - 1] : [group.position + 1]) {
                             let {dataId, dataStoreIndex} = this._viewSequence.findByIndex(position)._value;
-                            if (this.options.orderBy(child, this._internalDataSource[`${dataId}${dataStoreIndex}`])) {
+                            if (this.options.orderBy(child, this._internalDataSource[`${dataId}${dataStoreIndex}`].model)) {
                                 foundOrderedIndex = group.position;
                                 break;
                             }
