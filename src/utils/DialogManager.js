@@ -124,6 +124,11 @@ export class DialogManager extends View {
         if(!dialog){
             throw new Error('No dialog specified in show() function of DialogManager');
         }
+
+        if(dialog.canCancel){
+            canCancel = dialog.canCancel;
+        }
+
         if (this._hasOpenDialog) {
             /* If already open dialog we should either close that one, or just keep the current one, depending on the settings */
             if (!killOldDialog) {
