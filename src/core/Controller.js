@@ -111,13 +111,15 @@ export class Controller extends EventEmitter {
      * @param {Object} route
      * @private
      */
-    _showView(view, route) {
+    async _showView(view, route) {
         if(view instanceof Dialog){
             if(this.dialogManager.getOpenDialog() !== view){
                 this.dialogManager.show({dialog: view, canCancel: false});
                 this.dialogManager.once('dialogShown', () => {
                     this.emit('renderend', route.method);
                 });
+                await this.dialogManager.dialogComplete();
+                this.router.goBackInHistory();
             } else {
                 this.emit('renderend', route.method);
             }
