@@ -89,11 +89,11 @@ export class DataBoundScrollView extends ReflowingScrollView {
         /* If no orderBy method is set, or it is a string field name, we set our own ordering method. */
         if (!this.options.orderBy || typeof this.options.orderBy === 'string') {
             let fieldName = this.options.orderBy || 'id';
-            this.options.orderBy = function (currentChild, {model}) {
+            this.options.orderBy = function (firstModel, secondModel) {
                 if (this._isDescending) {
-                    return currentChild[fieldName] > model[fieldName];
+                    return firstModel[fieldName] > secondModel[fieldName];
                 } else {
-                    return currentChild[fieldName] < model[fieldName];
+                    return firstModel[fieldName] < secondModel[fieldName];
                 }
             }.bind(this);
         }
@@ -845,7 +845,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         while (item) {
             let {dataId, dataStoreIndex} = item._value;
-            if (item._value.dataId && this._internalDataSource[`${dataId}${dataStoreIndex}`] && orderByFunction(child, this._internalDataSource[`${dataId}${dataStoreIndex}`])) {
+            if (item._value.dataId && this._internalDataSource[`${dataId}${dataStoreIndex}`] && orderByFunction(child, this._internalDataSource[`${dataId}${dataStoreIndex}`].model)) {
                 return index;
             }
 
