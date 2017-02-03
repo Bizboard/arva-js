@@ -407,9 +407,12 @@ export class PrioritisedArray extends Array {
                 /* If the override is concerning another id, then go ahead and make the _onChildAdded */
                 if (newModel.id !== id) {
                     this._onChildAdded(snapshot, prevSiblingId)
+                } else {
+                    this._eventEmitter.emit('value', this);
                 }
                 /* Otherwise, don't recreate the same model twice */
             });
+
             return;
         }
 
