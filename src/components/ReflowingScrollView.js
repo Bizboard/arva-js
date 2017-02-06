@@ -4,10 +4,8 @@
  @copyright Bizboard, 2015
  */
 
-import FlexScrollView       from 'famous-flex/FlexScrollView.js';
-import {ScrollController}   from '../core/ScrollController.js';
-import {combineOptions}     from '../utils/CombineOptions.js';
-import {ObjectHelper}       from '../utils/ObjectHelper.js';
+import FlexScrollView   from 'famous-flex/FlexScrollView.js';
+import {ObjectHelper}   from '../utils/ObjectHelper.js';
 
 /**
  * Class extended by the dataBoundScrollView and for wrapping up a View.
@@ -39,5 +37,12 @@ export class ReflowingScrollView extends FlexScrollView {
          */
         this._eventOutput.emit('resize');
     }
-    
+
+    _removeItem() {
+        /* Views that use this ReflowingScrollView should manually subscribe to this event,
+         * since it does not automatically bubble to Arva's View.js.
+         */
+        this._eventOutput.emit('resize');
+    }
+
 }

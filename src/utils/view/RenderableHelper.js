@@ -3,6 +3,7 @@
  */
 
 import OrderedHashMap               from 'ordered-hashmap';
+import merge                        from 'lodash/merge.js';
 
 import Transitionable               from 'famous/transitions/Transitionable.js';
 import Easing                       from 'famous/transitions/Easing.js';
@@ -51,7 +52,10 @@ export class RenderableHelper {
 
     assignRenderable(renderable, renderableName) {
         this._renderables[renderableName] = renderable;
-        let renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName);
+        let renderableEquivalent = renderable;
+        if(renderable.decorations){
+            renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName);
+        }
         this._renderableCounterparts[renderableName] = renderableEquivalent;
         this._setupAllRenderableListeners(renderableName);
     }
@@ -128,7 +132,7 @@ export class RenderableHelper {
      * @private
      */
     _unpipeRenderable(renderableName) {
-        if(this._pipeToView(this._pipedRenderables[renderableName]), false){
+        if(this._pipeToView(this._pipedRenderables[renderableName], false)){
             delete this._pipedRenderables[renderableName];
         }
     }
@@ -500,6 +504,12 @@ export class RenderableHelper {
         if (shouldDisableFullSize) {
             delete renderable.decorations.fullSize;
         }
+
+        /* Merge existing flow decorations so they won't be discarded */
+        if(renderable.decorations.flow && fakeRenderable.decorations.flow){
+            merge(fakeRenderable.decorations.flow, renderable.decorations.flow)
+        }
+
         /* Extend the object */
         Object.assign(renderable.decorations, fakeRenderable.decorations);
         /* See if we have to redo the grouping */

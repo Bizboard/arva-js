@@ -14,6 +14,7 @@ import {Injection}                  from '../utils/Injection.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {DataSource}                 from './DataSource.js';
 import {Throttler}                  from '../utils/Throttler.js';
+import {Model}                      from '../core/Model.js';
 
 /**
  * An array of two-way bound data Models that are automatically synced with the currently used DataSource
@@ -64,8 +65,12 @@ export class PrioritisedArray extends Array {
         this._modelOptions = modelOptions;
         /* Flag to determine when we're reordering so we don't listen to move updates */
         this._eventEmitter = new EventEmitter();
-        this._childAddedThrottler = new Throttler(1, true, this, true);
+        this._childAddedThrottler = new Throttler(typeof window === 'undefined' ? 0 : 1, true, this, true);
         this._overrideChildAddedForId = null;
+
+        if(dataType && !(dataType.prototype instanceof Model)){
+            throw new Error(`${dataType.constructor.name} passed to PrioritisedArray is not an instance of a model`);
+        }
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
@@ -321,7 +326,7 @@ export class PrioritisedArray extends Array {
         dataSnapshot.forEach(function (child) {
             this._childAddedThrottler.add(function (child) {
                 /* Create a new instance of the given data type and prefill it with the snapshot data. */
-                let options = {dataSnapshot: child};
+                let options = {dataSnapshot: child, noInitialSync: true};
                 let childRef = this._dataSource.child(child.key);
 
                 /* whenever the ref() is a datasource, we can bind that source to the model.
@@ -402,9 +407,12 @@ export class PrioritisedArray extends Array {
                 /* If the override is concerning another id, then go ahead and make the _onChildAdded */
                 if (newModel.id !== id) {
                     this._onChildAdded(snapshot, prevSiblingId)
+                } else {
+                    this._eventEmitter.emit('value', this);
                 }
                 /* Otherwise, don't recreate the same model twice */
             });
+
             return;
         }
 
@@ -415,6 +423,7 @@ export class PrioritisedArray extends Array {
         }
 
         let model = new this._dataType(id, null, extend({}, this._modelOptions, {
+            noInitialSync: true,
             dataSnapshot: snapshot
         }));
         this.add(model, prevSiblingId);
@@ -441,6 +450,7 @@ export class PrioritisedArray extends Array {
             /* The model doesn't exist, so we won't emit a changed event. */
             return;
         }
+        
 
         let model = this[previousPosition];
         model._onChildValue(snapshot, prevSiblingId);

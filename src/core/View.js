@@ -11,8 +11,8 @@ import extend                       from 'lodash/extend.js';
 import cloneDeep                    from 'lodash/cloneDeep.js';
 import FamousView                   from 'famous/core/View.js';
 import Surface                      from 'famous/core/Surface.js';
-import LayoutController             from 'famous-flex/LayoutController.js';
 import Engine                       from 'famous/core/Engine.js';
+import LayoutController             from 'famous-flex/LayoutController.js';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
 
@@ -184,6 +184,10 @@ export class View extends FamousView {
      */
     showRenderable(renderableName, show = true) {
         let renderable = this[renderableName];
+        if(!renderable){
+            Utils.warn(`Trying to show renderable ${renderableName} which does not exist!`);
+            return;
+        }
         if (!renderable.animationController) {
             Utils.warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
             return;
@@ -483,6 +487,7 @@ export class View extends FamousView {
         let dockedRenderables = this._renderableHelper;
         let nativeScrollableOptions = this.decorations.nativeScrollable;
         if(nativeScrollableOptions) {
+            Engine.enableTouchMove();
             let thisSize  = this.getSize();
             context.size = context.size.map((size, index) =>
             (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index],size)) || size);
