@@ -13,6 +13,7 @@ import Context                  from 'famous/core/Context.js';
 import AnimationController      from 'famous-flex/AnimationController.js';
 
 import {provide}                from '../utils/di/Decorators.js';
+import {DialogManager}          from '../utils/DialogManager.js';
 import {ArvaRouter}             from '../routers/ArvaRouter.js';
 import {Injection}              from '../utils/Injection.js';
 import {Router}                 from './Router.js';
@@ -49,13 +50,11 @@ export class App {
         
         /* Request instances of a Router and a Famous Context. */
         let [router, context] = Injection.getAll(Router, Context);
-        
-        if(this.constructor.loaded && typeof this.constructor.loaded === 'function') {
-            try { this.constructor.loaded(); } catch(error) { console.log('Caught exception in App.loaded():', error); }
-        }
 
-        /* Load controllers */
-        this.controllers = Injection.getAll(...controllers);
+        /**
+         * The dialog manager used to show and hide dialogs
+         */
+        this.dialogManager = Injection.get(DialogManager);
 
         /**
          * The router of the application
@@ -65,6 +64,14 @@ export class App {
          * The animationController that controls the animations between screens
          */
         this.context = context;
+
+        if(this.constructor.loaded && typeof this.constructor.loaded === 'function') {
+            try { this.constructor.loaded(); } catch(error) { console.log('Caught exception in App.loaded():', error); }
+        }
+
+        /* Load controllers */
+        this.controllers = Injection.getAll(...controllers);
+
         this.router.run();
 
         /* Hide splash screen */
@@ -81,7 +88,7 @@ export class App {
      */
     static start(){
         /* Instantiate this App, which also instantiates the other components. */
-        this.references.app = Injection.get(this);
+        this.app = Injection.get(this);
     }
 }
 

@@ -7,6 +7,7 @@
 
  */
 import extend                       from 'lodash';
+import _                            from 'lodash';
 import {provide}                    from '../../utils/di/Decorators.js';
 import {ObjectHelper}               from '../../utils/ObjectHelper.js';
 import {UrlParser}                  from '../../utils/request/UrlParser.js';
@@ -55,7 +56,7 @@ export class SharePointDataSource extends DataSource {
                 listName: this.key()
             };
 
-            let sharePointOptions = extend({}, this.options, configuration);
+            let sharePointOptions = _.merge({}, this.options, configuration);
 
             /* Bind the soap adapter against the datasource with given configuration */
             this._dataReference = new SharePoint(sharePointOptions);
@@ -481,5 +482,39 @@ export class SharePointDataSource extends DataSource {
         }
         newPath += endPoint;
         return newPath;
+    }
+    /**
+     * Performs an atomic transaction
+     * @param {Function} transactionFunction A function that takes the current value as a single argument, and
+     * returns the new value.
+     * @returns {Promise} Resolves the new value when the transaction is finished
+     */
+    atomicTransaction(transactionFunction) {
+        throw new Error("Not supported");
+    }
+
+    /**
+     * Merges the current user with the specified provider.
+     * @param provider
+     * @returns {Authentication}
+     */
+    linkCurrentUserWithProvider(provider) {
+        throw new Error("Not supported");
+    }
+
+    /**
+     * Creates a provider with the specified type
+     *
+     * @param {String} providerType Can be 'password' or 'facebook'
+     * @param {String|Object} credential if 'password' providerType, then an object {email:String,password:String}. If
+     * 'facebook' providerType, then a string containing the API token.
+     * @returns {Provider}
+     */
+    createProviderFromCredential(providerType, credential) {
+        throw new Error("Not supported");
+    }
+
+    registerWithPassword(credentials, onComplete, options) {
+        throw new Error("Not Supported")
     }
 }

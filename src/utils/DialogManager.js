@@ -14,7 +14,7 @@ import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
 import Easing                from 'famous/transitions/Easing.js';
 
-@layout.scrollable({overscroll: false})
+@layout.scrollable({overscroll: false, scrollSync: {preventDefault: false}})
 class DialogWrapper extends View {
 
     /**
@@ -28,7 +28,7 @@ class DialogWrapper extends View {
     }
 
     @layout.size(function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)},
-        function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)})
+        function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 1)})
     @layout.stick.center()
     dialog = this.options.dialog;
 
@@ -36,12 +36,24 @@ class DialogWrapper extends View {
         this._parentSize = parentSize;
     }
 
+    /**
+     * The getSize function is used to determine the size by the scrolling behaviour. It will try to make sure that
+     * a too big dialog can be scrolled. If this isn't possible, it let's the dialog capture the entire screen
+     * @returns {*}
+     */
     getSize() {
         if (!this._parentSize) {
             return [undefined, undefined];
         }
         let dialogHeight = this.dialog.getSize()[1];
-        return this._parentSize[1] > dialogHeight ? [undefined, this._parentSize[1]] : [undefined, dialogHeight];
+        let height;
+        if(dialogHeight !== undefined){
+            height = Math.max(this._parentSize[1], dialogHeight);
+        } else {
+            /* undefined height, let's make it the entire height  */
+            height = this._parentSize[1];
+        }
+        return [undefined, height];
     }
 
 }
@@ -50,6 +62,7 @@ export class DialogManager extends View {
 
     @layout.fullSize()
     @layout.animate({showInitially: false, animation: AnimationController.Animation.Fade})
+    /* Add huge translations to make sure that it appears above everything else */
     @layout.translate(0, 0, 9000)
     background = new Surface({
         properties: {
@@ -102,12 +115,20 @@ export class DialogManager extends View {
 
     /**
      *
-     * @param dialog
-     * @param canCancel
-     * @param killOldDialog
+     * @param {Dialog} options.dialog dialog
+     * @param {Boolean} [options.canCancel=true]
+     * @param {Boolean} [options.killOldDialog=true]
      * @returns {*}
      */
     show({dialog, canCancel = true, killOldDialog = true}) {
+        if(!dialog){
+            throw new Error('No dialog specified in show() function of DialogManager');
+        }
+
+        if(dialog.canCancel){
+            canCancel = dialog.canCancel;
+        }
+
         if (this._hasOpenDialog) {
             /* If already open dialog we should either close that one, or just keep the current one, depending on the settings */
             if (!killOldDialog) {
@@ -130,7 +151,9 @@ export class DialogManager extends View {
         }
 
         /* Show the dialog */
-        this.showRenderable('dialog');
+        this.showRenderable('dialog').then(() => {
+            this._eventOutput.emit('dialogShown');
+        });
 
         this.dialog.on('closeDialog', (function () {
             /* Forward the arguments coming from the event emitter when closing */
@@ -147,6 +170,10 @@ export class DialogManager extends View {
         return this.dialogComplete();
     }
 
+
+    getOpenDialog() {
+        return this.hasOpenDialog() && this.dialog.dialog;
+    }
 
     _onClose() {
         if (this._canCancel) {

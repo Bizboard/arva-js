@@ -67,6 +67,13 @@ function famousMerge(defaultParam, specifiedParam) {
     for (let [param, shallowCopy] of [[specifiedParam, shallowParamCopies[0]], [defaultParam, shallowParamCopies[1]]]) {
         for (let key in param) {
             let value = param[key];
+            /* If there is an array present in one place but not the other, we need to be sure to place an empty
+            *  array in the other object in order to prevent the contents in that array from being copied unpromptedly */
+            if(defaultParam !== undefined && specifiedParam !== undefined && Array.isArray(value) && ((key in specifiedParam) !== (key in defaultParam))){
+                if(!key in specifiedParam){
+                    specifiedParam[key] = [];
+                }
+            }
             if (~key.indexOf('-')) {
                 hasDashProperty = true;
                 key = camelCase(key);
