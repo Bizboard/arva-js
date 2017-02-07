@@ -42,6 +42,7 @@ function prepDecoratedRenderable(viewOrRenderable, renderableName, descriptor) {
          * myRenderable = new Surface(); => descriptor.initializer();
          */
         if (descriptor.get) {
+            (console.warn || console.log)(`Adding renderables on views through getters has been deprecated (${renderableName}).`);
             specificRenderableConstructors[renderableName] = descriptor.get;
         } else if (descriptor.initializer) {
             specificRenderableConstructors[renderableName] = descriptor.initializer;
