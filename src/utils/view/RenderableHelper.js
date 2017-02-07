@@ -8,7 +8,7 @@ import merge                        from 'lodash/merge.js';
 import Transitionable               from 'famous/transitions/Transitionable.js';
 import Easing                       from 'famous/transitions/Easing.js';
 import Draggable                    from 'famous/modifiers/Draggable.js';
-import ContainerSurface             from 'famous/Surfaces/ContainerSurface.js';
+import ContainerSurface             from 'famous/surfaces/ContainerSurface.js';
 import Transform                    from 'famous/core/Transform.js';
 import Timer                        from 'famous/utilities/Timer.js';
 import GenericSync                  from 'famous/inputs/GenericSync.js';
