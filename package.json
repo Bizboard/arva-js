@@ -27,6 +27,7 @@
       "fastclick": "npm:fastclick@^1.0.6",
       "firebase": "github:firebase/firebase-bower@^3.0.5",
       "lodash": "npm:lodash@^4.13.1",
+      "lodash-decorators": "npm:lodash-decorators@^3.0.1",
       "ordered-hashmap": "npm:ordered-hashmap@^1.0.0",
       "request-animation-frame-mock": "github:erykpiast/request-animation-frame-mock@^0.1.8",
       "xml2js": "npm:xml2js@^0.4.16"
