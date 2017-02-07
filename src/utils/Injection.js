@@ -2,7 +2,7 @@
  * Created by tom on 28/06/16.
  */
 
-import {Injector}                   from './di/injector.js';
+import {Injector}                   from './di/Injector.js';
 import {provide}                    from './di/Decorators.js';
 
 export class Injection {
