@@ -197,7 +197,11 @@ export class DialogManager extends View {
 
     }
 
-    close() {
+    /**
+     * Closes the currently open dialog, if any.
+     * @param {Boolean} [goBack] Set to false to prevent router.goBackInHistory() from being called after close.
+     */
+    close(goBack = true) {
         if (this._hasOpenDialog) {
 
             /* Restore back button state */
@@ -214,6 +218,9 @@ export class DialogManager extends View {
             this.hideRenderable('dialog');
             this.hideRenderable('background');
             this._eventOutput.emit('close', ...arguments);
+            if(goBack) {
+                this.router.goBackInHistory();
+            }
         }
     }
 }
