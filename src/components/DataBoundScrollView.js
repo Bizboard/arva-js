@@ -149,6 +149,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
     /**
      * Sets the datastore to use. This will repopulate the view and remove any (if present) old items.
+     * We decorate it with debounce in order to avoid race conditions when setting the dataStore frequently after each other
      * @param dataStore
      */
     @debounce(300)
