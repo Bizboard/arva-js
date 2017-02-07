@@ -9,6 +9,7 @@
 
  */
 
+import {debounce}                   from 'lodash-decorators'
 import sortBy                       from 'lodash/sortBy.js';
 import findIndex                    from 'lodash/findIndex.js';
 import {Throttler}                  from '../utils/Throttler.js';
@@ -148,15 +149,16 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
     /**
      * Sets the datastore to use. This will repopulate the view and remove any (if present) old items.
+     * We decorate it with debounce in order to avoid race conditions when setting the dataStore frequently after each other
      * @param dataStore
      */
+    @debounce(300)
     setDataStore(dataStore) {
-        if (this.options.dataStore) {
-            this.clearDataSource();
-        }
+        this.clearDataSource();
         this.options.dataStore = dataStore;
         this._bindDataSource(this.options.dataStore);
     }
+
 
     /**
      * Gets the currently set dataStore.

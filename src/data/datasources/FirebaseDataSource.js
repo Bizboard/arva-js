@@ -63,7 +63,11 @@ export class FirebaseDataSource extends DataSource {
             this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
         } else if (this.options.equalTo) {
             let [key, value] = this.options.equalTo;
-            this._orderedDataReference = this._dataReference.orderByChild(key).equalTo(value);
+            if(key === 'id'){
+                this._orderedDataReference = this._dataReference.orderByKey().equalTo(value);
+            } else {
+                this._orderedDataReference = this._dataReference.orderByChild(key).equalTo(value);
+            }
         } else {
             this._orderedDataReference = this._dataReference;
         }
