@@ -22,7 +22,7 @@ export class FirebaseFileSource {
      */
     async push(file) {
         return new Promise((resolve, reject) => {
-            let fileRef = this.storageRef.child(file.name);
+            let fileRef = this.storageRef.child(`${Date.now()}-${file.name}`);
             let uploadTask = fileRef.put(file);
 
             uploadTask.on('state_changed', function (snapshot) {
