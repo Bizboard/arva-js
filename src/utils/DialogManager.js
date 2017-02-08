@@ -1,62 +1,18 @@
 /**
  * Created by lundfall on 06/07/16.
  */
-import Timer                 from 'famous/utilities/Timer';
-import AnimationController   from 'famous-flex/AnimationController';
 import Surface               from 'famous/core/Surface';
 import FamousContext         from 'famous/core/Context.js';
-
-import {View}                from 'arva-js/core/View.js';
-import {ObjectHelper}        from 'arva-js/utils/ObjectHelper';
+import Timer                 from 'famous/utilities/Timer';
+import Easing                from 'famous/transitions/Easing.js';
+import AnimationController   from 'famous-flex/AnimationController';
 
 import {Injection}           from './Injection.js';
+import {View}                from '../core/View.js';
 import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
-import Easing                from 'famous/transitions/Easing.js';
+import {DialogWrapper}       from './dialog/DialogWrapper.js';
 
-@layout.scrollable({overscroll: false, scrollSync: {preventDefault: false}})
-class DialogWrapper extends View {
-
-    /**
-     * Defines the size that is appropriate for the dialog. The dialog can return undefined on its getSize function for
-     * full-blown sizing instead of true sizing, and it can define a maxSize to specify a maximum that causes the margins
-     * to get larger.
-     * @param size
-     */
-    determineSizeWithMargins (size, maxSize, dimension) {
-        return ~Math.min(maxSize ? maxSize[dimension] : 480, size[dimension] - 32);
-    }
-
-    @layout.size(function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)},
-        function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 1)})
-    @layout.stick.center()
-    dialog = this.options.dialog;
-
-    onNewParentSize(parentSize) {
-        this._parentSize = parentSize;
-    }
-
-    /**
-     * The getSize function is used to determine the size by the scrolling behaviour. It will try to make sure that
-     * a too big dialog can be scrolled. If this isn't possible, it let's the dialog capture the entire screen
-     * @returns {*}
-     */
-    getSize() {
-        if (!this._parentSize) {
-            return [undefined, undefined];
-        }
-        let dialogHeight = this.dialog.getSize()[1];
-        let height;
-        if(dialogHeight !== undefined){
-            height = Math.max(this._parentSize[1], dialogHeight);
-        } else {
-            /* undefined height, let's make it the entire height  */
-            height = this._parentSize[1];
-        }
-        return [undefined, height];
-    }
-
-}
 
 export class DialogManager extends View {
 
@@ -171,6 +127,31 @@ export class DialogManager extends View {
         return this.dialogComplete();
     }
 
+    /**
+     * Handles the logic for closing the dialog and possible going back in History
+     * @param {Boolean} [goBackInHistory] Set to false to prevent router.goBackInHistory() from being called after close.
+     */
+    close(goBackInHistory = false) {
+        if (this.hasOpenDialog()) {
+
+            /* Restore back button state */
+            if (this.canCancel) {
+                this.router.setBackButtonEnabled(this.initialBackButtonState);
+            }
+            /* Resolve promise if necessary */
+            if (this._resolveDialogComplete) {
+                this._resolveDialogComplete(arguments);
+                this._resolveDialogComplete = null;
+            }
+
+            /* Close the current dialog */
+            if(goBackInHistory || this._shouldGoBackInHistory){
+                this._goBackInHistory();
+            } else {
+                this._close();
+            }
+        }
+    }
 
     getOpenDialog() {
         return this.hasOpenDialog() && this.dialog.dialog;
@@ -212,31 +193,5 @@ export class DialogManager extends View {
         this._shouldGoBackInHistory = false;
         (route instanceof Object && route.controller) ? this.router.go(route.controller, route.method, route.arguments) : this.router.goBackInHistory();
 
-    }
-
-    /**
-     * Handles the logic for closing the dialog and possible going back in History
-     * @param {Boolean} [goBackInHistory] Set to false to prevent router.goBackInHistory() from being called after close.
-     */
-    close(goBackInHistory = false) {
-        if (this.hasOpenDialog()) {
-
-            /* Restore back button state */
-            if (this.canCancel) {
-                this.router.setBackButtonEnabled(this.initialBackButtonState);
-            }
-            /* Resolve promise if necessary */
-            if (this._resolveDialogComplete) {
-                this._resolveDialogComplete(arguments);
-                this._resolveDialogComplete = null;
-            }
-
-            /* Close the current dialog */
-            if(goBackInHistory || this._shouldGoBackInHistory){
-                this._goBackInHistory();
-            } else {
-                this._close();
-            }
-        }
     }
 }
