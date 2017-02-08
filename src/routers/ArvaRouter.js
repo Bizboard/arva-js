@@ -77,7 +77,7 @@ export class ArvaRouter extends Router {
      * @returns {void}
      */
     go(controller, method, params = null) {
-        console.log('Router go ', console.trace());
+
         let controllerName = this._getControllerName(controller);
 
         let routeRoot = controllerName
