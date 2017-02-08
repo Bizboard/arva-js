@@ -303,7 +303,6 @@ export class RenderableHelper {
         }
     }
     
-    //Done
     /**
      * Processes an animated renderable
      * @param renderable
@@ -339,7 +338,7 @@ export class RenderableHelper {
 
         }
     }
-    //Done
+
     /**
      * Shows a renderable using the animationController specified. When operation is complete, the renderable emits
      * the one events 'show' or 'hide', depending on what operation that was done.
@@ -368,7 +367,7 @@ export class RenderableHelper {
             animationController.hide(null, emitOnFinished);
         }
     }
-    //Done
+
     _addRenderableToDecoratorGroup(renderable, renderableCounterpart, renderableName) {
         /* Group the renderable */
         let groupName = this._getGroupName(renderable);
@@ -382,7 +381,7 @@ export class RenderableHelper {
         }
     }
 
-    //Done
+
     _getGroupName(renderable) {
         let {decorations} = renderable;
 
@@ -407,7 +406,7 @@ export class RenderableHelper {
     getRenderableGroup(groupName) {
         return this._groupedRenderables[groupName];
     }
-    //Done
+
     /**
      * Removes the renderable from the view
      * @param {String} renderableName The name of the renderable
@@ -426,7 +425,7 @@ export class RenderableHelper {
         let groupName = this._getGroupName(renderable);
         this._removeRenderableFromGroupWithName(renderableName, groupName);
     }
-    //Done
+
     _removeRenderableFromGroupWithName(renderableName, groupName) {
         let group = this._groupedRenderables[groupName];
         group.remove(renderableName);
@@ -434,7 +433,7 @@ export class RenderableHelper {
             delete this._groupedRenderables[groupName];
         }
     }
-    //done
+
     /**
      * @example
      * decorateRenderable('myRenderable',layout.size(100, 100));
@@ -522,7 +521,7 @@ export class RenderableHelper {
         }
 
     }
-    //done
+
     applyDecoratorFunctionsToRenderable(renderable, decorators){
         for (let decorator of decorators) {
             /* There can be existing decorators already, which are preserved. We are extending the decorators object,
@@ -530,7 +529,7 @@ export class RenderableHelper {
             decorator(renderable);
         }
     }
-    //Done
+
     replaceRenderable(renderableName, newRenderable) {
         let renderable = this._renderables[renderableName];
         let renderableHasAnimationController = (this._renderableCounterparts[renderableName] instanceof AnimationController);
@@ -549,7 +548,6 @@ export class RenderableHelper {
     }
 
 
-    //Done
     async setRenderableFlowState(renderableName = '', stateName = '') {
 
         let renderable = this._renderables[renderableName];
@@ -592,7 +590,7 @@ export class RenderableHelper {
 
         return !flowWasInterrupted;
     }
-    //Done
+
     async setViewFlowState(stateName = '', flowOptions) {
         let steps = flowOptions.viewStates[stateName];
 
