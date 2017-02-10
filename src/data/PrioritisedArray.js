@@ -143,16 +143,17 @@ export class PrioritisedArray extends Array {
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
      * @param {Function} [handler] Function that is called when the given event type is emitted.
      * @param {Object} [context] context of 'this' inside the handler function when it is called.
-     * @returns {Promise} If no callback function provided, a promise that resolves once the event has happened
+     * @returns {Promise} A promise that resolves once the event has happened
      */
     once(event, handler, context = this) {
-        if (!handler) {
-            return new Promise((resolve) => this.once(event, resolve, context));
-        }
-        return this.on(event, function onceWrapper() {
-            this.off(event, onceWrapper, context);
-            handler.call(context, ...arguments);
-        }, this);
+        return new Promise((resolve)=>{
+            this.on(event, function onceWrapper() {
+                this.off(event, onceWrapper, context);
+                handler && handler.call(context, ...arguments);
+                resolve(...arguments);
+            }, this);
+        });
+
     }
 
     /**
