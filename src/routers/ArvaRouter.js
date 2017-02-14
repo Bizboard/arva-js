@@ -263,7 +263,7 @@ export class ArvaRouter extends Router {
     goBackInHistory() {
         /* Default behaviour: go back in history in the arva router */
         let previousRoute = this.getPreviousRoute();
-        this.router.go(previousRoute.controller, previousRoute.method, previousRoute.parameters || null);
+        this.go(previousRoute.controller, previousRoute.method, previousRoute.parameters || null);
     }
 
     _setupNativeBackButtonListener() {
