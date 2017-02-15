@@ -180,6 +180,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {FirebaseDataSource} A new FirebaseDataSource pointing to the injected data.
      */
     push(newData = {}) {
+        newData = (newData === undefined || newData === null) ? {} : newData;
         let pushResult = this._dataReference.push(newData);
         return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {
             synced: pushResult,
