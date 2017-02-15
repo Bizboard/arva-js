@@ -9,7 +9,7 @@
 
  */
 
-import {debounce}                   from 'lodash-decorators'
+import {debounce}                   from 'lodash-decorators';
 import sortBy                       from 'lodash/sortBy.js';
 import findIndex                    from 'lodash/findIndex.js';
 import {Throttler}                  from '../utils/Throttler.js';
@@ -111,7 +111,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         }
 
         if (this.options.dataStore && this.options.dataStores) {
-            throw new Error("Both the single dataStore and the multiple dataStores is set, please decide for one or the other");
+            throw new Error('Both the single dataStore and the multiple dataStores is set, please decide for one or the other');
         }
         if (this.options.dataStores) {
             this._bindMultipleDataSources(this.options.dataStores);
@@ -182,13 +182,12 @@ export class DataBoundScrollView extends ReflowingScrollView {
         if (this.options.dataStores) {
             for (let [dataStoreIndex,dataStore] of this.options.dataStores.entries() || []) {
                 for (let entry of dataStore) {
-                    this._reloadEntryFromFilter(entry, newFilter, dataStoreIndex)
+                    this._reloadEntryFromFilter(entry, newFilter, dataStoreIndex);
                 }
 
             }
             return Promise.all(filterPromises);
-        }
-        else if (this.options.dataStore) {
+        } else if (this.options.dataStore) {
             for (let entry of this.options.dataStore || []) {
                 this._reloadEntryFromFilter(entry, newFilter, 0);
             }
@@ -211,7 +210,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             filterPromises.push(result);
             result.then(function (shouldShow) {
                 this._handleNewFilterResult(shouldShow, alreadyExists, entry, dataStoreIndex);
-            }.bind(this))
+            }.bind(this));
         } else {
             this._handleNewFilterResult(result, alreadyExists, entry, dataStoreIndex);
         }
@@ -362,7 +361,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                         let sequence = this._viewSequence.findByIndex(insertIndex);
                         if (!sequence) {
                             /* Internal error, this should never happen. Reduce the number of items in the group */
-                            console.log("Internal error in DataBoundScrollView. Inconsistent groupData");
+                            console.log('Internal error in DataBoundScrollView. Inconsistent groupData');
                             groupData.itemsCount = insertIndex - 1;
                             break;
                         }
@@ -506,7 +505,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false;
             if (this.options.chatScrolling) {
                 if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) {
-                    this.ensureVisible(newSurface)
+                    this.ensureVisible(newSurface);
                 }
             } else if (shouldEnsureVisible) {
                 this.ensureVisible(newSurface);
@@ -705,7 +704,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 result.then((show) => {
                     if (show) {
                         this._throttler.add(() => {
-                            this._addItem(child, previousSiblingID, dataStoreIndex)
+                            this._addItem(child, previousSiblingID, dataStoreIndex);
                         });
                     }
                 });
@@ -749,8 +748,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                         this._removeItem(child, dataStoreIndex);
                     }
                 }.bind(this));
-            }
-            else if (this.options.dataFilter &&
+            } else if (this.options.dataFilter &&
                 typeof this.options.dataFilter === 'function' && !result) {
                 this._removeItem(child, dataStoreIndex);
             } else {
@@ -807,7 +805,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         let viewData = this._findData(dataStoreIndex, id);
 
         if (viewData) {
-            viewIndex = viewData.position
+            viewIndex = viewData.position;
         }
 
         if (viewIndex === -1) {
@@ -869,7 +867,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         for (let element of Object.keys(this._internalDataSource)) {
             let dataObject = this._internalDataSource[element];
             if (dataObject.position >= position) {
-                dataObject.position += change
+                dataObject.position += change;
             }
         }
         if (this._isGrouped) {
@@ -961,7 +959,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                     height += layoutOptions.spacing;
                 }
 
-            } while(item = item._next)
+            } while(item = item._next);
         }
 
         return [undefined, height];
