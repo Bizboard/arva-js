@@ -114,8 +114,7 @@ export class Controller extends EventEmitter {
     _showView(view, route) {
         if(view instanceof Dialog){
             if(this.dialogManager.getOpenDialog() !== view){
-                this.dialogManager.close(false);
-                this.dialogManager.show({dialog: view, canCancel: false});
+                this.dialogManager.show({dialog: view, canCancel: false, shouldGoToRoute: this.router.getPreviousRoute()});
                 this.dialogManager.once('dialogShown', () => {
                     this.emit('renderend', route.method);
                 });
@@ -124,7 +123,7 @@ export class Controller extends EventEmitter {
             }
         } else {
             /* Close if there's currently an open dialog */
-            this.dialogManager.close(false);
+            this.dialogManager.hasOpenDialog() && this.dialogManager._close();
             /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
             this.context.show(view, route.spec, () => { this.emit('renderend', route.method); });
         }
