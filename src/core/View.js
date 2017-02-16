@@ -10,9 +10,10 @@
 import extend                       from 'lodash/extend.js';
 import cloneDeep                    from 'lodash/cloneDeep.js';
 import FamousView                   from 'famous/core/View.js';
+import {RenderablePrototype}        from 'famous/utilities/RenderablePrototype.js';
+import LayoutController             from 'famous-flex/LayoutController.js';
 import Surface                      from 'famous/core/Surface.js';
 import Engine                       from 'famous/core/Engine.js';
-import LayoutController             from 'famous-flex/LayoutController.js';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
 
@@ -25,9 +26,12 @@ import {
     FullSizeLayoutHelper,
     TraditionalLayoutHelper
 }
-                                    from '../utils/view/LayoutHelpers.js';
+    from '../utils/view/LayoutHelpers.js';
 import {RenderableHelper}           from '../utils/view/RenderableHelper.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
+import {PrioritisedObject}          from '../data/PrioritisedObject.js';
+import {combineOptions}             from '../utils/CombineOptions.js';
+import observeJs             from 'observe-js';
 
 /**
  * An Arva View. Can be constructed explicitly by using new View() but is more commonly used as a base class for
@@ -78,6 +82,7 @@ export class View extends FamousView {
         this._initTrueSizedBookkeeping();
 
     }
+
 
     //noinspection JSUnusedGlobalSymbols
     /**
@@ -184,7 +189,7 @@ export class View extends FamousView {
      */
     showRenderable(renderableName, show = true) {
         let renderable = this[renderableName];
-        if(!renderable){
+        if (!renderable) {
             Utils.warn(`Trying to show renderable ${renderableName} which does not exist!`);
             return;
         }
@@ -204,7 +209,7 @@ export class View extends FamousView {
 
             }
         }
-        
+
         return new Promise((resolve) => this._renderableHelper.showWithAnimationController(this.renderables[renderableName], renderable, show, resolve));
     }
 
@@ -279,6 +284,10 @@ export class View extends FamousView {
         return this._scrollView;
     }
 
+    static with(options) {
+        return new RenderablePrototype(this, options);
+    }
+
     /**
      * getSize() is called by this view and by layoutControllers. For lazy people that don't want to specifiy their own getSize() function,
      * we provide a fallback. This function can be performance expensive when using non-docked renderables, but for docked renderables it
@@ -323,7 +332,7 @@ export class View extends FamousView {
      */
     onceNewSize() {
         return new Promise((resolve) => {
-            this._onNewSizeCallbacks.push(function onNewSize(size)  {
+            this._onNewSizeCallbacks.push(function onNewSize(size) {
                 this._onNewSizeCallbacks.splice(this._onNewSizeCallbacks.indexOf(onNewSize), 1);
                 resolve(size);
             }.bind(this))
@@ -338,11 +347,11 @@ export class View extends FamousView {
      * If false, it will be interrupted automatically by any interrput to another state. Defaults to true
      * @returns {Promise} resolves to false if the flow state can't be repeated due to an existing running repeat
      */
-    async repeatFlowState(renderableName = '', stateName = '', persistent = true){
-        if(!this._runningRepeatingFlowStates[renderableName]){
-            this._runningRepeatingFlowStates[renderableName] = {persistent};
-            while(this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent))
-            {}
+    async repeatFlowState(renderableName = '', stateName = '', persistent = true) {
+        if (!this._runningRepeatingFlowStates[renderableName]) {
+            this._runningRepeatingFlowStates[renderableName] = { persistent };
+            while (this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent)) {
+            }
             delete this._runningRepeatingFlowStates[renderableName];
             return true;
         } else {
@@ -354,8 +363,8 @@ export class View extends FamousView {
      * Cancel a repeating renderable. This will cancel the animation for next flow-cycle, it won't interject the current animation cycle.
      * @param renderableName
      */
-    cancelRepeatFlowState(renderableName){
-        if(this._runningRepeatingFlowStates){
+    cancelRepeatFlowState(renderableName) {
+        if (this._runningRepeatingFlowStates) {
             delete this._runningRepeatingFlowStates[renderableName];
         }
     }
@@ -383,14 +392,14 @@ export class View extends FamousView {
         this._dockedRenderablesHelper = new DockedLayoutHelper(this._sizeResolver);
         this._fullSizeLayoutHelper = new FullSizeLayoutHelper(this._sizeResolver);
         this._traditionalLayoutHelper = new TraditionalLayoutHelper(this._sizeResolver);
-        this._renderableHelper = new RenderableHelper(this._bindToSelf,this._setPipeToSelf, this.renderables, this._sizeResolver);
+        this._renderableHelper = new RenderableHelper(this._bindToSelf, this._setPipeToSelf, this.renderables, this._sizeResolver);
     }
 
     /** Requests for a parent LayoutController trying to resolve the size of this view
      * @private
      */
     _requestLayoutControllerReflow() {
-        this._nodes = {_trueSizeRequested: true};
+        this._nodes = { _trueSizeRequested: true };
         //TODO: Do we really need to emit this?
         this._eventOutput.emit('layoutControllerReflow');
     }
@@ -413,7 +422,7 @@ export class View extends FamousView {
 
         /* Reverse the class list becaues rit makes more sense to make the renderables of the parent before the renderables
          * of this view
-        */
+         */
         for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
             classConstructorList.push(currentClass.__proto__.constructor);
         }
@@ -423,25 +432,13 @@ export class View extends FamousView {
         for (let currentClassConstructor of classConstructorList) {
             let renderableConstructors = this.renderableConstructors.get(currentClassConstructor);
             for (let renderableName in renderableConstructors) {
-                let decorations = renderableConstructors[renderableName].decorations;
+                let renderableConstructor = renderableConstructors[renderableName];
 
-                let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
-
+                /* Assign to the 'flat' structure renderableConstructors */
+                this._renderableConstructors[renderableName] = renderableConstructor;
+                let { decorations } = renderableConstructor;
+                let renderable = this._setupRenderable(renderableName);
                 /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
-                if(!renderable) { continue; }
-
-                /* Allow class property to be a function that returns a renderable */
-                if(typeof renderable === 'function') {
-                    let factoryFunction = renderable;
-                    renderable = factoryFunction(this.options);
-                }
-
-                /* Clone the decorator properties, because otherwise every view of the same type willl share them between
-                 * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
-                 */
-                renderable.decorations = cloneDeep(extend({}, decorations, renderable.decorations || {}));
-
-
                 /* Since after constructor() of this View class is called, all decorated renderables will
                  * be attempted to be initialized by Babel / the ES7 class properties spec, we'll need to
                  * override the descriptor get/initializer to return this specific instance once.
@@ -451,7 +448,7 @@ export class View extends FamousView {
                  * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
                  * to the renderables of this instance, which is unwanted.
                  */
-                let {descriptor} = decorations;
+                let { descriptor } = decorations;
                 if (descriptor) {
                     if (descriptor.get) {
                         let originalGet = decorations.descriptor.get;
@@ -468,6 +465,14 @@ export class View extends FamousView {
                         }
                     }
                 }
+                if (!renderable) {
+                    continue;
+                }
+
+                /* Clone the decorator properties, because otherwise every view of the same type willl share them between
+                 * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
+                 */
+                renderable.decorations = cloneDeep(extend({}, decorations, renderable.decorations || {}));
                 this._assignRenderable(renderable, renderableName);
             }
         }
@@ -491,11 +496,11 @@ export class View extends FamousView {
     _layoutDecoratedRenderables(context, options) {
         let dockedRenderables = this._renderableHelper;
         let nativeScrollableOptions = this.decorations.nativeScrollable;
-        if(nativeScrollableOptions) {
+        if (nativeScrollableOptions) {
             Engine.enableTouchMove();
-            let thisSize  = this.getSize();
+            let thisSize = this.getSize();
             context.size = context.size.map((size, index) =>
-            (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index],size)) || size);
+            (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index], size)) || size);
         }
         this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations);
         this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations);
@@ -513,7 +518,7 @@ export class View extends FamousView {
             flow: !!this.decorations.useFlow || hasFlowyRenderables,
             partialFlow: !this.decorations.useFlow,
             nativeScroll: !!this.decorations.nativeScrollable,
-            flowOptions: this.decorations.flowOptions || {spring: {period: 200}},
+            flowOptions: this.decorations.flowOptions || { spring: { period: 200 } },
             layout: function (context, options) {
 
                 /* Because views that extend this View class first call super() and then define their renderables,
@@ -558,7 +563,7 @@ export class View extends FamousView {
         this._prepareLayoutController();
 
 
-        if((this.decorations.scrollable || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')){
+        if ((this.decorations.scrollable || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')) {
             this.addRenderable(new Surface(), '_fullScreenTouchArea', layout.fullSize(), layout.translate(0, 0, -10));
         }
     }
@@ -593,7 +598,7 @@ export class View extends FamousView {
      * @private
      */
     _prepareLayoutController() {
-        let {scrollableOptions} = this.decorations;
+        let { scrollableOptions } = this.decorations;
         if (scrollableOptions) {
             this._scrollView = new ReflowingScrollView(scrollableOptions);
             this.layout.getSize = this.getSize;
@@ -676,15 +681,25 @@ export class View extends FamousView {
             }
         }
 
-        if(this.decorations.dynamicDockPadding) {
+        if (this.decorations.dynamicDockPadding) {
             this.onNewSize((size) => this.decorations.viewMargins = this.decorations.dynamicDockPadding(size));
         }
 
         if (!this.decorations.extraTranslate) {
             this.decorations.extraTranslate = [0, 0, 10];
         }
-        
+    }
 
+    setNewOptions(options) {
+        window.newOptions = options;
+        new observeJs.ObjectObserver(options).open(() => {
+            debugger;
+        });
+        //TODO merge with default options and check diff
+        this.options = options;
+        for (let renderableName of this._renderableHelper.getRenderableNames()) {
+            this._setupRenderable(renderableName);
+        }
     }
 
     _doTrueSizedSurfacesBookkeeping() {
@@ -692,20 +707,20 @@ export class View extends FamousView {
     }
 
     _initTrueSizedBookkeeping() {
-        this.layout.on('layoutstart', ({oldSize, size}) => {
+        this.layout.on('layoutstart', ({ oldSize, size }) => {
             if (size[0] !== oldSize[0] ||
                 size[1] !== oldSize[1]) {
                 this._sizeResolver.doTrueSizedBookkeeping();
                 ///
                 //TODO: Kept for legacy reasons, but remove all listeners to this function
                 this._eventOutput.emit('newSize', size);
-                for(let callback of this._onNewSizeCallbacks){
+                for (let callback of this._onNewSizeCallbacks) {
                     callback(size);
                 }
             }
         });
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
-        this._nodes = {_trueSizedRequested: false};
+        this._nodes = { _trueSizedRequested: false };
         /* This needs to be set in order for the LayoutNodeManager to be happy */
         this.options.size = this.options.size || [true, true];
     }
@@ -714,12 +729,23 @@ export class View extends FamousView {
         if (!Utils.isPlainObject(options)) {
             Utils.warn(`View ${this._name()} initialized with invalid non-object arguments`);
         }
+        let { defaultOptions = {} } = this.decorations;
+
         /**
          * A copy of the options that were passed in the constructor
          *
          * @type {Object}
          */
-        this.options = options;
+        this.options = combineOptions(defaultOptions, options);
+        ObjectHelper.deepAddAllGetSetPropertyWithShadow(this.options, true, true,
+            ({nestedPropPath}) => {
+                console.log('set', nestedPropPath.join('->'));
+            },
+            ({nestedPropPath}) => {
+                console.log('get', nestedPropPath.join('->'));
+            });
+        window.options = window.options || [];
+        window.options.push(this.options);
     }
 
     _initDataStructures() {
@@ -750,6 +776,7 @@ export class View extends FamousView {
 
         this._runningRepeatingFlowStates = {};
         this._onNewSizeCallbacks = [];
+        this._renderableConstructors = {};
     }
 
     /**
@@ -782,5 +809,56 @@ export class View extends FamousView {
             return true;
         }
         return false;
+    }
+
+    async _syncModelPropertyWithRenderable(renderableName, model, property, lastKnownValue) {
+        let newValue = lastKnownValue;
+        while (newValue === lastKnownValue) {
+            //TODO see what event emitters with weakmaps can bring to the table≠
+            //TODO Make this a promise race with some other thing so that when we start changing the renderable the thing triggers
+            await model.once('changed');
+            model.disableChangeListener();
+            newValue = model[property];
+            model.enableChangeListener();
+        }
+        this._setupRenderable(renderableName);
+    }
+
+    _setupRenderable(renderableName) {
+        let renderableConstructor = this._renderableConstructors[renderableName];
+        let currentRenderable = this[renderableName];
+
+        PrioritisedObject.setPropertyGetterSpy((model, property, value) => {
+            this._syncModelPropertyWithRenderable(renderableName, model, property, value);
+        });
+        let renderable = renderableConstructor.call(this, this.options);
+
+
+        /* Allow class property to be a function that returns a renderable */
+        if (typeof renderable === 'function') {
+            let factoryFunction = renderable;
+            renderable = factoryFunction(this.options);
+        }
+
+        PrioritisedObject.removePropertyGetterSpy();
+
+        /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
+        if (!renderable) {
+            return;
+        }
+        if (renderable instanceof RenderablePrototype) {
+            let renderablePrototype = renderable;
+            let { options, type } = renderablePrototype;
+            if (currentRenderable && currentRenderable.constructor === type) {
+                currentRenderable.setNewOptions(options);
+                renderable = currentRenderable;
+            } else {
+                renderable = new type(options);
+                if (currentRenderable) {
+                    this.replaceRenderable(renderableName, renderable);
+                }
+            }
+        }
+        return renderable;
     }
 }

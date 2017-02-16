@@ -47,7 +47,6 @@ export class RenderableHelper {
         this._groupedRenderables = {};
         this._pipedRenderables = {};
         this._groupedRenderables = {};
-        this._runningFlowStates = {};
     }
 
     assignRenderable(renderable, renderableName) {
@@ -58,6 +57,10 @@ export class RenderableHelper {
         }
         this._renderableCounterparts[renderableName] = renderableEquivalent;
         this._setupAllRenderableListeners(renderableName);
+    }
+
+    getRenderableNames() {
+        return Object.keys(this._renderables);
     }
 
     /**

@@ -85,6 +85,25 @@ function prepPrototypeDecorations(prototype) {
 /**
  * Describes a set of decorators used for layouting of a renderable in a View.
  */
+export const options = {
+    /**
+     * Sets the default and mandatory options
+     *
+     * @example
+     * @options.setup({color: 'blue'})
+     * class MyView extends View{
+     *
+     * @returns {Function} A decorator function
+     */
+    setup: (defaultOptions) => {
+        return (target) => {
+            prepPrototypeDecorations(target.prototype).defaultOptions = defaultOptions;
+        }
+    }
+};
+/**
+ * Describes a set of decorators used for layouting of a renderable in a View.
+ */
 export const layout = {
 
 
@@ -148,7 +167,7 @@ export const layout = {
         };
     },
 
-    /**
+        /**
      * Internal function to do docking
      *
      * @param dockMethod

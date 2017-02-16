@@ -62,7 +62,7 @@ export class PrioritisedObject extends EventEmitter {
         this._events = this._events || [];
         this._dataSource = dataSource;
         this._priority = 0; // Priority of this object on remote dataSource
-        this._isBeingWrittenByDatasource = false; // Flag to determine when dataSource is updating object
+        this._changeListenersDisabled = false; // Flag to determine whether data change listeners are disabled
         this._childChangedListeners = {};
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
@@ -114,7 +114,7 @@ export class PrioritisedObject extends EventEmitter {
      * @returns {Promise} A promise that resolves once the event has happened
      */
     once(event, handler, context = this) {
-        return new Promise((resolve)=>{
+        return new Promise((resolve) => {
             this.on(event, function onceWrapper() {
                 this.off(event, onceWrapper, context);
                 handler && handler.call(context, ...arguments);
@@ -245,7 +245,7 @@ export class PrioritisedObject extends EventEmitter {
      * @returns {void}
      */
     disableChangeListener() {
-        this._isBeingWrittenByDatasource = true;
+        this._changeListenersDisabled = true;
     }
 
 
@@ -255,7 +255,7 @@ export class PrioritisedObject extends EventEmitter {
      * @returns {void}
      */
     enableChangeListener() {
-        this._isBeingWrittenByDatasource = false;
+        this._changeListenersDisabled = false;
     }
 
     /**
@@ -292,8 +292,8 @@ export class PrioritisedObject extends EventEmitter {
             /* Only map properties that exists on our model */
             let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
             if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
-                /* If child is a primitive, listen to changes so we can synch with Firebase */
-                ObjectHelper.addPropertyToObject(this, key, data[key], true, true, this._onSetterTriggered.bind(this, key));
+                /* If child is a primitive, listen to changes so we can sync with Firebase */
+                ObjectHelper.addPropertyToObject(this, key, data[key], true, true, this._onSetterTriggered, ({newValue}) => this._onGetterTriggered(key, newValue));
             }
 
         }
@@ -317,6 +317,32 @@ export class PrioritisedObject extends EventEmitter {
     }
 
     /**
+     * Registers that whenever a getter has been called, then the callback function will be called
+     * @param callbackFunction
+     * @returns {Function} oldCallbackFunction The function that was replaced (if applicabble)
+     */
+    static setPropertyGetterSpy(callbackFunction) {
+        let oldPropertyGetterSpy = this._propertyGetterSpy;
+        this._propertyGetterSpy = callbackFunction;
+        return oldPropertyGetterSpy;
+    }
+
+    /**
+     *
+     * @returns {Function} oldCallbackFunction The function that was replaced (if applicabble)
+     */
+    static removePropertyGetterSpy(callbackFunction) {
+        let oldPropertyGetterSpy = this._propertyGetterSpy;
+        this._propertyGetterSpy = null;
+        return oldPropertyGetterSpy;
+    }
+
+    /**
+     * This is used to keep track of any model getter accesses
+     */
+    static _propertyGetterSpy;
+
+    /**
      * Gets called whenever a property value is set on this object.
      * This can happen when local code modifies it, or when the dataSource updates it.
      * We only propagate changes to the dataSource if the change was local.
@@ -324,11 +350,19 @@ export class PrioritisedObject extends EventEmitter {
      * @private
      */
     _onSetterTriggered() {
-        if (!this._isBeingWrittenByDatasource) {
+        if (!this._changeListenersDisabled) {
             this.emit('changed', this);
-            return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this), this._priority);
+            return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this.shadow), this._priority);
         }
     }
+
+    _onGetterTriggered(propertyName, newValue) {
+        if (!this._changeListenersDisabled && PrioritisedObject._propertyGetterSpy) {
+            PrioritisedObject._propertyGetterSpy(this, propertyName, newValue);
+        }
+    }
+
+
 
     /**
      * Gets called whenever the current PrioritisedObject is changed by the dataSource.
@@ -338,7 +372,7 @@ export class PrioritisedObject extends EventEmitter {
      * @private
      */
     _onChildValue(dataSnapshot, previousSiblingID) {
-
+        this.disableChangeListener();
         /* If the new dataSource data is equal to what we have locally,
          * this is an update triggered by a local change having been pushed
          * to the remote dataSource. We can ignore it.
@@ -354,6 +388,7 @@ export class PrioritisedObject extends EventEmitter {
                 }
             })) {
             this.emit('value', this, previousSiblingID);
+            this.enableChangeListener();
             return;
         }
 
@@ -365,6 +400,7 @@ export class PrioritisedObject extends EventEmitter {
             this.emit('changed', this, previousSiblingID);
         }
 
+        this.enableChangeListener();
     }
 
     _hasListenersOfType(type) {
