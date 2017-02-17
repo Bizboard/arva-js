@@ -66,9 +66,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
         for (let renderableName of dockedNames) {
             let [renderable, renderableCounterpart] = dockedRenderables.get(renderableName);
-            let {dockSize, translate, innerSize, space = (ownDecorations.dockSpacing || 0)} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
+            let {dockSize, translate, innerSize, space = (ownDecorations.dockSpacing || 0), opacity} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
-            let {dock, rotate, opacity, origin, scale, skew} = renderable.decorations; // todo add scaling/skew
+            let {dock, rotate, origin, scale, skew} = renderable.decorations;
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
                 dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {
@@ -88,8 +88,8 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         for (let renderableName of filledNames) {
             let [renderable, renderableCounterpart] = filledRenderables.get(renderableName);
             let {decorations} = renderable;
-            let {rotate, opacity, origin} = decorations;
-            let {translate, dockSize} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
+            let {rotate, origin} = decorations;
+            let {translate, dockSize, opacity} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
             /* Special case for undefined size, since it's treated differently by the dockhelper, and should be kept to undefined if specified */
             let dimensionHasUndefinedSize = (dimension) => [decorations.dock.size, decorations.size].every((size) => !size || size[dimension] === undefined);
@@ -110,7 +110,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
      */
     _prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins = [0, 0, 0, 0]) {
         let {decorations} = renderable;
-        let {translate = [0, 0, 0]} = decorations;
+        let {translate = [0, 0, 0], opacity = 1} = decorations;
         translate = Utils.addTranslations(extraTranslate, translate);
         let {dockMethod, space} = decorations.dock;
         let horizontalMargins = margins[1] + margins[3];
@@ -118,6 +118,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
         let dockSizeSpecified = !(isEqual(decorations.dock.size, [undefined, undefined]));
         let dockSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: sizeWithoutMargins}, dockSizeSpecified ? decorations.dock.size : decorations.size);
+        if(!this._sizeResolver.isSizeFinal(renderable)){
+            opacity = 0;
+        }
         let inUseDockSize = this._sizeResolver.getResolvedSize(renderable);
         let innerSize;
         let {origin, align} = decorations;
@@ -131,6 +134,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
             if(decorations.size){
 
                 this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: sizeWithoutMargins}, decorations.size);
+                if(!this._sizeResolver.isSizeFinal(renderable)){
+                    opacity = 0;
+                }
                 innerSize = this._sizeResolver.getResolvedSize(renderable);
 
 
@@ -182,7 +188,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
             /* Don't display the space if the size is 0*/
             space = 0;
         }
-        return {dockSize, translate, innerSize, inUseDockSize, space};
+        return {dockSize, translate, innerSize, inUseDockSize, space, opacity};
     }
 
     getDockType(dockMethodToGet) {
@@ -345,6 +351,9 @@ export class TraditionalLayoutHelper extends BaseLayoutHelper {
                 translate = [0, 0, 0], origin = [0, 0], align, rotate,
                 opacity = 1, scale, skew
             } = renderable.decorations;
+            if(!this._sizeResolver.isSizeFinal(renderable)){
+                opacity = 0;
+            }
             translate = Utils.addTranslations(ownDecorations.extraTranslate, translate);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
             let adjustedTranslation = Utils.adjustPlacementForTrueSize(renderable, renderableSize, origin, translate, this._sizeResolver);

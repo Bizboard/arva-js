@@ -5,7 +5,6 @@
  */
 
 import FlexScrollView   from 'famous-flex/FlexScrollView.js';
-import {combineOptions} from '../utils/CombineOptions.js';
 import {ObjectHelper}   from '../utils/ObjectHelper.js';
 
 /**

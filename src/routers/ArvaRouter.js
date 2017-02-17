@@ -242,8 +242,11 @@ export class ArvaRouter extends Router {
         return this._backButtonEnabled;
     }
 
-    goBackInHistory() {
-        /* Default behaviour: go back in history in the arva router */
+    /**
+     * Return the previous known route, or default route if no route stack is present
+     * @returns {*}
+     */
+    getPreviousRoute(){
         let {history} = this;
         if (history.length > 1) {
             let {controller, method, keys, values} = history[history.length - 2];
@@ -251,10 +254,16 @@ export class ArvaRouter extends Router {
             for (let i = 0; i < keys.length; i++) {
                 inputObject[keys[i]] = values[i];
             }
-            this.go(controller, method, inputObject);
+           return {controller: controller, method: method, parameters: inputObject};
         } else {
-            this.go(this.defaultController, this.defaultMethod);
+            return {controller: this.defaultController, method: this.defaultMethod}
         }
+    }
+
+    goBackInHistory() {
+        /* Default behaviour: go back in history in the arva router */
+        let previousRoute = this.getPreviousRoute();
+        this.go(previousRoute.controller, previousRoute.method, previousRoute.parameters || null);
     }
 
     _setupNativeBackButtonListener() {

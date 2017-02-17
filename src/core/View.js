@@ -263,7 +263,7 @@ export class View extends FamousView {
     /**
      * Replaces an existing decorated renderable with a new renderable, preserving all necessary state and decorations
      * @param {String} renderableName. The name of the renderable
-     * @param newRenderable
+     * @param {Renderable} newRenderable Renderable to replace the old renderable with
      */
     replaceRenderable(renderableName, newRenderable) {
         this._renderableHelper.replaceRenderable(renderableName, newRenderable);
@@ -426,6 +426,15 @@ export class View extends FamousView {
                 let decorations = renderableConstructors[renderableName].decorations;
 
                 let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
+
+                /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
+                if(!renderable) { continue; }
+
+                /* Allow class property to be a function that returns a renderable */
+                if(typeof renderable === 'function') {
+                    let factoryFunction = renderable;
+                    renderable = factoryFunction(this.options);
+                }
 
                 /* Clone the decorator properties, because otherwise every view of the same type willl share them between
                  * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance

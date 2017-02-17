@@ -63,7 +63,11 @@ export class FirebaseDataSource extends DataSource {
             this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
         } else if (this.options.equalTo) {
             let [key, value] = this.options.equalTo;
-            this._orderedDataReference = this._dataReference.orderByChild(key).equalTo(value);
+            if(key === 'id'){
+                this._orderedDataReference = this._dataReference.orderByKey().equalTo(value);
+            } else {
+                this._orderedDataReference = this._dataReference.orderByChild(key).equalTo(value);
+            }
         } else {
             this._orderedDataReference = this._dataReference;
         }
@@ -175,7 +179,8 @@ export class FirebaseDataSource extends DataSource {
      * @param {Object} newData New data to append to dataSource.
      * @returns {FirebaseDataSource} A new FirebaseDataSource pointing to the injected data.
      */
-    push(newData) {
+    push(newData = {}) {
+        newData = (newData === undefined || newData === null) ? {} : newData;
         let pushResult = this._dataReference.push(newData);
         return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {
             synced: pushResult,

@@ -109,25 +109,25 @@ export class PrioritisedObject extends EventEmitter {
     /**
      * Subscribes to the given event type exactly once; it automatically unsubscribes after the first time it is triggered.
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
-     * @param {Function} handler Function that is called when the given event type is emitted.
-     * @param {Object} context Optional: context of 'this' inside the handler function when it is called.
-     * @returns {void}
+     * @param {Function} [handler] Function that is called when the given event type is emitted.
+     * @param {Object} [context] Optional: context of 'this' inside the handler function when it is called.
+     * @returns {Promise} A promise that resolves once the event has happened
      */
     once(event, handler, context = this) {
-        if (!handler) {
-            return new Promise((resolve) => this.once(event, resolve, context));
-        }
-        return this.on(event, function onceWrapper() {
-            handler.call(context, ...arguments);
-            this.off(event, onceWrapper, context);
-        }, this);
+        return new Promise((resolve)=>{
+            this.on(event, function onceWrapper() {
+                this.off(event, onceWrapper, context);
+                handler && handler.call(context, ...arguments);
+                resolve(...arguments);
+            }, this);
+        });
     }
 
     /**
      * Subscribes to events emitted by this PrioritisedArray.
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
      * @param {Function} handler Function that is called when the given event type is emitted.
-     * @param {Object} context Optional: context of 'this' inside the handler function when it is called.
+     * @param {Object} [context] Optional: context of 'this' inside the handler function when it is called.
      * @returns {void}
      */
     on(event, handler, context = this) {
@@ -183,8 +183,8 @@ export class PrioritisedObject extends EventEmitter {
      * Removes subscription to events emitted by this PrioritisedArray. If no handler or context is given, all handlers for
      * the given event are removed. If no parameters are given at all, all event types will have their handlers removed.
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
-     * @param {Function} handler Function to remove from event callbacks.
-     * @param {Object} context Object to bind the given callback function to.
+     * @param {Function} [handler] Function to remove from event callbacks.
+     * @param {Object} [context] Object to bind the given callback function to.
      * @returns {void}
      */
     off(event, handler, context) {
