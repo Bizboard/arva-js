@@ -731,8 +731,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     //TODO: This won't reorder children, which is a problem
     _onChildChanged(dataStoreIndex, child, previousSiblingID) {
-        let internalDataSourceData = this._findData(child.id, dataStoreIndex) || {};
-        let changedItemIndex = internalDataSourceData.position || -1;
+        let internalDataSourceData = this._findData(child.id, dataStoreIndex) || { position: -1 };
+        let changedItemIndex = internalDataSourceData.position;
 
         if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
 
