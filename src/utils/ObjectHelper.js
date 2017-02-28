@@ -92,19 +92,19 @@ export class ObjectHelper {
         }
     }
 
-    static deepAddAllGetSetPropertyWithShadow(object, enumerable = true, writable = true, setCallback = null, getCallback = null, nestedPropPath = []) {
+    static deepAddAllGetSetPropertyWithShadow(object, enumerable = true, writable = true, setCallback = null, getCallback = null, nestedPropertyPath = []) {
         _each(object, function (value, key) {
             if (typeof value === 'object' && value.constructor.name === 'Object') {
-                ObjectHelper.deepAddAllGetSetPropertyWithShadow(value, enumerable, writable, setCallback, getCallback, nestedPropPath.concat(key));
+                ObjectHelper.deepAddAllGetSetPropertyWithShadow(value, enumerable, writable, setCallback, getCallback, nestedPropertyPath.concat(key));
             }
-            ObjectHelper.addGetSetPropertyWithShadow(object, key, value, enumerable, writable, setCallback, getCallback, nestedPropPath);
+            ObjectHelper.addGetSetPropertyWithShadow(object, key, value, enumerable, writable, setCallback, getCallback, nestedPropertyPath);
         });
     }
 
     /* Adds given property to the object with get() and set() accessors, and saves actual data in object.shadow */
-    static addGetSetPropertyWithShadow(object, propName, prop, enumerable = true, writable = true, setCallback = null, getCallback = null, nestedPropPath = []) {
+    static addGetSetPropertyWithShadow(object, propName, prop, enumerable = true, writable = true, setCallback = null, getCallback = null, nestedPropertyPath = []) {
         ObjectHelper.buildPropertyShadow(object, propName, prop);
-        ObjectHelper.buildGetSetProperty(object, propName, enumerable, writable, setCallback, getCallback, nestedPropPath);
+        ObjectHelper.buildGetSetProperty(object, propName, enumerable, writable, setCallback, getCallback, nestedPropertyPath);
     }
 
     /* Creates or extends object.shadow to contain a property with name propName */
@@ -139,7 +139,7 @@ export class ObjectHelper {
      * @param {Function} getCallback A function that takes as a single argument the property that is about to be get. Should
      * return that thing as well
      */
-    static buildGetSetProperty(object, propName, enumerable = true, writable = true, setCallback = null, getCallback = null, nestedPropPath = []) {
+    static buildGetSetProperty(object, propName, enumerable = true, writable = true, setCallback = null, getCallback = null, nestedPropertyPath = []) {
         let descriptor = {
             enumerable: enumerable,
             configurable: true,
@@ -147,8 +147,8 @@ export class ObjectHelper {
                 if (getCallback && typeof setCallback === 'function') {
                     getCallback({
                         propertyName: propName,
-                        newValue: object.shadow[propName],
-                        nestedPropPath
+                        value: object.shadow[propName],
+                        nestedPropertyPath
                     });
                 }
                 return object.shadow[propName];
@@ -160,7 +160,7 @@ export class ObjectHelper {
                         setCallback({
                             propertyName: propName,
                             newValue: value,
-                            nestedPropPath
+                            nestedPropertyPath
                         });
                     }
                 } else {

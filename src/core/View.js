@@ -32,6 +32,7 @@ import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 import {PrioritisedObject}          from '../data/PrioritisedObject.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
 import observeJs             from 'observe-js';
+import {OptionObserver} from '../utils/view/OptionObserver';
 
 /**
  * An Arva View. Can be constructed explicitly by using new View() but is more commonly used as a base class for
@@ -691,10 +692,6 @@ export class View extends FamousView {
     }
 
     setNewOptions(options) {
-        window.newOptions = options;
-        new observeJs.ObjectObserver(options).open(() => {
-            debugger;
-        });
         //TODO merge with default options and check diff
         this.options = options;
         for (let renderableName of this._renderableHelper.getRenderableNames()) {
@@ -736,16 +733,13 @@ export class View extends FamousView {
          *
          * @type {Object}
          */
-        this.options = combineOptions(defaultOptions, options);
-        ObjectHelper.deepAddAllGetSetPropertyWithShadow(this.options, true, true,
-            ({nestedPropPath}) => {
-                console.log('set', nestedPropPath.join('->'));
-            },
-            ({nestedPropPath}) => {
-                console.log('get', nestedPropPath.join('->'));
-            });
+        this._optionObserver = new OptionObserver(defaultOptions, options);
+        this._optionObserver.on('needUpdate', (renderableName) => this._setupRenderable(renderableName));
+        this.options = this._optionObserver.getOptions();
         window.options = window.options || [];
+        window.optionObservers = window.optionObservers || [];
         window.options.push(this.options);
+        window.optionObservers.push(this._optionObserver);
     }
 
     _initDataStructures() {
@@ -828,9 +822,10 @@ export class View extends FamousView {
         let renderableConstructor = this._renderableConstructors[renderableName];
         let currentRenderable = this[renderableName];
 
-        PrioritisedObject.setPropertyGetterSpy((model, property, value) => {
+        /*PrioritisedObject.setPropertyGetterSpy((model, property, value) => {
             this._syncModelPropertyWithRenderable(renderableName, model, property, value);
-        });
+        });*/
+        this._optionObserver.recordForRenderable(renderableName);
         let renderable = renderableConstructor.call(this, this.options);
 
 
@@ -840,7 +835,7 @@ export class View extends FamousView {
             renderable = factoryFunction(this.options);
         }
 
-        PrioritisedObject.removePropertyGetterSpy();
+        this._optionObserver.stopRecordingForRenderable();
 
         /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
         if (!renderable) {

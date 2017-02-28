@@ -17,6 +17,8 @@ import {DataSource}     from '../data/DataSource.js';
 
 export class PrioritisedObject extends EventEmitter {
 
+    _accessedKeys = [];
+
     get id() {
         return this._id;
     }
@@ -293,7 +295,7 @@ export class PrioritisedObject extends EventEmitter {
             let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
             if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
                 /* If child is a primitive, listen to changes so we can sync with Firebase */
-                ObjectHelper.addPropertyToObject(this, key, data[key], true, true, this._onSetterTriggered, ({newValue}) => this._onGetterTriggered(key, newValue));
+                ObjectHelper.addPropertyToObject(this, key, data[key], true, true, () => this._onSetterTriggered(key), ({newValue}) => this._onGetterTriggered(key, newValue));
             }
 
         }
@@ -331,7 +333,7 @@ export class PrioritisedObject extends EventEmitter {
      *
      * @returns {Function} oldCallbackFunction The function that was replaced (if applicabble)
      */
-    static removePropertyGetterSpy(callbackFunction) {
+    static removePropertyGetterSpy() {
         let oldPropertyGetterSpy = this._propertyGetterSpy;
         this._propertyGetterSpy = null;
         return oldPropertyGetterSpy;
@@ -349,20 +351,29 @@ export class PrioritisedObject extends EventEmitter {
      * @returns {void}
      * @private
      */
-    _onSetterTriggered() {
+    _onSetterTriggered(key) {
         if (!this._changeListenersDisabled) {
-            this.emit('changed', this);
+            let changedProperties = this._accessedKeys.concat(key);
+            let changedValues = changedProperties.map((key) => this.shadow[key]);
+            this.emit('changed', this, {changedProperties, changedValues});
             return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this.shadow), this._priority);
+        } else {
+            this._accessedKeys.push(key);
         }
     }
 
-    _onGetterTriggered(propertyName, newValue) {
+    _onGetterTriggered({propertyName, value}) {
         if (!this._changeListenersDisabled && PrioritisedObject._propertyGetterSpy) {
-            PrioritisedObject._propertyGetterSpy(this, propertyName, newValue);
+            PrioritisedObject._propertyGetterSpy(this, propertyName, value);
         }
     }
 
-
+    _getDiffingKeysFromOther(otherObject) {
+        Object.keys(otherObject).filter((value, key) => {
+            let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
+            return ownPropertyDescriptor && ownPropertyDescriptor.enumerable && !isEqual(this[key], value);
+        });
+    }
 
     /**
      * Gets called whenever the current PrioritisedObject is changed by the dataSource.
@@ -379,14 +390,9 @@ export class PrioritisedObject extends EventEmitter {
          */
         let incomingData = dataSnapshot.val() || {};
 
-        if (every(incomingData, (val, key) => {
-                let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
-                if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
-                    return isEqual(this[key], val);
-                } else {
-                    return true;
-                }
-            })) {
+        let changedPropertyNames = this._getDiffingKeysFromOther(incomingData);
+
+        if (every) {
             this.emit('value', this, previousSiblingID);
             this.enableChangeListener();
             return;
@@ -397,7 +403,7 @@ export class PrioritisedObject extends EventEmitter {
         this.emit('value', this, previousSiblingID);
 
         if (this._hasListenersOfType('changed')) {
-            this.emit('changed', this, previousSiblingID);
+            this.emit('changed', this, changedPropertyNames);
         }
 
         this.enableChangeListener();
