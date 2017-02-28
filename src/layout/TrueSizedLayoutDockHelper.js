@@ -183,18 +183,26 @@ TrueSizedLayoutDockHelper.prototype.right = function (renderableName, size, spac
 /**
  * Fills the node to the remaining content.
  *
- * @param {LayoutNode|String} node layout-node to dock
- * @param {Number} [z] z-index to use for the node
  * @return {TrueSizedLayoutDockHelper} this
+ * @param renderableName
+ * @param size
+ * @param translate
+ * @param otherSpecs
  */
 TrueSizedLayoutDockHelper.prototype.fill = function (renderableName, size, translate = [0, 0, 0], otherSpecs) {
+    var fillSize = this.getFillSize();
     this._context.set(renderableName, {
-        size: [size[0] || this._data.right - this._data.left, size[1] || this._data.bottom - this._data.top],
+        size: [size[0] || fillSize[0], size[1] || fillSize[1]],
         translate: this._addTranslations([this._data.left, this._data.top, this._data.z], translate),
         ...otherSpecs
     });
     return this;
 };
+
+TrueSizedLayoutDockHelper.prototype.getFillSize = function() {
+    return [this._data.right - this._data.left, this._data.bottom - this._data.top];
+}
+
 
 /**
  * Applies indent margins to the remaining content.

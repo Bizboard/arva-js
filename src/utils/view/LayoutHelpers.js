@@ -89,6 +89,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
             let [renderable, renderableCounterpart] = filledRenderables.get(renderableName);
             let {decorations} = renderable;
             let {rotate, origin} = decorations;
+            decorations.dock.size = dockHelper.getFillSize();
             let {translate, dockSize, opacity} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
             /* Special case for undefined size, since it's treated differently by the dockhelper, and should be kept to undefined if specified */
