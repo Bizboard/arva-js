@@ -323,10 +323,11 @@ export class View extends FamousView {
      */
     onceNewSize() {
         return new Promise((resolve) => {
-            this._onNewSizeCallbacks.push(function onNewSize(size)  {
+            let onNewSize = (size) => {
                 this._onNewSizeCallbacks.splice(this._onNewSizeCallbacks.indexOf(onNewSize), 1);
                 resolve(size);
-            }.bind(this))
+            };
+            this._onNewSizeCallbacks.push(onNewSize);
         })
     }
 
