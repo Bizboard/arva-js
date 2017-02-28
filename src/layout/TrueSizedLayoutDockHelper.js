@@ -189,7 +189,7 @@ TrueSizedLayoutDockHelper.prototype.right = function (renderableName, size, spac
  * @param translate
  * @param otherSpecs
  */
-TrueSizedLayoutDockHelper.prototype.fill = function (renderableName, size, translate = [0, 0, 0], otherSpecs) {
+TrueSizedLayoutDockHelper.prototype.fill = function (renderableName, size = [0, 0], translate = [0, 0, 0], otherSpecs = {}) {
     var fillSize = this.getFillSize();
     this._context.set(renderableName, {
         size: [size[0] || fillSize[0], size[1] || fillSize[1]],
