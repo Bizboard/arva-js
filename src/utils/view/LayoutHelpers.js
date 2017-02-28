@@ -133,7 +133,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
 
             if(decorations.size){
 
-                this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: sizeWithoutMargins}, decorations.size);
+                this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: dockSize}, decorations.size);
                 if(!this._sizeResolver.isSizeFinal(renderable)){
                     opacity = 0;
                 }
