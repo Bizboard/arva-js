@@ -934,7 +934,7 @@ export const layout = {
      *  onTop = new Surface({content: "hello world"});
      *
      *  //Will be displayed without margin since we're using @layout.stick instead of @layout.dock
-     *  @layout.stick.bottom
+     *  @layout.stick.bottom()
      *  onButtom = new Surface({content: "hey hey"});
      * }
      *
