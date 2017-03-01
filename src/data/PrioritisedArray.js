@@ -56,9 +56,13 @@ export class PrioritisedArray extends Array {
         super();
         /**** Callbacks ****/
         this._valueChangedCallback = null;
-        this._ids = {};
+
+        /* Bind all local methods to the current object instance, so we can refer to "this"
+         * in the methods as expected, even when they're called from event handlers.        */
+        ObjectHelper.bindAllMethods(this, this);
 
         /**** Private properties ****/
+        this._ids = {};
         this._dataType = dataType;
         this._dataSource = dataSource;
         this._isBeingReordered = false;
@@ -68,13 +72,14 @@ export class PrioritisedArray extends Array {
         this._childAddedThrottler = new Throttler(typeof window === 'undefined' ? 0 : 1, true, this, true);
         this._overrideChildAddedForId = null;
 
+        /* We do the bindAllMethods before this happens in order to make sure that dataType.prototype isn't modified so
+         * that this check would break
+         */
         if (dataType && !(dataType.prototype instanceof Model)) {
-            throw new Error(`${dataType.constructor.name} passed to PrioritisedArray is not an instance of a model`);
+            throw new Error(`${dataType.toString()} passed to PrioritisedArray is not an instance of a model`);
         }
 
-        /* Bind all local methods to the current object instance, so we can refer to "this"
-         * in the methods as expected, even when they're called from event handlers.        */
-        ObjectHelper.bindAllMethods(this, this);
+
 
         /* Hide all private properties (starting with '_') and methods from enumeration,
          * so when you do for( in ), only actual data properties show up. */
