@@ -233,8 +233,8 @@ export class RenderableHelper {
                 properties: {overflow: 'hidden', ...clip.properties}
             });
             containerSurface.add(renderable);
-            if (containerSurface.pipe) {
-                containerSurface.pipe(renderable._eventOutput);
+            if (renderable.pipe) {
+                renderable.pipe(containerSurface._eventOutput);
             }
             renderable.containerSurface = containerSurface;
         }

@@ -388,7 +388,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
                     for (let group of sortBy(this._internalGroups, 'position')) {
                         /* Check the first and last item of every group (they're sorted) */
                         for (let position of group.itemsCount > 1 ? [group.position + 1, group.position + group.itemsCount - 1] : [group.position + 1]) {
+
                             let {dataId, dataStoreIndex} = this._viewSequence.findByIndex(position)._value;
+
                             if (this.options.orderBy(child, this._internalDataSource[`${dataId}${dataStoreIndex}`].model)) {
                                 foundOrderedIndex = group.position;
                                 break;
@@ -462,6 +464,11 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         this._removePlaceholder();
 
+        let newSurface = this.options.itemTemplate(child);
+        if(newSurface instanceof Promise) {
+            newSurface = await newSurface;
+        }
+
         let insertIndex = this._getInsertIndex(child, previousSiblingID, dataStoreIndex);
 
         /* If we're using groups, check if we need to insert a group item before this child. */
@@ -475,11 +482,6 @@ export class DataBoundScrollView extends ReflowingScrollView {
             }
             /* Increase the count of the number of items in the group */
             this._internalGroups[groupByValue].itemsCount++;
-        }
-
-        let newSurface = this.options.itemTemplate(child);
-        if(newSurface instanceof Promise) {
-            newSurface = await newSurface;
         }
 
         newSurface.dataId = child.id;
@@ -747,8 +749,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     //TODO: This won't reorder children, which is a problem
     _onChildChanged(dataStoreIndex, child, previousSiblingID) {
-        let internalDataSourceData = this._findData(child.id, dataStoreIndex) || {};
-        let changedItemIndex = internalDataSourceData.position || -1;
+        let internalDataSourceData = this._findData(child.id, dataStoreIndex) || { position: -1 };
+        let changedItemIndex = internalDataSourceData.position;
 
         if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
 

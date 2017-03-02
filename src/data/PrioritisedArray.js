@@ -56,9 +56,13 @@ export class PrioritisedArray extends Array {
         super();
         /**** Callbacks ****/
         this._valueChangedCallback = null;
-        this._ids = {};
+
+        /* Bind all local methods to the current object instance, so we can refer to "this"
+         * in the methods as expected, even when they're called from event handlers.        */
+        ObjectHelper.bindAllMethods(this, this);
 
         /**** Private properties ****/
+        this._ids = {};
         this._dataType = dataType;
         this._dataSource = dataSource;
         this._isBeingReordered = false;
@@ -68,13 +72,14 @@ export class PrioritisedArray extends Array {
         this._childAddedThrottler = new Throttler(typeof window === 'undefined' ? 0 : 1, true, this, true);
         this._overrideChildAddedForId = null;
 
-        if(dataType && !(dataType.prototype instanceof Model)){
-            throw new Error(`${dataType.constructor.name} passed to PrioritisedArray is not an instance of a model`);
+        /* We do the bindAllMethods before this happens in order to make sure that dataType.prototype isn't modified so
+         * that this check would break
+         */
+        if (dataType && !(dataType.prototype instanceof Model)) {
+            throw new Error(`${dataType.toString()} passed to PrioritisedArray is not an instance of a model`);
         }
 
-        /* Bind all local methods to the current object instance, so we can refer to "this"
-         * in the methods as expected, even when they're called from event handlers.        */
-        ObjectHelper.bindAllMethods(this, this);
+
 
         /* Hide all private properties (starting with '_') and methods from enumeration,
          * so when you do for( in ), only actual data properties show up. */
@@ -146,7 +151,7 @@ export class PrioritisedArray extends Array {
      * @returns {Promise} A promise that resolves once the event has happened
      */
     once(event, handler, context = this) {
-        return new Promise((resolve)=>{
+        return new Promise((resolve) => {
             this.on(event, function onceWrapper() {
                 this.off(event, onceWrapper, context);
                 handler && handler.call(context, ...arguments);
@@ -200,7 +205,7 @@ export class PrioritisedArray extends Array {
             }
         } else if (model instanceof Object) {
             /* Let's try to parse the object using property reflection */
-            var options = {dataSource: this._dataSource};
+            var options = { dataSource: this._dataSource };
             /* Prevent child_added from being fired immediately when the model is created by creating a promise that resolves
              * the ID that shouldn't be synced twice
              */
@@ -252,7 +257,7 @@ export class PrioritisedArray extends Array {
      * @param {Object|Model} model
      * @returns {Model} The newly inserted model
      */
-    push(model){
+    push(model) {
         return this.insertAt(model, this.length);
     }
 
@@ -267,20 +272,21 @@ export class PrioritisedArray extends Array {
          * TODO: Beware, there might be hard to reproduce prone to errors going on sometimes when deleting many things at once
          * Sometimes, there is an inconsistent state, but I haven't been able to figure out how that happens. /Karl
          */
-        if(this.length === 1){
+        if (this.length === 1) {
             this._ids = {};
         } else {
-            for (let i = position; i < this.length; i++) {
+            for (let i = position + 1; i < this.length; i++) {
                 /* Decrease the index of items further on in the prio array */
-                if(!this._ids[this[i].id] && this._ids[this[i].id] !== 0){
+                if (!this._ids[this[i].id] && this._ids[this[i].id] !== 0) {
                     console.log("Internal error, decreasing index of non-existing id. For ID: " + this[i].id);
                 }
                 this._ids[this[i].id]--;
             }
+            delete this._ids[this[position].id];
+
         }
         this.splice(position, 1);
     }
-
 
 
     /**
@@ -327,7 +333,7 @@ export class PrioritisedArray extends Array {
         dataSnapshot.forEach(function (child) {
             this._childAddedThrottler.add(function (child) {
                 /* Create a new instance of the given data type and prefill it with the snapshot data. */
-                let options = {dataSnapshot: child, noInitialSync: true};
+                let options = { dataSnapshot: child, noInitialSync: true };
                 let childRef = this._dataSource.child(child.key);
 
                 /* whenever the ref() is a datasource, we can bind that source to the model.
@@ -451,7 +457,7 @@ export class PrioritisedArray extends Array {
             /* The model doesn't exist, so we won't emit a changed event. */
             return;
         }
-        
+
 
         let model = this[previousPosition];
         model._onChildValue(snapshot, prevSiblingId);
@@ -504,6 +510,7 @@ export class PrioritisedArray extends Array {
             this.splice(newPosition, 0, modelToMove);
         }
     }
+
     /**
      * Called by dataSource when a child is removed.
      * @param {Snapshot} oldSnapshot Snapshot of the added child.
