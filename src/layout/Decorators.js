@@ -880,6 +880,17 @@ export const layout = {
     },
 
     /**
+     * Nests the view
+     * @returns {Function}
+     */
+    nest: function () {
+        return function (target) {
+            let decorations = prepPrototypeDecorations(target.prototype);
+            decorations.nested = true;
+        }
+    },
+
+    /**
      * Sets the margins for the docked content. This can be applied both to a child and a class. When in conflict,
      * the parent will override the child's setting. If the margin is set on a Surface, then CSS padding will be set.
      * margins can be 1, 2, or 4, parameters, which can be specified as shorthand in the same way
