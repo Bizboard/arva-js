@@ -36,7 +36,9 @@ export class LocalModel extends Model {
     static createLocalizedModelClass(modelClass) {
         class LocalizedModel extends LocalModel{};
         let modelPrototype = modelClass.prototype;
-        Object.defineProperties(LocalizedModel.prototype, omit(ObjectHelper.getMethodDescriptors(modelPrototype), ['constructor', 'id', 'dataSource', 'priority', '_inheritable']));
+        /* Define the properties that was defined on the modelClass, but omit things that would mess up the construction */
+        Object.defineProperties(LocalizedModel.prototype, omit(ObjectHelper.getMethodDescriptors(modelPrototype),
+            ['constructor', 'id', 'dataSource', 'priority', '_inheritable']));
         return LocalizedModel;
     }
 

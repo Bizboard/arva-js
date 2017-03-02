@@ -14,6 +14,26 @@ export class LocalPrioritisedArray extends PrioritisedArray {
     _buildFromDataSource() {
     }
 
+    /**
+     * Override to make sure that we catch the 'removed' events by patching the model.remove function
+     * of whatever is added
+     * @param item
+     * @param previousSiblingId
+     * @returns {Object}
+     */
+    add(item, previousSiblingId) {
+        let resultingModel = super.add(item, previousSiblingId);
+        if(!(item instanceof this._dataType)){
+            let originalRemoveFunction = resultingModel.remove;
+            let onChildRemoved = this._onChildRemoved;
+            resultingModel.remove = function () {
+                onChildRemoved({key: this.id, val: () => this.shadow});
+                originalRemoveFunction.apply(this, arguments);
+            }.bind(resultingModel);
+        }
+        return resultingModel;
+    }
+
     static fromPrioritisedArray(prioritisedArray) {
         let LocalizedModel = LocalModel.createLocalizedModelClass(prioritisedArray._dataType);
         let localPrioritisedArray = new LocalPrioritisedArray(LocalizedModel);
@@ -21,12 +41,7 @@ export class LocalPrioritisedArray extends PrioritisedArray {
         prioritisedArray.once('value', () => {
             for(let item of prioritisedArray){
                 /* Just add the shadow so that everything stays local by converting it to a localizedModel */
-                let newItem = localPrioritisedArray.add(item.shadow);
-                let originalRemoveFunction = newItem.remove;
-                newItem.remove = function() {
-                    this._onChildRemoved({key: newItem.id, val: () => newItem.shadow});
-                    originalRemoveFunction.apply(newItem, arguments);
-                }.bind(localPrioritisedArray);
+                localPrioritisedArray.add(item.shadow);
             }
         });
         return localPrioritisedArray;
