@@ -1,6 +1,7 @@
 /**
  * Created by Manuel on 22/07/16.
  */
+import cloneDeep        from 'lodash/cloneDeep.js'
 import omit             from 'lodash/omit.js';
 import {Model}          from '../../core/Model';
 import {DataSource}     from '../DataSource.js';
@@ -30,7 +31,7 @@ export class LocalModel extends Model {
     static fromModel(model) {
         let modelClass = LocalModel.createLocalizedModelClass(model.constructor);
         /* Create an inherit class */
-        return new modelClass(model.id, model.shadow);
+        return new modelClass(model.id, LocalModel.cloneModelProperties(model));
     }
 
     static createLocalizedModelClass(modelClass) {
@@ -40,6 +41,10 @@ export class LocalModel extends Model {
         Object.defineProperties(LocalizedModel.prototype, omit(ObjectHelper.getMethodDescriptors(modelPrototype),
             ['constructor', 'id', 'dataSource', 'priority', '_inheritable']));
         return LocalizedModel;
+    }
+
+    static cloneModelProperties(model) {
+        return cloneDeep(ObjectHelper.getEnumerableProperties(model));
     }
 
 }
