@@ -1,8 +1,9 @@
 /**
  * Created by lundfall on 01/09/16.
  */
+import isEqual                      from 'lodash/isEqual.js';
+import findIndex                    from 'lodash/findIndex.js';
 import Easing                       from 'famous/transitions/Easing.js';
-import _                            from 'lodash';
 
 import {Utils}                      from './Utils.js';
 import {TrueSizedLayoutDockHelper}  from '../../layout/TrueSizedLayoutDockHelper.js';
@@ -65,9 +66,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
         for (let renderableName of dockedNames) {
             let [renderable, renderableCounterpart] = dockedRenderables.get(renderableName);
-            let {dockSize, translate, innerSize, space} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
+            let {dockSize, translate, innerSize, space = (ownDecorations.dockSpacing || 0), opacity} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
-            let {dock, rotate, opacity, origin, scale, skew} = renderable.decorations; // todo add scaling/skew
+            let {dock, rotate, origin, scale, skew} = renderable.decorations;
             let {dockMethod} = dock;
             if (dockHelper[dockMethod]) {
                 dockHelper[dockMethod](renderableName, dockSize, space, translate, innerSize, {
@@ -87,13 +88,11 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         for (let renderableName of filledNames) {
             let [renderable, renderableCounterpart] = filledRenderables.get(renderableName);
             let {decorations} = renderable;
-            let {rotate, opacity, origin} = decorations;
-            let {translate, dockSize} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
+            let {rotate, origin} = decorations;
+            decorations.dock.size = dockHelper.getFillSize();
+            let {translate, innerSize, opacity} = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
-            /* Special case for undefined size, since it's treated differently by the dockhelper, and should be kept to undefined if specified */
-            let dimensionHasUndefinedSize = (dimension) => [decorations.dock.size, decorations.size].every((size) => !size || size[dimension] === undefined);
-            dockSize = dockSize.map((fallbackSize, dimension) => dimensionHasUndefinedSize(dimension) ? undefined : fallbackSize);
-            dockHelper.fill(renderableName, dockSize, translate, {rotate, opacity, origin, callback, transition});
+            dockHelper.fill(renderableName, innerSize, translate, {rotate, opacity, origin, callback, transition});
         }
     }
 
@@ -109,24 +108,36 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
      */
     _prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins = [0, 0, 0, 0]) {
         let {decorations} = renderable;
-        let {translate = [0, 0, 0]} = decorations;
+        let {translate = [0, 0, 0], opacity = 1} = decorations;
         translate = Utils.addTranslations(extraTranslate, translate);
         let {dockMethod, space} = decorations.dock;
         let horizontalMargins = margins[1] + margins[3];
         let verticalMargins = margins[0] + margins[2];
         let sizeWithoutMargins = [context.size[0] - horizontalMargins, context.size[1] - verticalMargins];
-        let dockSizeSpecified = !(_.isEqual(decorations.dock.size, [undefined, undefined]));
+        let dockSizeSpecified = !(isEqual(decorations.dock.size, [undefined, undefined]));
         let dockSize = this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: sizeWithoutMargins}, dockSizeSpecified ? decorations.dock.size : decorations.size);
+        if(!this._sizeResolver.isSizeFinal(renderable)){
+            opacity = 0;
+        }
         let inUseDockSize = this._sizeResolver.getResolvedSize(renderable);
         let innerSize;
         let {origin, align} = decorations;
+        /* If origin and align is used, we have to add this to the translate of the renderable */
         if (decorations.size || origin || align) {
-            /* If origin and align is used, we have to add this to the translate of the renderable */
-            this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: sizeWithoutMargins}, decorations.size);
-            innerSize = this._sizeResolver.getResolvedSize(renderable);
-            if (innerSize) {
-                let translateWithProportion = (proportion, size, translation, dimension, factor) =>
-                    translation[dimension] += size[dimension] ? factor * size[dimension] * proportion[dimension] : 0;
+
+            let translateWithProportion = (proportion, size, translation, dimension, factor) =>
+                translation[dimension] += size[dimension] ? factor * size[dimension] * proportion[dimension] : 0;
+
+
+            if(decorations.size){
+
+                this._sizeResolver.settleDecoratedSize(renderable, renderableCounterpart, {size: dockSizeSpecified ? dockSize : sizeWithoutMargins}, decorations.size);
+                if(!this._sizeResolver.isSizeFinal(renderable)){
+                    opacity = 0;
+                }
+                innerSize = this._sizeResolver.getResolvedSize(renderable);
+
+
                 translate = [...translate]; //shallow copy the translation to prevent the translation for happening multiple times
 
                 /* If no docksize was specified in a certain direction, then use the context size without margins */
@@ -137,8 +148,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                         outerDockSize = [...sizeWithoutMargins];
                     } else {
                         let dockingDirection = this.getDockType(dockMethod);
+                        let orthogonalDockingDirection = +!dockingDirection;
                         outerDockSize[dockingDirection] = innerSize[dockingDirection];
-                        outerDockSize[+!dockingDirection] = sizeWithoutMargins[+!dockingDirection];
+                        outerDockSize[orthogonalDockingDirection] = sizeWithoutMargins[orthogonalDockingDirection];
                     }
                 }
 
@@ -148,7 +160,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                             /* Because the size is set to true, it is interpreted as 1 by famous. We have to add 1 pixel
                              *  to make up for this.
                              */
-                            translate[dimension] += 1;
+                            if(origin[dimension] === 1){
+                                translate[dimension] += 1;
+                            }
                         }
                     });
                 }
@@ -156,10 +170,14 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                     translateWithProportion(align, outerDockSize, translate, 0, 1);
                     translateWithProportion(align, outerDockSize, translate, 1, 1);
                 }
+            } else if (align){
+                for(let i of [0,1]){
+                    translateWithProportion(align, decorations.dock.size[i] ? dockSize : sizeWithoutMargins, translate, i, 1);
+                }
             }
         }
         for (let i = 0; i < 2; i++) {
-            if (dockSize[i] == true) {
+            if (dockSize[i] === true) {
                 /* If a true size is used, do a tilde on it in order for the dockhelper to recognize it as true-sized */
                 dockSize[i] = ~inUseDockSize[i];
             }
@@ -169,12 +187,12 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
             /* Don't display the space if the size is 0*/
             space = 0;
         }
-        return {dockSize, translate, innerSize, inUseDockSize, space};
+        return {dockSize, translate, innerSize, inUseDockSize, space, opacity};
     }
 
     getDockType(dockMethodToGet) {
         let dockTypes = [['right', 'left'], ['top', 'bottom']];
-        return _.findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
+        return findIndex(dockTypes, (dockMethods) => ~dockMethods.indexOf(dockMethodToGet));
     }
 
     /**
@@ -203,14 +221,17 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         }
         let dockSize = [...fillSize];
         if (dockedRenderables) {
-            dockSize = this._getDockedRenderablesBoundingBox(dockedRenderables);
+            let dockSizeInfo = this._getRegularDockBoundingBoxInfo(dockedRenderables, ownDecorations);
+            dockSize = dockSizeInfo.boundingBoxSize;
             if (fillSize) {
                 for (let [dimension, singleFillSize] of fillSize.entries()) {
                     if (singleFillSize !== undefined) {
                         if (dockSize[dimension] === undefined) {
                             dockSize[dimension] = singleFillSize;
-                        } else {
+                        } else if (dockSizeInfo.dockingDirection == dimension){
                             dockSize[dimension] += singleFillSize;
+                        } else {
+                            dockSize[dimension] = Math.min(singleFillSize, dockSize[dimension]);
                         }
                     }
                 }
@@ -230,7 +251,8 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         return dockSize;
     }
 
-    _getDockedRenderablesBoundingBox(dockedRenderables) {
+
+    _getRegularDockBoundingBoxInfo(dockedRenderables, ownDecorations) {
         let {dockMethod} = dockedRenderables.get(dockedRenderables.keyAt(0))[0].decorations.dock;
         /* Gets the dock type where, 0 is right or left (horizontal) and 1 is top or bottom (vertical) */
         let dockType = this.getDockType(dockMethod);
@@ -241,7 +263,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         /* Previously countered dock size for docking direction and opposite docking direction */
         let previousDockSize = 0;
         /* Add up the different sizes to if they are docked all in the same direction */
-        return dockedRenderables.reduce((result, [dockedRenderable, renderableCounterpart], renderableName) => {
+        let boundingBoxSize = dockedRenderables.reduce((result, [dockedRenderable, renderableCounterpart], renderableName) => {
             let {decorations} = dockedRenderable;
             let {dockMethod: otherDockMethod} = decorations.dock;
             /* If docking is done orthogonally */
@@ -270,7 +292,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                     newResult[dockingDirection] = NaN;
                 } else {
                     /* If this or the previous renderable size is 0, don't add the space */
-                    let spaceSize = (resolvedSize[dockingDirection] === 0 || previousDockSize === 0) ? 0 : decorations.dock.space;
+                    let spaceSize = (resolvedSize[dockingDirection] === 0 || previousDockSize === 0)
+                        ? 0
+                        : decorations.dock.space || ownDecorations.dockSpacing || 0;
                     newResult[dockingDirection] = resolvedSize[dockingDirection] + spaceSize + result[dockingDirection];
                     previousDockSize = resolvedSize[dockingDirection];
                 }
@@ -289,6 +313,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                 return newResult;
             }
         }, dockingDirection ? [undefined, 0] : [0, undefined]);
+        return {boundingBoxSize, dockingDirection, orthogonalDirection};
     }
 }
 
@@ -330,6 +355,9 @@ export class TraditionalLayoutHelper extends BaseLayoutHelper {
                 translate = [0, 0, 0], origin = [0, 0], align, rotate,
                 opacity = 1, scale, skew
             } = renderable.decorations;
+            if(!this._sizeResolver.isSizeFinal(renderable)){
+                opacity = 0;
+            }
             translate = Utils.addTranslations(ownDecorations.extraTranslate, translate);
             let {callback, transition} = this._getRenderableFlowInformation(renderable);
             let adjustedTranslation = Utils.adjustPlacementForTrueSize(renderable, renderableSize, origin, translate, this._sizeResolver);

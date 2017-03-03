@@ -1,55 +1,24 @@
 /**
  * Created by lundfall on 06/07/16.
  */
-import Timer                 from 'famous/utilities/Timer';
-import AnimationController   from 'famous-flex/AnimationController';
 import Surface               from 'famous/core/Surface';
 import FamousContext         from 'famous/core/Context.js';
-
-import {View}                from 'arva-js/core/View.js';
-import {ObjectHelper}        from 'arva-js/utils/ObjectHelper';
+import Timer                 from 'famous/utilities/Timer';
+import Easing                from 'famous/transitions/Easing.js';
+import AnimationController   from 'famous-flex/AnimationController';
 
 import {Injection}           from './Injection.js';
+import {View}                from '../core/View.js';
 import {Router}              from '../core/Router.js';
 import {layout}              from '../layout/decorators.js';
-import Easing                from 'famous/transitions/Easing.js';
+import {DialogWrapper}       from './dialog/DialogWrapper.js';
 
-@layout.scrollable({overscroll: false})
-class DialogWrapper extends View {
-
-    /**
-     * Defines the size that is appropriate for the dialog. The dialog can return undefined on its getSize function for
-     * full-blown sizing instead of true sizing, and it can define a maxSize to specify a maximum that causes the margins
-     * to get larger.
-     * @param size
-     */
-    determineSizeWithMargins (size, maxSize, dimension) {
-        return ~Math.min(maxSize ? maxSize[dimension] : 480, size[dimension] - 32);
-    }
-
-    @layout.size(function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)},
-        function(...size) {return this.determineSizeWithMargins(size, this.options.dialog.maxSize, 0)})
-    @layout.stick.center()
-    dialog = this.options.dialog;
-
-    onNewParentSize(parentSize) {
-        this._parentSize = parentSize;
-    }
-
-    getSize() {
-        if (!this._parentSize) {
-            return [undefined, undefined];
-        }
-        let dialogHeight = this.dialog.getSize()[1];
-        return this._parentSize[1] > dialogHeight ? [undefined, this._parentSize[1]] : [undefined, dialogHeight];
-    }
-
-}
 
 export class DialogManager extends View {
 
     @layout.fullSize()
     @layout.animate({showInitially: false, animation: AnimationController.Animation.Fade})
+    /* Add huge translations to make sure that it appears above everything else */
     @layout.translate(0, 0, 9000)
     background = new Surface({
         properties: {
@@ -69,6 +38,7 @@ export class DialogManager extends View {
     /* Empty content until filled */
     dialog = {};
 
+    canCancel = true;
 
     constructor(options = {}) {
         super(options);
@@ -77,7 +47,7 @@ export class DialogManager extends View {
             /* Prevent keyboard from showing */
             window.addEventListener('native.keyboardshow', () => {
                 /* Hides the keyboard when a dialog is  shown */
-                if (this._hasOpenDialog) {
+                if (this.hasOpenDialog()) {
                     Keyboard.hide();
                 }
             });
@@ -96,25 +66,36 @@ export class DialogManager extends View {
         });
 
 
-        document.addEventListener("backbutton", this._onClose);
-        this.renderables.background.on('click', this._onClose);
+        document.addEventListener("backbutton", ()=> this.canCancel && this.close());
+        this.renderables.background.on('click', ()=> this.canCancel && this.close());
     }
 
     /**
      *
-     * @param dialog
-     * @param canCancel
-     * @param killOldDialog
+     * @param {Dialog} options.dialog dialog
+     * @param {Boolean} [options.canCancel=true]
+     * @param {Boolean} [options.killOldDialog=true]
      * @returns {*}
      */
-    show({dialog, canCancel = true, killOldDialog = true}) {
-        if (this._hasOpenDialog) {
-            /* If already open dialog we should either close that one, or just keep the current one, depending on the settings */
-            if (!killOldDialog) {
-                return;
-            }
-            this.close();
+    show({dialog, canCancel = true, killOldDialog = true, shouldGoToRoute = null}) {
+        if(!dialog){
+            throw new Error('No dialog specified in show() function of DialogManager');
         }
+
+        this._shouldGoBackInHistory = shouldGoToRoute || this._shouldGoBackInHistory;
+        this.canCancel = canCancel;
+        if(dialog.canCancel){
+            this.canCancel = dialog.canCancel;
+        }
+
+        /* If already open dialog we should either close that one, or just keep the current one, depending on the settings */
+        if (this.hasOpenDialog()) {
+            if(!killOldDialog){
+                return this.dialogComplete();
+            }
+            this._close();
+        }
+
         this._hasOpenDialog = true;
 
         /* Replace whatever non-showing dialog we have right now with the new dialog */
@@ -122,36 +103,58 @@ export class DialogManager extends View {
         if (this._savedParentSize) {
             this.dialog.onNewParentSize(this._savedParentSize);
         }
-        this._canCancel = canCancel;
-        if (canCancel) {
+
+        if (this.canCancel) {
             /* Disable existing default behavior of backbutton going back to previous route */
             this.initialBackButtonState = this.router.isBackButtonEnabled();
             this.router.setBackButtonEnabled(false);
         }
 
         /* Show the dialog */
-        this.showRenderable('dialog');
+        this.showRenderable('dialog').then(() => {
+            this._eventOutput.emit('dialogShown');
+        });
 
-        this.dialog.on('closeDialog', (function () {
-            /* Forward the arguments coming from the event emitter when closing */
-            this.close(...arguments)
-        }).bind(this));
+        this.dialog.on('closeDialog', this.close);
 
         /* Showing the background immediately propagates user's click event that triggered the show() directly to the background,
          * closing the dialog again. Delaying showing the background circumvents this issue. */
         Timer.setTimeout(() => {
-            if (this._hasOpenDialog) {
+            if (this.hasOpenDialog()) {
                 this.showRenderable('background');
             }
         }, 10);
         return this.dialogComplete();
     }
 
+    /**
+     * Handles the logic for closing the dialog and possible going back in History
+     * @param {Boolean} [goBackInHistory] Set to false to prevent router.goBackInHistory() from being called after close.
+     */
+    close(goBackInHistory = false) {
+        if (this.hasOpenDialog()) {
 
-    _onClose() {
-        if (this._canCancel) {
-            this.close();
+            /* Restore back button state */
+            if (this.canCancel) {
+                this.router.setBackButtonEnabled(this.initialBackButtonState);
+            }
+            /* Resolve promise if necessary */
+            if (this._resolveDialogComplete) {
+                this._resolveDialogComplete(arguments);
+                this._resolveDialogComplete = null;
+            }
+
+            /* Close the current dialog */
+            if(goBackInHistory || this._shouldGoBackInHistory){
+                this._goBackInHistory();
+            } else {
+                this._close();
+            }
         }
+    }
+
+    getOpenDialog() {
+        return this.hasOpenDialog() && this.dialog.dialog;
     }
 
     hasOpenDialog() {
@@ -170,23 +173,25 @@ export class DialogManager extends View {
 
     }
 
-    close() {
-        if (this._hasOpenDialog) {
+    /**
+     * Closes a dialog
+     * @private
+     */
+    _close(){
+        this._hasOpenDialog = false;
+        this.hideRenderable('dialog');
+        this.hideRenderable('background');
+        this._eventOutput.emit('close', ...arguments);
+    }
 
-            /* Restore back button state */
-            if (this._canCancel) {
-                this.router.setBackButtonEnabled(this.initialBackButtonState);
-            }
-            /* Resolve promise if necessary */
-            if (this._resolveDialogComplete) {
-                this._resolveDialogComplete(arguments);
-                this._resolveDialogComplete = null;
-            }
-            this._hasOpenDialog = false;
+    /**
+     * Let the router go back in history, this will automatically close the current dialog
+     * @private
+     */
+    _goBackInHistory(){
+        let route = this._shouldGoBackInHistory;
+        this._shouldGoBackInHistory = false;
+        (route instanceof Object && route.controller) ? this.router.go(route.controller, route.method, route.arguments) : this.router.goBackInHistory();
 
-            this.hideRenderable('dialog');
-            this.hideRenderable('background');
-            this._eventOutput.emit('close', ...arguments);
-        }
     }
 }

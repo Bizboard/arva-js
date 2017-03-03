@@ -6,8 +6,8 @@
  @copyright Bizboard, 2015
 
  */
-import _                            from 'lodash';
 import firebase                     from 'firebase';
+import merge                        from 'lodash/merge.js';
 import {DataSource}                 from '../DataSource.js';
 import {ObjectHelper}               from '../../utils/ObjectHelper.js';
 import {provide}                    from '../../utils/di/Decorators.js';
@@ -28,11 +28,14 @@ export class FirebaseDataSource extends DataSource {
      * @param {String} path Full path to resource in remote data storage.
      * @return {FirebaseDataSource} FirebaseDataSource instance.
      * @param {Object} options Optional: options to construct the DataSource with.
+     * @param {[key: String, value: String]} [options.equalTo] Optional, only subscribe to items with a certain value.
      * @param {String} [options.orderBy] Optional, order all items received through the dataSource.
      *                                   Options are: '.priority', '.value', or a string containing the child key to order by (e.g. 'MyModelProperty')
-     * @param {Number} [options.limitToFirst] Optional, only subscribe to the first amount of entries.
-     * @param {Number} [options.limitToLast] Optional, only subscribe to the last amount of entries.
-     * @param {Promise} [options.synced] Optional, a promise to tell the data source that it is only synchronized after this promise is resolved
+     * @param {Number} [options.limitToFirst]   Optional, only subscribe to the first amount of entries.
+     * @param {Number} [options.limitToLast]    Optional, only subscribe to the last amount of entries.
+     * @param {Number} [options.startAt]        Optional, only subscribe to the entries from a certain value onwards
+     * @param {Number} [options.endAt]          Optional, only subscribe to the entries towards a certain value
+     * @param {Promise} [options.synced]        Optional, a promise to tell the data source that it is only synchronized after this promise is resolved
      **/
     constructor(path, options = {orderBy: '.priority'}) {
         super(path);
@@ -41,23 +44,39 @@ export class FirebaseDataSource extends DataSource {
         this._onChangeCallback = null;
         this._onMoveCallback = null;
         this._onRemoveCallback = null;
-        this._dataReference = firebase.database().ref(path);
+        this._firebase = options.customFirebase || firebase;
+
+        this._dataReference = this._firebase.database().ref(path);
         this.handlers = {};
-        this.options = combineOptions({synced: Promise.resolve()},options);
+        this.options = combineOptions({synced: Promise.resolve()}, options);
         this._synced = this.options.synced;
 
         /* Populate the orderedReference, which is the standard Firebase reference with an optional ordering
          * defined. This needs to be saved seperately, because methods like child() and key() can't be called
          * from the ordered reference, and must instead be performed on the standard reference. */
 
-        if (this.options.orderBy && this.options.orderBy === '.priority') {
+        if (this.options.orderBy && this.options.orderBy === '.priority' && !this.options.equalTo) {
             this._orderedDataReference = this._dataReference.orderByPriority();
         } else if (this.options.orderBy && this.options.orderBy === '.value') {
             this._orderedDataReference = this._dataReference.orderByValue();
         } else if (this.options.orderBy && this.options.orderBy !== '') {
             this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+        } else if (this.options.equalTo) {
+            let [key, value] = this.options.equalTo;
+            if(key === 'id'){
+                this._orderedDataReference = this._dataReference.orderByKey().equalTo(value);
+            } else {
+                this._orderedDataReference = this._dataReference.orderByChild(key).equalTo(value);
+            }
         } else {
             this._orderedDataReference = this._dataReference;
+        }
+
+        if (this.options.startAt !== undefined) {
+            this._orderedDataReference = this._orderedDataReference.startAt(this.options.startAt);
+        }
+        if (this.options.endAt !== undefined) {
+            this._orderedDataReference = this._orderedDataReference.endAt(this.options.endAt);
         }
 
         if (this.options.limitToFirst !== undefined) {
@@ -65,6 +84,7 @@ export class FirebaseDataSource extends DataSource {
         } else if (this.options.limitToLast !== undefined) {
             this._orderedDataReference = this._orderedDataReference.limitToLast(this.options.limitToLast);
         }
+
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers. */
@@ -94,7 +114,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance pointing to the given child branch.
      */
     child(childName, options = {}) {
-        return new FirebaseDataSource(`${this.path()}/${childName}`, options);
+        return new FirebaseDataSource(`${this.path()}/${childName}`, {customFirebase: this.options.customFirebase, ...options});
     }
 
     /**
@@ -159,9 +179,13 @@ export class FirebaseDataSource extends DataSource {
      * @param {Object} newData New data to append to dataSource.
      * @returns {FirebaseDataSource} A new FirebaseDataSource pointing to the injected data.
      */
-    push(newData) {
+    push(newData = {}) {
+        newData = (newData === undefined || newData === null) ? {} : newData;
         let pushResult = this._dataReference.push(newData);
-        return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {synced: pushResult});
+        return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {
+            synced: pushResult,
+            customFirebase: this.options.customFirebase
+        });
     }
 
     /**
@@ -171,9 +195,14 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} Resolves when write to server is complete.
      */
     setWithPriority(newData, priority) {
-        let completionPromise = this.dataReference.setWithPriority(newData, priority);
-        /* Append another promise to the chain to keep track of whether it's still synchronized */
-        this._synced = this._synced.then(() => completionPromise);
+        /* Rethrow the error in order to be able to catch it higher up */
+        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((err) => {
+            throw new Error(err)
+        });
+        /* Append another promise to the chain to keep track of whether it's still synchronized. Fail silently
+         * since we already have error handling above */
+        this._synced = this._synced.then(() => completionPromise).catch(() => {
+        });
         return completionPromise;
     }
 
@@ -192,7 +221,10 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByChild(childKey) {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: childKey}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {
+            orderBy: childKey,
+            customFirebase: this.options.customFirebase
+        }));
     }
 
     /**
@@ -200,7 +232,10 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByKey() {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: '.key'}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {
+            orderBy: '.key',
+            customFirebase: this.options.customFirebase
+        }));
     }
 
     /**
@@ -208,7 +243,10 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     orderByValue() {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {orderBy: '.value'}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {
+            orderBy: '.value',
+            customFirebase: this.options.customFirebase
+        }));
     }
 
     /**
@@ -217,7 +255,10 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     limitToFirst(amount) {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {limitToFirst: amount}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {
+            limitToFirst: amount,
+            customFirebase: this.options.customFirebase
+        }));
     }
 
     /**
@@ -226,7 +267,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     limitToLast(amount) {
-        return new FirebaseDataSource(this.path(), _.merge({}, this.options, {limitToLast: amount}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, {limitToLast: amount}));
     }
 
     /**
@@ -239,8 +280,8 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithOAuthToken(provider, credentials, onComplete) {
-        credentials.provider = provider;
-        return firebase.auth().signInWithCredential(credentials).then((user) => {
+        let providerObject = this.createProviderFromCredential(provider, credentials);
+        return this._firebase.auth().signInWithCredential(providerObject).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
@@ -249,20 +290,63 @@ export class FirebaseDataSource extends DataSource {
     }
 
     /**
+     * Creates a provider with the specified type
+     *
+     * @param {String} providerType Can be 'password' or 'facebook'
+     * @param {String|Object} credential if 'password' providerType, then an object {email:String,password:String}. If
+     * 'facebook' providerType, then a string containing the API token.
+     * @returns {Provider}
+     */
+    createProviderFromCredential(providerType, credential) {
+        let providerObject;
+        switch (providerType) {
+            case 'password':
+                providerObject = this._firebase.auth.EmailAuthProvider.credential(credential.email, credential.password);
+                break;
+            case 'facebook':
+                providerObject = this._firebase.auth.FacebookAuthProvider.credential(credential);
+                break;
+            //TODO: Add more here
+        }
+        return providerObject;
+    }
+
+    /**
+     * Merges the current user with the specified provider.
+     * @param {Provider} provider
+     * @returns {Authentication}
+     */
+    linkCurrentUserWithProvider(provider) {
+        return this._firebase.auth().currentUser.link(provider);
+    }
+
+    /**
      * Authenticates all instances of this DataSource with a custom auth token or secret.
      * @param {String} authToken Authentication token or secret.
-     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * @param {Function} onCxomplete Callback, executed when login is completed either successfully or erroneously.
      * On error, first argument is error message.
      * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithCustomToken(authToken, onComplete) {
-        return firebase.auth().signInWithCustomToken(authToken).then((user) => {
+        return this._firebase.auth().signInWithCustomToken(authToken).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
             return user;
         });
+    }
+
+    /**
+     * Registers a user with instances of this DataSource with the given email/password credentials.
+     * @param {String|Object} credentials Object with key/value pairs {email: "value", password:"value"}.
+     * @param {Function} onComplete Callback, executed when login is completed either successfully or erroneously.
+     * On error, first argument is error message.
+     * On success, the first argument is null, and the second argument is an object containing the fields uid, provider, auth, and expires.
+     * @returns {Promise}
+     */
+    registerWithPassword(credentials, onComplete) {
+        return this._firebase.auth().createUserWithEmailAndPassword(credentials.email, credentials.password);
     }
 
     /**
@@ -274,7 +358,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authWithPassword(credentials, onComplete) {
-        return firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password).then((user) => {
+        return this._firebase.auth().signInWithEmailAndPassword(credentials.email, credentials.password).then((user) => {
             if (onComplete) {
                 onComplete(user);
             }
@@ -291,7 +375,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} A promise that resolves after successful authentication.
      */
     authAnonymously(options) {
-        return firebase.auth().signInAnonymously();
+        return this._firebase.auth().signInAnonymously();
     }
 
     /**
@@ -301,7 +385,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Object|null} User auth object.
      */
     getAuth() {
-        let firebaseAuth = firebase.auth();
+        let firebaseAuth = this._firebase.auth();
         let {currentUser} = firebaseAuth;
         if (!this._authDataPresent) {
             if (currentUser) {
@@ -325,7 +409,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {void}
      */
     unauth() {
-        return firebase.auth().signOut();
+        return this._firebase.auth().signOut();
     }
 
     /**
@@ -482,5 +566,27 @@ export class FirebaseDataSource extends DataSource {
             this.off('child_removed', this._onRemoveCallback);
             this._onRemoveCallback = null;
         }
+    }
+
+
+    /**
+     * Performs an atomic transaction
+     * @param {Function} transactionFunction A function that takes the current value as a single argument, and
+     * returns the new value.
+     * @returns {Promise} Resolves the new value when the transaction is finished
+     */
+    atomicTransaction(transactionFunction) {
+        return new Promise((resolve, reject) => {
+            this._dataReference.transaction(transactionFunction, (error, wasSuccessfullyCommited, snapshot) => {
+                if(error){
+                    return reject(error);
+                }
+                if (!wasSuccessfullyCommited) {
+                    console.log(`Transaction failed, retrying`);
+                    return this.atomicTransaction(transactionFunction);
+                }
+                resolve(snapshot.val());
+            });
+        });
     }
 }

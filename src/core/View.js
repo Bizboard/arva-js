@@ -7,12 +7,16 @@
 
  */
 
-import _                            from 'lodash';
+import extend                       from 'lodash/extend.js';
+import cloneDeep                    from 'lodash/cloneDeep.js';
 import FamousView                   from 'famous/core/View.js';
+import Surface                      from 'famous/core/Surface.js';
+import Engine                       from 'famous/core/Engine.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
 
+import {layout}                     from '../layout/Decorators.js';
 import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {SizeResolver}               from '../utils/view/SizeResolver.js';
 import {Utils}                      from '../utils/view/Utils.js';
@@ -25,13 +29,38 @@ import {
 import {RenderableHelper}           from '../utils/view/RenderableHelper.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 
-
+/**
+ * An Arva View. Can be constructed explicitly by using new View() but is more commonly used as a base class for
+ * views used by the app.
+ *
+ */
 export class View extends FamousView {
 
+    /**
+     * @example
+     * HomeController extends Controller {
+     *      Index() {
+     *          let view = new View();
+     *          view.add(new Surface({properties: {backgroundColor: 'red'}}));
+     *          return view
+     *      }
+     * }
+     * @example
+     * class HomeView extends View {
+     *      @layout.size(100, 100)
+     *      @layout.place.center()
+     *      mySurface = new Surface({properties: {backgroundColor: 'red'}})
+     * }
+     *
+     *
+     *
+     * @param {Object} options. The options passed to the view will be stored in this.options, but won't change any
+     * behaviour of the core functionality of the view. Instead, configuration of the View is done by decorators.
+     *
+     */
     constructor(options = {}) {
 
         super(options);
-
 
         /* Bind all local methods to the current object instance, so we can refer to 'this'
          * in the methods as expected, even when they're called from event handlers.        */
@@ -155,6 +184,10 @@ export class View extends FamousView {
      */
     showRenderable(renderableName, show = true) {
         let renderable = this[renderableName];
+        if(!renderable){
+            Utils.warn(`Trying to show renderable ${renderableName} which does not exist!`);
+            return;
+        }
         if (!renderable.animationController) {
             Utils.warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
             return;
@@ -176,10 +209,10 @@ export class View extends FamousView {
     }
 
     /**
-     * @example
-     * decorateRenderable('myRenderable',layout.size(100, 100));
-     *
      * Decorates a renderable with other decorators. Using the same decorators as used previously will override the old ones.
+     * @example
+     * this.decorateRenderable('myRenderable',layout.size(100, 100));
+     *
      * @param {String} renderableName The name of the renderable
      * @param ...decorators The decorators that should be applied
      */
@@ -208,10 +241,21 @@ export class View extends FamousView {
         return this._renderableHelper.setViewFlowState(stateName, this.decorations.flow);
     }
 
+    /**
+     * Gets the name of a flow state of a renderable.
+     *
+     * @param {String} renderableName the name of the renderable of which the flow state is concerned
+     * @returns {String} stateName the name of the state that the renderable is in
+     */
     getRenderableFlowState(renderableName = '') {
         return this._renderableHelper.getRenderableFlowState(renderableName);
     }
 
+    /**
+     * Gets the name of the flow state of a view.
+     *
+     * @returns {String} stateName the name of the state that this view is in.
+     */
     getViewFlowState() {
         return this._renderableHelper.getViewFlowState(this.decorations.flow);
     }
@@ -219,12 +263,30 @@ export class View extends FamousView {
     /**
      * Replaces an existing decorated renderable with a new renderable, preserving all necessary state and decorations
      * @param {String} renderableName. The name of the renderable
-     * @param newRenderable
+     * @param {Renderable} newRenderable Renderable to replace the old renderable with
      */
     replaceRenderable(renderableName, newRenderable) {
         this._renderableHelper.replaceRenderable(renderableName, newRenderable);
         this.reflowRecursively();
         this[renderableName] = newRenderable;
+    }
+
+    /**
+     * Gets the scroll view that was set if @layout.scrollable was used on the view
+     * @returns {ReflowingScrollView}
+     */
+    getScrollView() {
+        return this._scrollView;
+    }
+
+    /**
+     * getSize() is called by this view and by layoutControllers. For lazy people that don't want to specifiy their own getSize() function,
+     * we provide a fallback. This function can be performance expensive when using non-docked renderables, but for docked renderables it
+     * is efficient and convenient]
+     * @returns {*[]}
+     */
+    getSize() {
+        return this._getLayoutSize();
     }
 
     /**
@@ -234,6 +296,80 @@ export class View extends FamousView {
      */
     hideRenderable(renderableName) {
         return this.showRenderable(renderableName, false);
+    }
+
+    /**
+     * Passes a callback that gets called every time the context size changes.
+     *
+     * @param {Function} callback a callback with arguments (width, height)
+     */
+    onNewSize(callback) {
+        this._onNewSizeCallbacks.push(callback);
+    }
+
+    /**
+     * Gets a (new) context size of the view. This will always happen at least once immediately after the view is constructed.
+     * Hence, it can safely be used in the constructor to get the (initial) size of the view.
+     *
+     * @example
+     * constructor(options){
+     *  super(options);
+     *  onceNewSize.then((width, height) => {
+     *      console.log(width, height);
+     *  });
+     * }
+     *
+     * @returns {Promise} Resolves when there's a new size
+     */
+    onceNewSize() {
+        return new Promise((resolve) => {
+            let onNewSize = (size) => {
+                this._onNewSizeCallbacks.splice(this._onNewSizeCallbacks.indexOf(onNewSize), 1);
+                resolve(size);
+            };
+            this._onNewSizeCallbacks.push(onNewSize);
+        })
+    }
+
+    /**
+     * Repeat a certain flowState indefinitely
+     * @param renderableName
+     * @param stateName
+     * @param {Boolean} persistent. If true, then it will keep on repeating until explicitly cancelled by cancelRepeatFlowState.
+     * If false, it will be interrupted automatically by any interrput to another state. Defaults to true
+     * @returns {Promise} resolves to false if the flow state can't be repeated due to an existing running repeat
+     */
+    async repeatFlowState(renderableName = '', stateName = '', persistent = true){
+        if(!this._runningRepeatingFlowStates[renderableName]){
+            this._runningRepeatingFlowStates[renderableName] = {persistent};
+            while(this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent))
+            {}
+            delete this._runningRepeatingFlowStates[renderableName];
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Cancel a repeating renderable. This will cancel the animation for next flow-cycle, it won't interject the current animation cycle.
+     * @param renderableName
+     */
+    cancelRepeatFlowState(renderableName){
+        if(this._runningRepeatingFlowStates){
+            delete this._runningRepeatingFlowStates[renderableName];
+        }
+    }
+
+    /**
+     * Initiate a renderable to a default flow state.
+     * @param renderableName
+     * @param stateName
+     */
+    setDefaultState(renderableName, stateName) {
+        for (let step of this[renderableName].decorations.flow.states[stateName].steps) {
+            this.decorateRenderable(renderableName, ...step.transformations);
+        }
     }
 
     /**
@@ -292,10 +428,19 @@ export class View extends FamousView {
 
                 let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
 
+                /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
+                if(!renderable) { continue; }
+
+                /* Allow class property to be a function that returns a renderable */
+                if(typeof renderable === 'function') {
+                    let factoryFunction = renderable;
+                    renderable = factoryFunction(this.options);
+                }
+
                 /* Clone the decorator properties, because otherwise every view of the same type willl share them between
                  * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
                  */
-                renderable.decorations = _.cloneDeep(_.extend({}, decorations, renderable.decorations || {}));
+                renderable.decorations = cloneDeep(extend({}, decorations, renderable.decorations || {}));
 
 
                 /* Since after constructor() of this View class is called, all decorated renderables will
@@ -329,6 +474,7 @@ export class View extends FamousView {
         }
     }
 
+
     /**
      * Assigns a renderable to this view, without setting this[renderableName]
      * @param {Renderable} renderable the renderable that is going to be added
@@ -345,11 +491,17 @@ export class View extends FamousView {
 
     _layoutDecoratedRenderables(context, options) {
         let dockedRenderables = this._renderableHelper;
+        let nativeScrollableOptions = this.decorations.nativeScrollable;
+        if(nativeScrollableOptions) {
+            Engine.enableTouchMove();
+            let thisSize  = this.getSize();
+            context.size = context.size.map((size, index) =>
+            (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index],size)) || size);
+        }
         this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations);
         this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations);
         this._traditionalLayoutHelper.layout(dockedRenderables.getRenderableGroup('traditional'), context, this.decorations);
     }
-
 
     /**
      * Combines all layouts defined in subclasses of the View into a single layout for the LayoutController.
@@ -361,6 +513,7 @@ export class View extends FamousView {
         this.layout = new LayoutController({
             flow: !!this.decorations.useFlow || hasFlowyRenderables,
             partialFlow: !this.decorations.useFlow,
+            nativeScroll: !!this.decorations.nativeScrollable,
             flowOptions: this.decorations.flowOptions || {spring: {period: 200}},
             layout: function (context, options) {
 
@@ -404,6 +557,11 @@ export class View extends FamousView {
 
         /* Add the layoutController to this View's rendering context. */
         this._prepareLayoutController();
+
+
+        if((this.decorations.scrollable || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')){
+            this.addRenderable(new Surface(), '_fullScreenTouchArea', layout.fullSize(), layout.translate(0, 0, -10));
+        }
     }
 
     /**
@@ -447,24 +605,6 @@ export class View extends FamousView {
         else {
             this.add(this.layout);
         }
-    }
-
-    /**
-     * Gets the scroll view that was set if @layout.scrollable was used on the view
-     * @returns {ReflowingScrollView}
-     */
-    getScrollView() {
-        return this._scrollView;
-    }
-
-    /**
-     * getSize() is called by this view and by layoutControllers. For lazy people that don't want to specifiy their own getSize() function,
-     * we provide a fallback. This function can be performance expensive when using non-docked renderables, but for docked renderables it
-     * is efficient and convenient]
-     * @returns {*[]}
-     */
-    getSize() {
-        return this._getLayoutSize();
     }
 
     /**
@@ -518,7 +658,7 @@ export class View extends FamousView {
 
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
         for (let name of ['decorationsMap', 'renderableConstructors']) {
-            this[name] = _.cloneDeep(prototype[name]) || new Map();
+            this[name] = cloneDeep(prototype[name]) || new Map();
         }
     }
 
@@ -540,6 +680,12 @@ export class View extends FamousView {
         if(this.decorations.dynamicDockPadding) {
             this.onNewSize((size) => this.decorations.viewMargins = this.decorations.dynamicDockPadding(size));
         }
+
+        if (!this.decorations.extraTranslate) {
+            this.decorations.extraTranslate = [0, 0, 10];
+        }
+        
+
     }
 
     _doTrueSizedSurfacesBookkeeping() {
@@ -565,31 +711,36 @@ export class View extends FamousView {
         this.options.size = this.options.size || [true, true];
     }
 
-    onNewSize(callback) {
-        this._onNewSizeCallbacks.push(callback);
-    }
-
-    onceNewSize() {
-        return new Promise((resolve) => {
-            this._onNewSizeCallbacks.push(function onNewSize(size)  {
-                this._onNewSizeCallbacks.splice(this._onNewSizeCallbacks.indexOf(onNewSize), 1);
-                resolve(size);
-            }.bind(this))
-        })
-    }
-
     _initOptions(options) {
         if (!Utils.isPlainObject(options)) {
             Utils.warn(`View ${this._name()} initialized with invalid non-object arguments`);
         }
+        /**
+         * A copy of the options that were passed in the constructor
+         *
+         * @type {Object}
+         */
         this.options = options;
     }
 
     _initDataStructures() {
         if (!this.renderables) {
+            /**
+             * The renderables "outputted" by the view that are passed to the underlying famous-flex layer
+             *
+             * @type {Object}
+             */
             this.renderables = {};
         }
         if (!this.layouts) {
+            /**
+             * @deprecated
+             *`
+             * The old way of setting the spec of the renderables created by adding renderables through
+             * `this.renderables.myRenderable = ....
+             *
+             * @type {Array|Function}
+             */
             this.layouts = [];
         }
 
@@ -597,9 +748,7 @@ export class View extends FamousView {
             this.decorations = {};
         }
 
-        if (!this.decorations.extraTranslate) {
-            this.decorations.extraTranslate = [0, 0, 10];
-        }
+
         this._runningRepeatingFlowStates = {};
         this._onNewSizeCallbacks = [];
     }
@@ -634,46 +783,5 @@ export class View extends FamousView {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Repeat a certain flowState indefinitely
-     * @param renderableName
-     * @param stateName
-     * @param {Boolean} persistent. If true, then it will keep on repeating until explicitly cancelled by cancelRepeatFlowState.
-     * If false, it will be interrupted automatically by any interrput to another state. Defaults to true
-     * @returns {Promise} resolves to false if the flow state can't be repeated due to an existing running repeat
-     */
-    async repeatFlowState(renderableName = '', stateName = '', persistent = true){
-        if(!this._runningRepeatingFlowStates[renderableName]){
-            this._runningRepeatingFlowStates[renderableName] = {persistent};
-            while(this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent))
-            {}
-            delete this._runningRepeatingFlowStates[renderableName];
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Cancel a repeating renderable. This will cancel the animation for next flow-cycle, it won't interject the current animation cycle.
-     * @param renderableName
-     */
-    cancelRepeatFlowState(renderableName){
-        if(this._runningRepeatingFlowStates){
-            delete this._runningRepeatingFlowStates[renderableName];
-        }
-    }
-
-    /**
-     * Initiate a renderable to a default flow state.
-     * @param renderableName
-     * @param stateName
-     */
-    setDefaultState(renderableName, stateName) {
-        for (let step of this[renderableName].decorations.flow.states[stateName].steps) {
-            this.decorateRenderable(renderableName, ...step.transformations);
-        }
     }
 }

@@ -21,6 +21,7 @@ export class SizeResolver extends EventEmitter {
     constructor() {
         super();
         this._resolvedSizesCache = new Map();
+        this._sizeIsFinalFor = new Map();
         this._trueSizedSurfaceInfo = new Map();
     }
 
@@ -46,6 +47,7 @@ export class SizeResolver extends EventEmitter {
                     size[dimension] = cacheResolvedSize[dimension];
                 }
             } else {
+                this._sizeIsFinalFor.set(renderable, true);
                 size[dimension] = size[dimension] === undefined ? (context.size[dimension] || size[dimension]) : size[dimension];
                 cacheResolvedSize[dimension] = size[dimension];
             }
@@ -105,16 +107,17 @@ export class SizeResolver extends EventEmitter {
                 return this._specifyUndeterminedSingleHeight(renderable, size, dim);
             } else {
                 let renderableIsView = renderable instanceof View;
-                if (size[dim] === true && twoDimensionalSize[dim] === undefined &&
-                    ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView)) {
+                let sizeConsideredFinal = ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView);
+                if (size[dim] === true && twoDimensionalSize[dim] === undefined && sizeConsideredFinal) {
                     Utils.warn(`True sized renderable '${renderable.constructor.name}' is taking up the entire context size.`);
                     return twoDimensionalSize[dim];
                 } else {
                     let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
                     let resultingSize = twoDimensionalSize[dim] !== undefined ? twoDimensionalSize[dim] : approximatedSize;
                     if (renderableIsView) {
-                        resultingSize = (!renderable.containsUncalculatedSurfaces() && renderable._initialised) ? resultingSize : approximatedSize;
+                        resultingSize = sizeConsideredFinal ? resultingSize : approximatedSize;
                     }
+                    this._sizeIsFinalFor.set(renderable, sizeConsideredFinal);
                     return resultingSize;
                 }
             }
@@ -125,6 +128,7 @@ export class SizeResolver extends EventEmitter {
                 this._tryCalculateTrueSizedSurface(renderable);
             }
             let {isUncalculated} = trueSizedSurfaceInfo;
+            this._sizeIsFinalFor.set(renderable, !isUncalculated);
             if (isUncalculated === false) {
                 return trueSizedSurfaceInfo.size[dim];
             } else {
@@ -143,10 +147,25 @@ export class SizeResolver extends EventEmitter {
                 return ~size[dim];
             }
         } else {
+            this._sizeIsFinalFor.set(renderable, true);
             return this._specifyUndeterminedSingleHeight(renderable, size, dim);
         }
     }
 
+    /**
+     * Determines whether the size is considered final or not, and may affect whether the rendering will take place or
+     * not
+     * @param {Renderable} renderable
+     * @returns {Boolean} sizeIsFinal
+     */
+    isSizeFinal(renderable) {
+        let consideredFinal = this._sizeIsFinalFor.get(renderable);
+        /* Return true if nothing is known, to be sure not to make errors */
+        if(consideredFinal === undefined){
+            return true;
+        }
+        return consideredFinal;
+    }
     /**
      * Determines if the value is true sized
      * @param {*} value

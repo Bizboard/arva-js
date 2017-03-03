@@ -2,7 +2,7 @@
  * Created by mysim1 on 13/06/15.
  */
 
-import _                from 'lodash';
+import extend           from 'lodash/extend.js';
 import EventEmitter     from 'eventemitter3';
 import {Settings}       from './Settings.js';
 import {UrlParser}      from '../../../../utils/request/UrlParser.js';
@@ -43,7 +43,7 @@ export class SharePoint extends EventEmitter {
 
         /* Grab any existing cached data for this path. There will be data if there are other
          * subscribers on the same path already. */
-        SPWorker.postMessage(_.extend({}, this.options, {
+        SPWorker.postMessage(extend({}, this.options, {
             subscriberID: this.subscriberID,
             endPoint: this.options.endPoint,
             operation: 'get_auth'
@@ -74,14 +74,14 @@ export class SharePoint extends EventEmitter {
 
             /* Grab any existing cached data for this path. There will be data if there are other
              * subscribers on the same path already. */
-            SPWorker.postMessage(_.extend({}, this.options, {
+            SPWorker.postMessage(extend({}, this.options, {
                 subscriberID: this.subscriberID,
                 operation: 'get_cache'
             }));
         }
 
         /* Tell the SharePoint worker that we want to be subscribed to changes from now on (can be called multiple times) */
-        SPWorker.postMessage(_.extend({}, this.options, {
+        SPWorker.postMessage(extend({}, this.options, {
             subscriberID: this.subscriberID,
             operation: 'subscribe'
         }));
@@ -101,7 +101,7 @@ export class SharePoint extends EventEmitter {
 
         for (let i = 0; i < amountRemoved; i++) {
             /* Tell the Manager that this subscription is cancelled and no longer requires refreshed data from SharePoint. */
-            SPWorker.postMessage(_.extend({}, this.options, {
+            SPWorker.postMessage(extend({}, this.options, {
                 subscriberID: this.subscriberID,
                 operation: 'dispose'
             }));
@@ -162,7 +162,7 @@ export class SharePoint extends EventEmitter {
         });
 
         /* Initialise the worker */
-        SPWorker.postMessage(_.extend({}, this.options, {
+        SPWorker.postMessage(extend({}, this.options, {
             subscriberID: this.subscriberID,
             operation: 'init'
         }));

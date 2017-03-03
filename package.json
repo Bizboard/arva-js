@@ -1,6 +1,6 @@
 {
   "name": "arva-js",
-  "version": "1.1.1",
+  "version": "1.1.0",
   "description": "Using the latest ES6 standards creating a simple, compact MVC for Famous applications.",
   "main": "src/main.js",
   "homepage": "http://arva.io",
@@ -22,14 +22,13 @@
       "bowser": "npm:bowser@^1.0.0",
       "camelcase": "npm:camelcase@^2.1.0",
       "eventemitter3": "npm:eventemitter3@^1.2.0",
-      "famous": "github:bizboard/famous@^0.3.7",
-      "famous-flex": "github:bizboard/famous-flex@1.3.11",
+      "famous": "github:bizboard/famous@0.3.11",
+      "famous-flex": "github:bizboard/famous-flex@1.3.12",
       "fastclick": "npm:fastclick@^1.0.6",
-      "firebase": "github:firebase/firebase-bower@^3.0.5",
-      "fs": "github:jspm/nodelibs-fs@^0.1.2",
+      "firebase": "github:firebase/firebase-bower@^3.7.0",
       "lodash": "npm:lodash@^4.13.1",
+      "lodash-decorators": "npm:lodash-decorators@^3.0.1",
       "ordered-hashmap": "npm:ordered-hashmap@^1.0.0",
-      "path": "github:jspm/nodelibs-path@^0.1.0",
       "request-animation-frame-mock": "github:erykpiast/request-animation-frame-mock@^0.1.8",
       "xml2js": "npm:xml2js@^0.4.16"
     },
@@ -37,6 +36,10 @@
       "babel": "npm:babel-core@^5.8.24",
       "babel-runtime": "npm:babel-runtime@^5.8.24",
       "core-js": "npm:core-js@^1.1.4",
+      "esdoc": "git+https://git@github.com%2525252Ftyphonjs-node-esdoc%2525252Fesdoc.git",
+      "fs": "github:jspm/nodelibs-fs@^0.1.2",
+      "path": "github:jspm/nodelibs-path@^0.1.0",
+      "process": "github:jspm/nodelibs-process@^0.2.0-alpha",
       "traceur": "github:jmcriffey/bower-traceur@^0.0.92",
       "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90"
     }

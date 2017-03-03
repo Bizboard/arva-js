@@ -7,12 +7,21 @@
 
  */
 
-import _                        from 'lodash';
+import difference               from 'lodash/difference.js';
 import {Injection}              from '../utils/Injection.js';
 import {ObjectHelper}           from '../utils/ObjectHelper.js';
 import {PrioritisedObject}      from '../data/PrioritisedObject.js';
 import {DataSource}             from '../data/DataSource.js';
 
+/**
+ * A model that has attributes synced with the database.
+ *
+ * @example
+ * export class Box extends Model {
+ *  get label() {}
+ *  get articleNumber() {}
+ * }
+ */
 export class Model extends PrioritisedObject {
 
     /**
@@ -33,7 +42,7 @@ export class Model extends PrioritisedObject {
         /* Retrieve dataSource from the DI context */
         let dataSource = options.dataSource || Injection.get(DataSource);
         super();
-
+        this._id = id;
         /* Replace all stub data fields of any subclass of Model with databinding accessors.
          * This causes changes to be synched to and from the dataSource. */
         this._replaceModelAccessorsWithDatabinding();
@@ -48,6 +57,7 @@ export class Model extends PrioritisedObject {
 
         let pathRoot = modelName + 's';
 
+        let dataWasPushed = false;
         let dataIsSynced = new Promise((resolve) => this._dataIsSynced = resolve);
         let dataSourceOptions = {synced: dataIsSynced};
 
@@ -55,21 +65,27 @@ export class Model extends PrioritisedObject {
             this._dataSource = options.dataSource;
         } else if (options.dataSource) {
             /* No id is present, generate a random one by pushing a new entry to the dataSource. */
+            dataWasPushed = true;
             this._dataSource = options.dataSource.push(data);
         } else if (options.path && id) {
             this._dataSource = dataSource.child(options.path + '/' + id || '', dataSourceOptions);
         } else if (options.dataSnapshot) {
-            this._dataSource = dataSource.child(options.dataSnapshot.ref.path.toString(), dataSourceOptions);
+            let {ref} = options.dataSnapshot;
+            /* Getting the path from a snapshot requires some string modifications */
+            this._dataSource = dataSource.child(ref.toString().substring(ref.root.toString().length), dataSourceOptions);
         } else if (id) {
             /* If an id is present, use it to locate our model. */
             this._dataSource = dataSource.child(pathRoot + '/' + id, dataSourceOptions);
         } else {
+            dataWasPushed = true;
             /* No id is present, generate a random one by pushing a new entry to the dataSource. */
             if (options.path) {
                 this._dataSource = dataSource.child(options.path).push(data);
             } else {
                 this._dataSource = dataSource.child(pathRoot).push(data);
             }
+            /* Get the last part of the path and set to the ID */
+            this._id = dataSource.key();
         }
 
         /* Re-construct core PrioritisedObject with new dataSource */
@@ -78,10 +94,15 @@ export class Model extends PrioritisedObject {
         } else {
             this._buildFromDataSource(this._dataSource);
         }
-
-        /* Write local data to model, if any data is present. */
-        this._writeLocalDataToModel(data).then(this._dataIsSynced);
+        if(!options.noInitialSync && !dataWasPushed){
+            /* Write local data to model, if any data is present. */
+            this._writeLocalDataToModel(data).then(this._dataIsSynced);
+        } else {
+            this._dataIsSynced();
+        }
     }
+
+
 
     /**
      * Check if the model has been synchonized with the database
@@ -106,16 +127,14 @@ export class Model extends PrioritisedObject {
         /* If the code is minified, then this.constructor._name is defined, in that case that also goes for the inheriting classes */
         while (prototype.constructor._name || (!this.constructor._name && prototype.constructor.name !== 'Model')) {
             /* Get all properties except the id and constructor of this model */
-            let propNames = _.difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
+            let propNames = difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
 
             for (let name of propNames) {
                 let descriptor = Object.getOwnPropertyDescriptor(prototype, name);
                 if (descriptor && descriptor.get) {
                     let value = this[name];
                     delete this[name];
-                    ObjectHelper.addPropertyToObject(this, name, value, true, true, () => {
-                        this._onSetterTriggered();
-                    });
+                    ObjectHelper.addPropertyToObject(this, name, value, true, true, this._onSetterTriggered);
                 }
             }
 
@@ -155,4 +174,5 @@ export class Model extends PrioritisedObject {
         }
         return Promise.resolve();
     }
+
 }

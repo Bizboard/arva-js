@@ -4,8 +4,10 @@
  @copyright Bizboard, 2015
  */
 
-import camelCase from 'camelcase';
-import _         from 'lodash';
+import camelCase            from 'camelcase';
+import isEmpty              from 'lodash/isEmpty.js';
+import mergeWith            from 'lodash/mergeWith.js';
+import cloneDeepWith        from 'lodash/cloneDeepWith.js';
 
 function famousMerge(defaultParam, specifiedParam) {
     if (Array.isArray(defaultParam) && Array.isArray(specifiedParam)) {
@@ -23,7 +25,7 @@ function famousMerge(defaultParam, specifiedParam) {
                 if (typeof specifiedElement !== 'object' || typeof resultingElement !== 'object') {
                     resultingElement = specifiedElement;
                 } else {
-                    resultingElement = _.mergeWith(defaultElement, specifiedElement, famousMerge);
+                    resultingElement = mergeWith(defaultElement, specifiedElement, famousMerge);
                 }
                 results.push(resultingElement);
             }
@@ -49,7 +51,7 @@ function famousMerge(defaultParam, specifiedParam) {
                 }
 
 
-                if (_.isEmpty(param)) {
+                if (isEmpty(param)) {
                     return param === specifiedParam ? defaultParam : specifiedParam;
                 }
 
@@ -65,6 +67,13 @@ function famousMerge(defaultParam, specifiedParam) {
     for (let [param, shallowCopy] of [[specifiedParam, shallowParamCopies[0]], [defaultParam, shallowParamCopies[1]]]) {
         for (let key in param) {
             let value = param[key];
+            /* If there is an array present in one place but not the other, we need to be sure to place an empty
+            *  array in the other object in order to prevent the contents in that array from being copied unpromptedly */
+            if(defaultParam !== undefined && specifiedParam !== undefined && Array.isArray(value) && ((key in specifiedParam) !== (key in defaultParam))){
+                if(!key in specifiedParam){
+                    specifiedParam[key] = [];
+                }
+            }
             if (~key.indexOf('-')) {
                 hasDashProperty = true;
                 key = camelCase(key);
@@ -73,7 +82,7 @@ function famousMerge(defaultParam, specifiedParam) {
         }
     }
     if (hasDashProperty) {
-        return _.mergeWith(shallowParamCopies[1], shallowParamCopies[0], famousMerge);
+        return mergeWith(shallowParamCopies[1], shallowParamCopies[0], famousMerge);
     } else {
         return undefined;
     }
@@ -97,6 +106,6 @@ function dontCloneClassInstances(value) {
  * @returns {*}
  */
 export function combineOptions(defaultOptions, options) {
-    let clonedDefaultOptions = _.cloneDeepWith(defaultOptions, dontCloneClassInstances);
-    return _.mergeWith({root: clonedDefaultOptions}, {root: options}, famousMerge).root;
+    let clonedDefaultOptions = cloneDeepWith(defaultOptions, dontCloneClassInstances);
+    return mergeWith({root: clonedDefaultOptions}, {root: options}, famousMerge).root;
 }

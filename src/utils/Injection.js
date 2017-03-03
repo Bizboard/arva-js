@@ -3,6 +3,7 @@
  */
 
 import {Injector}                   from './di/Injector.js';
+import {provide}                    from './di/Decorators.js';
 
 export class Injection {
     static injector = new Injector();
@@ -22,6 +23,34 @@ export class Injection {
     static get(classConstructor, ...constructionParams) {
         return this.injector.get(classConstructor, constructionParams);
     }
+
+    /**
+     * Provide an instance a certain type.
+     *
+     * @param {Function} classConstructor The class of which an instance is wanted
+     * @param {Function|Object} functionOrConstructedObject. A function returning an instance of the object, or the object
+     * itself.
+     */
+    static provide(classConstructor, functionOrConstructedObject) {
+        let providerFunction = typeof functionOrConstructedObject === 'function' ?
+            functionOrConstructedObject : (() => functionOrConstructedObject);
+        provide(classConstructor)(providerFunction);
+        this.addProviders(providerFunction);
+
+    }
+
+
+    /**
+     * Provide an instance a certain type.
+     *
+     * @param {Class} classConstructor The class of which an instance is wanted
+     * @param {Function|Object} functionOrConstructedObject
+     */
+    static provideAndGet(classConstructor, functionOrConstructedObject) {
+        this.provide(classConstructor, functionOrConstructedObject);
+        return Injection.get(classConstructor);
+    }
+
 
     /**
      * Requests instances of multiple classes at once.

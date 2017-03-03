@@ -7,8 +7,8 @@
 
  */
 
-import _                    from 'lodash';
 import XML2JS               from './xml2js.js';
+import template             from 'lodash/template.js';
 import {PostRequest}        from '../../../utils/request/RequestClient.js';
 import {ObjectHelper}       from '../../../utils/ObjectHelper.js';
 import {UrlParser}          from '../../../utils/request/UrlParser.js';
@@ -414,7 +414,7 @@ export class DataModelGenerator {
               </soap:Body>
               </soap:Envelope>`;
         /*
-         return _.template(
+         return template(
          '<?xml version="1.0" encoding="utf-8"?>' +
          '<soap:Envelope ' +
          '  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +

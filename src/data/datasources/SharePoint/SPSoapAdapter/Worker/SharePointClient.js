@@ -1,7 +1,10 @@
 /**
  * Created by mysim1 on 13/06/15.
  */
-import _                from 'lodash';
+import pick             from 'lodash/pick.js';
+import pluck            from 'lodash/pluck.js';
+import extend           from 'lodash/extend.js';
+import findIndex        from 'lodash/findIndex.js';
 import EventEmitter     from 'eventemitter3';
 import {SoapClient}     from './SoapClient.js';
 import {Settings}       from '../Settings.js';
@@ -137,7 +140,7 @@ export class SharePointClient extends EventEmitter {
             };
 
 
-            _.extend(resultconfig, _.pick(args, ['query', 'limit', 'orderBy', 'pageSize']));
+            extend(resultconfig, pick(args, ['query', 'limit', 'orderBy', 'pageSize']));
 
             return {settings: resultconfig, isChild: isChild};
         }
@@ -291,7 +294,7 @@ export class SharePointClient extends EventEmitter {
         var fieldCollection = [];
         var method = '';
 
-        let isLocal = _.findIndex(tempKeys, function (key) {
+        let isLocal = findIndex(tempKeys, function (key) {
             return key.localId == newData.id;
         });
 
@@ -332,7 +335,7 @@ export class SharePointClient extends EventEmitter {
                     fieldValue = `${fieldValue.id};#`;
                 } else if (fieldValue.length !== undefined && fieldValue[0] && fieldValue[0].id && fieldValue[0].value) {
                     /* This is a SharePoint LookupMulti field. It is specially formatted like above. */
-                    let IDs = _.pluck(fieldValue, 'id');
+                    let IDs = pluck(fieldValue, 'id');
                     fieldValue = IDs.join(';#;#');
                 } else {
                     continue;
@@ -417,7 +420,7 @@ export class SharePointClient extends EventEmitter {
 
         record.remoteId = record.id;
 
-        let isLocal = _.findIndex(tempKeys, function (key) {
+        let isLocal = findIndex(tempKeys, function (key) {
             return key.localId == record.id;
         });
 
@@ -470,7 +473,7 @@ export class SharePointClient extends EventEmitter {
             let model = data[record];
             model.remoteId = model.id;
 
-            let localIndex = _.findIndex(tempKeys, function (key) {
+            let localIndex = findIndex(tempKeys, function (key) {
                 return key.remoteId == model.id;
             });
 
@@ -483,7 +486,7 @@ export class SharePointClient extends EventEmitter {
                 model.id = shouldUseRemoteId ? model.remoteId : tempKey.localId;
             }
 
-            let cacheIndex = _.findIndex(this.cache, function (item) {
+            let cacheIndex = findIndex(this.cache, function (item) {
                 return model.id == item.id;
             });
 
@@ -572,7 +575,7 @@ export class SharePointClient extends EventEmitter {
 
                     let recordId = changes[change]._;
 
-                    let localIndex = _.findIndex(tempKeys, function (key) {
+                    let localIndex = findIndex(tempKeys, function (key) {
                         return key.remoteId == recordId;
                     });
 
@@ -582,7 +585,7 @@ export class SharePointClient extends EventEmitter {
                         recordId = isOurTempKey ? tempKey.localId : tempKey.remoteId;
                     }
 
-                    let cacheItem = _.findIndex(this.cache, function (item) {
+                    let cacheItem = findIndex(this.cache, function (item) {
                         return item.id == recordId;
                     });
 

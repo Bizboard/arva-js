@@ -7,12 +7,15 @@
 
  */
 
-import _                            from 'lodash';
+import isEqual                      from 'lodash/isEqual';
 import {Router}                     from '../core/Router.js';
 import {provide}                    from '../utils/di/Decorators.js';
 import Easing                       from 'famous/transitions/Easing.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
 
+/**
+ * Emits the event 'routechange' with {url,controller,controllerObject,method,keys,values} when the route has changed
+ */
 @provide(Router)
 export class ArvaRouter extends Router {
 
@@ -78,8 +81,12 @@ export class ArvaRouter extends Router {
         let controllerName = this._getControllerName(controller);
 
         let routeRoot = controllerName
-            .replace(this.defaultController, '')
             .replace('Controller', '');
+
+        //TODO Can we skip this code?
+        if(routeRoot === this.defaultController){
+            routeRoot = '';
+        }
 
         let hash = '#' + (routeRoot.length > 0 ? '/' + routeRoot : '') + ('/' + method);
         if (params !== null) {
@@ -235,8 +242,11 @@ export class ArvaRouter extends Router {
         return this._backButtonEnabled;
     }
 
-    goBackInHistory() {
-        /* Default behaviour: go back in history in the arva router */
+    /**
+     * Return the previous known route, or default route if no route stack is present
+     * @returns {*}
+     */
+    getPreviousRoute(){
         let {history} = this;
         if (history.length > 1) {
             let {controller, method, keys, values} = history[history.length - 2];
@@ -244,10 +254,16 @@ export class ArvaRouter extends Router {
             for (let i = 0; i < keys.length; i++) {
                 inputObject[keys[i]] = values[i];
             }
-            this.go(controller, method, inputObject);
+           return {controller: controller, method: method, parameters: inputObject};
         } else {
-            this.go(this.defaultController, this.defaultMethod);
+            return {controller: this.defaultController, method: this.defaultMethod}
         }
+    }
+
+    goBackInHistory() {
+        /* Default behaviour: go back in history in the arva router */
+        let previousRoute = this.getPreviousRoute();
+        this.go(previousRoute.controller, previousRoute.method, previousRoute.parameters || null);
     }
 
     _setupNativeBackButtonListener() {
@@ -288,7 +304,7 @@ export class ArvaRouter extends Router {
             let previousRoute = this.history[i];
             if (currentRoute.controller === previousRoute.controller &&
                 currentRoute.method === previousRoute.method &&
-                _.isEqual(currentRoute.values, previousRoute.values)) {
+                isEqual(currentRoute.values, previousRoute.values)) {
                 this.history.splice(i, this.history.length - i);
                 break;
             }
@@ -308,7 +324,7 @@ export class ArvaRouter extends Router {
             let previousRoute = this.history[i];
             if (currentRoute.controller === previousRoute.controller &&
                 currentRoute.method === previousRoute.method &&
-                _.isEqual(currentRoute.values, previousRoute.values)) {
+                isEqual(currentRoute.values, previousRoute.values)) {
                 return true;
             }
         }
@@ -338,7 +354,7 @@ export class ArvaRouter extends Router {
         /* We're on exactly the same page as before */
         if (currentRoute.controller === previousRoute.controller &&
             currentRoute.method === previousRoute.method &&
-            _.isEqual(currentRoute.values, previousRoute.values)) {
+            isEqual(currentRoute.values, previousRoute.values)) {
             return {};
         }
 

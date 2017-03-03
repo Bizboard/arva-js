@@ -5,6 +5,9 @@
 
  */
 
+/**
+ * Helper class for converting base64 string data to a HTML5 Blob object.
+ **/
 export class BlobHelper {
 
     /**

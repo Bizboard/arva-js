@@ -10,9 +10,9 @@ import Bowser                           from 'bowser';
 let browser = Bowser;
 
 if (((browser.msie || browser.msedge) && parseFloat(browser.version) <= 11) ||
-    (browser.chrome) && parseFloat(browser.version) >= 53) {
+    (browser.chrome)) {
+    //TODO: Check if this is still broken in Chrome v56
     duplicateZIndex();
-    //TODO: Check if it's still broken in v54
 } else if (browser.firefox && parseFloat(browser.version) <= 53) {
     removeSurfacePreserve3D();
 }
