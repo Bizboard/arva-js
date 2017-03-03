@@ -191,7 +191,7 @@ export class DialogManager extends View {
     _goBackInHistory(){
         let route = this._shouldGoBackInHistory;
         this._shouldGoBackInHistory = false;
-        (route instanceof Object && route.controller) ? this.router.go(route.controller, route.method, route.arguments) : this.router.goBackInHistory();
+        (route instanceof Object && route.controller) ? this.router.go(route.controller, route.method, route.parameters) : this.router.goBackInHistory();
 
     }
 }
