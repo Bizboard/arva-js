@@ -10,7 +10,7 @@ import AnimationController   from 'famous-flex/AnimationController';
 import {Injection}           from './Injection.js';
 import {View}                from '../core/View.js';
 import {Router}              from '../core/Router.js';
-import {layout}              from '../layout/decorators.js';
+import {layout}              from '../layout/Decorators.js';
 import {DialogWrapper}       from './dialog/DialogWrapper.js';
 
 

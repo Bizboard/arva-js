@@ -3,7 +3,7 @@
  */
 
 import {View}               from '../../core/View.js';
-import {layout}             from '../../layout/decorators.js';
+import {layout}             from '../../layout/Decorators.js';
 
 @layout.scrollable({overscroll: false, scrollSync: {preventDefault: false}})
 export class DialogWrapper extends View {

@@ -50,7 +50,7 @@ describe('View', () => {
 
         return loadDependencies({
             View: System.normalizeSync('./src/core/View.js'),
-            decorators: System.normalizeSync('./src/layout/decorators.js'),
+            decorators: System.normalizeSync('./src/layout/Decorators.js'),
             Surface: System.normalizeSync('famous/core/Surface.js'),
             Engine: System.normalizeSync('famous/core/Engine.js'),
             RenderNode: System.normalizeSync('famous/core/RenderNode.js'),
