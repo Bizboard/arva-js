@@ -40,8 +40,8 @@ export class LocalPrioritisedArray extends PrioritisedArray {
 
         prioritisedArray.once('value', () => {
             for(let item of prioritisedArray){
-                /* Just add the shadow so that everything stays local by converting it to a localizedModel */
-                localPrioritisedArray.add(item.shadow);
+                /* Add a copy so that everything stays local by converting it to a localizedModel */
+                localPrioritisedArray.add(LocalModel.cloneModelProperties(item));
             }
         });
         return localPrioritisedArray;

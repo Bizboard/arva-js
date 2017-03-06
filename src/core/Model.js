@@ -125,7 +125,7 @@ export class Model extends PrioritisedObject {
         }
 
         /* If the code is minified, then this.constructor._name is defined, in that case that also goes for the inheriting classes */
-        while (prototype.constructor._name || (!this.constructor._name && prototype.constructor.name !== 'Model')) {
+        while (prototype && (prototype.constructor._name || (!this.constructor._name && prototype.constructor.name !== 'Model'))) {
             /* Get all properties except the id and constructor of this model */
             let propNames = difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
 
