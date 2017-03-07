@@ -109,7 +109,7 @@ export class SizeResolver extends EventEmitter {
                 let renderableIsView = renderable instanceof View;
                 /* If the renderable isn't displaying, we must simply consider it final.
                 TODO: There might be better ways to reason about non-displaying renderables  */
-                let sizeConsideredFinal = !renderable.layout.isDisplaying() ||
+                let sizeConsideredFinal = !(renderable.layout && renderable.layout.isDisplaying()) ||
                     ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView);
                 if (size[dim] === true && twoDimensionalSize[dim] === undefined && sizeConsideredFinal) {
                     Utils.warn(`True sized renderable '${renderable.constructor.name}' is taking up the entire context size.`);
