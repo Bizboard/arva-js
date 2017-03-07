@@ -170,13 +170,14 @@ export class DataBoundScrollView extends ReflowingScrollView {
         if (dataStore) {
             this.clearDataStore();
         } else if (previousDataStores) {
-            for (let [index] of dataStores.entries()) {
+            for (let index in previousDataStores) {
                 this.clearDataStore(index);
             }
         }
 
         this.options.dataStores = dataStores;
         this._bindMultipleDataSources(dataStores);
+
     }
 
 
@@ -186,6 +187,14 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     getDataStore() {
         return this.options.dataStore;
+    }
+
+    /**
+     * Gets the currently set dataStore.
+     * @returns {*}
+     */
+    getDataStores() {
+        return this.options.dataStores;
     }
 
     /**
