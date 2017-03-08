@@ -58,7 +58,8 @@ export class Model extends PrioritisedObject {
         let pathRoot = modelName + 's';
 
         let dataWasPushed = false;
-        let dataIsSynced = new Promise((resolve) => this._dataIsSynced = resolve);
+        let onDataSynced;
+        let dataIsSynced = new Promise((resolve) => onDataSynced = resolve);
         let dataSourceOptions = {synced: dataIsSynced};
 
         if (options.dataSource && id) {
@@ -96,9 +97,9 @@ export class Model extends PrioritisedObject {
         }
         if(!options.noInitialSync && !dataWasPushed){
             /* Write local data to model, if any data is present. */
-            this._writeLocalDataToModel(data).then(this._dataIsSynced);
+            this._writeLocalDataToModel(data).then(onDataSynced);
         } else {
-            this._dataIsSynced();
+            onDataSynced();
         }
     }
 
