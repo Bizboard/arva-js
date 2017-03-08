@@ -63,7 +63,6 @@ export class PrioritisedObject extends EventEmitter {
         this._dataSource = dataSource;
         this._priority = 0; // Priority of this object on remote dataSource
         this._isBeingWrittenByDatasource = false; // Flag to determine when dataSource is updating object
-        this._childChangedListeners = {};
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
