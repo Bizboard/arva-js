@@ -205,7 +205,10 @@ export class SizeResolver extends EventEmitter {
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
         let {trueSizedDimensions} = trueSizedInfo;
 
-        if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!renderable.getContent() && !(renderable instanceof ImageSurface))) && renderableHtmlElement.innerHTML === renderable.getContent() &&
+        /* HTML treats white space as nothing at all, so we need to be sure that "  " == "" */
+        let trimmedContent = (renderable.getContent() && renderable.getContent().trim) ? renderable.getContent().trim() : renderable.getContent();
+
+        if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!trimmedContent && !(renderable instanceof ImageSurface))) && renderableHtmlElement.innerHTML === trimmedContent &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
             let newSize;
 
