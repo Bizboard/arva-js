@@ -163,7 +163,7 @@ export class SizeResolver extends EventEmitter {
      */
     isSizeFinal(renderable) {
         let consideredFinal = this._sizeIsFinalFor.get(renderable);
-        /* Return true if nothing is known, to be sure not to make errors */
+        /* Return true if nothing is known, to be sure not to make false negatives */
         if(consideredFinal === undefined){
             return true;
         }
