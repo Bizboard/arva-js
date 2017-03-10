@@ -400,15 +400,16 @@ export class TraditionalLayoutHelper extends BaseLayoutHelper {
             let {align = [0, 0]} = renderableSpec;
             let translate = Utils.adjustPlacementForTrueSize(renderable, size, renderableSpec.origin || [0, 0], renderableSpec.translate || [0, 0, 0]);
 
-            /* If there has been an align specified, then nothing can be calculated */
-            if (!renderableSpec || !renderableSpec.size || (align[0] && align[1])) {
+            if (!renderableSpec || !renderableSpec.size ) {
                 continue;
             }
 
             /* If the renderable has a lower min y/x position, or a higher max y/x position, save its values */
             for (let i = 0; i < 2; i++) {
                 /* Undefined is the same as context size */
-                if (renderable.decorations.size[i] !== undefined && size[i] !== undefined && !(align && align[i])) {
+                if (renderable.decorations.size[i] !== undefined && size[i] !== undefined) {
+                    /* If align is set, then there can be a case where the aligned renderable is the biggest one on the view.
+                     * Therefore, the translation of the align is not taken into account here, only the explicitly specified translate*/
                     let newPotentialOuterSize = translate[i] + size[i];
                     if (newPotentialOuterSize > totalSize[i] || totalSize[i] === undefined) {
                         totalSize[i] = newPotentialOuterSize;
