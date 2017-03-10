@@ -287,6 +287,13 @@ export class PrioritisedObject extends EventEmitter {
             return;
         }
 
+        this._buildFromData(data);
+
+        this._dataSource.ready = true;
+        this.emit('ready');
+    }
+
+    _buildFromData(data) {
         for (let key in data) {
             /* Only map properties that exists on our model */
             let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
@@ -294,11 +301,7 @@ export class PrioritisedObject extends EventEmitter {
                 /* If child is a primitive, listen to changes so we can synch with Firebase */
                 ObjectHelper.addPropertyToObject(this, key, data[key], true, true, this._onSetterTriggered.bind(this, key));
             }
-
         }
-
-        this._dataSource.ready = true;
-        this.emit('ready');
     }
 
     /**
