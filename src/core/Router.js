@@ -40,7 +40,6 @@ export class Router extends EventEmitter {
      */
     run() { }
 
-
     /**
      * Sets the initial controller and method to be activated whenever the controllers are activated.
      * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.
@@ -65,6 +64,12 @@ export class Router extends EventEmitter {
      * @returns {void}
      */
     go(controller, method, params) { }
+
+    /**
+     * Returns an object containing the current route.
+     * @returns {controller, method, params}
+     */
+    getRoute() { }
 
     /**
      * Executes the controller handler associated with a given route, passing the route as a parameter.

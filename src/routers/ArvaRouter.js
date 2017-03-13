@@ -36,6 +36,7 @@ export class ArvaRouter extends Router {
             return;
         }
 
+        this.route = {};
         this.routes = {};
         this.history = [];
         this.decode = decodeURIComponent;
@@ -104,6 +105,23 @@ export class ArvaRouter extends Router {
         this.run();
     }
 
+    /**
+     * Returns an object containing the current route.
+     * @returns {{controller: *, method: (*), params: {}}}
+     */
+    getRoute() {
+        let currentRoute = {
+            controller: this.route.controller,
+            method: this.route.method,
+            params: {}
+        };
+
+        for(let index in this.route.keys) {
+            currentRoute.params[this.route.keys[index]] = this.route.values[index];
+        }
+
+        return currentRoute;
+    }
 
     /**
      * Registers a single controller.
@@ -211,6 +229,10 @@ export class ArvaRouter extends Router {
                 keys: keys,
                 values: values
             };
+
+            /* TODO: save route, so it can be exposed in getRoute() */
+
+            this.route = currentRoute;
 
             if(previousRoute){
                 if(currentRoute.controllerObject !== previousRoute.controllerObject){
