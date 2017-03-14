@@ -213,25 +213,27 @@ export class DataBoundScrollView extends ReflowingScrollView {
     /**
      * Reloads the dataFilter option of the DataBoundScrollView, and verifies whether the items in the dataStore are allowed by the new filter.
      * It removes any currently visible items that aren't allowed anymore, and adds any non-visible ones that are allowed now.
-     * @param {Function} newFilter New filter function to verify item visibility with.
-     * @param {Boolean} reRender Boolean to rerender all childs that pass the filter function. Useful when setting a new itemTemplate alongside reloading the filter
+     * @param {Function} [newFilter] New filter function to verify item visibility with.
      * @returns {Promise} Resolves when filter has been applied
      */
     reloadFilter(newFilter) {
-        this.options.dataFilter = newFilter;
+
+        if (newFilter) {
+            this.options.dataFilter = newFilter;
+        }
 
         let filterPromises = [];
         if (this.options.dataStores) {
             for (let [dataStoreIndex, dataStore] of this.options.dataStores.entries() || []) {
                 for (let entry of dataStore) {
-                    this._reloadEntryFromFilter(entry, newFilter, dataStoreIndex);
+                    filterPromises.push(this._reloadEntryFromFilter(entry, this.options.dataFilter, dataStoreIndex));
                 }
 
             }
             return Promise.all(filterPromises);
         } else if (this.options.dataStore) {
             for (let entry of this.options.dataStore || []) {
-                this._reloadEntryFromFilter(entry, newFilter, 0);
+                filterPromises.push(this._reloadEntryFromFilter(entry, this.options.dataFilter, 0));
             }
             return Promise.all(filterPromises);
         }
@@ -244,15 +246,13 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @param dataStoreIndex
      * @private
      */
-    _reloadEntryFromFilter(entry, newFilter, dataStoreIndex) {
+    async _reloadEntryFromFilter(entry, newFilter, dataStoreIndex) {
         let alreadyExists = this._internalDataSource[`${entry.id}${dataStoreIndex}`] !== undefined;
         let result = newFilter(entry);
 
         if (result instanceof Promise) {
-            filterPromises.push(result);
-            result.then(function (shouldShow) {
-                this._handleNewFilterResult(shouldShow, alreadyExists, entry, dataStoreIndex);
-            }.bind(this));
+            let shouldShow = await result;
+            this._handleNewFilterResult(shouldShow, alreadyExists, entry, dataStoreIndex);
         } else {
             this._handleNewFilterResult(result, alreadyExists, entry, dataStoreIndex);
         }

@@ -180,10 +180,11 @@ export class PrioritisedArray extends Array {
     /**
      * Adds a model instance to the rear of the PrioritisedArray, and emits a 'child_added' and possibly 'new_child' event after successful addition.
      * @param {Model|Object} model Instance of a Model.
-     * @param {String} prevSiblingId ID of the model preceding the one that will be added.
+     * @param {String|undefined} prevSiblingId ID of the model preceding the one that will be added.
+     * @param {Boolean} [emitValueEvent] Set to false to prevent emitting value event in this method.
      * @returns {Object} Same model as the one originally passed as parameter.
      */
-    add(model, prevSiblingId = null) {
+    add(model, prevSiblingId = null, emitValueEvent = true) {
         if (model instanceof this._dataType) {
             if (this.findIndexById(model.id) < 0) {
 
@@ -201,6 +202,8 @@ export class PrioritisedArray extends Array {
                 }
 
                 this._eventEmitter.emit('child_added', model, prevSiblingId);
+                if(emitValueEvent) { this._eventEmitter.emit('value', this); }
+
                 return model;
             }
         } else if (model instanceof Object) {
@@ -213,7 +216,7 @@ export class PrioritisedArray extends Array {
             this._overrideChildAddedForId = this.once('local_child_added');
             let newModel = new this._dataType(null, model, extend({}, this._modelOptions, options));
 
-            this.add(newModel);
+            this.add(newModel, undefined, emitValueEvent);
             /* Remove lock */
             this._eventEmitter.emit('local_child_added', newModel);
             this._overrideChildAddedForId = null;
@@ -348,7 +351,7 @@ export class PrioritisedArray extends Array {
                 }
 
                 let newModel = new this._dataType(child.key, child.val(), extend({}, this._modelOptions, options));
-                this.add(newModel);
+                this.add(newModel, undefined, false);
 
                 /* If this is the last child, fire a ready event */
                 if (currentChild++ === numChildren) {
@@ -433,7 +436,7 @@ export class PrioritisedArray extends Array {
             noInitialSync: true,
             dataSnapshot: snapshot
         }));
-        this.add(model, prevSiblingId);
+        this.add(model, prevSiblingId, false);
 
         if (!this._dataSource.ready) {
             this._dataSource.ready = true;

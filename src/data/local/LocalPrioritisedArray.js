@@ -35,7 +35,7 @@ export class LocalPrioritisedArray extends PrioritisedArray {
     }
 
     static fromPrioritisedArray(prioritisedArray) {
-        let LocalizedModel = LocalModel.createLocalizedModelClass(prioritisedArray._dataType);
+        let LocalizedModel = LocalModel.fromModelClass(prioritisedArray._dataType);
         let localPrioritisedArray = new LocalPrioritisedArray(LocalizedModel);
 
         prioritisedArray.once('value', () => {
