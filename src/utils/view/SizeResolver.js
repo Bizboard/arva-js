@@ -203,12 +203,13 @@ export class SizeResolver extends EventEmitter {
     _tryCalculateTrueSizedSurface(renderable) {
         let renderableHtmlElement = renderable._element;
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
-        let {trueSizedDimensions} = trueSizedInfo;
+        let { trueSizedDimensions } = trueSizedInfo;
 
         /* HTML treats white space as nothing at all, so we need to be sure that "  " == "" */
         let trimmedContent = (renderable.getContent() && renderable.getContent().trim) ? renderable.getContent().trim() : renderable.getContent();
+        let trimmedHtmlContent =  renderableHtmlElement.innerHTML.trim ? renderableHtmlElement.innerHTML.trim() : renderableHtmlElement.innerHTML;
 
-        if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!trimmedContent && !(renderable instanceof ImageSurface))) && renderableHtmlElement.innerHTML === trimmedContent &&
+        if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!trimmedContent && !(renderable instanceof ImageSurface))) && trimmedHtmlContent === trimmedContent &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
             let newSize;
 
