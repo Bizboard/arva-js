@@ -297,7 +297,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         if (this.options.headerTemplate) {
             this._header = this.options.headerTemplate();
             this._header.isHeader = true;
-            this._insertId(0, 0, this._header, null, { isHeader: true });
+            this._insertId(0, 0, this._header, null, { isHeader: true }, 0);
             this.insert(0, this._header);
         }
     }
@@ -485,7 +485,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 /* No group of this value exists yet, so we'll need to create one. */
                 this._updatePosition(insertIndex, 1);
                 let newSurface = this._addGroupItem(groupByValue, insertIndex);
-                this._insertId(`group_${groupByValue}`, insertIndex, newSurface, null, { groupId: groupByValue }, 0);
+                this._insertId(`group_${groupByValue}`, insertIndex, newSurface, {}, { groupId: groupByValue }, 0);
                 /*insertIndex++;*/
             }
             return !groupExists;
@@ -589,7 +589,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             }
             newSurface.dataId = child.id;
             this._subscribeToClicks(newSurface, child);
-            this._insertId(child.id, position, newSurface, child);
+            this._insertId(child.id, position, newSurface, child, {}, dataStoreIndex);
             this._replace(position, newSurface, true);
         }
 
