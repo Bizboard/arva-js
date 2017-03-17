@@ -122,6 +122,19 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     /**
+     * Gets a renderable from a specific ID
+     *
+     * @param {String} id The id of data
+     * @param {Number} [dataStoreIndex] the index of the dataStore that is used, if several of them are specified
+     */
+    getRenderableFromID(id, dataStoreIndex = 0) {
+        let data = this._findData(id, dataStoreIndex);
+        if(data){
+            return data.renderable;
+        }
+    }
+
+    /**
      * Set a template function, optionally re-renders all the dataSource' renderables
      * @param templateFunction
      */
