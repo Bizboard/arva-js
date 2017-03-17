@@ -379,6 +379,14 @@ export class FirebaseDataSource extends DataSource {
     }
 
     /**
+     * Send a password reset to the email adress
+     * @param emailAddress
+     * @returns {Promise}
+     */
+    sendPasswordResetEmail(emailAddress){
+        return this._firebase.auth().sendPasswordResetEmail(emailAddress);
+    }
+    /**
      * Fetches the current user's authentication state.
      * If the user is authenticated, returns an object containing at least the fields uid, provider, auth, and expires.
      * If the user is not authenticated, returns null.
