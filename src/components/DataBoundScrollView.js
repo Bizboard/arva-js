@@ -588,6 +588,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 newSurface = await newSurface;
             }
             newSurface.dataId = child.id;
+            newSurface.dataStoreIndex = dataStoreIndex;
             this._subscribeToClicks(newSurface, child);
             this._insertId(child.id, position, newSurface, child, {}, dataStoreIndex);
             this._replace(position, newSurface, true);

@@ -1196,10 +1196,11 @@ export const flow = {
     viewStates: function (states = {}) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
-            if (!decorations.flow) {
-                decorations.flow = {};
+            if (!decorations.viewFlow) {
+                decorations.viewFlow = {};
             }
-            decorations.flow.viewStates = states;
+
+            decorations.viewFlow.viewStates = states;
         }
     },
 
