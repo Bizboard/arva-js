@@ -238,7 +238,7 @@ export class View extends FamousView {
      * @returns {*}
      */
     setViewFlowState(stateName = '') {
-        return this._renderableHelper.setViewFlowState(stateName, this.decorations.flow);
+        return this._renderableHelper.setViewFlowState(stateName, this.decorations.viewFlow);
     }
 
     /**
@@ -257,7 +257,7 @@ export class View extends FamousView {
      * @returns {String} stateName the name of the state that this view is in.
      */
     getViewFlowState() {
-        return this._renderableHelper.getViewFlowState(this.decorations.flow);
+        return this._renderableHelper.getViewFlowState(this.decorations.viewFlow);
     }
 
     /**
