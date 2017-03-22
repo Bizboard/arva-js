@@ -294,9 +294,8 @@ export class PrioritisedArray extends Array {
 
     /**
      * Return the position of model's id, saved in an associative array
-     * @param {Number} id Id field of the model we're looking for
+     * @param {String} id Id field of the model we're looking for
      * @returns {Number} Zero-based index if found, -1 otherwise
-     * @private
      */
     findIndexById(id) {
         let position = this._ids[id];
