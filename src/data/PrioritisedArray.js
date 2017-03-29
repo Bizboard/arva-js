@@ -312,6 +312,10 @@ export class PrioritisedArray extends Array {
         return this[this.findIndexById(id)];
     }
 
+    getDataSourcePath() {
+        return this._dataSource.path();
+    }
+
 
     /**
      * Interprets all childs of a given snapshot as instances of the given data type for this PrioritisedArray,

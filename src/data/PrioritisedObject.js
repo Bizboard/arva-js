@@ -257,6 +257,10 @@ export class PrioritisedObject extends EventEmitter {
         this._isBeingWrittenByDatasource = false;
     }
 
+    getDataSourcePath() {
+        return this._dataSource.path();
+    }
+
     /**
      * Recursively builds getter/setter based properties on current PrioritisedObject from
      * a given dataSnapshot. If an object value is detected, the object itself gets built as
