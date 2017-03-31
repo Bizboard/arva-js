@@ -91,6 +91,16 @@ export class FirebaseDataSource extends DataSource {
         ObjectHelper.bindAllMethods(this, this);
     }
 
+    dataExists(){
+        return new Promise((resolve)=>{
+            this._dataReference.once('value', (snapshot)=> {
+                return resolve(snapshot.exists());
+            });
+        });
+    }
+
+
+
     /**
      * Returns the full path to this dataSource's source on the remote storage provider.
      * @returns {String} Full resource path.
