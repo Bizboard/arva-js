@@ -88,6 +88,14 @@ export class PrioritisedObject extends EventEmitter {
         }
     }
 
+    getDataSource(){
+        return this._dataSource;
+    }
+
+    dataExists(){
+       return this.getDataSource().dataExists();
+    }
+
     _getParentDataSource() {
         if (!this._parentDataSource) {
             return this._parentDataSource = Injection.get(DataSource, this._dataSource.parent());
