@@ -151,9 +151,14 @@ export class View extends FamousView {
      * @param {String} renderableName The name of the renderable
      */
     removeRenderable(renderableName) {
+        if (!this[renderableName]) {
+            Utils.warn(`Failed to remove renderable ${renderableName} from ${this._name()} because the renderable doesn't exist`);
+            return;
+        }
         this._renderableHelper.removeRenderable(renderableName);
         this[renderableName] = undefined;
         this.layout.reflowLayout();
+
     }
 
     /**
@@ -331,6 +336,19 @@ export class View extends FamousView {
         })
     }
 
+    isSizeSettled() {
+        if (this._sizeResolver.containsUncalculatedSurfaces()) {
+            return false;
+        }
+        for (let renderableName in this.renderables) {
+            let renderable = this.renderables[renderableName];
+            if (!this._sizeResolver.isSizeFinal(renderable)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Repeat a certain flowState indefinitely
      * @param renderableName
@@ -396,7 +414,7 @@ export class View extends FamousView {
         this._eventOutput.emit('layoutControllerReflow');
     }
 
-    
+
     _getRenderableOptions(renderableName, decorations = this.renderables[renderableName]) {
         let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
         if (!Utils.isPlainObject(decoratorOptions)) {
