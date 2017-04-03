@@ -9,13 +9,16 @@
 
  */
 
-import {debounce}                   from 'lodash-decorators';
 import sortBy                       from 'lodash/sortBy.js';
 import findIndex                    from 'lodash/findIndex.js';
-import {Throttler}                  from '../utils/Throttler.js';
-import {combineOptions}             from '../utils/CombineOptions.js';
-import {ReflowingScrollView}        from './ReflowingScrollView.js';
 import ListLayout                   from 'famous-flex/layouts/ListLayout.js';
+
+import {debounce}                   from 'lodash-decorators';
+
+import {Throttler}                  from '../utils/Throttler.js';
+import {Utils}                      from '../utils/view/Utils.js';
+import {ReflowingScrollView}        from './ReflowingScrollView.js';
+import {combineOptions}             from '../utils/CombineOptions.js';
 
 /**
  * A FlexScrollView with enhanced functionality for maintaining a two-way connection with a PrioritisedArray.
@@ -572,7 +575,14 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     async _replaceItem(child, dataStoreIndex) {
 
-        let { position, model, groupValue } = this._findData(child.id, dataStoreIndex);
+        let data = this._findData(child.id, dataStoreIndex);
+
+        if(!data) {
+            Utils.warn(`Child with ID ${child.id} is not present (anymore) in dataStore with index ${dataStoreIndex}`);
+            return false;
+        }
+
+        let { position, groupValue } = data;
         let newGroupValue = null;
 
         if (this._isGrouped) {
@@ -797,7 +807,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     //TODO: This won't reorder children, which is a problem
-    _onChildChanged(dataStoreIndex, child, previousSiblingID) {
+    async _onChildChanged(dataStoreIndex, child, previousSiblingID) {
         let internalDataSourceData = this._findData(child.id, dataStoreIndex) || { position: -1 };
         let changedItemIndex = internalDataSourceData.position;
 
@@ -806,16 +816,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
             let result = this.options.dataFilter ? this.options.dataFilter(child) : true;
 
             if (result instanceof Promise) {
-                result.then(function (show) {
-                    if (show) {
-                        this._throttler.add(() => {
-                            this._replaceItem(child, dataStoreIndex);
-                        });
-                    } else {
-                        this._removeItem(child, dataStoreIndex);
-                    }
-                }.bind(this));
-            } else if (this.options.dataFilter &&
+                result = await result;
+            }
+
+            if (this.options.dataFilter &&
                 typeof this.options.dataFilter === 'function' && !result) {
                 this._removeItem(child, dataStoreIndex);
             } else {
