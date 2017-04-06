@@ -20,7 +20,7 @@ function isClass(clsOrFunction) {
     else if (clsOrFunction.name && clsOrFunction.name.length && clsOrFunction.name.length > 3) {
         return isUpperCase(clsOrFunction.name.charAt(0));
     } else {
-        return ownKeys(clsOrFunction.prototype).length > 0;
+        return ownKeys(clsOrFunction.prototype || {}).length > 0;
     }
 }
 
