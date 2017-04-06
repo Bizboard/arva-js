@@ -169,10 +169,15 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} Resolves when write to server is complete.
      */
     set(newData) {
-        let completionPromise = this._dataReference.set(newData);
+        let completionPromise = this._dataReference.set(newData).catch((err) => {
+            err.data = newData;
+            err.path = this.path();
+            throw new Error(err);
+        });
+
         /* Append another promise to the chain to keep track of whether it's still synchronized */
         this._synced = this._synced.then(() => completionPromise);
-        return completionPromise
+        return completionPromise;
     }
 
     /**
@@ -207,7 +212,9 @@ export class FirebaseDataSource extends DataSource {
     setWithPriority(newData, priority) {
         /* Rethrow the error in order to be able to catch it higher up */
         let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((err) => {
-            throw new Error(err)
+            err.data = newData;
+            err.path = this.path();
+            throw new Error(err);
         });
         /* Append another promise to the chain to keep track of whether it's still synchronized. Fail silently
          * since we already have error handling above */
