@@ -134,8 +134,11 @@ export class Model extends PrioritisedObject {
                 let descriptor = Object.getOwnPropertyDescriptor(prototype, name);
                 if (descriptor && descriptor.get) {
                     let value = this[name];
+                    if(value){
+                        this._locallySetProperties[name] = true;
+                    }
                     delete this[name];
-                    ObjectHelper.addPropertyToObject(this, name, value, true, true, this._onSetterTriggered);
+                    ObjectHelper.addPropertyToObject(this, name, value, true, true, this._onSetterTriggered.bind(this, name));
                 }
             }
 

@@ -8,6 +8,7 @@
 
  */
 
+import difference       from 'lodash/difference.js';
 import isEqual          from 'lodash/isEqual.js';
 import every            from 'lodash/every.js';
 import EventEmitter     from 'eventemitter3';
@@ -59,6 +60,7 @@ export class PrioritisedObject extends EventEmitter {
 
         /**** Private properties ****/
         this._id = dataSource ? dataSource.key() : 0;
+        this._locallySetProperties = {};
         this._events = this._events || [];
         this._dataSource = dataSource;
         this._priority = 0; // Priority of this object on remote dataSource
@@ -88,12 +90,12 @@ export class PrioritisedObject extends EventEmitter {
         }
     }
 
-    getDataSource(){
+    getDataSource() {
         return this._dataSource;
     }
 
-    dataExists(){
-       return this.getDataSource().dataExists();
+    dataExists() {
+        return this.getDataSource().dataExists();
     }
 
     _getParentDataSource() {
@@ -121,7 +123,7 @@ export class PrioritisedObject extends EventEmitter {
      * @returns {Promise} A promise that resolves once the event has happened
      */
     once(event, handler, context = this) {
-        return new Promise((resolve)=>{
+        return new Promise((resolve) => {
             this.on(event, function onceWrapper() {
                 this.off(event, onceWrapper, context);
                 handler && handler.call(context, ...arguments);
@@ -132,13 +134,14 @@ export class PrioritisedObject extends EventEmitter {
 
     /**
      * Subscribes to events emitted by this PrioritisedArray.
-     * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
+     * @param {String} event One of the following Event Types: 'value', 'changed', 'removed', 'ready', 'moved', 'added'.
      * @param {Function} handler Function that is called when the given event type is emitted.
      * @param {Object} [context] Optional: context of 'this' inside the handler function when it is called.
      * @returns {void}
      */
     on(event, handler, context = this) {
         let haveListeners = this._hasListenersOfType(event);
+        let haveValueListeners = this._hasListenersForValueEvent();
         super.on(event, handler, context);
 
         switch (event) {
@@ -149,7 +152,7 @@ export class PrioritisedObject extends EventEmitter {
                 }
                 break;
             case 'value':
-                if (!haveListeners) {
+                if (!haveValueListeners) {
                     /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
                     this._dataSource.setValueChangedCallback(this._onChildValue);
                 } else {
@@ -159,16 +162,14 @@ export class PrioritisedObject extends EventEmitter {
                     }
                 }
                 break;
+            /*
+             * TODO: If we want to support these use cases (added and move), they might be named more appropriately
+             * since they (in the current implementation) will listen for these things happening on properties,
+             * e.g. property added and property moved
+             */
             case 'added':
-
-                if (haveListeners) {
+                if (!haveListeners) {
                     this._dataSource.setChildAddedCallback(this._onChildAdded);
-                }
-                break;
-            case 'changed':
-                /* We include the changed event in the value callback */
-                if (!this._hasListenersOfType('value')) {
-                    this._dataSource.setValueChangedCallback(this._onChildValue);
                 }
                 break;
             case 'moved':
@@ -176,9 +177,16 @@ export class PrioritisedObject extends EventEmitter {
                     this._dataSource.setChildMovedCallback(this._onChildMoved);
                 }
                 break;
+            case 'changed':
+                /* We include the changed event in the value callback */
+                if (!haveValueListeners) {
+                    this._dataSource.setValueChangedCallback(this._onChildValue);
+                }
+                break;
             case 'removed':
-                if (!haveListeners) {
-                    this._dataSource.setChildRemovedCallback(this._onChildRemoved);
+                /* We include the removed event in the value callback */
+                if (!haveValueListeners) {
+                    this._dataSource.setValueChangedCallback(this._onChildValue);
                 }
                 break;
             default:
@@ -200,19 +208,14 @@ export class PrioritisedObject extends EventEmitter {
         } else {
             super.removeAllListeners(event);
         }
+        /* Value, remove, and changed share the same callback */
 
-        /* If we have no more listeners of this event type, remove dataSource callback. */
-        if (!this._hasListenersOfType(event)) {
+        if (!this._hasListenersForValueEvent()) {
+            this._dataSource.removeValueChangedCallback();
+            /* If we have no more listeners of this event type, remove dataSource callback. */
+        } else if (!this._hasListenersOfType(event)) {
             switch (event) {
                 case 'ready':
-                    break;
-                case 'value':
-                    /* Value and changed have the same callback, due to the ability to be able to detect all property
-                     * changes at once.
-                     */
-                    if (!this._hasListenersOfType('changed')) {
-                        this._dataSource.removeValueChangedCallback();
-                    }
                     break;
                 case 'added':
                     this._dataSource.removeChildAddedCallback();
@@ -220,18 +223,22 @@ export class PrioritisedObject extends EventEmitter {
                 case 'moved':
                     this._dataSource.removeChildMovedCallback();
                     break;
-                case 'removed':
-                    if (!this._hasListenersOfType('value')) {
-                        this._dataSource.removeValueChangedCallback();
-                    }
-                    break;
-                case 'changed':
-                    this._dataSource.removeChildChangedCallback();
-                    break;
                 default:
                     break;
             }
         }
+    }
+
+    /**
+     * Changed, removed and value are triggered from the same function: _onChildValue.
+     * This function determines whether there are listeners requiring this function
+     * @returns {boolean}
+     * @private
+     */
+    _hasListenersForValueEvent() {
+        return this._hasListenersOfType('changed')
+        || this._hasListenersOfType('removed')
+        || this._hasListenersOfType('value');
     }
 
     /**
@@ -310,7 +317,7 @@ export class PrioritisedObject extends EventEmitter {
             /* Only map properties that exists on our model */
             let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
             if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
-                /* If child is a primitive, listen to changes so we can synch with Firebase */
+                /* If child is a primitive, listen to changes so we can sync with Firebase */
                 ObjectHelper.addPropertyToObject(this, key, data[key], true, true, this._onSetterTriggered.bind(this, key));
             }
         }
@@ -337,10 +344,14 @@ export class PrioritisedObject extends EventEmitter {
      * @returns {Promise}
      * @private
      */
-    _onSetterTriggered() {
+    _onSetterTriggered(property) {
         if (!this._isBeingWrittenByDatasource) {
             this.emit('changed', this);
+            this._locallySetProperties = {};
             return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this), this._priority);
+        }
+        if (property !== undefined) {
+            this._locallySetProperties[property] = true;
         }
     }
 
@@ -359,23 +370,22 @@ export class PrioritisedObject extends EventEmitter {
          */
         let incomingData = dataSnapshot.val() || {};
 
-        if (every(incomingData, (val, key) => {
-                let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
-                if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
-                    return isEqual(this[key], val);
-                } else {
-                    return true;
-                }
-            })) {
+        /* Get the fields that currently are set by external data source */
+        let fieldsSetByData = difference(Object.keys(ObjectHelper.getEnumerableProperties(this)), Object.keys(this._locallySetProperties));
+        let deletedPropertyNames = difference(fieldsSetByData, Object.keys(incomingData));
+
+        /* If data is equal */
+        if (!deletedPropertyNames.length && this._incomingDataDiffersFromLocalData(incomingData)) {
             this.emit('value', this, previousSiblingID);
             return;
         }
 
-        this._buildFromSnapshotWithoutSynchronizing(dataSnapshot);
+        this._rebuildFromSnapshot(dataSnapshot, deletedPropertyNames);
 
         this.emit('value', this, previousSiblingID);
-
-        if (this._hasListenersOfType('changed')) {
+        if (dataSnapshot.val() === null) {
+            this.emit('removed', this, previousSiblingID);
+        } else {
             this.emit('changed', this, previousSiblingID);
         }
 
@@ -385,10 +395,24 @@ export class PrioritisedObject extends EventEmitter {
         return this.listeners(type, true);
     }
 
-    _buildFromSnapshotWithoutSynchronizing(dataSnapshot) {
+    _incomingDataDiffersFromLocalData(incomingData){
+        return every(incomingData, (val, key) => {
+            let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
+            if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
+                return isEqual(this[key], val);
+            } else {
+                return true;
+            }
+        })
+    }
+
+    _rebuildFromSnapshot(dataSnapshot, deletedPropertyNames) {
         /* Make sure we don't trigger pushes to dataSource whilst repopulating with new dataSource data */
         this.disableChangeListener();
         this._buildFromSnapshot(dataSnapshot);
+        for (let field of deletedPropertyNames) {
+            this[field] = undefined;
+        }
         this.enableChangeListener();
     }
 
