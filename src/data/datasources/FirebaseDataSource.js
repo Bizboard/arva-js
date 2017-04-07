@@ -37,7 +37,7 @@ export class FirebaseDataSource extends DataSource {
      * @param {Number} [options.endAt]          Optional, only subscribe to the entries towards a certain value
      * @param {Promise} [options.synced]        Optional, a promise to tell the data source that it is only synchronized after this promise is resolved
      **/
-    constructor(path, options = {orderBy: '.priority'}) {
+    constructor(path, options = { orderBy: '.priority' }) {
         super(path);
         this._onValueCallback = null;
         this._onAddCallback = null;
@@ -48,7 +48,7 @@ export class FirebaseDataSource extends DataSource {
 
         this._dataReference = this._firebase.database().ref(path);
         this.handlers = {};
-        this.options = combineOptions({synced: Promise.resolve()}, options);
+        this.options = combineOptions({ synced: Promise.resolve() }, options);
         this._synced = this.options.synced;
 
         /* Populate the orderedReference, which is the standard Firebase reference with an optional ordering
@@ -63,7 +63,7 @@ export class FirebaseDataSource extends DataSource {
             this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
         } else if (this.options.equalTo) {
             let [key, value] = this.options.equalTo;
-            if(key === 'id'){
+            if (key === 'id') {
                 this._orderedDataReference = this._dataReference.orderByKey().equalTo(value);
             } else {
                 this._orderedDataReference = this._dataReference.orderByChild(key).equalTo(value);
@@ -91,14 +91,13 @@ export class FirebaseDataSource extends DataSource {
         ObjectHelper.bindAllMethods(this, this);
     }
 
-    dataExists(){
-        return new Promise((resolve)=>{
-            this._dataReference.once('value', (snapshot)=> {
+    dataExists() {
+        return new Promise((resolve) => {
+            this._dataReference.once('value', (snapshot) => {
                 return resolve(snapshot.exists());
             });
         });
     }
-
 
 
     /**
@@ -124,7 +123,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance pointing to the given child branch.
      */
     child(childName, options = {}) {
-        return new FirebaseDataSource(`${this.path()}/${childName}`, {customFirebase: this.options.customFirebase, ...options});
+        return new FirebaseDataSource(`${this.path()}/${childName}`, { customFirebase: this.options.customFirebase, ...options });
     }
 
     /**
@@ -178,7 +177,7 @@ export class FirebaseDataSource extends DataSource {
 
     /**
      * Removes the object and all underlying children that this dataSource points to.
-     * @returns {void}
+     * @returns {Promise}
      */
     remove() {
         return this._dataReference.remove();
@@ -277,7 +276,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     limitToLast(amount) {
-        return new FirebaseDataSource(this.path(), merge({}, this.options, {limitToLast: amount}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, { limitToLast: amount }));
     }
 
     /**
@@ -393,9 +392,10 @@ export class FirebaseDataSource extends DataSource {
      * @param emailAddress
      * @returns {Promise}
      */
-    sendPasswordResetEmail(emailAddress){
+    sendPasswordResetEmail(emailAddress) {
         return this._firebase.auth().sendPasswordResetEmail(emailAddress);
     }
+
     /**
      * Fetches the current user's authentication state.
      * If the user is authenticated, returns an object containing at least the fields uid, provider, auth, and expires.
@@ -404,7 +404,7 @@ export class FirebaseDataSource extends DataSource {
      */
     getAuth() {
         let firebaseAuth = this._firebase.auth();
-        let {currentUser} = firebaseAuth;
+        let { currentUser } = firebaseAuth;
         if (!this._authDataPresent) {
             if (currentUser) {
                 this._authDataPresent = true;
@@ -596,7 +596,7 @@ export class FirebaseDataSource extends DataSource {
     atomicTransaction(transactionFunction) {
         return new Promise((resolve, reject) => {
             this._dataReference.transaction(transactionFunction, (error, wasSuccessfullyCommited, snapshot) => {
-                if(error){
+                if (error) {
                     return reject(error);
                 }
                 if (!wasSuccessfullyCommited) {
