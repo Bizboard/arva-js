@@ -169,11 +169,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} Resolves when write to server is complete.
      */
     set(newData) {
-        let completionPromise = this._dataReference.set(newData).catch((err) => {
-            err.data = newData;
-            err.path = this.path();
-            throw new Error(err);
-        });
+        let completionPromise = this._dataReference.set(newData).catch((error) => this._rethrowFirebaseError(error, newData));
 
         /* Append another promise to the chain to keep track of whether it's still synchronized */
         this._synced = this._synced.then(() => completionPromise);
@@ -197,6 +193,7 @@ export class FirebaseDataSource extends DataSource {
     push(newData = {}) {
         newData = (newData === undefined || newData === null) ? {} : newData;
         let pushResult = this._dataReference.push(newData);
+        pushResult.catch((error) => this._rethrowFirebaseError(error, newData));
         return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {
             synced: pushResult,
             customFirebase: this.options.customFirebase
@@ -211,11 +208,7 @@ export class FirebaseDataSource extends DataSource {
      */
     setWithPriority(newData, priority) {
         /* Rethrow the error in order to be able to catch it higher up */
-        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((err) => {
-            err.data = newData;
-            err.path = this.path();
-            throw new Error(err);
-        });
+        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((error) => this._rethrowFirebaseError(error, newData));
         /* Append another promise to the chain to keep track of whether it's still synchronized. Fail silently
          * since we already have error handling above */
         this._synced = this._synced.then(() => completionPromise).catch(() => {
@@ -613,5 +606,17 @@ export class FirebaseDataSource extends DataSource {
                 resolve(snapshot.val());
             });
         });
+    }
+
+    /**
+     * Rethrows a an error in Firebase to contain some more data to better be able to see the cause of the error
+     * @param error
+     * @param newData
+     * @private
+     */
+    _rethrowFirebaseError(error, newData) {
+        error.data = newData;
+        error.path = this.path();
+        throw new Error(error);
     }
 }
