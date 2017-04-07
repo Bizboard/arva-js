@@ -91,14 +91,16 @@ export class FirebaseDataSource extends DataSource {
         ObjectHelper.bindAllMethods(this, this);
     }
 
+
     dataExists(){
         return new Promise((resolve)=>{
             this._dataReference.once('value', (snapshot)=> {
                 return resolve(snapshot.exists());
+            }, ()=>{
+                resolve(false);
             });
         });
     }
-
 
 
     /**
