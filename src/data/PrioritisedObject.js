@@ -109,8 +109,8 @@ export class PrioritisedObject extends EventEmitter {
      */
     remove() {
         this.off();
-        this._dataSource.remove(this);
-        delete this;
+        delete this; //TODO <---- This is cryptic, what does it do?
+        return this._dataSource.remove(this);
     }
 
     /**
