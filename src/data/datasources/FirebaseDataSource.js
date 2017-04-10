@@ -209,7 +209,9 @@ export class FirebaseDataSource extends DataSource {
      */
     setWithPriority(newData, priority) {
         /* Rethrow the error in order to be able to catch it higher up */
-        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((error) => this._rethrowFirebaseError(error, newData));
+        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((error) =>
+                this._rethrowFirebaseError(error, newData)
+        );
         /* Append another promise to the chain to keep track of whether it's still synchronized. Fail silently
          * since we already have error handling above */
         this._synced = this._synced.then(() => completionPromise).catch(() => {
@@ -619,6 +621,6 @@ export class FirebaseDataSource extends DataSource {
     _rethrowFirebaseError(error, newData) {
         error.data = newData;
         error.path = this.path();
-        throw new Error(error);
+        return Promise.reject(error);
     }
 }

@@ -58,9 +58,13 @@ export class Model extends PrioritisedObject {
         let pathRoot = modelName + 's';
 
         let dataWasPushed = false;
-        let onDataSynced;
-        let dataIsSynced = new Promise((resolve) => onDataSynced = resolve);
-        let dataSourceOptions = {synced: dataIsSynced};
+        let onDataSynced, onDataSyncFailed;
+        let dataIsSynced = new Promise((resolve, reject) => {
+            onDataSynced = resolve;
+            onDataSyncFailed = reject;
+        });
+
+        let dataSourceOptions = { synced: dataIsSynced };
 
         if (options.dataSource && id) {
             this._dataSource = options.dataSource;
@@ -71,7 +75,7 @@ export class Model extends PrioritisedObject {
         } else if (options.path && id) {
             this._dataSource = dataSource.child(options.path + '/' + id || '', dataSourceOptions);
         } else if (options.dataSnapshot) {
-            let {ref} = options.dataSnapshot;
+            let { ref } = options.dataSnapshot;
             /* Getting the path from a snapshot requires some string modifications */
             this._dataSource = dataSource.child(ref.toString().substring(ref.root.toString().length), dataSourceOptions);
         } else if (id) {
@@ -95,14 +99,20 @@ export class Model extends PrioritisedObject {
         } else {
             this._buildFromDataSource(this._dataSource);
         }
-        if(!options.noInitialSync && !dataWasPushed){
+        if (!options.noInitialSync && !dataWasPushed) {
             /* Write local data to model, if any data is present. */
-            this._writeLocalDataToModel(data).then(onDataSynced);
+            this._writeLocalDataToModel(data)
+                .then(onDataSynced)
+                .catch(onDataSyncFailed);
         } else {
             onDataSynced();
         }
+        /* Add the promise to the end of the dataSource synced chain.
+         * This enables to catch errors like this:
+         * new Model(null, {...data}).synced().catch((error) => /!* Handle error *!/)
+         */
+        this._dataSource._synced = this._dataSource.synced().then(() => dataIsSynced);
     }
-
 
 
     /**
