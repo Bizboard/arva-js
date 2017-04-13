@@ -22,7 +22,8 @@ function duplicateZIndex() {
     ElementOutput.prototype.commit = function (context) {
         oldCommit.call(this, context);
         if (this._element) {
-            var zIndex = this._matrix[14];
+            /* Turns Z-property of matrix into an integer, and then into a string */
+            let zIndex = this._matrix[14] | 0 + '';
             if (this._element.style.zIndex !== zIndex) {
                 this._element.style.zIndex = zIndex;
             }
@@ -31,7 +32,6 @@ function duplicateZIndex() {
 }
 
 function removeSurfacePreserve3D() {
-    debugger;
     let styleSheets = window.document.styleSheets;
     for (let sheetIndex in styleSheets) {
         let sheet = styleSheets[sheetIndex];

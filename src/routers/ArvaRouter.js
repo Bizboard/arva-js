@@ -170,6 +170,7 @@ export class ArvaRouter extends Router {
             pieces = querySplit[0].split('/'),
             values = [],
             keys = [],
+            params = [],
             method = '';
         for (let piece in pieces) {
             if (pieces[piece].indexOf('=') > -1) {
@@ -211,8 +212,11 @@ export class ArvaRouter extends Router {
                 let nameValue = query[i].split('=');
 
                 if (nameValue.length > 1) {
-                    keys.push(nameValue[0]);
-                    values.push(this.decode(nameValue[1]));
+                    let key = nameValue[0];
+                    let value = this.decode(nameValue[1]);
+                    keys.push(key);
+                    values.push(value);
+                    params[key] = value;
                 }
             }
         }).call(this, querySplit.length > 1 ? querySplit[1] : '');
@@ -222,12 +226,13 @@ export class ArvaRouter extends Router {
             /* Push current route to the history stack for later use */
             let previousRoute = this.history.length ? this.history[this.history.length - 1] : undefined;
             let currentRoute = {
-                url: url,
-                controller: controller,
-                controllerObject: rule['controller'],
-                method: method,
-                keys: keys,
-                values: values
+                url,
+                keys,
+                method,
+                values,
+                params,
+                controller,
+                controllerObject: rule['controller']
             };
 
             /* TODO: save route, so it can be exposed in getRoute() */
