@@ -33,13 +33,19 @@ export class LocalModel extends Model {
     }
 
     static fromModelClass(modelClass, modelID = null, constructionArguments = []) {
+        let LocalizedModel = LocalModel.createClassFromModel(modelClass);
+        let localizedModel = new LocalizedModel(modelID, ...constructionArguments);
+        return localizedModel;
+    }
+
+    static createClassFromModel(modelClass) {
         class LocalizedModel extends LocalModel{}
         let modelPrototype = modelClass.prototype;
 
         /* Define the properties that was defined on the modelClass, but omit things that would mess up the construction */
         Object.defineProperties(LocalizedModel.prototype, omit(ObjectHelper.getMethodDescriptors(modelPrototype),
             ['constructor', 'id', 'dataSource', 'priority', '_inheritable']));
-        return new LocalizedModel(modelID, ...constructionArguments);
+        return LocalizedModel;
     }
 
     static cloneModelProperties(model) {
