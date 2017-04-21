@@ -22,10 +22,11 @@ export class LocalModel extends Model {
 
     constructor(id, data) {
         if(id === null) { id = `${Math.random() * 100000}`; }
-        super(id, data, {dataSource: new DataSource()});
+        let dataSource = new DataSource();
+        super(id, data, {dataSource});
         this.id = id;
+        this._dataSource = dataSource;
         this._dataSource.ready = true;
-        this._dataSource.remove = () => {};
     }
 
     static fromModel(model) {

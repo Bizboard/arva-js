@@ -107,13 +107,15 @@ export class Model extends PrioritisedObject {
         } else {
             onDataSynced();
         }
-        /* Add the promise to the end of the dataSource synced chain.
-         * This enables to catch errors like this:
-         * new Model(null, {...data}).synced().catch((error) => /!* Handle error *!/)
-         */
-        let dataSourceSyncPromise = this._dataSource.synced();
-        if(dataSourceSyncPromise){
-            this._dataSource._synced = dataSourceSyncPromise.then(() => dataIsSynced);
+        if(this._dataSource){
+            /* Add the promise to the end of the dataSource synced chain.
+             * This enables to catch errors like this:
+             * new Model(null, {...data}).synced().catch((error) => /!* Handle error *!/)
+             */
+            let dataSourceSyncPromise = this._dataSource.synced();
+            if (dataSourceSyncPromise) {
+                this._dataSource._synced = dataSourceSyncPromise.then(() => dataIsSynced);
+            }
         }
     }
 
