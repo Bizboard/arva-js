@@ -1,6 +1,7 @@
 /**
  * Created by Manuel on 22/07/16.
  */
+import cloneDeep        from 'lodash/cloneDeep.js'
 import omit             from 'lodash/omit.js';
 import {Model}          from '../../core/Model';
 import {DataSource}     from '../DataSource.js';
@@ -21,25 +22,35 @@ export class LocalModel extends Model {
 
     constructor(id, data) {
         if(id === null) { id = `${Math.random() * 100000}`; }
-        super(id, data, {dataSource: new DataSource()});
+        let dataSource = new DataSource();
+        super(id, data, {dataSource});
         this.id = id;
+        this._dataSource = dataSource;
         this._dataSource.ready = true;
-        this._dataSource.remove = () => {};
     }
 
     static fromModel(model) {
-        let modelClass = LocalModel.createLocalizedModelClass(model.constructor);
-        /* Create an inherit class */
-        return new modelClass(model.id, model.shadow);
+        return LocalModel.fromModelClass(model.constructor, model.id, LocalModel.cloneModelProperties(model));
     }
 
-    static createLocalizedModelClass(modelClass) {
-        class LocalizedModel extends LocalModel{};
+    static fromModelClass(modelClass, modelID = null, constructionArguments = []) {
+        let LocalizedModel = LocalModel.createClassFromModel(modelClass);
+        let localizedModel = new LocalizedModel(modelID, ...constructionArguments);
+        return localizedModel;
+    }
+
+    static createClassFromModel(modelClass) {
+        class LocalizedModel extends LocalModel{}
         let modelPrototype = modelClass.prototype;
+
         /* Define the properties that was defined on the modelClass, but omit things that would mess up the construction */
         Object.defineProperties(LocalizedModel.prototype, omit(ObjectHelper.getMethodDescriptors(modelPrototype),
             ['constructor', 'id', 'dataSource', 'priority', '_inheritable']));
         return LocalizedModel;
+    }
+
+    static cloneModelProperties(model) {
+        return cloneDeep(ObjectHelper.getEnumerableProperties(model));
     }
 
 }

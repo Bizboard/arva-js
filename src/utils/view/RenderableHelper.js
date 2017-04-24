@@ -4,24 +4,23 @@
 
 import OrderedHashMap               from 'ordered-hashmap';
 import merge                        from 'lodash/merge.js';
-
-import Transitionable               from 'famous/transitions/Transitionable.js';
-import Easing                       from 'famous/transitions/Easing.js';
-import Draggable                    from 'famous/modifiers/Draggable.js';
-import ContainerSurface             from 'famous/surfaces/ContainerSurface.js';
+import Modifier                     from 'famous/core/Modifier.js';
 import Transform                    from 'famous/core/Transform.js';
+import RenderNode                   from 'famous/core/RenderNode.js';
 import Timer                        from 'famous/utilities/Timer.js';
-import GenericSync                  from 'famous/inputs/GenericSync.js';
 import MouseSync                    from 'famous/inputs/MouseSync.js';
 import TouchSync                    from 'famous/inputs/TouchSync.js';
-import RenderNode                   from 'famous/core/RenderNode';
-import Modifier                     from 'famous/core/Modifier.js';
+import GenericSync                  from 'famous/inputs/GenericSync.js';
+import Easing                       from 'famous/transitions/Easing.js';
+import Draggable                    from 'famous/modifiers/Draggable.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
+import ContainerSurface             from 'famous/surfaces/ContainerSurface.js';
+import Transitionable               from 'famous/transitions/Transitionable.js';
 
 import {Throttler}                  from 'arva-js/utils/Throttler.js';
 
-import {limit}                      from '../Limiter.js';
 import {Utils}                      from './Utils.js';
+import {limit}                      from '../Limiter.js';
 import {
     callbackToPromise,
     waitMilliseconds
@@ -593,6 +592,11 @@ export class RenderableHelper {
 
     async setViewFlowState(stateName = '', flowOptions) {
         let steps = flowOptions.viewStates[stateName];
+
+        if(!steps) {
+            (console.warn || console.log)(`Flow state name '${stateName}' does not exist`);
+            return false;
+        }
 
         /* This is intended to be overwritten by other asynchronous calls to this method, see the stateName check below. */
         flowOptions.currentState = stateName;

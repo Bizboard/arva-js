@@ -147,10 +147,10 @@ export class SharePointDataSource extends DataSource {
     /**
      * Removes the object and all underlying children that this dataSource points to.
      * @param {Object} object The current object, needed because of a SharePointDataSource-specific issue. Will be refactored out in the future.
-     * @returns {void}
+     * @returns {Promise}
      */
     remove(object) {
-        this._dataReference.remove(object);
+        return this._dataReference.remove(object);
     }
 
     /**

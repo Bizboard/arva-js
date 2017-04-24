@@ -107,7 +107,10 @@ export class SizeResolver extends EventEmitter {
                 return this._specifyUndeterminedSingleHeight(renderable, size, dim);
             } else {
                 let renderableIsView = renderable instanceof View;
-                let sizeConsideredFinal = ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView);
+                /* If the renderable isn't displaying, we must simply consider it final.
+                 TODO: There might be better ways to reason about non-displaying renderables  */
+                let sizeConsideredFinal = !(renderableIsView && renderable.layout.isDisplaying()) ||
+                    ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView);
                 if (size[dim] === true && twoDimensionalSize[dim] === undefined && sizeConsideredFinal) {
                     Utils.warn(`True sized renderable '${renderable.constructor.name}' is taking up the entire context size.`);
                     return twoDimensionalSize[dim];
@@ -127,7 +130,7 @@ export class SizeResolver extends EventEmitter {
                 trueSizedSurfaceInfo.calculateOnNext = false;
                 this._tryCalculateTrueSizedSurface(renderable);
             }
-            let {isUncalculated} = trueSizedSurfaceInfo;
+            let { isUncalculated } = trueSizedSurfaceInfo;
             this._sizeIsFinalFor.set(renderable, !isUncalculated);
             if (isUncalculated === false) {
                 return trueSizedSurfaceInfo.size[dim];
@@ -160,12 +163,14 @@ export class SizeResolver extends EventEmitter {
      */
     isSizeFinal(renderable) {
         let consideredFinal = this._sizeIsFinalFor.get(renderable);
-        /* Return true if nothing is known, to be sure not to make errors */
-        if(consideredFinal === undefined){
+
+        /* Return true if nothing is known, to be sure not to make false negatives */
+        if (consideredFinal === undefined) {
             return true;
         }
         return consideredFinal;
     }
+
     /**
      * Determines if the value is true sized
      * @param {*} value
@@ -184,7 +189,7 @@ export class SizeResolver extends EventEmitter {
     }
 
     containsUncalculatedSurfaces() {
-        for (let [surface, {isUncalculated}] of this._trueSizedSurfaceInfo) {
+        for (let [surface, { isUncalculated }] of this._trueSizedSurfaceInfo) {
             if (isUncalculated) {
                 return true;
             }
@@ -200,9 +205,13 @@ export class SizeResolver extends EventEmitter {
     _tryCalculateTrueSizedSurface(renderable) {
         let renderableHtmlElement = renderable._element;
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
-        let {trueSizedDimensions} = trueSizedInfo;
+        let { trueSizedDimensions } = trueSizedInfo;
 
-        if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!renderable.getContent() && !(renderable instanceof ImageSurface))) && renderableHtmlElement.innerHTML === renderable.getContent() &&
+        /* HTML treats white space as nothing at all, so we need to be sure that "  " == "" */
+        let trimmedContent = (renderable.getContent() && renderable.getContent().trim) ? renderable.getContent().trim() : renderable.getContent();
+        let trimmedHtmlContent =  renderableHtmlElement.innerHTML.trim ? renderableHtmlElement.innerHTML.trim() : renderableHtmlElement.innerHTML;
+
+        if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!trimmedContent && !(renderable instanceof ImageSurface))) && trimmedHtmlContent === trimmedContent &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
             let newSize;
 
@@ -252,7 +261,7 @@ export class SizeResolver extends EventEmitter {
      * @private
      */
     configureTrueSizedSurface(renderable) {
-        let trueSizedSurfaceInfo = {isUncalculated: true, trueSizedDimensions: [false, false]};
+        let trueSizedSurfaceInfo = { isUncalculated: true, trueSizedDimensions: [false, false] };
 
         /* We assume both dimensions not to be truesized, they are set in this._resolveDecoratedSize */
         this._trueSizedSurfaceInfo.set(renderable, trueSizedSurfaceInfo);

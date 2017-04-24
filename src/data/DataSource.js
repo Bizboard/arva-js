@@ -71,7 +71,7 @@ export class DataSource {
 
     /**
      * Removes the object and all underlying children that this dataSource points to.
-     * @returns {void}
+     * @returns {Promise} resolves when it has been successfully removed
      */
     remove() {
     }
