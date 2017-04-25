@@ -939,7 +939,7 @@ export const layout = {
      * }
      *
      * @param {Number} maxContentWidth Maximum width the content should be allowed to be.
-     * @param {Array.Number} defaultPadding A 1-D, 2-D, or 4-D array of padding numbers, just like the padding spec in CSS.
+     * @param {[Number]} defaultPadding A 1-D, 2-D, or 4-D array of padding numbers, just like the padding spec in CSS.
      * @returns {Function}
      */
     columnDockPadding: function (maxContentWidth = 720, defaultPadding = [0, 16, 0, 16]) {
