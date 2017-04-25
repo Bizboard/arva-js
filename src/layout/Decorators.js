@@ -427,8 +427,8 @@ export const layout = {
      * // options.maxWidth, or the context size
      * text = new Surface({content: 'This is some text', properties: {backgroundColor: 'red'}});
      *
-     * @param {Number|Function} x
-     * @param {Number|Function} y
+     * @param {Number|Function|Boolean} x
+     * @param {Number|Function|Boolean} y
      * @returns {Function} A decorator function
      */
     size: function (x, y) {

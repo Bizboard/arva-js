@@ -40,12 +40,16 @@ export class LocalModel extends Model {
     }
 
     static createClassFromModel(modelClass) {
-        class LocalizedModel extends LocalModel{}
-        let modelPrototype = modelClass.prototype;
+        return this.createMergedModelClass(modelClass);
+    }
 
-        /* Define the properties that was defined on the modelClass, but omit things that would mess up the construction */
-        Object.defineProperties(LocalizedModel.prototype, omit(ObjectHelper.getMethodDescriptors(modelPrototype),
-            ['constructor', 'id', 'dataSource', 'priority', '_inheritable']));
+    static createMergedModelClass(...modelClasses) {
+        class LocalizedModel extends LocalModel{}
+        for(let modelPrototype of modelClasses.map(({prototype}) => prototype)){
+            /* Define the properties that was defined on the modelClass, but omit things that would mess up the construction */
+            Object.defineProperties(LocalizedModel.prototype, omit(ObjectHelper.getMethodDescriptors(modelPrototype),
+                ['constructor', 'id', 'dataSource', 'priority', '_inheritable']));
+        }
         return LocalizedModel;
     }
 
