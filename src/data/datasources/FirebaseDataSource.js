@@ -60,7 +60,12 @@ export class FirebaseDataSource extends DataSource {
         } else if (this.options.orderBy && this.options.orderBy === '.value') {
             this._orderedDataReference = this._dataReference.orderByValue();
         } else if (this.options.orderBy && this.options.orderBy !== '') {
-            this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+            let {orderBy} = this.options;
+            if(orderBy === 'id'){
+                this._orderedDataReference = this._dataReference.orderByKey();
+            } else {
+                this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+            }
         } else if (this.options.equalTo) {
             let [key, value] = this.options.equalTo;
             if (key === 'id') {
