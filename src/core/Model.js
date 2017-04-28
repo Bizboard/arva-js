@@ -130,7 +130,7 @@ export class Model extends PrioritisedObject {
 
     /**
      * Updates properties of this model to the values of those of another model, or a normal JS Object.
-     * @param {Model|{}} newModelOrData Data to replace old data with
+     * @param {Model|Object} newModelOrData Data to replace old data with
      */
     replaceProperties(newModelOrData) {
         this.transaction(() => {
