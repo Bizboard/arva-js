@@ -10,11 +10,12 @@
 
 import extend                       from 'lodash/extend.js';
 import EventEmitter                 from 'eventemitter3';
-import {Injection}                  from '../utils/Injection.js';
-import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {DataSource}                 from './DataSource.js';
-import {Throttler}                  from '../utils/Throttler.js';
 import {Model}                      from '../core/Model.js';
+import {LocalModel}                 from './local/LocalModel.js';
+import {Injection}                  from '../utils/Injection.js';
+import {Throttler}                  from '../utils/Throttler.js';
+import {ObjectHelper}               from '../utils/ObjectHelper.js';
 
 /**
  * An array of two-way bound data Models that are automatically synced with the currently used DataSource
@@ -314,6 +315,19 @@ export class PrioritisedArray extends Array {
 
     getDataSourcePath() {
         return this._dataSource.path();
+    }
+
+    /**
+     * Replaces all items in this PrioritisedArray with items from newContents.
+     * @param {PrioritisedArray} newContents PrioritisedArray to take elements from.
+     */
+    replaceContents(newContents) {
+        while (this.length) {
+            this[0].remove();
+        }
+        for (let item of newContents) {
+            this.add(LocalModel.cloneModelProperties(item));
+        }
     }
 
 
