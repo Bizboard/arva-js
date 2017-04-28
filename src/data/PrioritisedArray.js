@@ -203,7 +203,9 @@ export class PrioritisedArray extends Array {
                 }
 
                 this._eventEmitter.emit('child_added', model, prevSiblingId);
-                if(emitValueEvent) { this._eventEmitter.emit('value', this); }
+                if (emitValueEvent) {
+                    this._eventEmitter.emit('value', this);
+                }
 
                 return model;
             }
