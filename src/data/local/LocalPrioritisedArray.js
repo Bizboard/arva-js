@@ -17,7 +17,7 @@ export class LocalPrioritisedArray extends PrioritisedArray {
 
     /**
      * Override to make sure that we catch the 'removed' events by patching the model.remove function
-     * of whatever is added
+     * of whatever is added, and also that we can follow 'changed' events
      * @param item
      * @param previousSiblingId
      * @returns {Object}
@@ -33,6 +33,11 @@ export class LocalPrioritisedArray extends PrioritisedArray {
             onChildRemoved({ key: this.id, val: () => this.shadow });
             originalRemoveFunction.apply(this, arguments);
         }.bind(resultingModel);
+
+        resultingModel.on('changed', () => {
+            this._eventEmitter.emit('child_changed', resultingModel, null);
+            this._eventEmitter.emit('value', this);
+        });
 
         return resultingModel;
     }
