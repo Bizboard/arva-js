@@ -34,7 +34,7 @@ export class ArvaRouter extends Router {
 
         this.route = {};
         this.routes = {};
-        this.history = [];
+        this.routeStack = [];
         this.decode = decodeURIComponent;
 
         window.addEventListener('hashchange', this.run);
@@ -216,7 +216,7 @@ export class ArvaRouter extends Router {
         if (rule && rule['enter']) {
 
             /* Push current route to the history stack for later use */
-            let previousRoute = this.history.length ? this.history[this.history.length - 1] : undefined;
+            let previousRoute = this.routeStack.length ? this.routeStack[this.routeStack.length - 1] : undefined;
             let currentRoute = {
                 url,
                 keys,
@@ -264,9 +264,9 @@ export class ArvaRouter extends Router {
      * @returns {*}
      */
     getPreviousRoute() {
-        let { history } = this;
-        if (history.length > 1) {
-            let { controller, method, keys, values } = history[history.length - 2];
+        let { routeStack } = this;
+        if (routeStack.length > 1) {
+            let { controller, method, keys, values } = routeStack[routeStack.length - 2];
             let inputObject = {};
             for (let i = 0; i < keys.length; i++) {
                 inputObject[keys[i]] = values[i];
@@ -316,17 +316,17 @@ export class ArvaRouter extends Router {
      * @private
      */
     _setHistory(currentRoute) {
-        for (let i = 0; i < this.history.length; i++) {
-            let previousRoute = this.history[i];
+        for (let i = 0; i < this.routeStack.length; i++) {
+            let previousRoute = this.routeStack[i];
             if (currentRoute.controller === previousRoute.controller &&
                 currentRoute.method === previousRoute.method &&
                 isEqual(currentRoute.values, previousRoute.values)) {
-                this.history.splice(i, this.history.length - i);
+                this.routeStack.splice(i, this.routeStack.length - i);
                 break;
             }
         }
 
-        this.history.push(currentRoute);
+        this.routeStack.push(currentRoute);
     }
 
     /**
@@ -336,8 +336,8 @@ export class ArvaRouter extends Router {
      * @private
      */
     _hasVisited(currentRoute) {
-        for (let i = 0; i < this.history.length; i++) {
-            let previousRoute = this.history[i];
+        for (let i = 0; i < this.routeStack.length; i++) {
+            let previousRoute = this.routeStack[i];
             if (currentRoute.controller === previousRoute.controller &&
                 currentRoute.method === previousRoute.method &&
                 isEqual(currentRoute.values, previousRoute.values)) {
@@ -405,8 +405,6 @@ export class ArvaRouter extends Router {
                 }
             }
         }
-
-        console.log('No spec defined from ' + fromController + ' to ' + toController + '. Please check router.setControllerSpecs() in your app constructor.');
     }
 
     /**
