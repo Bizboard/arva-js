@@ -1012,7 +1012,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         let item = this._dataSource._.head;
         let { layoutOptions } = this.options;
         if (this.options.layout !== ListLayout || (this.options.layoutOptions.direction && this.options.layoutOptions.direction !== 1)) {
-            console.log(`'Trying to calculate the size of a DataBoundSrollView, which can't be done in the current configuration`);
+            console.log(`'Trying to calculate the size of a DataBoundScrollView, which can't be done in the current configuration`);
             return [undefined, undefined];
         }
         let height = layoutOptions && layoutOptions.margins ? layoutOptions.margins[0] + layoutOptions.margins[2] : 0;
@@ -1024,7 +1024,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 if (renderable.getSize && (itemSize = renderable.getSize())) {
                     height += itemSize[1];
                 } else {
-                    console.log('Trying to calculate the size of a DataBoundSrollView, but all elements cannot be calculated');
+                    console.log('Trying to calculate the size of a DataBoundScrollView, but all elements cannot be calculated');
                 }
                 if (layoutOptions && layoutOptions.spacing) {
                     height += layoutOptions.spacing;
