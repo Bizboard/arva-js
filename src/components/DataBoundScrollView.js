@@ -27,7 +27,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
 
     /**
-     * Be sure to specifiy either a getSize function in the class of the itemTemplate, or to specify the size in the
+     * Be sure to specify either a getSize function in the class of the itemTemplate, or to specify the size in the
      * layoutOptions.
      *
      * @param {Object} options The options passed inherit from previous classes. Avoid using the dataSource option since
@@ -110,7 +110,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
 
         if (!(this.options.dataStores || this.options.dataStore) || !this.options.itemTemplate) {
-            console.log('Datasource and template should both be set.');
+            console.log('DataSource and template should both be set.');
             return this;
         }
 
@@ -165,7 +165,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     /**
-     * Sets the datastore to use. This will repopulate the view and remove any (if present) old items.
+     * Sets the dataStore to use. This will repopulate the view and remove any (if present) old items.
      * We decorate it with debounce in order to avoid race conditions when setting the dataStore frequently after each other
      * @param dataStore
      */
@@ -177,7 +177,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     /**
-     * Sets the multiple datastore to use. The "multiple" version of setDataStore(dataStore).
+     * Sets the multiple dataStores to use. The "multiple" version of setDataStore(dataStore).
      * @param {Array} dataStores
      */
     @debounce(300)
@@ -615,7 +615,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         /* Check if the group corresponding to the child is now empty */
         let group = this._internalGroups[groupByValue];
         if (group && group.itemsCount === 0) {
-            /* TODO: Maybe remove internalgroups[groupByValue]? (Or not?) */
+            /* TODO: Maybe remove internalGroups[groupByValue]? (Or not?) */
             let { position } = group;
             this._updatePosition(position, -1);
             this.remove(position);
@@ -1005,7 +1005,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     /**
-     * Guesses that layout is listlayout
+     * Guesses that layout is ListLayout
      * @returns {number}
      */
     getSize() {
