@@ -166,10 +166,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
     /**
      * Sets the datastore to use. This will repopulate the view and remove any (if present) old items.
-     * We decorate it with debounce in order to avoid race conditions when setting the dataStore frequently after each other
+     * We decorate it with debounce in order to (naively) avoid race conditions when setting the dataStore frequently after each other
      * @param dataStore
      */
-    @debounce(300)
+    @debounce(500)
     setDataStore(dataStore) {
         this.clearDataStore();
         this.options.dataStore = dataStore;
@@ -180,7 +180,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * Sets the multiple datastore to use. The "multiple" version of setDataStore(dataStore).
      * @param {Array} dataStores
      */
-    @debounce(300)
+    @debounce(500)
     setDataStores(dataStores) {
         let { dataStore, dataStores: previousDataStores } = this.options;
         if (dataStore) {
@@ -752,15 +752,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             this._initialLoad = true;
             dataStore.on('ready', () => this._initialLoad = false);
         }
-
-
-        dataStore.on('child_added', this._onChildAdded.bind(this, index));
-        dataStore.on('child_changed', this._onChildChanged.bind(this, index));
-        dataStore.on('child_removed', this._onChildRemoved.bind(this, index));
-        /* Only listen for child_moved if there is one single dataStore. TODO: See if we want to change this behaviour */
-        if (!this.options.dataStores) {
-            dataStore.on('child_moved', this._onChildMoved.bind(this, 0));
-        }
+        this._setupDataStoreListeners(dataStore, index, true);
     }
 
     /**
@@ -771,6 +763,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     _onChildAdded(dataStoreIndex, child, previousSiblingID) {
+        //TODO refactor this to be async
         if (this.options.dataFilter &&
             (typeof this.options.dataFilter === 'function')) {
 
@@ -1005,7 +998,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     /**
-     * Guesses that layout is listlayout
+     * Based on the guess that layout is ListLayout, calculates the vertical size
      * @returns {number}
      */
     getSize() {
@@ -1034,5 +1027,24 @@ export class DataBoundScrollView extends ReflowingScrollView {
         }
 
         return [undefined, height];
+    }
+
+    /**
+     *
+     * @param dataStore
+     * @param index
+     * @param {Boolean} shouldActivate
+     * @private
+     */
+    _setupDataStoreListeners(dataStore, index, shouldActivate) {
+        let methodName = shouldActivate ? 'on' : 'off';
+        let method = dataStore[methodName];
+        method('child_added', this._onChildAdded.bind(this, index));
+        method('child_changed', this._onChildChanged.bind(this, index));
+        method('child_removed', this._onChildRemoved.bind(this, index));
+        /* Only listen for child_moved if there is one single dataStore. TODO: See if we want to change this behaviour to support moved children within the dataStore */
+        if (!this.options.dataStores) {
+            method('child_moved', this._onChildMoved.bind(this, 0));
+        }
     }
 }
