@@ -20,7 +20,9 @@ import AnimationController          from 'famous-flex/AnimationController.js';
 export class ArvaRouter extends Router {
 
     routes = {};
-    history = [];
+    route = {};
+    previousRoute = {};
+    routeStack = [];
     decode = decodeURIComponent;
     defaultController = 'Home';
     defaultMethod = 'Index';
@@ -32,8 +34,8 @@ export class ArvaRouter extends Router {
         }
         window.addEventListener('hashchange', this.run);
 
-        this.route = {};
-        this.routes = {};
+        window.router = this;
+
         this.routeStack = [];
         this.decode = decodeURIComponent;
 
@@ -235,6 +237,9 @@ export class ArvaRouter extends Router {
                 }
             }
             currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : (this._initialSpec || {});
+
+            /* Set the previousRoute and the history stack */
+            this.previousRoute = this.routeStack[this.routeStack.length -1];
             this._setHistory(currentRoute);
 
             this._executeRoute(rule, currentRoute);
@@ -264,17 +269,7 @@ export class ArvaRouter extends Router {
      * @returns {*}
      */
     getPreviousRoute() {
-        let { routeStack } = this;
-        if (routeStack.length > 1) {
-            let { controller, method, keys, values } = routeStack[routeStack.length - 2];
-            let inputObject = {};
-            for (let i = 0; i < keys.length; i++) {
-                inputObject[keys[i]] = values[i];
-            }
-            return { controller: controller, method: method, parameters: inputObject };
-        } else {
-            return { controller: this.defaultController, method: this.defaultMethod }
-        }
+        return this.previousRoute;
     }
 
     goBackInHistory() {
