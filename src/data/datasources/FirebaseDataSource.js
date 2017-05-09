@@ -448,7 +448,9 @@ export class FirebaseDataSource extends DataSource {
      */
     on(event, handler, context = this) {
         let boundHandler = this.handlers[handler] = handler.bind(this);
-        this._orderedDataReference.on(event, boundHandler);
+        this._orderedDataReference.on(event, boundHandler, (reasonForFailure) => {
+            console.log(`Read failed: ${reasonForFailure}`);
+        });
     }
 
     /**
