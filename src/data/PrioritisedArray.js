@@ -53,12 +53,10 @@ export class PrioritisedArray extends Array {
      * @param {Object} [modelOptions] options to merge into the construction of every new Model.
      * @returns {PrioritisedArray} PrioritisedArray instance.
      */
-    constructor(dataType, dataSource = null, dataSnapshot = null, options = null, modelOptions = {}) {
+    constructor(dataType, dataSource = null, dataSnapshot = null, options = {}, modelOptions = {}) {
         super();
         /**** Callbacks ****/
         this._valueChangedCallback = null;
-
-        options = options || {};
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
@@ -82,8 +80,6 @@ export class PrioritisedArray extends Array {
             throw new Error(`${dataType.toString()} passed to PrioritisedArray is not an instance of a model`);
         }
 
-
-
         /* Hide all private properties (starting with '_') and methods from enumeration,
          * so when you do for( in ), only actual data properties show up. */
         ObjectHelper.hideMethodsAndPrivatePropertiesFromObject(this);
@@ -99,7 +95,6 @@ export class PrioritisedArray extends Array {
             let path = this.constructor._name || Object.getPrototypeOf(this).constructor.name;
             /* Retrieve dataSource from the DI context */
             dataSource = Injection.get(DataSource);
-
             dataSource = dataSource.child(options.path || path, options);
 
             this._dataSource = dataSource;
