@@ -58,6 +58,8 @@ export class PrioritisedArray extends Array {
         /**** Callbacks ****/
         this._valueChangedCallback = null;
 
+        options = options || {};
+
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
@@ -70,7 +72,7 @@ export class PrioritisedArray extends Array {
         this._modelOptions = modelOptions;
         /* Flag to determine when we're reordering so we don't listen to move updates */
         this._eventEmitter = new EventEmitter();
-        this._childAddedThrottler = new Throttler(typeof window === 'undefined' ? 0 : 1, true, this, true);
+        this._childAddedThrottler = new Throttler(options.noThrottle || typeof window === 'undefined' ? 0 : 1, true, this, true);
         this._overrideChildAddedForId = null;
 
         /* We do the bindAllMethods before this happens in order to make sure that dataType.prototype isn't modified so
@@ -98,7 +100,7 @@ export class PrioritisedArray extends Array {
             /* Retrieve dataSource from the DI context */
             dataSource = Injection.get(DataSource);
 
-            if (options) {
+            if (options.path) {
                 dataSource = dataSource.child(options.path || path, options);
             } else {
                 dataSource = dataSource.child(path);
