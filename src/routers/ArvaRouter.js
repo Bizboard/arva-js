@@ -34,8 +34,6 @@ export class ArvaRouter extends Router {
         }
         window.addEventListener('hashchange', this.run);
 
-        window.router = this;
-
         this.routeStack = [];
         this.decode = decodeURIComponent;
 
