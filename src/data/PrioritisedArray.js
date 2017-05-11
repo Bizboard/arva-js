@@ -100,11 +100,7 @@ export class PrioritisedArray extends Array {
             /* Retrieve dataSource from the DI context */
             dataSource = Injection.get(DataSource);
 
-            if (options.path) {
-                dataSource = dataSource.child(options.path || path, options);
-            } else {
-                dataSource = dataSource.child(path);
-            }
+            dataSource = dataSource.child(options.path || path, options);
 
             this._dataSource = dataSource;
         }
