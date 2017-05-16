@@ -187,7 +187,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise}
      */
     remove() {
-        return this._dataReference.remove();
+        return this._dataReference.remove().catch((error) => this._rethrowFirebaseError(error, null))
     }
 
     /**
