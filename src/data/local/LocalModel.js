@@ -22,10 +22,11 @@ export class LocalModel extends Model {
 
     constructor(id, data) {
         if(id === null) { id = `${Math.random() * 100000}`; }
-        super(id, data, {dataSource: new DataSource()});
+        let dataSource = new DataSource();
+        super(id, data, {dataSource});
         this.id = id;
+        this._dataSource = dataSource;
         this._dataSource.ready = true;
-        this._dataSource.remove = () => {};
     }
 
     static fromModel(model) {
@@ -33,13 +34,23 @@ export class LocalModel extends Model {
     }
 
     static fromModelClass(modelClass, modelID = null, constructionArguments = []) {
-        class LocalizedModel extends LocalModel{}
-        let modelPrototype = modelClass.prototype;
+        let LocalizedModel = LocalModel.createClassFromModel(modelClass);
+        let localizedModel = new LocalizedModel(modelID, ...constructionArguments);
+        return localizedModel;
+    }
 
-        /* Define the properties that was defined on the modelClass, but omit things that would mess up the construction */
-        Object.defineProperties(LocalizedModel.prototype, omit(ObjectHelper.getMethodDescriptors(modelPrototype),
-            ['constructor', 'id', 'dataSource', 'priority', '_inheritable']));
-        return new LocalizedModel(modelID, ...constructionArguments);
+    static createClassFromModel(modelClass) {
+        return this.createMergedModelClass(modelClass);
+    }
+
+    static createMergedModelClass(...modelClasses) {
+        class LocalizedModel extends LocalModel{}
+        for(let modelPrototype of modelClasses.map(({prototype}) => prototype)){
+            /* Define the properties that was defined on the modelClass, but omit things that would mess up the construction */
+            Object.defineProperties(LocalizedModel.prototype, omit(ObjectHelper.getMethodDescriptors(modelPrototype),
+                ['constructor', 'id', 'dataSource', 'priority', '_inheritable']));
+        }
+        return LocalizedModel;
     }
 
     static cloneModelProperties(model) {

@@ -136,18 +136,19 @@ export class SizeResolver extends EventEmitter {
                 return trueSizedSurfaceInfo.size[dim];
             } else {
                 if (size[dim] === true) {
-                    let defaultSize = 5;
-                    Utils.warn(`No initial size set for renderable '${renderable.constructor.name}', will default to ${defaultSize}px`);
-                    size[dim] = ~5;
+                    /* If size is set to true, and it can't be resolved, then settle with size undefined*/
+                    size[dim] = undefined;
                 }
                 if (isUncalculated !== true) {
                     /* Seems like the surface isn't properly configured, let's get that going */
                     trueSizedSurfaceInfo = this.configureTrueSizedSurface(renderable);
                 }
                 trueSizedSurfaceInfo.trueSizedDimensions[dim] = true;
+                /* Need to set the Surface 'size' property in order to get resize notifications */
                 renderable.size[dim] = true;
-                /* Need to set the size in order to get resize notifications */
-                return ~size[dim];
+
+                /* Return an approximated size, if possible */
+                return size[dim] === undefined ? undefined : ~size[dim];
             }
         } else {
             this._sizeIsFinalFor.set(renderable, true);
@@ -209,7 +210,7 @@ export class SizeResolver extends EventEmitter {
 
         /* HTML treats white space as nothing at all, so we need to be sure that "  " == "" */
         let trimmedContent = (renderable.getContent() && renderable.getContent().trim) ? renderable.getContent().trim() : renderable.getContent();
-        let trimmedHtmlContent =  renderableHtmlElement.innerHTML.trim ? renderableHtmlElement.innerHTML.trim() : renderableHtmlElement.innerHTML;
+        let trimmedHtmlContent = renderableHtmlElement.innerHTML.trim ? renderableHtmlElement.innerHTML.trim() : renderableHtmlElement.innerHTML;
 
         if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!trimmedContent && !(renderable instanceof ImageSurface))) && trimmedHtmlContent === trimmedContent &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {

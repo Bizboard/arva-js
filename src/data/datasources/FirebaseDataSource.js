@@ -60,7 +60,12 @@ export class FirebaseDataSource extends DataSource {
         } else if (this.options.orderBy && this.options.orderBy === '.value') {
             this._orderedDataReference = this._dataReference.orderByValue();
         } else if (this.options.orderBy && this.options.orderBy !== '') {
-            this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+            let {orderBy} = this.options;
+            if(orderBy === 'id'){
+                this._orderedDataReference = this._dataReference.orderByKey();
+            } else {
+                this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+            }
         } else if (this.options.equalTo) {
             let [key, value] = this.options.equalTo;
             if (key === 'id') {
@@ -182,7 +187,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise}
      */
     remove() {
-        return this._dataReference.remove();
+        return this._dataReference.remove().catch((error) => this._rethrowFirebaseError(error, null))
     }
 
     /**
@@ -209,7 +214,9 @@ export class FirebaseDataSource extends DataSource {
      */
     setWithPriority(newData, priority) {
         /* Rethrow the error in order to be able to catch it higher up */
-        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((error) => this._rethrowFirebaseError(error, newData));
+        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((error) =>
+                this._rethrowFirebaseError(error, newData)
+        );
         /* Append another promise to the chain to keep track of whether it's still synchronized. Fail silently
          * since we already have error handling above */
         this._synced = this._synced.then(() => completionPromise).catch(() => {
@@ -441,7 +448,9 @@ export class FirebaseDataSource extends DataSource {
      */
     on(event, handler, context = this) {
         let boundHandler = this.handlers[handler] = handler.bind(this);
-        this._orderedDataReference.on(event, boundHandler);
+        this._orderedDataReference.on(event, boundHandler, (reasonForFailure) => {
+            console.log(`Read failed: ${reasonForFailure}`);
+        });
     }
 
     /**
@@ -619,6 +628,6 @@ export class FirebaseDataSource extends DataSource {
     _rethrowFirebaseError(error, newData) {
         error.data = newData;
         error.path = this.path();
-        throw new Error(error);
+        return Promise.reject(error);
     }
 }
