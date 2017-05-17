@@ -79,8 +79,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
             ensureVisible: null,
             layoutOptions: {
                 isSectionCallback: options.stickyHeaders ? function (renderNode) {
-                        return renderNode.groupId !== undefined;
-                    } : undefined
+                    return renderNode.groupId !== undefined;
+                } : undefined
             },
             chatScrolling: false
         }, options));
@@ -792,10 +792,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     //TODO: This won't reorder children, which is a problem
-    _onChildChanged(dataStoreIndex, child, previousSiblingID) {
-        this._throttler.add(async() => {
-            let internalDataSourceData = this._findData(child.id, dataStoreIndex) || { position: -1 };
-            let changedItemIndex = internalDataSourceData.position;
+    async _onChildChanged(dataStoreIndex, child, previousSiblingID) {
+        this._throttler.add(async () => {
+            let changedItemIndex = this._findIndexFromID(dataStoreIndex, child.id);
 
             if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
 
@@ -803,8 +802,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
                 if (result instanceof Promise) {
                     result = await result;
-                    internalDataSourceData = this._findData(child.id, dataStoreIndex) || { position: -1 };
-                    changedItemIndex = internalDataSourceData.position;
+                    changedItemIndex = this._findIndexFromID(dataStoreIndex, child.id);
                 }
 
                 if (this.options.dataFilter &&
@@ -812,9 +810,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
                     this._removeItem(child, dataStoreIndex);
                 } else {
                     if (changedItemIndex === -1) {
-                        await this._addItem(child, previousSiblingID, dataStoreIndex);
+                        this._addItem(child, previousSiblingID, dataStoreIndex);
                     } else {
-                        await this._replaceItem(child, dataStoreIndex);
+                        this._replaceItem(child, dataStoreIndex);
                     }
                 }
             }
@@ -846,7 +844,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._throttler.add(() => {
             this._removeItem(child, dataStoreIndex);
         });
-    };
+    }
+    ;
 
 
     /**
@@ -1038,5 +1037,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
         if (!this.options.dataStores) {
             method('child_moved', this._onChildMoved.bind(this, 0));
         }
+    }
+
+    _findIndexFromID(dataStoreIndex, id) {
+        let internalDataSourceData = this._findData(id, dataStoreIndex) || { position: -1 };
+        return internalDataSourceData.position;
     }
 }
