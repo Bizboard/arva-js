@@ -132,7 +132,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     getRenderableFromID(id, dataStoreIndex = 0) {
         let data = this._findData(id, dataStoreIndex);
-        if(data){
+        if (data) {
             return data.renderable;
         }
     }
@@ -577,7 +577,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         let data = this._findData(child.id, dataStoreIndex);
 
-        if(!data) {
+        if (!data) {
             Utils.warn(`Child with ID ${child.id} is not present (anymore) in dataStore with index ${dataStoreIndex}`);
             return false;
         }
@@ -763,33 +763,25 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     _onChildAdded(dataStoreIndex, child, previousSiblingID) {
-        //TODO refactor this to be async
-        if (this.options.dataFilter &&
-            (typeof this.options.dataFilter === 'function')) {
+        this._throttler.add(async () => {
+            if (this.options.dataFilter &&
+                (typeof this.options.dataFilter === 'function')) {
 
-            let result = this.options.dataFilter(child);
+                let result = this.options.dataFilter(child);
 
-            if (result instanceof Promise) {
-                /* If the result is a Promise, show the item when that promise resolves. */
-                result.then((show) => {
-                    if (show) {
-                        this._throttler.add(() => {
-                            this._addItem(child, previousSiblingID, dataStoreIndex);
-                        });
-                    }
-                });
-            } else if (result) {
-                /* The result is an item, so we can add it directly. */
-                this._throttler.add(() => {
-                    this._addItem(child, previousSiblingID, dataStoreIndex,);
-                });
+                if (result instanceof Promise) {
+                    /* If the result is a Promise, wait until that promise resolves. */
+                    result = await result;
+                }
+
+                if (result) {
+                    await this._addItem(child, previousSiblingID, dataStoreIndex,);
+                }
+            } else {
+                /* There is no dataFilter method, so we can add this child. */
+                await this._addItem(child, previousSiblingID, dataStoreIndex);
             }
-        } else {
-            /* There is no dataFilter method, so we can add this child. */
-            this._throttler.add(() => {
-                this._addItem(child, previousSiblingID, dataStoreIndex);
-            });
-        }
+        });
     }
 
     /**
@@ -800,33 +792,33 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     //TODO: This won't reorder children, which is a problem
-    async _onChildChanged(dataStoreIndex, child, previousSiblingID) {
-        let internalDataSourceData = this._findData(child.id, dataStoreIndex) || { position: -1 };
-        let changedItemIndex = internalDataSourceData.position;
+    _onChildChanged(dataStoreIndex, child, previousSiblingID) {
+        this._throttler.add(async() => {
+            let internalDataSourceData = this._findData(child.id, dataStoreIndex) || { position: -1 };
+            let changedItemIndex = internalDataSourceData.position;
 
-        if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
+            if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
 
-            let result = this.options.dataFilter ? this.options.dataFilter(child) : true;
+                let result = this.options.dataFilter ? this.options.dataFilter(child) : true;
 
-            if (result instanceof Promise) {
-                result = await result;
-            }
+                if (result instanceof Promise) {
+                    result = await result;
+                    internalDataSourceData = this._findData(child.id, dataStoreIndex) || { position: -1 };
+                    changedItemIndex = internalDataSourceData.position;
+                }
 
-            if (this.options.dataFilter &&
-                typeof this.options.dataFilter === 'function' && !result) {
-                this._removeItem(child, dataStoreIndex);
-            } else {
-                if (changedItemIndex === -1) {
-                    this._throttler.add(() => {
-                        this._addItem(child, previousSiblingID, dataStoreIndex);
-                    });
+                if (this.options.dataFilter &&
+                    typeof this.options.dataFilter === 'function' && !result) {
+                    this._removeItem(child, dataStoreIndex);
                 } else {
-                    this._throttler.add(() => {
-                        this._replaceItem(child, dataStoreIndex);
-                    });
+                    if (changedItemIndex === -1) {
+                        await this._addItem(child, previousSiblingID, dataStoreIndex);
+                    } else {
+                        await this._replaceItem(child, dataStoreIndex);
+                    }
                 }
             }
-        }
+        });
     }
 
     /**
