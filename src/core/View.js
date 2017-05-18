@@ -61,6 +61,7 @@ export class View extends FamousView {
     constructor(options = {}) {
 
         super(options);
+        this._eventOutput.recordEvents();
 
         /* Bind all local methods to the current object instance, so we can refer to 'this'
          * in the methods as expected, even when they're called from event handlers.        */

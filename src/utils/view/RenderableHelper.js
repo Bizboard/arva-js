@@ -43,7 +43,6 @@ export class RenderableHelper {
         this._pipeToView = pipeMethod;
         this.waitingAnimations = [];
         this._renderables = {};
-        this._groupedRenderables = {};
         this._pipedRenderables = {};
         this._groupedRenderables = {};
         this._runningFlowStates = {};
@@ -52,7 +51,7 @@ export class RenderableHelper {
     assignRenderable(renderable, renderableName) {
         this._renderables[renderableName] = renderable;
         let renderableEquivalent = renderable;
-        if(renderable.decorations){
+        if (renderable.decorations) {
             renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName);
         }
         this._renderableCounterparts[renderableName] = renderableEquivalent;
@@ -73,53 +72,62 @@ export class RenderableHelper {
         } else {
             this._unpipeRenderable(renderableOrEquivalent, renderableName);
         }
-        let {decorations} = this._renderables[renderableName];
+        let renderable = this._renderables[renderableName];
+        let { decorations } = renderable;
         if (decorations) {
-            this._setDecorationPipes(renderableOrEquivalent, decorations.pipes, enabled);
-            this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions, enabled);
+            this._setDecorationPipes(renderableOrEquivalent, renderable, decorations.pipes, enabled);
+            this._setDecorationEvents(renderableOrEquivalent, renderable, decorations.eventSubscriptions, enabled);
         }
     }
 
     /**
      * Sets the decoration events that are specified with (among potential others) @layout.on and @layout.once
-     * @param {String} renderableName
+     * @param renderableCounterpart
+     * @param renderable
+     * @param subscriptions
      * @param enable. If false, removes the events.
      * @private
      */
-    _setDecorationEvents(renderable, subscriptions, enable = true) {
+    _setDecorationEvents(renderableCounterpart, renderable, subscriptions, enable = true) {
         for (let subscription of subscriptions || []) {
+            let eventName = subscription.eventName;
+            let callback = subscription.callback;
+            let boundMethod = this._bindMethod(callback);
             let subscriptionType = subscription.type || 'on';
             if (!enable) {
                 /* In famous, you remove a listener by calling removeListener, but some classes might have another event
                  * listener that is called off
                  */
-                subscriptionType = renderable.removeListener ? 'removeListener' : 'off';
+                subscriptionType = renderableCounterpart.removeListener ? 'removeListener' : 'off';
             }
-            let eventName = subscription.eventName;
-            let callback = subscription.callback;
-            if (subscriptionType in renderable) {
-                renderable[subscriptionType](eventName, this._bindMethod(callback));
+
+            if (subscriptionType in renderableCounterpart) {
+                renderableCounterpart[subscriptionType](eventName, boundMethod);
             }
         }
+        if (enable) {
+            this._flushBufferedEvents(renderable, subscriptions);
+        }
     }
-    
+
     /**
      * Pipes the renderable to a list of other renderables
-     * @param {Renderable} renderable
-     * @param {Array|String} Names of renderables that have to be piped.
+     * @param {Renderable} renderableCounterpart
+     * @param renderable
+     * @param pipes
      * @param {Boolean} enabled. Set to false to unpipe
      * @private
      */
-    _setDecorationPipes(renderable, pipes, enabled = true) {
+    _setDecorationPipes(renderableCounterpart, renderable, pipes, enabled = true) {
         for (let pipeToName of pipes || []) {
             let target = pipeToName ? this._renderables[pipeToName] : this;
             let pipeFn = (enabled ? '' : 'un') + 'pipe';
             /* In order to keep things consistent and easier to use, we pipe from the renderable equivalent */
-            if (renderable[pipeFn]) {
-                renderable[pipeFn](target);
+            if (renderableCounterpart[pipeFn]) {
+                renderableCounterpart[pipeFn](target);
             }
-            if (renderable[pipeFn] && target._eventOutput) {
-                renderable[pipeFn](target._eventOutput);
+            if (renderableCounterpart[pipeFn] && target._eventOutput) {
+                renderableCounterpart[pipeFn](target._eventOutput);
             }
         }
 
@@ -131,7 +139,7 @@ export class RenderableHelper {
      * @private
      */
     _unpipeRenderable(renderableName) {
-        if(this._pipeToView(this._pipedRenderables[renderableName], false)){
+        if (this._pipeToView(this._pipedRenderables[renderableName], false)) {
             delete this._pipedRenderables[renderableName];
         }
     }
@@ -144,13 +152,13 @@ export class RenderableHelper {
      */
     _pipeRenderable(renderable, renderableName) {
         /* Auto pipe events from the renderable to the view */
-        if(this._pipeToView(renderable, true)){
+        if (this._pipeToView(renderable, true)) {
             this._pipedRenderables[renderableName] = renderable;
         }
     }
 
     /**
-     * Determines whether the renderable counterpart (i.e. animationcontroller or containersurface) should be used 
+     * Determines whether the renderable counterpart (i.e. animationcontroller or containersurface) should be used
      * when piping, or the renderable itself
      * @param {String} renderableName The name of the renderable
      * @returns {Renderable} the renderable or its counterpart
@@ -168,7 +176,7 @@ export class RenderableHelper {
      * @private
      */
     _addDecoratedRenderable(renderable, renderableName) {
-        let {flow, size, dock} = renderable.decorations;
+        let { flow, size, dock } = renderable.decorations;
 
         if (size) {
             this._bindSizeFunctions(size);
@@ -208,7 +216,7 @@ export class RenderableHelper {
         }
         return false;
     }
-    
+
     /**
      * Processes the renderable counter-part of the renderable. The counterpart is different from the renderable
      * in @layout.draggable, @layout.swipable, @layout.animate, and others.
@@ -218,7 +226,7 @@ export class RenderableHelper {
      * @private
      */
     _processsDecoratedRenderableCounterpart(renderable, renderableName) {
-        let {draggableOptions, swipableOptions, clip, animation, flow} = renderable.decorations;
+        let { draggableOptions, swipableOptions, clip, animation, flow } = renderable.decorations;
 
         /* If we clip, then we need to create a containerSurface */
         if (clip) {
@@ -226,7 +234,7 @@ export class RenderableHelper {
             /* Resolve clipSize specified as undefined */
             let containerSurface = new ContainerSurface({
                 size: clipSize,
-                properties: {overflow: 'hidden', ...clip.properties}
+                properties: { overflow: 'hidden', ...clip.properties }
             });
             containerSurface.add(renderable);
             if (renderable.pipe) {
@@ -301,7 +309,7 @@ export class RenderableHelper {
             }
         }
     }
-    
+
     /**
      * Processes an animated renderable
      * @param renderable
@@ -329,7 +337,7 @@ export class RenderableHelper {
             if (options.delay && options.delay > 0 && options.showInitially) {
                 Timer.setTimeout(showMethod, options.delay);
             } else if (options.waitFor) {
-                this.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor});
+                this.waitingAnimations.push({ showMethod: showMethod, waitFor: options.waitFor });
             } else if (options.showInitially) {
                 showMethod();
             }
@@ -349,7 +357,7 @@ export class RenderableHelper {
     showWithAnimationController(animationController, renderable, show = true, callback) {
         animationController._showingRenderable = show;
         let callbackIfExists = () => {
-            if(callback) {
+            if (callback) {
                 callback();
             }
         };
@@ -382,7 +390,7 @@ export class RenderableHelper {
 
 
     _getGroupName(renderable) {
-        let {decorations} = renderable;
+        let { decorations } = renderable;
 
         if (!!decorations.dock) {
             /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
@@ -412,13 +420,16 @@ export class RenderableHelper {
      */
     removeRenderable(renderableName) {
         let renderable = this._renderables[renderableName];
-        this._setDecorationPipes(renderableName, false);
-        this._setDecorationEvents(renderableName, false);
+        let renderableCounterPart = this._renderableCounterparts[renderableName];
+        let { decorations } = renderable;
+        this._setDecorationPipes(renderableCounterPart, renderable, decorations.pipes, false);
+        this._setDecorationEvents(renderableCounterPart, renderable, decorations.eventSubscriptions, false);
         this._unpipeRenderable(renderableName, renderableName);
         this._removeRenderableFromDecoratorGroup(renderable, renderableName);
         delete this._renderableCounterparts[renderableName];
         delete this._renderables[renderableName];
     }
+
     //Done
     _removeRenderableFromDecoratorGroup(renderable, renderableName) {
         let groupName = this._getGroupName(renderable);
@@ -456,16 +467,16 @@ export class RenderableHelper {
         /* There can be existing decorators already, which are preserved. We are extending the decorators object,
          * by first creating a fake renderable that gets decorators */
         this.applyDecoratorFunctionsToRenderable(fakeRenderable, decorators)
-        let {decorations} = fakeRenderable;
+        let { decorations } = fakeRenderable;
         let renderableOrEquivalent = this._getPipeableRenderableFromName(renderableName);
         /* We might need to do extra piping */
-        this._setDecorationPipes(renderableOrEquivalent, decorations.pipes);
-        this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions);
+        this._setDecorationPipes(renderableOrEquivalent, renderable, decorations.pipes);
+        this._setDecorationEvents(renderableOrEquivalent, renderable, decorations.eventSubscriptions);
 
         /* If the renderable is surface, we need to do some special things if there is a true size being used */
         if (Utils.renderableIsSurface(renderable)) {
             let sizesToCheck = [];
-            let {size, dock} = decorations;
+            let { size, dock } = decorations;
             if (size) {
                 sizesToCheck.push(size);
             }
@@ -504,7 +515,7 @@ export class RenderableHelper {
         }
 
         /* Merge existing flow decorations so they won't be discarded */
-        if(renderable.decorations.flow && fakeRenderable.decorations.flow){
+        if (renderable.decorations.flow && fakeRenderable.decorations.flow) {
             merge(fakeRenderable.decorations.flow, renderable.decorations.flow)
         }
 
@@ -521,7 +532,7 @@ export class RenderableHelper {
 
     }
 
-    applyDecoratorFunctionsToRenderable(renderable, decorators){
+    applyDecoratorFunctionsToRenderable(renderable, decorators) {
         for (let decorator of decorators) {
             /* There can be existing decorators already, which are preserved. We are extending the decorators object,
              * by first creating a fake renderable that gets decorators */
@@ -536,10 +547,12 @@ export class RenderableHelper {
         if (!renderableHasAnimationController) {
             this._setupAllRenderableListeners(renderableName, false);
         }
-        newRenderable.decorations = {...newRenderable.decorations, ...renderable.decorations};
+        newRenderable.decorations = { ...newRenderable.decorations, ...renderable.decorations };
         let newRenderableCounterpart = this._processsDecoratedRenderableCounterpart(newRenderable, renderableName);
         this._groupedRenderables[this._getGroupName(renderable)].set(renderableName, [newRenderable, newRenderableCounterpart]);
-        if (!renderableHasAnimationController) {
+        if (renderableHasAnimationController) {
+            this._flushBufferedEvents(newRenderable, newRenderable.decorations.eventSubscriptions);
+        } else {
             this._renderableCounterparts[renderableName] = newRenderableCounterpart;
             this._setupAllRenderableListeners(renderableName, true);
         }
@@ -561,7 +574,7 @@ export class RenderableHelper {
         let flowWasInterrupted = false;
 
         flowOptions.currentState = stateName;
-        for (let {transformations, options} of flowOptions.states[stateName].steps) {
+        for (let { transformations, options } of flowOptions.states[stateName].steps) {
             flowOptions.currentTransition = options.transition;
             this.decorateRenderable(renderableName, ...transformations);
 
@@ -584,7 +597,7 @@ export class RenderableHelper {
 
 
             let emit = (renderable._eventOutput && renderable._eventOutput.emit || renderable.emit).bind(renderable._eventOutput || renderable);
-            emit('flowStep', {state: stateName});
+            emit('flowStep', { state: stateName });
         }
 
         return !flowWasInterrupted;
@@ -593,7 +606,7 @@ export class RenderableHelper {
     async setViewFlowState(stateName = '', flowOptions) {
         let steps = flowOptions.viewStates[stateName];
 
-        if(!steps) {
+        if (!steps) {
             (console.warn || console.log)(`Flow state name '${stateName}' does not exist`);
             return false;
         }
@@ -663,22 +676,22 @@ export class RenderableHelper {
 
         var position = new Transitionable([0, 0]);
 
-        sync.on('update', (data)=> {
-            let [x,y] = position.get();
+        sync.on('update', (data) => {
+            let [x, y] = position.get();
             x += !swipableOptions.snapX ? data.delta[0] : 0;
             y += !swipableOptions.snapY ? data.delta[1] : 0;
-            let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions;
+            let { yRange = [0, 0], xRange = [0, 0] } = swipableOptions;
             y = limit(yRange[0], y, yRange[1]);
             x = limit(xRange[0], x, xRange[1]);
             position.set([x, y]);
         });
 
-        sync.on('end', (data)=> {
-            let [x,y] = position.get();
+        sync.on('end', (data) => {
+            let [x, y] = position.get();
             data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0] * 2 : data.velocity[0];
             let endX = swipableOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175);
             let endY = swipableOptions.snapY ? 0 : y + data.delta[1] + (data.velocity[1] * 175);
-            let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions;
+            let { yRange = [0, 0], xRange = [0, 0] } = swipableOptions;
             endY = limit(yRange[0], endY, yRange[1]);
             endX = limit(xRange[0], endX, xRange[1]);
             position.set([endX, endY], {
@@ -695,7 +708,7 @@ export class RenderableHelper {
 
         return renderable;
     }
-    
+
     _determineSwipeEvents(renderable, swipableOptions = {}, endX = 0, endY = 0) {
 
         if (!renderable || !renderable._eventOutput) return;
@@ -787,9 +800,24 @@ export class RenderableHelper {
 
         dockedRenderables.remove(renderableName);
         dockedRenderables.insert(index, renderableName, renderableToRearrange);
-        
+
         return true;
 
     }
-    
+
+    _flushBufferedEvents(renderable, eventSubscriptions) {
+        if (!eventSubscriptions || !renderable._eventOutput || !renderable._eventOutput.flush) {
+            return;
+        }
+        /* Call methods for events that might have been emitted during construction */
+        let bufferedEvents = renderable._eventOutput.flush();
+        for (let bufferedEventName in bufferedEvents) {
+            for (let eventArgs of bufferedEvents[bufferedEventName]) {
+                let eventSubscription = eventSubscriptions.find(({eventName}) => eventName === bufferedEventName);
+                if(eventSubscription){
+                    this._bindMethod(eventSubscription.callback)(...Array.from(eventArgs).slice(1));
+                }
+            }
+        }
+    }
 }
