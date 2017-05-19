@@ -188,7 +188,17 @@ export class SharePointDataSource extends DataSource {
      * @returns {void}
      */
     setPriority(newPriority) {
-        throw new Error('Not implemented');
+        throw new Promise.reject('Not implemented');
+    }
+
+
+    /**
+     * Sets data at the specified path(s) without touching unspecified paths
+     * @param {JSON} data The object to push
+     * @returns {Promise}
+     **/
+    update(data) {
+        return Promise.reject('Not implemented');
     }
 
     /**

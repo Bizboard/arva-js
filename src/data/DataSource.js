@@ -274,6 +274,15 @@ export class DataSource {
     }
 
     /**
+     * Sets data at the specified path(s) without touching unspecified paths
+     * @param {JSON} data The object to push
+     * @returns {Promise}
+     **/
+    update(data) {
+        return Promise.resolve();
+    }
+
+    /**
      * Removes the callback set to trigger when dataSource updates the data.
      * @returns {void}
      **/
