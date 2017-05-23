@@ -763,33 +763,25 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     _onChildAdded(dataStoreIndex, child, previousSiblingID) {
-        //TODO refactor this to be async
-        if (this.options.dataFilter &&
-            (typeof this.options.dataFilter === 'function')) {
+        this._throttler.add(async () => {
+            if (this.options.dataFilter &&
+                (typeof this.options.dataFilter === 'function')) {
 
-            let result = this.options.dataFilter(child);
+                let result = this.options.dataFilter(child);
 
-            if (result instanceof Promise) {
-                /* If the result is a Promise, show the item when that promise resolves. */
-                result.then((show) => {
-                    if (show) {
-                        this._throttler.add(() => {
-                            this._addItem(child, previousSiblingID, dataStoreIndex);
-                        });
-                    }
-                });
-            } else if (result) {
-                /* The result is an item, so we can add it directly. */
-                this._throttler.add(() => {
-                    this._addItem(child, previousSiblingID, dataStoreIndex,);
-                });
+                if (result instanceof Promise) {
+                    /* If the result is a Promise, wait until that promise resolves. */
+                    result = await result;
+                }
+
+                if (result) {
+                    await this._addItem(child, previousSiblingID, dataStoreIndex,);
+                }
+            } else {
+                /* There is no dataFilter method, so we can add this child. */
+                await this._addItem(child, previousSiblingID, dataStoreIndex);
             }
-        } else {
-            /* There is no dataFilter method, so we can add this child. */
-            this._throttler.add(() => {
-                this._addItem(child, previousSiblingID, dataStoreIndex);
-            });
-        }
+        });
     }
 
     /**
@@ -801,31 +793,30 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     //TODO: This won't reorder children, which is a problem
     async _onChildChanged(dataStoreIndex, child, previousSiblingID) {
+        this._throttler.add(async () => {
+            let changedItemIndex = this._findIndexFromID(dataStoreIndex, child.id);
 
-        let changedItemIndex = this._findIndexFromID(dataStoreIndex, child.id);
+            if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
 
-        if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
+                let result = this.options.dataFilter ? this.options.dataFilter(child) : true;
 
-            let result = this.options.dataFilter ? this.options.dataFilter(child) : true;
-
-            if (result instanceof Promise) {
-                result = await result;
-            }
-
-            if (this.options.dataFilter &&
-                typeof this.options.dataFilter === 'function' && !result) {
-                this._removeItem(child, dataStoreIndex);
-            } else {
-                this._throttler.add(() => {
+                if (result instanceof Promise) {
+                    result = await result;
                     changedItemIndex = this._findIndexFromID(dataStoreIndex, child.id);
+                }
+
+                if (this.options.dataFilter &&
+                    typeof this.options.dataFilter === 'function' && !result) {
+                    this._removeItem(child, dataStoreIndex);
+                } else {
                     if (changedItemIndex === -1) {
                         this._addItem(child, previousSiblingID, dataStoreIndex);
                     } else {
                         this._replaceItem(child, dataStoreIndex);
                     }
-                });
+                }
             }
-        }
+        });
     }
 
     /**
