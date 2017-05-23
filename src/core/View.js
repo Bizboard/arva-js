@@ -714,7 +714,7 @@ export class View extends FamousView {
     }
 
     _initTrueSizedBookkeeping() {
-        this.layout.on('layoutstart', ({ oldSize, size }) => {
+        this.layout.on('sizeChanged', ({ oldSize, size }) => {
             if (size[0] !== oldSize[0] ||
                 size[1] !== oldSize[1]) {
                 this._sizeResolver.doTrueSizedBookkeeping();
