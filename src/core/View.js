@@ -503,7 +503,8 @@ export class View extends FamousView {
      * @private
      */
     _assignRenderable(renderable, renderableName) {
-        this._renderableHelper.assignRenderable(renderable, renderableName);
+        this._renderableHelper.assignRenderable(renderable, renderableName, this._name());
+
         /* Do add property to object because there can be a getter defined instead of a class property,
          * in which case we have to use the ObjectHelper
          */
