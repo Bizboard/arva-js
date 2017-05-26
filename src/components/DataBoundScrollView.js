@@ -27,7 +27,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
 
     /**
-     * Be sure to specifiy either a getSize function in the class of the itemTemplate, or to specify the size in the
+     * Be sure to specify either a getSize function in the class of the itemTemplate, or to specify the size in the
      * layoutOptions.
      *
      * @param {Object} options The options passed inherit from previous classes. Avoid using the dataSource option since
@@ -79,8 +79,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
             ensureVisible: null,
             layoutOptions: {
                 isSectionCallback: options.stickyHeaders ? function (renderNode) {
-                        return renderNode.groupId !== undefined;
-                    } : undefined
+                    return renderNode.groupId !== undefined;
+                } : undefined
             },
             chatScrolling: false
         }, options));
@@ -110,7 +110,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
 
         if (!(this.options.dataStores || this.options.dataStore) || !this.options.itemTemplate) {
-            console.log('Datasource and template should both be set.');
+            console.log('DataSource and template should both be set.');
             return this;
         }
 
@@ -132,7 +132,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     getRenderableFromID(id, dataStoreIndex = 0) {
         let data = this._findData(id, dataStoreIndex);
-        if(data){
+        if (data) {
             return data.renderable;
         }
     }
@@ -165,11 +165,11 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     /**
-     * Sets the datastore to use. This will repopulate the view and remove any (if present) old items.
-     * We decorate it with debounce in order to avoid race conditions when setting the dataStore frequently after each other
+     * Sets the dataStore to use. This will repopulate the view and remove any (if present) old items.
+     * We decorate it with debounce in order to (naively) avoid race conditions when setting the dataStore frequently after each other
      * @param dataStore
      */
-    @debounce(300)
+    @debounce(500)
     setDataStore(dataStore) {
         this.clearDataStore();
         this.options.dataStore = dataStore;
@@ -177,10 +177,10 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     /**
-     * Sets the multiple datastore to use. The "multiple" version of setDataStore(dataStore).
+     * Sets the multiple dataStores to use. The "multiple" version of setDataStore(dataStore).
      * @param {Array} dataStores
      */
-    @debounce(300)
+    @debounce(500)
     setDataStores(dataStores) {
         let { dataStore, dataStores: previousDataStores } = this.options;
         if (dataStore) {
@@ -577,7 +577,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         let data = this._findData(child.id, dataStoreIndex);
 
-        if(!data) {
+        if (!data) {
             Utils.warn(`Child with ID ${child.id} is not present (anymore) in dataStore with index ${dataStoreIndex}`);
             return false;
         }
@@ -615,7 +615,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         /* Check if the group corresponding to the child is now empty */
         let group = this._internalGroups[groupByValue];
         if (group && group.itemsCount === 0) {
-            /* TODO: Maybe remove internalgroups[groupByValue]? (Or not?) */
+            /* TODO: Maybe remove internalGroups[groupByValue]? (Or not?) */
             let { position } = group;
             this._updatePosition(position, -1);
             this.remove(position);
@@ -752,15 +752,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             this._initialLoad = true;
             dataStore.on('ready', () => this._initialLoad = false);
         }
-
-
-        dataStore.on('child_added', this._onChildAdded.bind(this, index));
-        dataStore.on('child_changed', this._onChildChanged.bind(this, index));
-        dataStore.on('child_removed', this._onChildRemoved.bind(this, index));
-        /* Only listen for child_moved if there is one single dataStore. TODO: See if we want to change this behaviour */
-        if (!this.options.dataStores) {
-            dataStore.on('child_moved', this._onChildMoved.bind(this, 0));
-        }
+        this._setupDataStoreListeners(dataStore, index, true);
     }
 
     /**
@@ -771,32 +763,25 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     _onChildAdded(dataStoreIndex, child, previousSiblingID) {
-        if (this.options.dataFilter &&
-            (typeof this.options.dataFilter === 'function')) {
+        this._throttler.add(async () => {
+            if (this.options.dataFilter &&
+                (typeof this.options.dataFilter === 'function')) {
 
-            let result = this.options.dataFilter(child);
+                let result = this.options.dataFilter(child);
 
-            if (result instanceof Promise) {
-                /* If the result is a Promise, show the item when that promise resolves. */
-                result.then((show) => {
-                    if (show) {
-                        this._throttler.add(() => {
-                            this._addItem(child, previousSiblingID, dataStoreIndex);
-                        });
-                    }
-                });
-            } else if (result) {
-                /* The result is an item, so we can add it directly. */
-                this._throttler.add(() => {
-                    this._addItem(child, previousSiblingID, dataStoreIndex,);
-                });
+                if (result instanceof Promise) {
+                    /* If the result is a Promise, wait until that promise resolves. */
+                    result = await result;
+                }
+
+                if (result) {
+                    await this._addItem(child, previousSiblingID, dataStoreIndex,);
+                }
+            } else {
+                /* There is no dataFilter method, so we can add this child. */
+                await this._addItem(child, previousSiblingID, dataStoreIndex);
             }
-        } else {
-            /* There is no dataFilter method, so we can add this child. */
-            this._throttler.add(() => {
-                this._addItem(child, previousSiblingID, dataStoreIndex);
-            });
-        }
+        });
     }
 
     /**
@@ -808,32 +793,30 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     //TODO: This won't reorder children, which is a problem
     async _onChildChanged(dataStoreIndex, child, previousSiblingID) {
-        let internalDataSourceData = this._findData(child.id, dataStoreIndex) || { position: -1 };
-        let changedItemIndex = internalDataSourceData.position;
+        this._throttler.add(async () => {
+            let changedItemIndex = this._findIndexFromID(dataStoreIndex, child.id);
 
-        if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
+            if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
 
-            let result = this.options.dataFilter ? this.options.dataFilter(child) : true;
+                let result = this.options.dataFilter ? this.options.dataFilter(child) : true;
 
-            if (result instanceof Promise) {
-                result = await result;
-            }
+                if (result instanceof Promise) {
+                    result = await result;
+                    changedItemIndex = this._findIndexFromID(dataStoreIndex, child.id);
+                }
 
-            if (this.options.dataFilter &&
-                typeof this.options.dataFilter === 'function' && !result) {
-                this._removeItem(child, dataStoreIndex);
-            } else {
-                if (changedItemIndex === -1) {
-                    this._throttler.add(() => {
-                        this._addItem(child, previousSiblingID, dataStoreIndex);
-                    });
+                if (this.options.dataFilter &&
+                    typeof this.options.dataFilter === 'function' && !result) {
+                    this._removeItem(child, dataStoreIndex);
                 } else {
-                    this._throttler.add(() => {
+                    if (changedItemIndex === -1) {
+                        this._addItem(child, previousSiblingID, dataStoreIndex);
+                    } else {
                         this._replaceItem(child, dataStoreIndex);
-                    });
+                    }
                 }
             }
-        }
+        });
     }
 
     /**
@@ -861,7 +844,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._throttler.add(() => {
             this._removeItem(child, dataStoreIndex);
         });
-    };
+    }
+    ;
 
 
     /**
@@ -1005,14 +989,14 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     /**
-     * Guesses that layout is listlayout
+     * Based on the guess that layout is ListLayout, calculates the vertical size
      * @returns {number}
      */
     getSize() {
         let item = this._dataSource._.head;
         let { layoutOptions } = this.options;
         if (this.options.layout !== ListLayout || (this.options.layoutOptions.direction && this.options.layoutOptions.direction !== 1)) {
-            console.log(`'Trying to calculate the size of a DataBoundSrollView, which can't be done in the current configuration`);
+            console.log(`'Trying to calculate the size of a DataBoundScrollView, which can't be done in the current configuration`);
             return [undefined, undefined];
         }
         let height = layoutOptions && layoutOptions.margins ? layoutOptions.margins[0] + layoutOptions.margins[2] : 0;
@@ -1024,7 +1008,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 if (renderable.getSize && (itemSize = renderable.getSize())) {
                     height += itemSize[1];
                 } else {
-                    console.log('Trying to calculate the size of a DataBoundSrollView, but all elements cannot be calculated');
+                    console.log('Trying to calculate the size of a DataBoundScrollView, but all elements cannot be calculated');
                 }
                 if (layoutOptions && layoutOptions.spacing) {
                     height += layoutOptions.spacing;
@@ -1034,5 +1018,29 @@ export class DataBoundScrollView extends ReflowingScrollView {
         }
 
         return [undefined, height];
+    }
+
+    /**
+     *
+     * @param dataStore
+     * @param index
+     * @param {Boolean} shouldActivate
+     * @private
+     */
+    _setupDataStoreListeners(dataStore, index, shouldActivate) {
+        let methodName = shouldActivate ? 'on' : 'off';
+        let method = dataStore[methodName];
+        method('child_added', this._onChildAdded.bind(this, index));
+        method('child_changed', this._onChildChanged.bind(this, index));
+        method('child_removed', this._onChildRemoved.bind(this, index));
+        /* Only listen for child_moved if there is one single dataStore. TODO: See if we want to change this behaviour to support moved children within the dataStore */
+        if (!this.options.dataStores) {
+            method('child_moved', this._onChildMoved.bind(this, 0));
+        }
+    }
+
+    _findIndexFromID(dataStoreIndex, id) {
+        let internalDataSourceData = this._findData(id, dataStoreIndex) || { position: -1 };
+        return internalDataSourceData.position;
     }
 }

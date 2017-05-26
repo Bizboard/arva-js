@@ -17,7 +17,7 @@ export class LocalPrioritisedArray extends PrioritisedArray {
 
     /**
      * Override to make sure that we catch the 'removed' events by patching the model.remove function
-     * of whatever is added
+     * of whatever is added, and also that we can follow 'changed' events
      * @param item
      * @param previousSiblingId
      * @returns {Object}
@@ -34,38 +34,53 @@ export class LocalPrioritisedArray extends PrioritisedArray {
             originalRemoveFunction.apply(this, arguments);
         }.bind(resultingModel);
 
+        resultingModel.on('changed', () => {
+            this._eventEmitter.emit('child_changed', resultingModel, null);
+            this._eventEmitter.emit('value', this);
+        });
+
         return resultingModel;
     }
 
     _buildFromDataSource() {
     }
 
-    static fromPrioritisedArray(prioritisedArray) {
-        let LocalizedModel = LocalModel.createClassFromModel(prioritisedArray._dataType);
-        let LocalisedPrioritisedArray = LocalPrioritisedArray.classFromPrioritisedArray(prioritisedArray);
+    static mergePrioritisedArrays(...prioritisedArrays) {
+        let LocalizedModel = LocalModel.createMergedModelClass(...prioritisedArrays.map((prioritisedArray) => prioritisedArray._dataType));
+        let LocalisedPrioritisedArray = LocalPrioritisedArray.createMergedPrioritisedArrayClass(...prioritisedArrays);
         let localPrioritisedArray = new LocalisedPrioritisedArray(LocalizedModel);
-        prioritisedArray.once('value', () => {
-            for (let item of prioritisedArray) {
-                /* Add a copy so that everything stays local by converting it to a localizedModel */
-                localPrioritisedArray.add(LocalModel.cloneModelProperties(item));
-            }
-        });
+        for(let prioritisedArray of prioritisedArrays){
+            prioritisedArray.once('value', () => {
+                for (let item of prioritisedArray) {
+                    /* Add a copy so that everything stays local by converting it to a localizedModel */
+                    localPrioritisedArray.add(new LocalizedModel(item.id, LocalModel.cloneModelProperties(item)));
+                }
+            });
+        }
         return localPrioritisedArray;
     }
 
-    //TODO This function isn't bullet proof, since it won't execute the constructor of the prioritisedArray
-    static classFromPrioritisedArray(prioritisedArray) {
-        class LocalisedPrioritisedArray extends LocalPrioritisedArray {
-        }
-        let modelPrototype = Object.getPrototypeOf(prioritisedArray);
+    static fromPrioritisedArray(prioritisedArray) {
+        return this.mergePrioritisedArrays(prioritisedArray);
+    }
 
-        /* Define the properties that was defined on the modelClass, but omit things that would mess up the construction */
-        Object.defineProperties(LocalisedPrioritisedArray.prototype,
-            omit(
-                ObjectHelper.getMethodDescriptors(modelPrototype),
-                ['constructor', 'length', ...Object.getOwnPropertyNames(LocalPrioritisedArray.prototype)]
-            )
-        );
+    static classFromPrioritisedArray(prioritisedArray) {
+        return this.createMergedPrioritisedArrayClass(prioritisedArray);
+    }
+
+    //TODO This function isn't bullet proof, since it won't execute the constructor of the prioritisedArray and might miss some setup from the original class
+    static createMergedPrioritisedArrayClass(...prioritisedArrays) {
+        class LocalisedPrioritisedArray extends LocalPrioritisedArray {}
+        for(let prioritisedArray of prioritisedArrays){
+            let prioritisedArrayPrototype  = Object.getPrototypeOf(prioritisedArray);
+            /* Define the properties that was defined on the modelClass, but omit things that would mess up the construction */
+            Object.defineProperties(LocalisedPrioritisedArray.prototype,
+                omit(
+                    ObjectHelper.getMethodDescriptors(prioritisedArrayPrototype),
+                    ['constructor', 'length', ...Object.getOwnPropertyNames(LocalPrioritisedArray.prototype)]
+                )
+            );
+        }
         return LocalisedPrioritisedArray;
     }
 

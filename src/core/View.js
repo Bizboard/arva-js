@@ -130,10 +130,10 @@ export class View extends FamousView {
 
     /**
      * Adds a renderable to the layout.
-     * @param {Renderable} renderable The renderable to be added
+     * @param {Surface|FamousView|View} renderable The renderable to be added
      * @param {String} renderableName The name (key) of the renderable
      * @param {Decorator} Decorator Any decorator(s) to apply to the renderable
-     * @returns {Renderable} The renderable that was assigned
+     * @returns {Surface|FamousView|View} The renderable that was assigned
      */
     addRenderable(renderable, renderableName, ...decorators) {
         /* Due to common mistake, we check if renderableName is a string */
@@ -268,7 +268,7 @@ export class View extends FamousView {
     /**
      * Replaces an existing decorated renderable with a new renderable, preserving all necessary state and decorations
      * @param {String} renderableName. The name of the renderable
-     * @param {Renderable} newRenderable Renderable to replace the old renderable with
+     * @param {Surface|FamousView|View} newRenderable Renderable to replace the old renderable with
      */
     replaceRenderable(renderableName, newRenderable) {
         this._renderableHelper.replaceRenderable(renderableName, newRenderable);
@@ -498,12 +498,13 @@ export class View extends FamousView {
 
     /**
      * Assigns a renderable to this view, without setting this[renderableName]
-     * @param {Renderable} renderable the renderable that is going to be added
+     * @param {Surface|FamousView|View} renderable the renderable that is going to be added
      * @param {String} renderableName the name of the renderable
      * @private
      */
     _assignRenderable(renderable, renderableName) {
-        this._renderableHelper.assignRenderable(renderable, renderableName);
+        this._renderableHelper.assignRenderable(renderable, renderableName, this._name());
+
         /* Do add property to object because there can be a getter defined instead of a class property,
          * in which case we have to use the ObjectHelper
          */

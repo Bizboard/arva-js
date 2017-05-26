@@ -49,11 +49,12 @@ export class RenderableHelper {
         this._runningFlowStates = {};
     }
 
-    assignRenderable(renderable, renderableName) {
+    assignRenderable(renderable, renderableName, viewName) {
         this._renderables[renderableName] = renderable;
         let renderableEquivalent = renderable;
         if(renderable.decorations){
             renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName);
+            renderableEquivalent._hiddenID = `${viewName}.${renderableName}`;
         }
         this._renderableCounterparts[renderableName] = renderableEquivalent;
         this._setupAllRenderableListeners(renderableName);

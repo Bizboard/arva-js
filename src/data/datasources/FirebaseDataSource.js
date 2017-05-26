@@ -60,7 +60,12 @@ export class FirebaseDataSource extends DataSource {
         } else if (this.options.orderBy && this.options.orderBy === '.value') {
             this._orderedDataReference = this._dataReference.orderByValue();
         } else if (this.options.orderBy && this.options.orderBy !== '') {
-            this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+            let {orderBy} = this.options;
+            if(orderBy === 'id'){
+                this._orderedDataReference = this._dataReference.orderByKey();
+            } else {
+                this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+            }
         } else if (this.options.equalTo) {
             let [key, value] = this.options.equalTo;
             if (key === 'id') {
@@ -182,7 +187,15 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise}
      */
     remove() {
-        return this._dataReference.remove();
+        return this._dataReference.remove().catch((error) => this._rethrowFirebaseError(error, null))
+    }
+
+    /**
+     * Sets data at the specified path(s) without touching unspecified paths
+     * @returns {Promise}
+     */
+    update(data) {
+        return this._dataReference.update(data).catch((error) => this._rethrowFirebaseError(error, data));
     }
 
     /**
@@ -443,7 +456,9 @@ export class FirebaseDataSource extends DataSource {
      */
     on(event, handler, context = this) {
         let boundHandler = this.handlers[handler] = handler.bind(this);
-        this._orderedDataReference.on(event, boundHandler);
+        this._orderedDataReference.on(event, boundHandler, (reasonForFailure) => {
+            console.log(`Read failed: ${reasonForFailure}`);
+        });
     }
 
     /**
