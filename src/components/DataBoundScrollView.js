@@ -670,17 +670,20 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     _moveItem(oldId, prevChildId = null, dataStoreIndex) {
 
-        let oldData = this._findData(oldId);
+        let oldData = this._findData(oldId && oldId.position || oldId);
         let oldIndex = oldData && oldData.position;
+
+        /* sometimes oldId is data ('oldData')*/
+        if (oldId && oldId.position) {
+            oldData = oldId;
+            oldIndex = oldId.position;
+        }
 
         let previousSiblingIndex = this._getNextVisibleIndex(prevChildId, dataStoreIndex);
         if (oldIndex !== previousSiblingIndex) {
             this.move(oldIndex, previousSiblingIndex);
-            /* oldData may be undefined in some instances, so we check before we try to set the index*/
-            if (oldData) {
-                this._internalDataSource[`${previousSiblingIndex}${dataStoreIndex}`] = oldData;
-                this._internalDataSource[`${previousSiblingIndex}${dataStoreIndex}`].position = oldIndex;
-            }
+            this._internalDataSource[`${previousSiblingIndex}${dataStoreIndex}`] = oldData;
+            this._internalDataSource[`${previousSiblingIndex}${dataStoreIndex}`].position = oldIndex;
         }
     }
 
