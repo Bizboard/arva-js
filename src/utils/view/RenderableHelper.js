@@ -53,10 +53,10 @@ export class RenderableHelper {
     assignRenderable(renderable, renderableName, viewName) {
         this._renderables[renderableName] = renderable;
         let renderableEquivalent = renderable;
-        renderableEquivalent._hiddenID = `${viewName}.${renderableName}`;
         if(renderable.decorations){
             renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName);
         }
+        renderableEquivalent._hiddenID = `${viewName}.${renderableName}`;
         this._renderableCounterparts[renderableName] = renderableEquivalent;
         this._setupAllRenderableListeners(renderableName);
     }

@@ -66,7 +66,7 @@ export class View extends FamousView {
          * in the methods as expected, even when they're called from event handlers.        */
         ObjectHelper.bindAllMethods(this, this);
 
-
+        this._hiddenID = View.getRenderableName();
         this._copyPrototypeProperties();
         this._initDataStructures();
         this._initOwnDecorations();
@@ -77,6 +77,14 @@ export class View extends FamousView {
         this._createLayoutController();
         this._initTrueSizedBookkeeping();
 
+    }
+
+    static setRenderableName(name) {
+        View._name = name;
+    }
+
+    static getRenderableName(){
+        return View._name;
     }
 
     //noinspection JSUnusedGlobalSymbols
@@ -444,7 +452,7 @@ export class View extends FamousView {
             let renderableConstructors = this.renderableConstructors.get(currentClassConstructor);
             for (let renderableName in renderableConstructors) {
                 let decorations = renderableConstructors[renderableName].decorations;
-
+                View.setRenderableName(`${this._name()}.${renderableName}`);
                 let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
 
                 /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
@@ -536,6 +544,7 @@ export class View extends FamousView {
             flow: !!this.decorations.useFlow || hasFlowyRenderables,
             partialFlow: !this.decorations.useFlow,
             group: this.decorations.nested,
+            _hiddenID: this._hiddenID,
             nativeScroll: !!this.decorations.nativeScrollable,
             flowOptions: this.decorations.flowOptions || { spring: { period: 200 } },
             layout: function (context, options) {
@@ -543,9 +552,6 @@ export class View extends FamousView {
                 /* Because views that extend this View class first call super() and then define their renderables,
                  * we wait until the first engine render tick to add our renderables to the layout, when the view will have declared them all.
                  * layout.setDataSource() will automatically pipe events from the renderables to this View. */
-                if(!this.layout._hiddenID){
-                    this.layout._hiddenID = this._hiddenID
-                }
                 if (!this._initialised) {
                     this.layout.setDataSource(this.renderables);
                     this._renderableHelper.pipeAllRenderables();
@@ -623,6 +629,7 @@ export class View extends FamousView {
         let { scrollableOptions } = this.decorations;
         if (scrollableOptions) {
             this._scrollView = new ReflowingScrollView(scrollableOptions);
+            this._scrollView.group._hiddenID = this._hiddenID;
             this.layout.getSize = this.getSize;
             this._scrollView.push(this.layout);
             this.pipe(this._scrollView);
