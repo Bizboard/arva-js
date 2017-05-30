@@ -527,4 +527,12 @@ export class SharePointDataSource extends DataSource {
     registerWithPassword(credentials, onComplete, options) {
         throw new Error("Not Supported")
     }
+
+    /**
+     * Gets a symbolic representation of a timestamp as being run on the server-side
+     * @returns {*}
+     */
+    getTimestamp() {
+        throw new Error("Not Supported")
+    }
 }

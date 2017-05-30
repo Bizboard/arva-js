@@ -366,4 +366,12 @@ export class DataSource {
     atomicTransaction(transactionFunction) {
     }
 
+    /**
+     * Gets a symbolic representation of a timestamp as being run on the server-side
+     * @returns {*}
+     */
+    getTimestamp() {
+
+    }
+
 }

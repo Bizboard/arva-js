@@ -638,4 +638,12 @@ export class FirebaseDataSource extends DataSource {
         error.path = this.path();
         return Promise.reject(error);
     }
+
+    /**
+     * Gets a symbolic representation of a timestamp as being run on the server-side
+     * @returns {*}
+     */
+    getTimestamp() {
+        return this._firebase.database.ServerValue.TIMESTAMP;
+    }
 }
