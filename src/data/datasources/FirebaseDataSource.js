@@ -466,15 +466,17 @@ export class FirebaseDataSource extends DataSource {
      * @param {String} event Event type to subscribe to. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed', 'child_moved'.
      * @param {Function} handler Function to call when the subscribed event is emitted.
      * @param {Object} context Context to set 'this' to when calling the handler function.
-     * @returns {void}
+     * @returns {Promise}
      */
     once(event, handler, context = this) {
-        function onceWrapper() {
-            handler.call(context, ...arguments);
-            this.off(event, onceWrapper);
-        }
-
-        return this.on(event, onceWrapper, this);
+        return new Promise((resolve) => {
+            function onceWrapper() {
+                this.off(event, onceWrapper);
+                handler && handler.call(context, ...arguments);
+                resolve(...arguments);
+            }
+            this.on(event, onceWrapper, this);
+        });
     }
 
 
