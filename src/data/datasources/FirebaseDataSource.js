@@ -643,7 +643,7 @@ export class FirebaseDataSource extends DataSource {
      * Gets a symbolic representation of a timestamp as being run on the server-side
      * @returns {*}
      */
-    getTimestamp() {
+    getTimestampSymbol() {
         return this._firebase.database.ServerValue.TIMESTAMP;
     }
 }

@@ -251,6 +251,7 @@ export class DataSource {
      * @param {String} event Event type to subscribe to. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed', 'child_moved'.
      * @param {Function} handler Function to call when the subscribed event is emitted.
      * @param {Object} context Context to set 'this' to when calling the handler function.
+     * @returns {Promise}
      */
     once(event, handler, context) {
     }
@@ -370,7 +371,7 @@ export class DataSource {
      * Gets a symbolic representation of a timestamp as being run on the server-side
      * @returns {*}
      */
-    getTimestamp() {
+    getTimestampSymbol() {
 
     }
 

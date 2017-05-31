@@ -532,7 +532,7 @@ export class SharePointDataSource extends DataSource {
      * Gets a symbolic representation of a timestamp as being run on the server-side
      * @returns {*}
      */
-    getTimestamp() {
+    getTimestampSymbol() {
         throw new Error("Not Supported")
     }
 }
