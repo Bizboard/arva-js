@@ -10,7 +10,7 @@ import Bowser                           from 'bowser';
 let browser = Bowser;
 
 if (((browser.msie || browser.msedge) && parseFloat(browser.version) <= 11) ||
-    (browser.chrome)) {
+    (browser.chrome) || (browser.gecko)) {
     //TODO: Check if this is still broken in Chrome v56
     duplicateZIndex();
 } else if (browser.firefox && parseFloat(browser.version) <= 53) {
