@@ -478,13 +478,7 @@ export class RenderableHelper {
                 for (let dimension of [0, 1]) {
                     if (this._sizeResolver.isValueTrueSized(sizeToCheck[dimension])) {
                         if (!trueSizedInfo) {
-                            trueSizedInfo = this._sizeResolver.configureTrueSizedSurface(renderable);
-                        }
-                        trueSizedInfo.trueSizedDimensions[dimension] = true;
-                        renderableSize[dimension] = true;
-                    } else {
-                        if (trueSizedInfo) {
-                            trueSizedInfo.trueSizedDimensions[dimension] = false;
+                            this._sizeResolver.configureTrueSizedSurface(renderable, sizeToCheck);
                         }
                     }
                 }
