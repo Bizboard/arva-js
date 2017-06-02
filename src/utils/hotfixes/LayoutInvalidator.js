@@ -16,6 +16,7 @@ export let invalidateLayoutForElement = (element) => {
 
 let browser = Bowser;
 
+/* Firefox has an issue with new elements not being painted  */
 if (browser.gecko) {
     let oldAllocateFunction = Surface.prototype.allocate;
     Surface.prototype.allocate = function (allocator) {
@@ -27,6 +28,7 @@ if (browser.gecko) {
     }
 
 }
+/* Safari has an issue with elements coming back from scale 0 (context.hide==true) not being painted */
 if (browser.safari) {
     let oldCommitFunction = ElementOutput.prototype.commit;
     ElementOutput.prototype.commit = function (context) {
