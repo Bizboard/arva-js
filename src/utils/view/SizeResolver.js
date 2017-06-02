@@ -367,9 +367,10 @@ export class SizeResolver extends EventEmitter {
         }
 
         let estimatedWidth = this._measureRenderableWidth(renderable);
+        let height = null, width = null;
 
         if(trueSizedDimensions[0]){
-            trueSizedSurfaceInfo.size[0] = estimatedWidth;
+            width = trueSizedSurfaceInfo.size[0] = estimatedWidth;
         }
 
         if(trueSizedDimensions[1]){
@@ -379,7 +380,13 @@ export class SizeResolver extends EventEmitter {
                     return this._setupSurfaceGetsSizeFromDOM(renderable);
                 }
             }
-            trueSizedSurfaceInfo.size[1] = this._estimateRenderableHeight(renderable);
+            height = trueSizedSurfaceInfo.size[1] = this._estimateRenderableHeight(renderable);
+        }
+
+        for(let singleSize of [width, height]){
+            if(singleSize === undefined || Number.isNaN(singleSize)){
+                return this._setupSurfaceGetsSizeFromDOM(renderable);
+            }
         }
 
         /* If we reached this far, then everything could succesfully be calculated */
