@@ -6,6 +6,7 @@
  */
 import ElementOutput                    from 'famous/core/ElementOutput';
 import Bowser                           from 'bowser';
+import DOMBuffer                        from 'famous/core/DOMBuffer.js';
 
 let browser = Bowser;
 
@@ -25,7 +26,7 @@ function duplicateZIndex() {
             /* Turns Z-property of matrix into an integer, and then into a string */
             let zIndex = this._matrix[14] | 0 + '';
             if (this._element.style.zIndex !== zIndex) {
-                this._element.style.zIndex = zIndex;
+                DOMBuffer.assignProperty(this._element.style, 'zIndex', zIndex);
             }
         }
     };
