@@ -775,6 +775,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     _onChildAdded(dataStoreIndex, child, previousSiblingID) {
+        if(!child){
+            console.log('Warning: Child added recieved with undefined child, in DataBoundScrollView');
+        }
         /* Mark the entry as undeleted */
         this._removedEntries[`${child.id}${dataStoreIndex}`] = false;
         this._throttler.add(async () => {
