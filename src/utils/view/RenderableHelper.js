@@ -483,9 +483,6 @@ export class RenderableHelper {
                     }
                 }
             }
-            if (sizesToCheck.length) {
-                renderable.setSize(renderableSize);
-            }
         }
         let oldRenderableGroupName = this._getGroupName(renderable);
         let shouldDisableDock = (fakeRenderable.decorations.disableDock && renderable.decorations.dock);
