@@ -288,7 +288,7 @@ export class SizeResolver extends EventEmitter {
 
         /* HTML treats white space as nothing at all, so we need to be sure that "  " == "" */
         let trimmedContent = (renderable.getContent() && renderable.getContent().trim) ? renderable.getContent().trim() : renderable.getContent();
-        let trimmedHtmlContent = renderableHtmlElement.innerHTML.trim ? renderableHtmlElement.innerHTML.trim() : renderableHtmlElement.innerHTML;
+        let trimmedHtmlContent = renderableHtmlElement.textContent.trim ? renderableHtmlElement.textContent.trim() : renderableHtmlElement.textContent;
 
         if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!trimmedContent && !(renderable instanceof ImageSurface))) && trimmedHtmlContent === trimmedContent &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
