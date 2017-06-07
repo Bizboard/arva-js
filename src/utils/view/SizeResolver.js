@@ -167,6 +167,7 @@ export class SizeResolver extends EventEmitter {
             fontVariant = 'normal',
             lineHeight = 'normal',
             fontFamily,
+            letterSpacing = '0px',
             font
         } = surfaceProperties;
         if (!font && fontFamily) {
@@ -177,19 +178,21 @@ export class SizeResolver extends EventEmitter {
         }
 
         let [paddingTop, paddingRight, paddingBottom, paddingLeft] = this._getParsedPadding(surfaceProperties);
-
-        let textWidth = context.measureText(_unescape(text)).width;
+        let content = _unescape(text);
+        let spaceBetweenLetters = this._cssValueToPixels(letterSpacing, undefined);
+        let textWidth = context.measureText(content).width + content.length * spaceBetweenLetters;
         return this._cssValueToPixels(paddingLeft, textWidth) + textWidth + this._cssValueToPixels(paddingRight, textWidth);
     }
 
-    _getParsedPadding(properties){
-        let {padding,
+    _getParsedPadding(properties) {
+        let {
+            padding,
             paddingRight = '0px',
             paddingLeft = '0px',
             paddingTop = '0px',
             paddingBottom = '0px'
         } = properties;
-        if(padding){
+        if (padding) {
             [paddingTop, paddingRight, paddingBottom, paddingLeft] = LayoutUtility.normalizeMargins(padding.split(" "));
         }
         return [paddingTop, paddingRight, paddingBottom, paddingLeft];
@@ -197,37 +200,37 @@ export class SizeResolver extends EventEmitter {
 
     _estimateRenderableHeight(surface) {
         let surfaceProperties = surface.getProperties();
-        let {fontSize, lineHeight} = surface.getProperties();
-        if(!fontSize){
+        let { fontSize, lineHeight } = surface.getProperties();
+        if (!fontSize) {
             return NaN;
         }
         let [paddingTop, paddingRight, paddingBottom, paddingLeft] = this._getParsedPadding(surfaceProperties);
         /* If using a percentage in font, it refers to 16px */
         let estimatedHeight;
-        if(!surface.getContent()){
+        if (!surface.getContent()) {
             estimatedHeight = 0;
         } else {
             estimatedHeight = this._cssValueToPixels(fontSize, 16);
         }
-        if(lineHeight){
+        if (lineHeight) {
             estimatedHeight = this._cssValueToPixels(lineHeight, estimatedHeight);
         }
         return this._cssValueToPixels(paddingTop, estimatedHeight) + estimatedHeight + this._cssValueToPixels(paddingBottom, estimatedHeight);
     }
 
     _cssValueToPixels(value = NaN, parentSize = NaN) {
-        if(value.endsWith('px')){
+        if (value.endsWith('px')) {
             return parseFloat(value);
         }
         /* Pixels are points times 1 and a third */
-        if(value.endsWith('pt')){
-            return parseFloat(value) * (1 + 1/3);
+        if (value.endsWith('pt')) {
+            return parseFloat(value) * (1 + 1 / 3);
         }
-        if(value === 'normal'){
+        if (value === 'normal') {
             return parentSize;
         }
 
-        if(value.endsWith('%')){
+        if (value.endsWith('%')) {
             return (parseFloat(value) / 100) * parentSize;
         }
         //value ends with number, assume proportion
@@ -341,7 +344,12 @@ export class SizeResolver extends EventEmitter {
      */
     configureTrueSizedSurface(renderable, specifiedSize) {
         let trueSizedDimensions = specifiedSize.map((singleSize) => this.isValueTrueSized(singleSize));
-        let trueSizedSurfaceInfo = { isUncalculated: true, trueSizedDimensions, size: [undefined, undefined], specifiedSize};
+        let trueSizedSurfaceInfo = {
+            isUncalculated: true,
+            trueSizedDimensions,
+            size: [undefined, undefined],
+            specifiedSize
+        };
 
         /* We assume both dimensions not to be truesized, they are set in this._resolveDecoratedSize */
         this._trueSizedSurfaceInfo.set(renderable, trueSizedSurfaceInfo);
@@ -358,33 +366,33 @@ export class SizeResolver extends EventEmitter {
      * @returns {*}
      * @private
      */
-    _evaluateTrueSizedSurface(renderable){
+    _evaluateTrueSizedSurface(renderable) {
         let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
-        let {trueSizedDimensions, specifiedSize} = trueSizedSurfaceInfo;
+        let { trueSizedDimensions, specifiedSize } = trueSizedSurfaceInfo;
 
-        if(renderable instanceof ImageSurface){
+        if (renderable instanceof ImageSurface) {
             return this._setupSurfaceGetsSizeFromDOM(renderable);
         }
 
         let estimatedWidth = this._measureRenderableWidth(renderable);
         let height = null, width = null;
 
-        if(trueSizedDimensions[0]){
+        if (trueSizedDimensions[0]) {
             width = trueSizedSurfaceInfo.size[0] = estimatedWidth;
         }
 
-        if(trueSizedDimensions[1]){
-            if(!trueSizedDimensions[0]){
-                let resolvedSpecifiedWidth = this.resolveSingleSize(specifiedSize[0], {size: [NaN, NaN]}, 0);
-                if(!resolvedSpecifiedWidth || resolvedSpecifiedWidth < estimatedWidth){
+        if (trueSizedDimensions[1]) {
+            if (!trueSizedDimensions[0]) {
+                let resolvedSpecifiedWidth = this.resolveSingleSize(specifiedSize[0], { size: [NaN, NaN] }, 0);
+                if (!resolvedSpecifiedWidth || resolvedSpecifiedWidth < estimatedWidth) {
                     return this._setupSurfaceGetsSizeFromDOM(renderable);
                 }
             }
             height = trueSizedSurfaceInfo.size[1] = this._estimateRenderableHeight(renderable);
         }
 
-        for(let singleSize of [width, height]){
-            if(singleSize === undefined || Number.isNaN(singleSize)){
+        for (let singleSize of [width, height]) {
+            if (singleSize === undefined || Number.isNaN(singleSize)) {
                 return this._setupSurfaceGetsSizeFromDOM(renderable);
             }
         }
@@ -404,21 +412,21 @@ export class SizeResolver extends EventEmitter {
 
 
         let trueSizeSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
-        let {resizeFromCanvasListener, trueSizedDimensions} = trueSizeSurfaceInfo;
+        let { resizeFromCanvasListener, trueSizedDimensions } = trueSizeSurfaceInfo;
 
         /* Need to set the Surface 'size' property in order to get resize notifications */
         renderable.setSize(trueSizedDimensions.map((isTrueSized) => isTrueSized || undefined));
 
-        if(resizeFromCanvasListener){
+        if (resizeFromCanvasListener) {
             renderable.removeListener('resize', resizeFromCanvasListener);
         }
-        if(!trueSizeSurfaceInfo.resizeFromDOMListener){
+        if (!trueSizeSurfaceInfo.resizeFromDOMListener) {
             let resizeListener = trueSizeSurfaceInfo.resizeFromDOMListener = () => {
                 this._tryCalculateTrueSizedSurface(renderable);
             };
             renderable.on('resize', resizeListener);
         }
-        if(!trueSizeSurfaceInfo.deployListener){
+        if (!trueSizeSurfaceInfo.deployListener) {
             let deployListener = trueSizeSurfaceInfo.deployListener = () => {
                 if (!trueSizeSurfaceInfo.isUncalculated) {
                     this._tryCalculateTrueSizedSurface(renderable);
@@ -436,14 +444,14 @@ export class SizeResolver extends EventEmitter {
     _setupSurfaceGetsSizeFromCanvas(renderable) {
         let trueSizeSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
         renderable.setSize(trueSizeSurfaceInfo.size);
-        let {resizeFromDOMListener, deployListener} = trueSizeSurfaceInfo;
-        if(resizeFromDOMListener){
+        let { resizeFromDOMListener, deployListener } = trueSizeSurfaceInfo;
+        if (resizeFromDOMListener) {
             renderable.removeListener('resize', resizeFromDOMListener);
         }
-        if(deployListener){
+        if (deployListener) {
             renderable.removeListener('deploy', deployListener);
         }
-        if(!trueSizeSurfaceInfo.resizeFromCanvasListener){
+        if (!trueSizeSurfaceInfo.resizeFromCanvasListener) {
             trueSizeSurfaceInfo.resizeFromCanvasListener = () => {
                 this._evaluateTrueSizedSurface(renderable);
             };
