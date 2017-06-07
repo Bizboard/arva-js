@@ -407,7 +407,7 @@ export class SizeResolver extends EventEmitter {
         let {resizeFromCanvasListener, trueSizedDimensions} = trueSizeSurfaceInfo;
 
         /* Need to set the Surface 'size' property in order to get resize notifications */
-        renderable.size = trueSizedDimensions.map((isTrueSized) => isTrueSized || undefined);
+        renderable.setSize(trueSizedDimensions.map((isTrueSized) => isTrueSized || undefined));
 
         if(resizeFromCanvasListener){
             renderable.removeListener('resize', resizeFromCanvasListener);
@@ -435,7 +435,7 @@ export class SizeResolver extends EventEmitter {
      */
     _setupSurfaceGetsSizeFromCanvas(renderable) {
         let trueSizeSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
-        renderable.size = trueSizeSurfaceInfo.size;
+        renderable.setSize(trueSizeSurfaceInfo.size);
         let {resizeFromDOMListener, deployListener} = trueSizeSurfaceInfo;
         if(resizeFromDOMListener){
             renderable.removeListener('resize', resizeFromDOMListener);
