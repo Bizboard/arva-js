@@ -87,6 +87,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         this._internalDataSource = {};
         this._internalGroups = {};
+        /* In order to keep track of what's being removed, we store this which maps an id to a boolean */
+        this._removedEntries = {};
         this._isGrouped = this.options.groupBy != null;
         this._isDescending = this.options.sortingDirection === 'descending';
         this._throttler = new Throttler(this.options.throttleDelay, true, this);
@@ -515,6 +517,11 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         let newSurface = await this.options.itemTemplate(child);
 
+        /* If the entry was removed while trying to add it, we should abort here */
+        if(this._removedEntries[`${child.id}${dataStoreIndex}`]){
+            onInsertIndexKnown(-1);
+            delete this._internalDataSource[`${child.id}${dataStoreIndex}`];
+        }
 
         let insertIndex = this._getInsertIndex(child, previousSiblingID, dataStoreIndex);
 
@@ -768,6 +775,11 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     _onChildAdded(dataStoreIndex, child, previousSiblingID) {
+        if(!child){
+            console.log('Warning: Child added recieved with undefined child, in DataBoundScrollView');
+        }
+        /* Mark the entry as undeleted */
+        this._removedEntries[`${child.id}${dataStoreIndex}`] = false;
         this._throttler.add(async () => {
             if (this.options.dataFilter &&
                 (typeof this.options.dataFilter === 'function')) {
@@ -806,6 +818,11 @@ export class DataBoundScrollView extends ReflowingScrollView {
                     typeof this.options.dataFilter === 'function' && !result) {
                     this._removeItem(child, dataStoreIndex);
                 } else {
+                    /* If the entry was removed in the meantime, return */
+                    if(this._removedEntries[`${child.id}${dataStoreIndex}`]){
+                        return;
+                    }
+
                     if (changedItemIndex === -1) {
                         this._addItem(child, previousSiblingID, dataStoreIndex);
                     } else {
@@ -838,6 +855,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     _onChildRemoved(dataStoreIndex, child) {
+        /* Mark the entry as removed */
+        this._removedEntries[`${child.id}${dataStoreIndex}`] = true;
         this._throttler.add(() => {
             this._removeItem(child, dataStoreIndex);
         });

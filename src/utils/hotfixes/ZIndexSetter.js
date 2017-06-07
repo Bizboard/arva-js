@@ -6,31 +6,13 @@
  */
 import ElementOutput                    from 'famous/core/ElementOutput';
 import Bowser                           from 'bowser';
-import DOMBuffer                        from 'famous/core/DOMBuffer.js';
 
 let browser = Bowser;
 
-if (((browser.msie || browser.msedge) && parseFloat(browser.version) <= 11) ||
-    (browser.chrome) || (browser.gecko)) {
-    //TODO: Check if this is still broken in Chrome v56
-    duplicateZIndex();
-} else if (browser.firefox && parseFloat(browser.version) <= 53) {
+if (browser.firefox && parseFloat(browser.version) <= 53) {
     removeSurfacePreserve3D();
 }
 
-function duplicateZIndex() {
-    let oldCommit = ElementOutput.prototype.commit;
-    ElementOutput.prototype.commit = function (context) {
-        oldCommit.call(this, context);
-        if (this._element) {
-            /* Turns Z-property of matrix into an integer, and then into a string */
-            let zIndex = this._matrix[14] | 0 + '';
-            if (this._element.style.zIndex !== zIndex) {
-                DOMBuffer.assignProperty(this._element.style, 'zIndex', zIndex);
-            }
-        }
-    };
-}
 
 function removeSurfacePreserve3D() {
     let styleSheets = window.document.styleSheets;
