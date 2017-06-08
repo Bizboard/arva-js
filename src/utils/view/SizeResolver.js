@@ -282,10 +282,12 @@ export class SizeResolver extends EventEmitter {
     /**
      * Calculates a surface size, if possible
      * @param renderable
+     * @returns Boolean True if the surface could be calculated
      * @private
      */
     _tryCalculateTrueSizedSurface(renderable) {
         let renderableHtmlElement = renderable._element;
+        if(!renderableHtmlElement) return false;
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
         let { trueSizedDimensions } = trueSizedInfo;
 
