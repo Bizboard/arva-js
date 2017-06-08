@@ -167,6 +167,7 @@ export class SizeResolver extends EventEmitter {
             fontVariant = 'normal',
             lineHeight = 'normal',
             fontFamily,
+            letterSpacing = '0px',
             font
         } = surfaceProperties;
         if (!font && fontFamily) {
@@ -177,8 +178,9 @@ export class SizeResolver extends EventEmitter {
         }
 
         let [paddingTop, paddingRight, paddingBottom, paddingLeft] = this._getParsedPadding(surfaceProperties);
+        let content = _unescape(text);
 
-        let textWidth = context.measureText(_unescape(text)).width;
+        let textWidth = content ? (context.measureText(content).width + content.length * this._cssValueToPixels(letterSpacing, undefined)) : 0;
         return this._cssValueToPixels(paddingLeft, textWidth) + textWidth + this._cssValueToPixels(paddingRight, textWidth);
     }
 
