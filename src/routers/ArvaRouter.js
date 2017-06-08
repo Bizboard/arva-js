@@ -343,6 +343,16 @@ export class ArvaRouter extends Router {
     }
 
     /**
+     * Returns the animation direction for a route change within the same controller
+     * @param currentRoute
+     * @returns {string}
+     * @private
+     */
+    _getRouteDirection(currentRoute){
+        return this._hasVisited(currentRoute) ? 'previous' : 'next';
+    }
+
+    /**
      * Returns the Famous-Flex animation spec for two given routes. Takes its spec inputs from the specs set in
      * router.setControllerSpecs(), which is called from the app constructor.
      * @param {Object} previousRoute Previous route object containing url, controller, method, keys, and values.
@@ -371,7 +381,7 @@ export class ArvaRouter extends Router {
         /* Same controller, different method or different parameters */
         if (currentRoute.controller === previousRoute.controller) {
 
-            let direction = this._hasVisited(currentRoute) ? 'previous' : 'next';
+            let direction = this._getRouteDirection(currentRoute);
             if (this.specs && this.specs[fromController] && this.specs[fromController].methods) {
                 return this.specs[fromController].methods[direction];
             }
