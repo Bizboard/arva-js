@@ -305,7 +305,8 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                         ? 0
                         : decorations.dock.space || ownDecorations.dockSpacing || 0;
                     newResult[dockingDirection] = resolvedSize[dockingDirection] + spaceSize + result[dockingDirection];
-                    previousDockSize = resolvedSize[dockingDirection];
+                    /* If the resolved size is 0, then the relevant previous dock size should be the one before that */
+                    previousDockSize = resolvedSize[dockingDirection] || previousDockSize;
                 }
                 /* If a size in the orthogonalDirection has been set... */
                 if (resolvedSize[orthogonalDirection] !== undefined && !Number.isNaN(resolvedSize[orthogonalDirection])) {
