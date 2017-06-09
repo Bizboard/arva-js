@@ -317,8 +317,10 @@ export class SharePointDataSource extends DataSource {
      * @param {String} event Event type to subscribe to. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed'.
      * @param {Function} handler Function to call when the subscribed event is emitted.
      * @param {Object} context Context to set 'this' to when calling the handler function.
+     * @returns {Promise}
      */
     once(event, handler, context = this) {
+        //todo fix so that it returns a promise
         let onceWrapper = function () {
             handler.call(context, ...arguments);
             this.off(event, onceWrapper);
@@ -525,6 +527,14 @@ export class SharePointDataSource extends DataSource {
     }
 
     registerWithPassword(credentials, onComplete, options) {
+        throw new Error("Not Supported")
+    }
+
+    /**
+     * Gets a symbolic representation of a timestamp as being run on the server-side
+     * @returns {*}
+     */
+    getTimestampSymbol() {
         throw new Error("Not Supported")
     }
 }

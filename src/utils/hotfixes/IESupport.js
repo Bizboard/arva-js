@@ -4,3 +4,4 @@
 
 import './Polyfills.js';
 import './ZIndexSetter.js';
+import './LayoutInvalidator.js';
