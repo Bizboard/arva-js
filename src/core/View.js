@@ -11,7 +11,6 @@ import extend                       from 'lodash/extend.js';
 import cloneDeep                    from 'lodash/cloneDeep.js';
 import FamousView                   from 'famous/core/View.js';
 import Surface                      from 'famous/core/Surface.js';
-import Engine                       from 'famous/core/Engine.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
@@ -514,7 +513,6 @@ export class View extends FamousView {
         let dockedRenderables = this._renderableHelper;
         let nativeScrollableOptions = this.decorations.nativeScrollable;
         if (nativeScrollableOptions) {
-            Engine.enableTouchMove();
             let thisSize = this.getSize();
             context.size = context.size.map((size, index) =>
             (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index], size)) || size);
@@ -714,7 +712,7 @@ export class View extends FamousView {
     }
 
     _initTrueSizedBookkeeping() {
-        this.layout.on('layoutstart', ({ oldSize, size }) => {
+        this.layout.on('sizeChanged', ({ oldSize, size }) => {
             if (size[0] !== oldSize[0] ||
                 size[1] !== oldSize[1]) {
                 this._sizeResolver.doTrueSizedBookkeeping();
