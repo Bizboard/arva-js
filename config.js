@@ -23,9 +23,9 @@ System.config({
     "camelcase": "npm:camelcase@2.1.1",
     "core-js": "npm:core-js@1.2.6",
     "eventemitter3": "npm:eventemitter3@1.2.0",
-    "famous": "github:bizboard/famous@0.3.12",
+    "famous": "github:bizboard/famous@0.4.0",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
-    "famous-flex": "github:bizboard/famous-flex@1.3.13",
+    "famous-flex": "github:bizboard/famous-flex@1.4.0",
     "fastclick": "npm:fastclick@1.0.6",
     "firebase": "github:firebase/firebase-bower@3.7.3",
     "fs": "github:jspm/nodelibs-fs@0.1.2",
@@ -37,7 +37,7 @@ System.config({
     "traceur": "github:jmcriffey/bower-traceur@0.0.92",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90",
     "xml2js": "npm:xml2js@0.4.16",
-    "github:bizboard/famous-flex@1.3.13": {
+    "github:bizboard/famous-flex@1.4.0": {
       "es6-map": "npm:es6-map@0.1.5"
     },
     "github:jspm/nodelibs-assert@0.1.0": {
@@ -93,21 +93,21 @@ System.config({
       "buffer": "github:jspm/nodelibs-buffer@0.1.1"
     },
     "npm:d@1.0.0": {
-      "es5-ext": "npm:es5-ext@0.10.18"
+      "es5-ext": "npm:es5-ext@0.10.23"
     },
-    "npm:es5-ext@0.10.18": {
+    "npm:es5-ext@0.10.23": {
       "es6-iterator": "npm:es6-iterator@2.0.1",
       "es6-symbol": "npm:es6-symbol@3.1.1",
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:es6-iterator@2.0.1": {
       "d": "npm:d@1.0.0",
-      "es5-ext": "npm:es5-ext@0.10.18",
+      "es5-ext": "npm:es5-ext@0.10.23",
       "es6-symbol": "npm:es6-symbol@3.1.1"
     },
     "npm:es6-map@0.1.5": {
       "d": "npm:d@1.0.0",
-      "es5-ext": "npm:es5-ext@0.10.18",
+      "es5-ext": "npm:es5-ext@0.10.23",
       "es6-iterator": "npm:es6-iterator@2.0.1",
       "es6-set": "npm:es6-set@0.1.5",
       "es6-symbol": "npm:es6-symbol@3.1.1",
@@ -115,18 +115,18 @@ System.config({
     },
     "npm:es6-set@0.1.5": {
       "d": "npm:d@1.0.0",
-      "es5-ext": "npm:es5-ext@0.10.18",
+      "es5-ext": "npm:es5-ext@0.10.23",
       "es6-iterator": "npm:es6-iterator@2.0.1",
       "es6-symbol": "npm:es6-symbol@3.1.1",
       "event-emitter": "npm:event-emitter@0.3.5"
     },
     "npm:es6-symbol@3.1.1": {
       "d": "npm:d@1.0.0",
-      "es5-ext": "npm:es5-ext@0.10.18"
+      "es5-ext": "npm:es5-ext@0.10.23"
     },
     "npm:event-emitter@0.3.5": {
       "d": "npm:d@1.0.0",
-      "es5-ext": "npm:es5-ext@0.10.18",
+      "es5-ext": "npm:es5-ext@0.10.23",
       "events": "github:jspm/nodelibs-events@0.1.1"
     },
     "npm:inherits@2.0.1": {
