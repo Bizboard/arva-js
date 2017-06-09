@@ -42,7 +42,7 @@ export class SizeResolver extends EventEmitter {
         let cacheResolvedSize = [];
         for (let dimension = 0; dimension < 2; dimension++) {
             if (this.isValueTrueSized(size[dimension])) {
-                cacheResolvedSize[dimension] = this._resolveSingleTrueSizedRenderable(renderable, size, dimension, renderableCounterpart, specifiedSize);
+                cacheResolvedSize[dimension] = this._resolveSingleTrueSizedRenderable(renderable, size, dimension, renderableCounterpart, specifiedSize, context.size);
                 if (Utils.renderableIsSurface(renderable)) {
                     size[dimension] = true;
                 } else {
@@ -91,7 +91,7 @@ export class SizeResolver extends EventEmitter {
      * @returns {Number} size[dim] will be returned with a non-truesized value
      * @private
      */
-    _resolveSingleTrueSizedRenderable(renderable, size, dim, renderableCounterpart, specifiedSize) {
+    _resolveSingleTrueSizedRenderable(renderable, size, dim, renderableCounterpart, specifiedSize, contextSize) {
         if (size[dim] === -1) {
             Utils.warn('-1 detected as set size. If you want a true sized element to take ' +
                 'up a proportion of your view, please define a function doing so by ' +
@@ -148,9 +148,9 @@ export class SizeResolver extends EventEmitter {
                     trueSizedSurfaceInfo = this.configureTrueSizedSurface(renderable, specifiedSize);
                 }
 
-
+                let approximatedSize = size[dim] === undefined ? contextSize[dim] : ~size[dim];
                 /* Return an approximated size, if possible */
-                return size[dim] === undefined ? undefined : (trueSizedSurfaceInfo.size[dim] || ~size[dim]);
+                return (trueSizedSurfaceInfo.size[dim] || approximatedSize);
             }
         } else {
             this._sizeIsFinalFor.set(renderable, true);
