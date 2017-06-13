@@ -377,7 +377,17 @@ export class SizeResolver extends EventEmitter {
             return this._setupSurfaceGetsSizeFromDOM(renderable);
         }
 
-        let estimatedWidth = this._measureRenderableWidth(renderable);
+        let widthExplicitlySet = renderable.size && typeof renderable.size[0] === 'number',
+            heightExplicitlySet = renderable.size && typeof renderable.size[1] === 'number';
+
+        if(widthExplicitlySet && heightExplicitlySet){
+            trueSizedSurfaceInfo.size = renderable.size;
+            return;
+        }
+
+        let estimatedWidth = widthExplicitlySet ?
+            renderable.size[0] :
+            this._measureRenderableWidth(renderable);
         let height = null, width = null;
 
         if (trueSizedDimensions[0]) {
@@ -391,7 +401,10 @@ export class SizeResolver extends EventEmitter {
                     return this._setupSurfaceGetsSizeFromDOM(renderable);
                 }
             }
-            height = trueSizedSurfaceInfo.size[1] = this._estimateRenderableHeight(renderable);
+            height = trueSizedSurfaceInfo.size[1] =
+                heightExplicitlySet ?
+                    renderable.size[1]
+                    : this._estimateRenderableHeight(renderable);
         }
 
         for (let singleSize of [width, height]) {
