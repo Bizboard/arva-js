@@ -63,7 +63,6 @@ export class PrioritisedObject extends EventEmitter {
         this._dataSource = dataSource;
         this._priority = 0; // Priority of this object on remote dataSource
         this._isBeingWrittenByDatasource = false; // Flag to determine when dataSource is updating object
-        this._childChangedListeners = {};
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers.        */
@@ -89,6 +88,14 @@ export class PrioritisedObject extends EventEmitter {
         }
     }
 
+    getDataSource(){
+        return this._dataSource;
+    }
+
+    dataExists(){
+       return this.getDataSource().dataExists();
+    }
+
     _getParentDataSource() {
         if (!this._parentDataSource) {
             return this._parentDataSource = Injection.get(DataSource, this._dataSource.parent());
@@ -102,32 +109,32 @@ export class PrioritisedObject extends EventEmitter {
      */
     remove() {
         this.off();
-        this._dataSource.remove(this);
-        delete this;
+        delete this; //TODO <---- This is cryptic, what does it do?
+        return this._dataSource.remove(this);
     }
 
     /**
      * Subscribes to the given event type exactly once; it automatically unsubscribes after the first time it is triggered.
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
-     * @param {Function} handler Function that is called when the given event type is emitted.
-     * @param {Object} context Optional: context of 'this' inside the handler function when it is called.
-     * @returns {void}
+     * @param {Function} [handler] Function that is called when the given event type is emitted.
+     * @param {Object} [context] Optional: context of 'this' inside the handler function when it is called.
+     * @returns {Promise} A promise that resolves once the event has happened
      */
     once(event, handler, context = this) {
-        if (!handler) {
-            return new Promise((resolve) => this.once(event, resolve, context));
-        }
-        return this.on(event, function onceWrapper() {
-            handler.call(context, ...arguments);
-            this.off(event, onceWrapper, context);
-        }, this);
+        return new Promise((resolve)=>{
+            this.on(event, function onceWrapper() {
+                this.off(event, onceWrapper, context);
+                handler && handler.call(context, ...arguments);
+                resolve(...arguments);
+            }, this);
+        });
     }
 
     /**
      * Subscribes to events emitted by this PrioritisedArray.
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
      * @param {Function} handler Function that is called when the given event type is emitted.
-     * @param {Object} context Optional: context of 'this' inside the handler function when it is called.
+     * @param {Object} [context] Optional: context of 'this' inside the handler function when it is called.
      * @returns {void}
      */
     on(event, handler, context = this) {
@@ -183,8 +190,8 @@ export class PrioritisedObject extends EventEmitter {
      * Removes subscription to events emitted by this PrioritisedArray. If no handler or context is given, all handlers for
      * the given event are removed. If no parameters are given at all, all event types will have their handlers removed.
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
-     * @param {Function} handler Function to remove from event callbacks.
-     * @param {Object} context Object to bind the given callback function to.
+     * @param {Function} [handler] Function to remove from event callbacks.
+     * @param {Object} [context] Object to bind the given callback function to.
      * @returns {void}
      */
     off(event, handler, context) {
@@ -231,7 +238,7 @@ export class PrioritisedObject extends EventEmitter {
      * Allows multiple modifications to be made to the model without triggering dataSource pushes and event emits for each change.
      * Triggers a push to the dataSource after executing the given method. This push should then emit an event notifying subscribers of any changes.
      * @param {Function} method Function in which the model can be modified.
-     * @returns {void}
+     * @returns {Promise}
      */
     transaction(method) {
         this.disableChangeListener();
@@ -256,6 +263,10 @@ export class PrioritisedObject extends EventEmitter {
      */
     enableChangeListener() {
         this._isBeingWrittenByDatasource = false;
+    }
+
+    getDataSourcePath() {
+        return this._dataSource.path();
     }
 
     /**
@@ -288,6 +299,13 @@ export class PrioritisedObject extends EventEmitter {
             return;
         }
 
+        this._buildFromData(data);
+
+        this._dataSource.ready = true;
+        this.emit('ready');
+    }
+
+    _buildFromData(data) {
         for (let key in data) {
             /* Only map properties that exists on our model */
             let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
@@ -295,11 +313,7 @@ export class PrioritisedObject extends EventEmitter {
                 /* If child is a primitive, listen to changes so we can synch with Firebase */
                 ObjectHelper.addPropertyToObject(this, key, data[key], true, true, this._onSetterTriggered.bind(this, key));
             }
-
         }
-
-        this._dataSource.ready = true;
-        this.emit('ready');
     }
 
     /**
@@ -320,7 +334,7 @@ export class PrioritisedObject extends EventEmitter {
      * Gets called whenever a property value is set on this object.
      * This can happen when local code modifies it, or when the dataSource updates it.
      * We only propagate changes to the dataSource if the change was local.
-     * @returns {void}
+     * @returns {Promise}
      * @private
      */
     _onSetterTriggered() {

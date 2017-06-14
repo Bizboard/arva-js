@@ -147,10 +147,10 @@ export class SharePointDataSource extends DataSource {
     /**
      * Removes the object and all underlying children that this dataSource points to.
      * @param {Object} object The current object, needed because of a SharePointDataSource-specific issue. Will be refactored out in the future.
-     * @returns {void}
+     * @returns {Promise}
      */
     remove(object) {
-        this._dataReference.remove(object);
+        return this._dataReference.remove(object);
     }
 
     /**
@@ -188,7 +188,17 @@ export class SharePointDataSource extends DataSource {
      * @returns {void}
      */
     setPriority(newPriority) {
-        throw new Error('Not implemented');
+        throw new Promise.reject('Not implemented');
+    }
+
+
+    /**
+     * Sets data at the specified path(s) without touching unspecified paths
+     * @param {JSON} data The object to push
+     * @returns {Promise}
+     **/
+    update(data) {
+        return Promise.reject('Not implemented');
     }
 
     /**
@@ -307,8 +317,10 @@ export class SharePointDataSource extends DataSource {
      * @param {String} event Event type to subscribe to. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed'.
      * @param {Function} handler Function to call when the subscribed event is emitted.
      * @param {Object} context Context to set 'this' to when calling the handler function.
+     * @returns {Promise}
      */
     once(event, handler, context = this) {
+        //todo fix so that it returns a promise
         let onceWrapper = function () {
             handler.call(context, ...arguments);
             this.off(event, onceWrapper);
@@ -515,6 +527,14 @@ export class SharePointDataSource extends DataSource {
     }
 
     registerWithPassword(credentials, onComplete, options) {
+        throw new Error("Not Supported")
+    }
+
+    /**
+     * Gets a symbolic representation of a timestamp as being run on the server-side
+     * @returns {*}
+     */
+    getTimestampSymbol() {
         throw new Error("Not Supported")
     }
 }

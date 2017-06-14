@@ -11,7 +11,6 @@ import extend                       from 'lodash/extend.js';
 import cloneDeep                    from 'lodash/cloneDeep.js';
 import FamousView                   from 'famous/core/View.js';
 import Surface                      from 'famous/core/Surface.js';
-import Engine                       from 'famous/core/Engine.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
@@ -25,7 +24,7 @@ import {
     FullSizeLayoutHelper,
     TraditionalLayoutHelper
 }
-                                    from '../utils/view/LayoutHelpers.js';
+    from '../utils/view/LayoutHelpers.js';
 import {RenderableHelper}           from '../utils/view/RenderableHelper.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 
@@ -130,10 +129,10 @@ export class View extends FamousView {
 
     /**
      * Adds a renderable to the layout.
-     * @param {Renderable} renderable The renderable to be added
+     * @param {Surface|FamousView|View} renderable The renderable to be added
      * @param {String} renderableName The name (key) of the renderable
      * @param {Decorator} Decorator Any decorator(s) to apply to the renderable
-     * @returns {Renderable} The renderable that was assigned
+     * @returns {Surface|FamousView|View} The renderable that was assigned
      */
     addRenderable(renderable, renderableName, ...decorators) {
         /* Due to common mistake, we check if renderableName is a string */
@@ -151,9 +150,14 @@ export class View extends FamousView {
      * @param {String} renderableName The name of the renderable
      */
     removeRenderable(renderableName) {
+        if (!this[renderableName]) {
+            Utils.warn(`Failed to remove renderable ${renderableName} from ${this._name()} because the renderable doesn't exist`);
+            return;
+        }
         this._renderableHelper.removeRenderable(renderableName);
         this[renderableName] = undefined;
         this.layout.reflowLayout();
+
     }
 
     /**
@@ -184,7 +188,7 @@ export class View extends FamousView {
      */
     showRenderable(renderableName, show = true) {
         let renderable = this[renderableName];
-        if(!renderable){
+        if (!renderable) {
             Utils.warn(`Trying to show renderable ${renderableName} which does not exist!`);
             return;
         }
@@ -204,7 +208,7 @@ export class View extends FamousView {
 
             }
         }
-        
+
         return new Promise((resolve) => this._renderableHelper.showWithAnimationController(this.renderables[renderableName], renderable, show, resolve));
     }
 
@@ -238,7 +242,7 @@ export class View extends FamousView {
      * @returns {*}
      */
     setViewFlowState(stateName = '') {
-        return this._renderableHelper.setViewFlowState(stateName, this.decorations.flow);
+        return this._renderableHelper.setViewFlowState(stateName, this.decorations.viewFlow);
     }
 
     /**
@@ -257,13 +261,13 @@ export class View extends FamousView {
      * @returns {String} stateName the name of the state that this view is in.
      */
     getViewFlowState() {
-        return this._renderableHelper.getViewFlowState(this.decorations.flow);
+        return this._renderableHelper.getViewFlowState(this.decorations.viewFlow);
     }
 
     /**
      * Replaces an existing decorated renderable with a new renderable, preserving all necessary state and decorations
      * @param {String} renderableName. The name of the renderable
-     * @param newRenderable
+     * @param {Surface|FamousView|View} newRenderable Renderable to replace the old renderable with
      */
     replaceRenderable(renderableName, newRenderable) {
         this._renderableHelper.replaceRenderable(renderableName, newRenderable);
@@ -323,11 +327,25 @@ export class View extends FamousView {
      */
     onceNewSize() {
         return new Promise((resolve) => {
-            this._onNewSizeCallbacks.push(function onNewSize(size)  {
+            let onNewSize = (size) => {
                 this._onNewSizeCallbacks.splice(this._onNewSizeCallbacks.indexOf(onNewSize), 1);
                 resolve(size);
-            }.bind(this))
+            };
+            this._onNewSizeCallbacks.push(onNewSize);
         })
+    }
+
+    isSizeSettled() {
+        if (this._sizeResolver.containsUncalculatedSurfaces()) {
+            return false;
+        }
+        for (let renderableName in this.renderables) {
+            let renderable = this.renderables[renderableName];
+            if (!this._sizeResolver.isSizeFinal(renderable)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -338,11 +356,11 @@ export class View extends FamousView {
      * If false, it will be interrupted automatically by any interrput to another state. Defaults to true
      * @returns {Promise} resolves to false if the flow state can't be repeated due to an existing running repeat
      */
-    async repeatFlowState(renderableName = '', stateName = '', persistent = true){
-        if(!this._runningRepeatingFlowStates[renderableName]){
-            this._runningRepeatingFlowStates[renderableName] = {persistent};
-            while(this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent))
-            {}
+    async repeatFlowState(renderableName = '', stateName = '', persistent = true) {
+        if (!this._runningRepeatingFlowStates[renderableName]) {
+            this._runningRepeatingFlowStates[renderableName] = { persistent };
+            while (this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent)) {
+            }
             delete this._runningRepeatingFlowStates[renderableName];
             return true;
         } else {
@@ -354,8 +372,8 @@ export class View extends FamousView {
      * Cancel a repeating renderable. This will cancel the animation for next flow-cycle, it won't interject the current animation cycle.
      * @param renderableName
      */
-    cancelRepeatFlowState(renderableName){
-        if(this._runningRepeatingFlowStates){
+    cancelRepeatFlowState(renderableName) {
+        if (this._runningRepeatingFlowStates) {
             delete this._runningRepeatingFlowStates[renderableName];
         }
     }
@@ -387,17 +405,18 @@ export class View extends FamousView {
         this._dockedRenderablesHelper = new DockedLayoutHelper(this._sizeResolver);
         this._fullSizeLayoutHelper = new FullSizeLayoutHelper(this._sizeResolver);
         this._traditionalLayoutHelper = new TraditionalLayoutHelper(this._sizeResolver);
-        this._renderableHelper = new RenderableHelper(this._bindToSelf,this._setPipeToSelf, this.renderables, this._sizeResolver);
+        this._renderableHelper = new RenderableHelper(this._bindToSelf, this._setPipeToSelf, this.renderables, this._sizeResolver);
     }
 
     /** Requests for a parent LayoutController trying to resolve the size of this view
      * @private
      */
     _requestLayoutControllerReflow() {
-        this._nodes = {_trueSizeRequested: true};
+        this._nodes = { _trueSizeRequested: true };
         //TODO: Do we really need to emit this?
         this._eventOutput.emit('layoutControllerReflow');
     }
+
 
     _getRenderableOptions(renderableName, decorations = this.renderables[renderableName]) {
         let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
@@ -417,7 +436,7 @@ export class View extends FamousView {
 
         /* Reverse the class list becaues rit makes more sense to make the renderables of the parent before the renderables
          * of this view
-        */
+         */
         for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
             classConstructorList.push(currentClass.__proto__.constructor);
         }
@@ -430,6 +449,17 @@ export class View extends FamousView {
                 let decorations = renderableConstructors[renderableName].decorations;
 
                 let renderable = renderableConstructors[renderableName].call(this, this._getRenderableOptions(renderableName, decorations));
+
+                /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
+                if (!renderable) {
+                    continue;
+                }
+
+                /* Allow class property to be a function that returns a renderable */
+                if (typeof renderable === 'function') {
+                    let factoryFunction = renderable;
+                    renderable = factoryFunction(this.options);
+                }
 
                 /* Clone the decorator properties, because otherwise every view of the same type willl share them between
                  * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
@@ -446,7 +476,7 @@ export class View extends FamousView {
                  * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
                  * to the renderables of this instance, which is unwanted.
                  */
-                let {descriptor} = decorations;
+                let { descriptor } = decorations;
                 if (descriptor) {
                     if (descriptor.get) {
                         let originalGet = decorations.descriptor.get;
@@ -471,7 +501,7 @@ export class View extends FamousView {
 
     /**
      * Assigns a renderable to this view, without setting this[renderableName]
-     * @param {Renderable} renderable the renderable that is going to be added
+     * @param {Surface|FamousView|View} renderable the renderable that is going to be added
      * @param {String} renderableName the name of the renderable
      * @private
      */
@@ -486,11 +516,10 @@ export class View extends FamousView {
     _layoutDecoratedRenderables(context, options) {
         let dockedRenderables = this._renderableHelper;
         let nativeScrollableOptions = this.decorations.nativeScrollable;
-        if(nativeScrollableOptions) {
-            Engine.enableTouchMove();
-            let thisSize  = this.getSize();
+        if (nativeScrollableOptions) {
+            let thisSize = this.getSize();
             context.size = context.size.map((size, index) =>
-            (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index],size)) || size);
+            (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index], size)) || size);
         }
         this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations);
         this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations);
@@ -508,7 +537,7 @@ export class View extends FamousView {
             flow: !!this.decorations.useFlow || hasFlowyRenderables,
             partialFlow: !this.decorations.useFlow,
             nativeScroll: !!this.decorations.nativeScrollable,
-            flowOptions: this.decorations.flowOptions || {spring: {period: 200}},
+            flowOptions: this.decorations.flowOptions || { spring: { period: 200 } },
             layout: function (context, options) {
 
                 /* Because views that extend this View class first call super() and then define their renderables,
@@ -553,7 +582,7 @@ export class View extends FamousView {
         this._prepareLayoutController();
 
 
-        if((this.decorations.scrollable || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')){
+        if ((this.decorations.scrollable || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')) {
             this.addRenderable(new Surface(), '_fullScreenTouchArea', layout.fullSize(), layout.translate(0, 0, -10));
         }
     }
@@ -588,7 +617,7 @@ export class View extends FamousView {
      * @private
      */
     _prepareLayoutController() {
-        let {scrollableOptions} = this.decorations;
+        let { scrollableOptions } = this.decorations;
         if (scrollableOptions) {
             this._scrollView = new ReflowingScrollView(scrollableOptions);
             this.layout.getSize = this.getSize;
@@ -671,14 +700,14 @@ export class View extends FamousView {
             }
         }
 
-        if(this.decorations.dynamicDockPadding) {
+        if (this.decorations.dynamicDockPadding) {
             this.onNewSize((size) => this.decorations.viewMargins = this.decorations.dynamicDockPadding(size));
         }
 
         if (!this.decorations.extraTranslate) {
             this.decorations.extraTranslate = [0, 0, 10];
         }
-        
+
 
     }
 
@@ -687,20 +716,20 @@ export class View extends FamousView {
     }
 
     _initTrueSizedBookkeeping() {
-        this.layout.on('layoutstart', ({oldSize, size}) => {
+        this.layout.on('sizeChanged', ({ oldSize, size }) => {
             if (size[0] !== oldSize[0] ||
                 size[1] !== oldSize[1]) {
                 this._sizeResolver.doTrueSizedBookkeeping();
                 ///
                 //TODO: Kept for legacy reasons, but remove all listeners to this function
                 this._eventOutput.emit('newSize', size);
-                for(let callback of this._onNewSizeCallbacks){
+                for (let callback of this._onNewSizeCallbacks) {
                     callback(size);
                 }
             }
         });
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
-        this._nodes = {_trueSizedRequested: false};
+        this._nodes = { _trueSizedRequested: false };
         /* This needs to be set in order for the LayoutNodeManager to be happy */
         this.options.size = this.options.size || [true, true];
     }

@@ -148,6 +148,8 @@ export class ObjectHelper {
 
     /* Calls object['functionName'].bind(bindTarget) on all of object's functions. */
     static bindAllMethods(object, bindTarget) {
+        /* TODO: There is a bug here that will bind properties that were defined through this.x = <something>. This is
+         * the desired effect because this.x.prototype will be redefined */
 
         /* Bind all current object's methods to bindTarget. */
         let methodDescriptors = ObjectHelper.getMethodDescriptors(object);

@@ -22,7 +22,6 @@ import PhysicsEngine           from 'famous/physics/PhysicsEngine';
 import Engine                  from 'famous/core/Engine.js';
 import Spring                  from 'famous/physics/forces/Spring';
 import Drag                    from 'famous/physics/forces/Drag';
-import ScrollSync              from 'famous/inputs/ScrollSync';
 import TouchSync               from 'famous/inputs/TouchSync.js';
 import EventHandler            from 'famous/core/EventHandler';
 import Transform               from 'famous/core/Transform';
@@ -84,7 +83,6 @@ export class ScrollController extends FamousView {
         this._cachedSpecs = {};
         this._scrollToTransitionable = new Transitionable();
         this._initOverScrollPhysics();
-        this.on('touchmove', this._onTouchMove);
 
 
         this._maxKnownTranslate = this.options.initialHeight;
@@ -102,8 +100,6 @@ export class ScrollController extends FamousView {
             }
         }, true);
         this._layoutNodeManager.setNodeOptions(this.options.flowOptions);
-        /* Enable touch move. TODO: When stable and tested, remove this */
-        Engine.enableTouchMove();
         this._initNativeScrollGroup();
 
         /* TODO: Remove duplicates this._viewSequence, this._dataSource. Kept for DBSV compatibility */
@@ -311,7 +307,7 @@ export class ScrollController extends FamousView {
             /* There is no normalizedScollOffset */
             lastNormalizedScrollOffset === undefined ||
             /* The scrolling has changed too much since last normalization */
-            Math.abs(lastNormalizedScrollOffset - newScrollOffset) > newSize[this.options.layoutDirection] * 0.8 ||
+            Math.abs(lastNormalizedScrollOffset - newScrollOffset) > newSize[this.options.layoutDirection] * 0.3 ||
             (newScrollOffset < upperMargin && lastNormalizedScrollOffset >= upperMargin) ||
             (scrollHeight - newScrollOffset < lowerMargin && scrollHeight - lastNormalizedScrollOffset >= lowerMargin) ||
             /* We should always layout */
@@ -525,7 +521,7 @@ export class ScrollController extends FamousView {
         /* Normalize to bottom to make sure that the bottom margin is always correct */
         else if (this._forceNormalizeBottom ||
             (sequenceTail && this._group.getMaxScrollOffset() - scrollOffset <= this.options.layoutOptions.margins[1] &&
-            /* Make sure that we're seeing the last node and just not temporary hitting bottom*/
+            /* Make sure that we're seeing the last nodOe and just not temporary hitting bottom*/
             (this._lastNodeIndex === Infinity || this._lastNodeIndex === sequenceTail.getIndex()))) {
             if (this._forceNormalizeBottom) {
                 this._forceNormalizeBottom = false;
@@ -705,15 +701,15 @@ export class ScrollController extends FamousView {
 
         this._didManualScroll = false;
 
-        /* Check if we can scroll anywhere at all, and if the physics engine is sleeping. In that case make an overscroll
-         * animation */
+        /*/!* Check if we can scroll anywhere at all, and if the physics engine is sleeping. In that case make an overscroll
+         * animation *!/
         if (this._physicsEngine.isSleeping() && this._group.getMaxScrollOffset()) {
             if ((scrollOffset === 0 && this._firstNodeIndex === 0) || (this.isAtBottom() && this._lastNodeIndex === Infinity)) {
                 this._startOverscrollAnimation();
             }
         } else if (!this.isAtBottom() && scrollOffset !== 0) {
             this._physicsEngine.sleep();
-        }
+        }*/
         let extraTranslate = [0, 0, 0];
         /* Adjust transform and size to extra bounds */
         extraTranslate[this.options.layoutDirection] = -this.options.extraBoundsSpace[0];

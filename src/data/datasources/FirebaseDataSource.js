@@ -37,7 +37,7 @@ export class FirebaseDataSource extends DataSource {
      * @param {Number} [options.endAt]          Optional, only subscribe to the entries towards a certain value
      * @param {Promise} [options.synced]        Optional, a promise to tell the data source that it is only synchronized after this promise is resolved
      **/
-    constructor(path, options = {orderBy: '.priority'}) {
+    constructor(path, options = { orderBy: '.priority' }) {
         super(path);
         this._onValueCallback = null;
         this._onAddCallback = null;
@@ -48,7 +48,7 @@ export class FirebaseDataSource extends DataSource {
 
         this._dataReference = this._firebase.database().ref(path);
         this.handlers = {};
-        this.options = combineOptions({synced: Promise.resolve()}, options);
+        this.options = combineOptions({ synced: Promise.resolve() }, options);
         this._synced = this.options.synced;
 
         /* Populate the orderedReference, which is the standard Firebase reference with an optional ordering
@@ -60,10 +60,19 @@ export class FirebaseDataSource extends DataSource {
         } else if (this.options.orderBy && this.options.orderBy === '.value') {
             this._orderedDataReference = this._dataReference.orderByValue();
         } else if (this.options.orderBy && this.options.orderBy !== '') {
-            this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+            let {orderBy} = this.options;
+            if(orderBy === 'id'){
+                this._orderedDataReference = this._dataReference.orderByKey();
+            } else {
+                this._orderedDataReference = this._dataReference.orderByChild(this.options.orderBy);
+            }
         } else if (this.options.equalTo) {
             let [key, value] = this.options.equalTo;
-            this._orderedDataReference = this._dataReference.orderByChild(key).equalTo(value);
+            if (key === 'id') {
+                this._orderedDataReference = this._dataReference.orderByKey().equalTo(value);
+            } else {
+                this._orderedDataReference = this._dataReference.orderByChild(key).equalTo(value);
+            }
         } else {
             this._orderedDataReference = this._dataReference;
         }
@@ -86,6 +95,17 @@ export class FirebaseDataSource extends DataSource {
          * in the methods as expected, even when they're called from event handlers. */
         ObjectHelper.bindAllMethods(this, this);
     }
+
+    dataExists() {
+        return new Promise((resolve) => {
+            this._dataReference.once('value', (snapshot) => {
+                return resolve(snapshot.exists());
+            }, ()=>{
+                resolve(false);
+            });
+        });
+    }
+
 
     /**
      * Returns the full path to this dataSource's source on the remote storage provider.
@@ -110,7 +130,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance pointing to the given child branch.
      */
     child(childName, options = {}) {
-        return new FirebaseDataSource(`${this.path()}/${childName}`, {customFirebase: this.options.customFirebase, ...options});
+        return new FirebaseDataSource(`${this.path()}/${childName}`, { customFirebase: this.options.customFirebase, ...options });
     }
 
     /**
@@ -155,18 +175,27 @@ export class FirebaseDataSource extends DataSource {
      * @returns {Promise} Resolves when write to server is complete.
      */
     set(newData) {
-        let completionPromise = this._dataReference.set(newData);
+        let completionPromise = this._dataReference.set(newData).catch((error) => this._rethrowFirebaseError(error, newData));
+
         /* Append another promise to the chain to keep track of whether it's still synchronized */
         this._synced = this._synced.then(() => completionPromise);
-        return completionPromise
+        return completionPromise;
     }
 
     /**
      * Removes the object and all underlying children that this dataSource points to.
-     * @returns {void}
+     * @returns {Promise}
      */
     remove() {
-        return this._dataReference.remove();
+        return this._dataReference.remove().catch((error) => this._rethrowFirebaseError(error, null))
+    }
+
+    /**
+     * Sets data at the specified path(s) without touching unspecified paths
+     * @returns {Promise}
+     */
+    update(data) {
+        return this._dataReference.update(data).catch((error) => this._rethrowFirebaseError(error, data));
     }
 
     /**
@@ -175,8 +204,10 @@ export class FirebaseDataSource extends DataSource {
      * @param {Object} newData New data to append to dataSource.
      * @returns {FirebaseDataSource} A new FirebaseDataSource pointing to the injected data.
      */
-    push(newData) {
+    push(newData = {}) {
+        newData = (newData === undefined || newData === null) ? {} : newData;
         let pushResult = this._dataReference.push(newData);
+        pushResult.catch((error) => this._rethrowFirebaseError(error, newData));
         return new FirebaseDataSource(`${this.path()}/${pushResult.key}`, {
             synced: pushResult,
             customFirebase: this.options.customFirebase
@@ -191,9 +222,9 @@ export class FirebaseDataSource extends DataSource {
      */
     setWithPriority(newData, priority) {
         /* Rethrow the error in order to be able to catch it higher up */
-        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((err) => {
-            throw new Error(err)
-        });
+        let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((error) =>
+                this._rethrowFirebaseError(error, newData)
+        );
         /* Append another promise to the chain to keep track of whether it's still synchronized. Fail silently
          * since we already have error handling above */
         this._synced = this._synced.then(() => completionPromise).catch(() => {
@@ -262,7 +293,7 @@ export class FirebaseDataSource extends DataSource {
      * @returns {DataSource} New dataSource instance.
      */
     limitToLast(amount) {
-        return new FirebaseDataSource(this.path(), merge({}, this.options, {limitToLast: amount}));
+        return new FirebaseDataSource(this.path(), merge({}, this.options, { limitToLast: amount }));
     }
 
     /**
@@ -374,6 +405,15 @@ export class FirebaseDataSource extends DataSource {
     }
 
     /**
+     * Send a password reset to the email adress
+     * @param emailAddress
+     * @returns {Promise}
+     */
+    sendPasswordResetEmail(emailAddress) {
+        return this._firebase.auth().sendPasswordResetEmail(emailAddress);
+    }
+
+    /**
      * Fetches the current user's authentication state.
      * If the user is authenticated, returns an object containing at least the fields uid, provider, auth, and expires.
      * If the user is not authenticated, returns null.
@@ -381,7 +421,7 @@ export class FirebaseDataSource extends DataSource {
      */
     getAuth() {
         let firebaseAuth = this._firebase.auth();
-        let {currentUser} = firebaseAuth;
+        let { currentUser } = firebaseAuth;
         if (!this._authDataPresent) {
             if (currentUser) {
                 this._authDataPresent = true;
@@ -416,7 +456,9 @@ export class FirebaseDataSource extends DataSource {
      */
     on(event, handler, context = this) {
         let boundHandler = this.handlers[handler] = handler.bind(this);
-        this._orderedDataReference.on(event, boundHandler);
+        this._orderedDataReference.on(event, boundHandler, (reasonForFailure) => {
+            console.log(`Read failed: ${reasonForFailure}`);
+        });
     }
 
     /**
@@ -424,15 +466,17 @@ export class FirebaseDataSource extends DataSource {
      * @param {String} event Event type to subscribe to. Allowed values are: 'value', 'child_changed', 'child_added', 'child_removed', 'child_moved'.
      * @param {Function} handler Function to call when the subscribed event is emitted.
      * @param {Object} context Context to set 'this' to when calling the handler function.
-     * @returns {void}
+     * @returns {Promise}
      */
     once(event, handler, context = this) {
-        function onceWrapper() {
-            handler.call(context, ...arguments);
-            this.off(event, onceWrapper);
-        }
-
-        return this.on(event, onceWrapper, this);
+        return new Promise((resolve) => {
+            function onceWrapper() {
+                this.off(event, onceWrapper);
+                handler && handler.call(context, ...arguments);
+                resolve(...arguments);
+            }
+            this.on(event, onceWrapper, this);
+        });
     }
 
 
@@ -573,7 +617,7 @@ export class FirebaseDataSource extends DataSource {
     atomicTransaction(transactionFunction) {
         return new Promise((resolve, reject) => {
             this._dataReference.transaction(transactionFunction, (error, wasSuccessfullyCommited, snapshot) => {
-                if(error){
+                if (error) {
                     return reject(error);
                 }
                 if (!wasSuccessfullyCommited) {
@@ -583,5 +627,25 @@ export class FirebaseDataSource extends DataSource {
                 resolve(snapshot.val());
             });
         });
+    }
+
+    /**
+     * Rethrows a an error in Firebase to contain some more data to better be able to see the cause of the error
+     * @param error
+     * @param newData
+     * @private
+     */
+    _rethrowFirebaseError(error, newData) {
+        error.data = newData;
+        error.path = this.path();
+        return Promise.reject(error);
+    }
+
+    /**
+     * Gets a symbolic representation of a timestamp as being run on the server-side
+     * @returns {*}
+     */
+    getTimestampSymbol() {
+        return this._firebase.database.ServerValue.TIMESTAMP;
     }
 }
