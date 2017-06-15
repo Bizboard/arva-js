@@ -287,15 +287,22 @@ export class SizeResolver extends EventEmitter {
      */
     _tryCalculateTrueSizedSurface(renderable) {
         let renderableHtmlElement = renderable._element;
-        if(!renderableHtmlElement) return false;
+        if (!renderableHtmlElement) return false;
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
         let { trueSizedDimensions } = trueSizedInfo;
 
+        let containsNestedElements = renderable.containsNestedElements && renderable.containsNestedElements();
+
         /* HTML treats white space as nothing at all, so we need to be sure that "  " == "" */
         let trimmedContent = (renderable.getContent() && renderable.getContent().trim) ? renderable.getContent().trim() : renderable.getContent();
-        let trimmedHtmlContent = renderableHtmlElement.textContent.trim ? renderableHtmlElement.textContent.trim() : renderableHtmlElement.textContent;
 
-        if (renderableHtmlElement && ((renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight) || (!trimmedContent && !(renderable instanceof ImageSurface))) && trimmedHtmlContent === trimmedContent &&
+        if (renderableHtmlElement &&
+            ((
+                    renderableHtmlElement.offsetWidth && renderableHtmlElement.offsetHeight
+                ) ||
+                (!trimmedContent && !(renderable instanceof ImageSurface))
+            ) &&
+            !renderable._contentDirty &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
             let newSize;
 
@@ -380,8 +387,8 @@ export class SizeResolver extends EventEmitter {
         let widthExplicitlySet = renderable.size && typeof renderable.size[0] === 'number',
             heightExplicitlySet = renderable.size && typeof renderable.size[1] === 'number';
 
-        if(widthExplicitlySet && heightExplicitlySet){
-            trueSizedSurfaceInfo.size = renderable.size;
+        if (widthExplicitlySet && heightExplicitlySet) {
+            trueSizedSurfaceInfo.size = [...renderable.size];
             return;
         }
 
@@ -428,7 +435,7 @@ export class SizeResolver extends EventEmitter {
 
 
         let trueSizeSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
-        let { resizeFromCanvasListener, trueSizedDimensions } = trueSizeSurfaceInfo;
+        let { resizeFromCanvasListener, deployFromCanvasListener, trueSizedDimensions } = trueSizeSurfaceInfo;
 
         /* Need to set the Surface 'size' property in order to get resize notifications */
         renderable.setSize(trueSizedDimensions.map((isTrueSized) => isTrueSized || undefined));
@@ -436,16 +443,19 @@ export class SizeResolver extends EventEmitter {
         if (resizeFromCanvasListener) {
             renderable.removeListener('resize', resizeFromCanvasListener);
         }
+        if (deployFromCanvasListener) {
+            renderable.removeListener('deploy', deployFromCanvasListener);
+        }
         if (!trueSizeSurfaceInfo.resizeFromDOMListener) {
             let resizeListener = trueSizeSurfaceInfo.resizeFromDOMListener = () => {
-                if(!this._tryCalculateTrueSizedSurface(renderable)){
+                if (!this._tryCalculateTrueSizedSurface(renderable)) {
                     Timer.after(() => this._tryCalculateTrueSizedSurface(renderable), 1);
                 }
             };
             renderable.on('resize', resizeListener);
         }
-        if (!trueSizeSurfaceInfo.deployListener) {
-            let deployListener = trueSizeSurfaceInfo.deployListener = () => {
+        if (!trueSizeSurfaceInfo.deployFromDOMListener) {
+            let deployListener = trueSizeSurfaceInfo.deployFromDOMListener = () => {
                 if (!trueSizeSurfaceInfo.isUncalculated) {
                     this._tryCalculateTrueSizedSurface(renderable);
                 }
@@ -462,18 +472,29 @@ export class SizeResolver extends EventEmitter {
     _setupSurfaceGetsSizeFromCanvas(renderable) {
         let trueSizeSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
         renderable.setSize(trueSizeSurfaceInfo.size);
-        let { resizeFromDOMListener, deployListener } = trueSizeSurfaceInfo;
+        let { resizeFromDOMListener, deployFromDOMListener } = trueSizeSurfaceInfo;
         if (resizeFromDOMListener) {
             renderable.removeListener('resize', resizeFromDOMListener);
         }
-        if (deployListener) {
-            renderable.removeListener('deploy', deployListener);
+        if (deployFromDOMListener) {
+            renderable.removeListener('deploy', deployFromDOMListener);
         }
         if (!trueSizeSurfaceInfo.resizeFromCanvasListener) {
-            trueSizeSurfaceInfo.resizeFromCanvasListener = () => {
+            let resizeListener = trueSizeSurfaceInfo.resizeFromCanvasListener = () => {
                 this._evaluateTrueSizedSurface(renderable);
+                this.requestReflow();
             };
-            renderable.on('resize', trueSizeSurfaceInfo.resizeFromCanvasListener);
+            renderable.on('resize', resizeListener);
+        }
+        if (!trueSizeSurfaceInfo.deployFromCanvasListener) {
+            let deployListener = trueSizeSurfaceInfo.deployFromCanvasListener = () => {
+                /* Reset size. If not reset, it will be interpreted as being explicitly set
+                *  in evaluateTrueSizedSurface */
+                renderable.setSize(null);
+                this._evaluateTrueSizedSurface(renderable);
+                this.requestReflow();
+            };
+            renderable.on('deploy', deployListener);
         }
 
     }
