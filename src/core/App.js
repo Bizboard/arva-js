@@ -46,7 +46,11 @@ export class App {
         FastClick(document.body);
         
         /* Add default class providers to DI engine */
-        Injection.addProviders(defaultDataSource, defaultRouter, FamousContextSingleton, NewAnimationController);
+        Injection.addProviders(defaultRouter, FamousContextSingleton, NewAnimationController);
+
+        if(defaultDataSource){
+            Injection.addProviders(defaultDataSource);
+        }
         
         /* Request instances of a Router and a Famous Context. */
         let [router, context] = Injection.getAll(Router, Context);
