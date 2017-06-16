@@ -267,6 +267,7 @@ export class SizeResolver extends EventEmitter {
      * @returns {Boolean} sizeIsFinal
      */
     isSizeFinal(renderable) {
+        return true; // TODO Remove this line when the final size concept has proved itself to be 100% stable
         let consideredFinal = this._sizeIsFinalFor.get(renderable);
 
         /* Return true if nothing is known, to be sure not to make false negatives */
