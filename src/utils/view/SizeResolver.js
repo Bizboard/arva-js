@@ -168,7 +168,7 @@ export class SizeResolver extends EventEmitter {
 
     async _measureRenderableWidth(surface, text = surface.getContent()) {
         /* The canvas API of Safari iOS is too unreliable */
-        if(browser.ios){
+        if (browser.ios) {
             return;
         }
         let surfaceProperties = surface.getProperties();
@@ -185,7 +185,7 @@ export class SizeResolver extends EventEmitter {
         if (!font && fontFamily) {
             font = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}/${lineHeight} "${fontFamily}"`;
         }
-        if(!font) return;
+        if (!font) return;
 
         if (browser.check('webkit')) {
             await this._patchCanvasBug(surface, font);
@@ -323,7 +323,7 @@ export class SizeResolver extends EventEmitter {
                 ) ||
                 (!trimmedContent && !(renderable instanceof ImageSurface))
             ) &&
-                /* If the content is dirty, that means that the content is about to change, so we shouldn't resolve the size */
+            /* If the content is dirty, that means that the content is about to change, so we shouldn't resolve the size */
             !renderable._contentDirty &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
             let newSize;
@@ -473,7 +473,7 @@ export class SizeResolver extends EventEmitter {
             let resizeListener = trueSizeSurfaceInfo.resizeFromDOMListener = () => {
                 this._tryCalculateTrueSizedSurface(renderable);
                 /* Because the resize is triggered before the DOM manipulations happened, also
-                *  try to calculate the surface after 1 more tick */
+                 *  try to calculate the surface after 1 more tick */
                 Timer.after(() => this._tryCalculateTrueSizedSurface(renderable), 1);
 
             };
@@ -556,15 +556,15 @@ export class SizeResolver extends EventEmitter {
         this._sizeIsFinalFor.set(renderable, false);
         let fontMatch = /"(.*)"$/g.exec(font);
         let fontFamily;
-        if(fontMatch[1]){
+        if (fontMatch[1]) {
             fontFamily = fontMatch[1];
         } else {
             fontFamily = font.split(' ').slice(-1)[0];
         }
-        if (!SizeResolver._invalidatedFonts){
+        if (!SizeResolver._invalidatedFonts) {
             SizeResolver._invalidatedFonts = {};
         }
-        if(!SizeResolver._invalidatedFonts[fontFamily]) {
+        if (!SizeResolver._invalidatedFonts[fontFamily]) {
             await this.invalidateFontForBrowserBugFix(fontFamily);
             this.requestReflow();
             SizeResolver._invalidatedFonts[fontFamily] = true;
