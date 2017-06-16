@@ -168,7 +168,7 @@ export class SizeResolver extends EventEmitter {
 
     async _measureRenderableWidth(surface, text = surface.getContent()) {
         /* The canvas API of Safari iOS is too unreliable */
-        if (browser.ios) {
+        if (true) { //TODO Change this back to browser.ios when the canvas width resolving has proved to be more stable
             return;
         }
         let surfaceProperties = surface.getProperties();
@@ -479,7 +479,6 @@ export class SizeResolver extends EventEmitter {
                 /* Because the resize is triggered before the DOM manipulations happened, also
                  *  try to calculate the surface after 1 more tick */
                 Timer.after(() => this._tryCalculateTrueSizedSurface(renderable), 1);
-
             };
             renderable.on('resize', resizeListener);
         }
