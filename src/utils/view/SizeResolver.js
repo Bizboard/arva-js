@@ -2,6 +2,9 @@
  * Created by lundfall on 01/09/16.
  */
 
+import EventEmitter                 from 'eventemitter3';
+import browser                      from 'bowser';
+
 import _unescape                    from 'lodash/unescape.js';
 import LayoutUtility                from 'famous-flex/LayoutUtility.js';
 import Engine                       from 'famous/core/Engine.js';
@@ -14,7 +17,7 @@ import AnimationController          from 'famous-flex/AnimationController.js';
 import {View}                       from '../../core/View.js';
 import {Utils}                      from './Utils.js';
 
-import EventEmitter                 from 'eventemitter3';
+import ElementOutput                from 'famous/core/ElementOutput';
 
 /**
  * Used by the view to keep track of sizes. Emits events to communicate with the view to do certain actions
@@ -49,7 +52,6 @@ export class SizeResolver extends EventEmitter {
                     size[dimension] = cacheResolvedSize[dimension];
                 }
             } else {
-                this._sizeIsFinalFor.set(renderable, true);
                 size[dimension] = size[dimension] === undefined ? (context.size[dimension] || size[dimension]) : size[dimension];
                 cacheResolvedSize[dimension] = size[dimension];
             }
@@ -158,8 +160,19 @@ export class SizeResolver extends EventEmitter {
         }
     }
 
-    _measureRenderableWidth(surface, text = surface.getContent()) {
-        let context = Engine.getCachedCanvas().getContext("2d");
+    async invalidateFontForBrowserBugFix(font) {
+        let dummyContext = Engine.getCachedCanvas().getContext("2d");
+        dummyContext.font = font;
+        dummyContext.measureText('A');
+        await new Promise((resolve) => Timer.after(resolve, 1));
+
+    }
+
+    async _measureRenderableWidth(surface, text = surface.getContent()) {
+        /* The canvas API of Safari iOS is too unreliable */
+        if(browser.ios){
+            return;
+        }
         let surfaceProperties = surface.getProperties();
         let {
             fontStyle = 'normal',
@@ -172,16 +185,28 @@ export class SizeResolver extends EventEmitter {
             font
         } = surfaceProperties;
         if (!font && fontFamily) {
-            font = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}/${lineHeight} ${fontFamily}`;
+            font = `${fontStyle} ${fontVariant} ${fontWeight} ${fontSize}/${lineHeight} "${fontFamily}"`;
         }
+        if(!font) return;
+
+        if (browser.check('webkit')) {
+            await this._patchCanvasBug(surface, font);
+        }
+
+        let context = Engine.getCachedCanvas().getContext("2d");
+
         if (font) {
             context.font = font;
         }
 
+
         let [paddingTop, paddingRight, paddingBottom, paddingLeft] = this._getParsedPadding(surfaceProperties);
         let content = _unescape(text);
+        context.measureText(content);
         let textWidth = context.measureText(content).width + content.length * this._cssValueToPixels(letterSpacing, undefined);
-        return this._cssValueToPixels(paddingLeft, textWidth) + textWidth + this._cssValueToPixels(paddingRight, textWidth);
+        let resultingWidth = this._cssValueToPixels(paddingLeft, textWidth) + textWidth + this._cssValueToPixels(paddingRight, textWidth);
+        /* Mozilla Firefox appreciates the values rounded upwards */
+        return Math.ceil(resultingWidth);
     }
 
     _getParsedPadding(properties) {
@@ -291,8 +316,6 @@ export class SizeResolver extends EventEmitter {
         let trueSizedInfo = this._trueSizedSurfaceInfo.get(renderable);
         let { trueSizedDimensions } = trueSizedInfo;
 
-        let containsNestedElements = renderable.containsNestedElements && renderable.containsNestedElements();
-
         /* HTML treats white space as nothing at all, so we need to be sure that "  " == "" */
         let trimmedContent = (renderable.getContent() && renderable.getContent().trim) ? renderable.getContent().trim() : renderable.getContent();
 
@@ -302,6 +325,7 @@ export class SizeResolver extends EventEmitter {
                 ) ||
                 (!trimmedContent && !(renderable instanceof ImageSurface))
             ) &&
+                /* If the content is dirty, that means that the content is about to change, so we shouldn't resolve the size */
             !renderable._contentDirty &&
             (!renderableHtmlElement.style.width || !trueSizedDimensions[0]) && (!renderableHtmlElement.style.height || !trueSizedDimensions[1])) {
             let newSize;
@@ -376,7 +400,7 @@ export class SizeResolver extends EventEmitter {
      * @returns {*}
      * @private
      */
-    _evaluateTrueSizedSurface(renderable) {
+    async _evaluateTrueSizedSurface(renderable) {
         let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
         let { trueSizedDimensions, specifiedSize } = trueSizedSurfaceInfo;
 
@@ -394,7 +418,8 @@ export class SizeResolver extends EventEmitter {
 
         let estimatedWidth = widthExplicitlySet ?
             renderable.size[0] :
-            this._measureRenderableWidth(renderable);
+            await this._measureRenderableWidth(renderable);
+
         let height = null, width = null;
 
         if (trueSizedDimensions[0]) {
@@ -448,9 +473,11 @@ export class SizeResolver extends EventEmitter {
         }
         if (!trueSizeSurfaceInfo.resizeFromDOMListener) {
             let resizeListener = trueSizeSurfaceInfo.resizeFromDOMListener = () => {
-                if (!this._tryCalculateTrueSizedSurface(renderable)) {
-                    Timer.after(() => this._tryCalculateTrueSizedSurface(renderable), 1);
-                }
+                this._tryCalculateTrueSizedSurface(renderable);
+                /* Because the resize is triggered before the DOM manipulations happened, also
+                *  try to calculate the surface after 1 more tick */
+                Timer.after(() => this._tryCalculateTrueSizedSurface(renderable), 1);
+
             };
             renderable.on('resize', resizeListener);
         }
@@ -488,11 +515,13 @@ export class SizeResolver extends EventEmitter {
         }
         if (!trueSizeSurfaceInfo.deployFromCanvasListener) {
             let deployListener = trueSizeSurfaceInfo.deployFromCanvasListener = () => {
-                /* Reset size. If not reset, it will be interpreted as being explicitly set
-                *  in evaluateTrueSizedSurface */
-                renderable.setSize(null);
-                this._evaluateTrueSizedSurface(renderable);
-                this.requestReflow();
+                if (!trueSizeSurfaceInfo.isUncalculated) {
+                    /* Reset size. If not reset, it will be interpreted as being explicitly set
+                     *  in evaluateTrueSizedSurface */
+                    renderable.setSize(null);
+                    this._evaluateTrueSizedSurface(renderable);
+                    this.requestReflow();
+                }
             };
             renderable.on('deploy', deployListener);
         }
@@ -516,5 +545,31 @@ export class SizeResolver extends EventEmitter {
 
     getSurfaceTrueSizedInfo(surface) {
         return this._trueSizedSurfaceInfo.get(surface);
+    }
+
+    /**
+     * For Chrome and Safari, the canvas API doesn't return the correct value when font is loaded
+     * @param renderable
+     * @param font
+     * @returns {Promise.<void>}
+     * @private
+     */
+    async _patchCanvasBug(renderable, font) {
+        this._sizeIsFinalFor.set(renderable, false);
+        let fontMatch = /"(.*)"$/g.exec(font);
+        let fontFamily;
+        if(fontMatch[1]){
+            fontFamily = fontMatch[1];
+        } else {
+            fontFamily = font.split(' ').slice(-1)[0];
+        }
+        if (!SizeResolver._invalidatedFonts){
+            SizeResolver._invalidatedFonts = {};
+        }
+        if(!SizeResolver._invalidatedFonts[fontFamily]) {
+            await this.invalidateFontForBrowserBugFix(fontFamily);
+            this.requestReflow();
+            SizeResolver._invalidatedFonts[fontFamily] = true;
+        }
     }
 }
