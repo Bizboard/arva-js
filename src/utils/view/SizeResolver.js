@@ -431,6 +431,9 @@ export class SizeResolver extends EventEmitter {
                     return this._setupSurfaceGetsSizeFromDOM(renderable);
                 }
             }
+            if(heightExplicitlySet && !renderable.size){
+                return this._setupSurfaceGetsSizeFromDOM(renderable);
+            }
             height = trueSizedSurfaceInfo.size[1] =
                 heightExplicitlySet ?
                     renderable.size[1]
