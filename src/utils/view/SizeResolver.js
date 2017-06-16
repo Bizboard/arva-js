@@ -130,24 +130,22 @@ export class SizeResolver extends EventEmitter {
                 }
             }
         } else if (Utils.renderableIsSurface(renderable)) {
-            let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable) || {};
-            if (trueSizedSurfaceInfo.calculateOnNext) {
-                trueSizedSurfaceInfo.calculateOnNext = false;
-                this._tryCalculateTrueSizedSurface(renderable);
+            let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
+
+            if (!trueSizedSurfaceInfo) {
+                /* Seems like the surface isn't properly configured, let's get that going */
+                trueSizedSurfaceInfo = this.configureTrueSizedSurface(renderable, specifiedSize);
             }
             let { isUncalculated } = trueSizedSurfaceInfo;
+
             this._sizeIsFinalFor.set(renderable, !isUncalculated);
+
             if (isUncalculated === false) {
                 return trueSizedSurfaceInfo.size[dim];
             } else {
                 if (size[dim] === true) {
                     /* If size is set to true, and it can't be resolved, then settle with size undefined*/
                     size[dim] = undefined;
-                }
-
-                if (isUncalculated !== true) {
-                    /* Seems like the surface isn't properly configured, let's get that going */
-                    trueSizedSurfaceInfo = this.configureTrueSizedSurface(renderable, specifiedSize);
                 }
 
                 let approximatedSize = size[dim] === undefined ? contextSize[dim] : ~size[dim];
