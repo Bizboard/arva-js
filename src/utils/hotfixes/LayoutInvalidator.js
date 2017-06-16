@@ -33,6 +33,10 @@ if (browser.safari) {
     let oldCommitFunction = ElementOutput.prototype.commit;
     ElementOutput.prototype.commit = function (context) {
         oldCommitFunction.call(this, context);
+
+        if(browser.ios){
+            this._trueSizeCheck = true;
+        }
         if(this._wasHidden && !context.hide){
             invalidateLayoutForElement(this._element);
         }
