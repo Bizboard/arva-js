@@ -7,7 +7,6 @@
 
  */
 
-import extend                   from 'lodash/extend.js';
 import EventEmitter             from 'eventemitter3';
 import AnimationController      from 'famous-flex/AnimationController.js';
 
