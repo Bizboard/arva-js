@@ -168,7 +168,7 @@ export class SizeResolver extends EventEmitter {
 
     async _measureRenderableWidth(surface, text = surface.getContent()) {
         /* The canvas API of Safari iOS is too unreliable */
-        if (browser.ios) {
+        if (true/*browser.ios*/) { //TODO uncomment this
             return;
         }
         let surfaceProperties = surface.getProperties();
