@@ -56,6 +56,7 @@ export class Model extends PrioritisedObject {
         let modelName = this.constructor._name || Object.getPrototypeOf(this).constructor.name;
 
         let pathRoot = modelName + 's';
+        if (options.subBranch) { pathRoot += `/${options.subBranch}`; }
 
         let dataWasPushed = false;
         let onDataSynced, onDataSyncFailed;
