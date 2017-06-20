@@ -364,7 +364,7 @@ export const layout = {
     mapModifier: function (mapModifier = {}) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            renderable.decorations.mapModifer = mapModifier;
+            renderable.decorations.mapModifier = mapModifier;
         }
     },
 
