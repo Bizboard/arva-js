@@ -136,22 +136,27 @@ export class SizeResolver extends EventEmitter {
                 /* Seems like the surface isn't properly configured, let's get that going */
                 trueSizedSurfaceInfo = this.configureTrueSizedSurface(renderable, specifiedSize);
             }
-            let { isUncalculated } = trueSizedSurfaceInfo;
+            let { isUncalculated, trueSizedDimensions } = trueSizedSurfaceInfo;
 
             this._sizeIsFinalFor.set(renderable, !isUncalculated);
 
-            if (isUncalculated === false) {
+            if (isUncalculated === false && trueSizedDimensions[dim]) {
                 return trueSizedSurfaceInfo.size[dim];
-            } else {
-                if (size[dim] === true) {
-                    /* If size is set to true, and it can't be resolved, then settle with size undefined*/
-                    size[dim] = undefined;
-                }
-
-                let approximatedSize = size[dim] === undefined ? contextSize[dim] : ~size[dim];
-                /* Return an approximated size, if possible */
-                return (trueSizedSurfaceInfo.size[dim] || approximatedSize);
             }
+
+            if (!trueSizedDimensions[dim]) {
+                trueSizedDimensions[dim] = true;
+                this._evaluateTrueSizedSurface(renderable);
+            }
+
+            if (size[dim] === true) {
+                /* If size is set to true, and it can't be resolved, then settle with size undefined*/
+                size[dim] = undefined;
+            }
+
+            let approximatedSize = size[dim] === undefined ? contextSize[dim] : ~size[dim];
+            /* Return an approximated size, if possible */
+            return (trueSizedSurfaceInfo.size[dim] || approximatedSize);
         } else {
             this._sizeIsFinalFor.set(renderable, true);
             return this._specifyUndeterminedSingleHeight(renderable, size, dim);
