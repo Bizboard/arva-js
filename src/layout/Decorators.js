@@ -353,18 +353,18 @@ export const layout = {
     },
 
     /**
-     * Makes modifications to a surface based on the position of a famous-map
+     * Makes modifications to a surface using old-style famous modifiers (e.g MapModifier for famous-map)
      * @example
      * @layout.mapModifier(new MapModifier{ mapView: map, position: {lat: 0, lng: 0} })
      * // Makes a surface that is linked to the position (0, 0)
      *
-     * @param {Object} [mapModifier]. MapModifier object.
+     * @param {Object} [modifier]. modifier object.
      * @returns {Function}
      */
-    mapModifier: function (mapModifier = {}) {
+    modifier: function (modifier = {}) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            renderable.decorations.mapModifier = mapModifier;
+            renderable.decorations.modifier = modifier;
         }
     },
 
