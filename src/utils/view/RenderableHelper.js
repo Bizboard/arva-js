@@ -218,7 +218,7 @@ export class RenderableHelper {
      * @private
      */
     _processsDecoratedRenderableCounterpart(renderable, renderableName) {
-        let {draggableOptions, swipableOptions, clip, animation, flow, mapModifier} = renderable.decorations;
+        let {draggableOptions, swipableOptions, clip, animation, flow, modifier} = renderable.decorations;
 
         /* If we clip, then we need to create a containerSurface */
         if (clip) {
@@ -249,9 +249,9 @@ export class RenderableHelper {
             renderable.pipe(draggable);
             //TODO: We don't do an unpiping of the draggable, which might be dangerous
             this._pipeToView(draggable);
-        } else if (mapModifier && mapModifier.mapView) {
+        } else if (modifier) {
             renderable.node = new RenderNode();
-            renderable.node.add(mapModifier).add(renderable);
+            renderable.node.add(modifier).add(renderable);
         }
 
 
