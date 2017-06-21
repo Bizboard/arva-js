@@ -42,7 +42,7 @@ function prepDecoratedRenderable(viewOrRenderable, renderableName, descriptor) {
          * myRenderable = new Surface(); => descriptor.initializer();
          */
         if (descriptor.get) {
-            (console.warn || console.log)(`Adding renderables on views through getters has been deprecated (${renderableName}).`);
+            Utils.warn(`Adding renderables on views through getters has been deprecated (${renderableName}).`);
             specificRenderableConstructors[renderableName] = descriptor.get;
         } else if (descriptor.initializer) {
             specificRenderableConstructors[renderableName] = descriptor.initializer;
@@ -446,8 +446,8 @@ export const layout = {
      * // options.maxWidth, or the context size
      * text = new Surface({content: 'This is some text', properties: {backgroundColor: 'red'}});
      *
-     * @param {Number|Function} x
-     * @param {Number|Function} y
+     * @param {Number|Function|Boolean} x
+     * @param {Number|Function|Boolean} y
      * @returns {Function} A decorator function
      */
     size: function (x, y) {
@@ -958,7 +958,7 @@ export const layout = {
      * }
      *
      * @param {Number} maxContentWidth Maximum width the content should be allowed to be.
-     * @param {Array.Number} defaultPadding A 1-D, 2-D, or 4-D array of padding numbers, just like the padding spec in CSS.
+     * @param {[Number]} defaultPadding A 1-D, 2-D, or 4-D array of padding numbers, just like the padding spec in CSS.
      * @returns {Function}
      */
     columnDockPadding: function (maxContentWidth = 720, defaultPadding = [0, 16, 0, 16]) {
@@ -1215,10 +1215,11 @@ export const flow = {
     viewStates: function (states = {}) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
-            if (!decorations.flow) {
-                decorations.flow = {};
+            if (!decorations.viewFlow) {
+                decorations.viewFlow = {};
             }
-            decorations.flow.viewStates = states;
+
+            decorations.viewFlow.viewStates = states;
         }
     },
 

@@ -91,6 +91,14 @@ export class PrioritisedObject extends EventEmitter {
         }
     }
 
+    getDataSource(){
+        return this._dataSource;
+    }
+
+    dataExists(){
+       return this.getDataSource().dataExists();
+    }
+
     _getParentDataSource() {
         if (!this._parentDataSource) {
             return this._parentDataSource = Injection.get(DataSource, this._dataSource.parent());
@@ -104,8 +112,8 @@ export class PrioritisedObject extends EventEmitter {
      */
     remove() {
         this.off();
-        this._dataSource.remove(this);
-        delete this;
+        delete this; //TODO <---- This is cryptic, what does it do?
+        return this._dataSource.remove(this);
     }
 
     /**
@@ -233,7 +241,7 @@ export class PrioritisedObject extends EventEmitter {
      * Allows multiple modifications to be made to the model without triggering dataSource pushes and event emits for each change.
      * Triggers a push to the dataSource after executing the given method. This push should then emit an event notifying subscribers of any changes.
      * @param {Function} method Function in which the model can be modified.
-     * @returns {void}
+     * @returns {Promise}
      */
     transaction(method) {
         this.disableChangeListener();
@@ -258,6 +266,10 @@ export class PrioritisedObject extends EventEmitter {
      */
     enableChangeListener() {
         this._changeListenersDisabled = false;
+    }
+
+    getDataSourcePath() {
+        return this._dataSource.path();
     }
 
     /**
@@ -290,6 +302,13 @@ export class PrioritisedObject extends EventEmitter {
             return;
         }
 
+        this._buildFromData(data);
+
+        this._dataSource.ready = true;
+        this.emit('ready');
+    }
+
+    _buildFromData(data) {
         for (let key in data) {
             /* Only map properties that exists on our model */
             let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
@@ -297,11 +316,7 @@ export class PrioritisedObject extends EventEmitter {
                 /* If child is a primitive, listen to changes so we can sync with Firebase */
                 ObjectHelper.addPropertyToObject(this, key, data[key], true, true, () => this._onSetterTriggered(key), ({newValue}) => this._onGetterTriggered(key, newValue));
             }
-
         }
-
-        this._dataSource.ready = true;
-        this.emit('ready');
     }
 
     /**
@@ -348,7 +363,7 @@ export class PrioritisedObject extends EventEmitter {
      * Gets called whenever a property value is set on this object.
      * This can happen when local code modifies it, or when the dataSource updates it.
      * We only propagate changes to the dataSource if the change was local.
-     * @returns {void}
+     * @returns {Promise}
      * @private
      */
     _onSetterTriggered(key) {

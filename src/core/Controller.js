@@ -7,7 +7,6 @@
 
  */
 
-import extend                   from 'lodash/extend.js';
 import EventEmitter             from 'eventemitter3';
 import AnimationController      from 'famous-flex/AnimationController.js';
 
@@ -114,7 +113,7 @@ export class Controller extends EventEmitter {
     _showView(view, route) {
         if(view instanceof Dialog){
             if(this.dialogManager.getOpenDialog() !== view){
-                this.dialogManager.show({dialog: view, canCancel: false, shouldGoToRoute: this.router.getPreviousRoute()});
+                this.dialogManager.show({dialog: view, canCancel: false, shouldGoToRoute: view.goToRoute || this.router.getPreviousRoute()});
                 this.dialogManager.once('dialogShown', () => {
                     this.emit('renderend', route.method);
                 });

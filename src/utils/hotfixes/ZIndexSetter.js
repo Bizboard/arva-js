@@ -9,29 +9,12 @@ import Bowser                           from 'bowser';
 
 let browser = Bowser;
 
-if (((browser.msie || browser.msedge) && parseFloat(browser.version) <= 11) ||
-    (browser.chrome)) {
-    //TODO: Check if this is still broken in Chrome v56
-    duplicateZIndex();
-} else if (browser.firefox && parseFloat(browser.version) <= 53) {
+if (browser.firefox && parseFloat(browser.version) <= 53) {
     removeSurfacePreserve3D();
 }
 
-function duplicateZIndex() {
-    let oldCommit = ElementOutput.prototype.commit;
-    ElementOutput.prototype.commit = function (context) {
-        oldCommit.call(this, context);
-        if (this._element) {
-            var zIndex = this._matrix[14];
-            if (this._element.style.zIndex !== zIndex) {
-                this._element.style.zIndex = zIndex;
-            }
-        }
-    };
-}
 
 function removeSurfacePreserve3D() {
-    debugger;
     let styleSheets = window.document.styleSheets;
     for (let sheetIndex in styleSheets) {
         let sheet = styleSheets[sheetIndex];

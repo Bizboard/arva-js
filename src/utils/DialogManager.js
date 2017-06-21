@@ -10,7 +10,7 @@ import AnimationController   from 'famous-flex/AnimationController';
 import {Injection}           from './Injection.js';
 import {View}                from '../core/View.js';
 import {Router}              from '../core/Router.js';
-import {layout}              from '../layout/decorators.js';
+import {layout}              from '../layout/Decorators.js';
 import {DialogWrapper}       from './dialog/DialogWrapper.js';
 
 
@@ -191,7 +191,7 @@ export class DialogManager extends View {
     _goBackInHistory(){
         let route = this._shouldGoBackInHistory;
         this._shouldGoBackInHistory = false;
-        (route instanceof Object && route.controller) ? this.router.go(route.controller, route.method, route.arguments) : this.router.goBackInHistory();
+        (route instanceof Object && route.controller) ? this.router.go(route.controller, route.method, route.params) : this.router.goBackInHistory();
 
     }
 }

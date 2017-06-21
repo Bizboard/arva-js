@@ -84,7 +84,7 @@ function famousMerge(defaultParam, specifiedParam) {
     if (hasDashProperty) {
         return mergeWith(shallowParamCopies[1], shallowParamCopies[0], famousMerge);
     } else {
-        return undefined;
+        return defaultParam === undefined ? specifiedParam : undefined;
     }
 }
 

@@ -56,9 +56,15 @@ export class Model extends PrioritisedObject {
         let modelName = this.constructor._name || Object.getPrototypeOf(this).constructor.name;
 
         let pathRoot = modelName + 's';
+        if (options.subBranch) { pathRoot += `/${options.subBranch}`; }
 
         let dataWasPushed = false;
-        let dataIsSynced = new Promise((resolve) => this._dataIsSynced = resolve);
+        let onDataSynced, onDataSyncFailed;
+        let dataIsSynced = new Promise((resolve, reject) => {
+            onDataSynced = resolve;
+            onDataSyncFailed = reject;
+        });
+
         let dataSourceOptions = { synced: dataIsSynced };
 
         if (options.dataSource && id) {
@@ -96,9 +102,21 @@ export class Model extends PrioritisedObject {
         }
         if (!options.noInitialSync && !dataWasPushed) {
             /* Write local data to model, if any data is present. */
-            this._writeLocalDataToModel(data).then(this._dataIsSynced);
+            this._writeLocalDataToModel(data)
+                .then(onDataSynced)
+                .catch(onDataSyncFailed);
         } else {
-            this._dataIsSynced();
+            onDataSynced();
+        }
+        if(this._dataSource){
+            /* Add the promise to the end of the dataSource synced chain.
+             * This enables to catch errors like this:
+             * new Model(null, {...data}).synced().catch((error) => /!* Handle error *!/)
+             */
+            let dataSourceSyncPromise = this._dataSource.synced();
+            if (dataSourceSyncPromise) {
+                this._dataSource._synced = dataSourceSyncPromise.then(() => dataIsSynced);
+            }
         }
     }
 
@@ -109,6 +127,19 @@ export class Model extends PrioritisedObject {
      */
     synced() {
         return this._dataSource.synced();
+    }
+
+    /**
+     * Updates properties of this model to the values of those of another model, or a normal JS Object.
+     * @param {Model|Object} newModelOrData Data to replace old data with
+     */
+    replaceProperties(newModelOrData) {
+        this.transaction(() => {
+            for (let fieldName in newModelOrData) {
+                /* Simple shallow clone */
+                this[fieldName] = newModelOrData[fieldName];
+            }
+        });
     }
 
     /**
@@ -124,7 +155,7 @@ export class Model extends PrioritisedObject {
         }
 
         /* If the code is minified, then this.constructor._name is defined, in that case that also goes for the inheriting classes */
-        while (prototype.constructor._name || (!this.constructor._name && prototype.constructor.name !== 'Model')) {
+        while (prototype && (prototype.constructor._name || (!this.constructor._name && prototype.constructor.name !== 'Model'))) {
             /* Get all properties except the id and constructor of this model */
             let propNames = difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
 
