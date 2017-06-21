@@ -111,10 +111,11 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._addPlaceholder();
 
 
-        if (!(this.options.dataStores || this.options.dataStore) || !this.options.itemTemplate) {
-            console.log('DataSource and template should both be set.');
+        if (!this.options.itemTemplate) {
+            console.log('DataBoundScrollView.options.itemTemplate must be set!');
             return this;
         }
+
 
         if (this.options.dataStore && this.options.dataStores) {
             throw new Error('Both the single dataStore and the multiple dataStores is set, please decide for one or the other');
