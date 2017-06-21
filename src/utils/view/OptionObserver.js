@@ -89,8 +89,8 @@ export class OptionObserver extends EventEmitter {
                 //TODO This won't work if the id can be set to something else, so verify that this shouldn't be possible
                 /* We assume that the constructor name is unique */
                 let listenersByProperty = {};
-                let onModelChanged = (model, { changedProperties, changedValues }) =>
-                    this._onModelChanged(model, changedValues, changedProperties, key, nestedPropertyPath, listenersByProperty);
+                let onModelChanged = (model, changedProperties ) =>
+                    this._onModelChanged(model, changedProperties, key, nestedPropertyPath, listenersByProperty);
                 let isListening = false;
                 this._accommodateObjectPath(this._modelListeners, [value.constructor.name])[value.id] = {
                     startListening: () => {
@@ -118,15 +118,15 @@ export class OptionObserver extends EventEmitter {
                 this._onEventTriggered({ ...info, type: 'getter', parentObject: object, nestedPropertyPath }));
     }
 
-    _onModelChanged(model, changedValues, changedProperties, modelKeyInParent, nestedPropertyPath, listenersByProperty) {
-        this._updateOptionsStructure(changedValues, changedProperties, model, nestedPropertyPath.concat(modelKeyInParent));
+    _onModelChanged(model, changedProperties, modelKeyInParent, nestedPropertyPath, listenersByProperty) {
+        this._updateOptionsStructure(changedProperties, model, nestedPropertyPath.concat(modelKeyInParent));
     }
 
     _onEventTriggered(info) {
         this.emit('optionTrigger', info);
         if (info.type === 'setter') {
             let { nestedPropertyPath, propertyName, newValue, parentObject } = info;
-            this._updateOptionsStructure([newValue], [propertyName], parentObject, nestedPropertyPath);
+            this._updateOptionsStructure([propertyName], parentObject, nestedPropertyPath);
         }
     }
 
@@ -154,11 +154,7 @@ export class OptionObserver extends EventEmitter {
         }
     }
 
-    _updateOptionsStructure(changedValues, changedProperties, parentObject, nestedPropertyPath) {
-        if (changedProperties.length !== changedValues.length) {
-            console.log('Internal error in Options Observer! the properties are not the same count as the changed values!');
-        }
-
+    _updateOptionsStructure(changedProperties, parentObject, nestedPropertyPath) {
 
         this._deepUpdateStructure(
             changedProperties,

@@ -314,7 +314,7 @@ export class PrioritisedObject extends EventEmitter {
             let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
             if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
                 /* If child is a primitive, listen to changes so we can sync with Firebase */
-                ObjectHelper.addPropertyToObject(this, key, data[key], true, true, () => this._onSetterTriggered(key), ({newValue}) => this._onGetterTriggered(key, newValue));
+                ObjectHelper.addPropertyToObject(this, key, data[key], true, true, () => this._onSetterTriggered(key), ({value}) => this._onGetterTriggered({propertyName: key, value}));
             }
         }
     }
@@ -384,9 +384,9 @@ export class PrioritisedObject extends EventEmitter {
     }
 
     _getDiffingKeysFromOther(otherObject) {
-        Object.keys(otherObject).filter((value, key) => {
-            let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
-            return ownPropertyDescriptor && ownPropertyDescriptor.enumerable && !isEqual(this[key], value);
+        return Object.keys(otherObject).filter((propertyName) => {
+            let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, propertyName);
+            return ownPropertyDescriptor && ownPropertyDescriptor.enumerable && !isEqual(this[propertyName], otherObject[propertyName]);
         });
     }
 
@@ -407,7 +407,7 @@ export class PrioritisedObject extends EventEmitter {
 
         let changedPropertyNames = this._getDiffingKeysFromOther(incomingData);
 
-        if (every) {
+        if (!changedPropertyNames.length) {
             this.emit('value', this, previousSiblingID);
             this.enableChangeListener();
             return;

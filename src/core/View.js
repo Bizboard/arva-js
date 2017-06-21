@@ -858,9 +858,6 @@ export class View extends FamousView {
         let renderableConstructor = this._renderableConstructors[renderableName];
         let currentRenderable = this[renderableName];
 
-        /*PrioritisedObject.setPropertyGetterSpy((model, property, value) => {
-            this._syncModelPropertyWithRenderable(renderableName, model, property, value);
-        });*/
         this._optionObserver.recordForRenderable(renderableName);
         let renderable = renderableConstructor.call(this, this.options);
 
