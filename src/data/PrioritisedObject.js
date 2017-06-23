@@ -370,7 +370,7 @@ export class PrioritisedObject extends EventEmitter {
         if (!this._changeListenersDisabled) {
             let changedProperties = this._accessedKeys.concat(key);
             let changedValues = changedProperties.map((key) => this.shadow[key]);
-            this.emit('changed', this, {changedProperties, changedValues});
+            this.emit('changed', this, changedProperties);
             return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this.shadow), this._priority);
         } else {
             this._accessedKeys.push(key);
