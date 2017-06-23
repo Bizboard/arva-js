@@ -32,7 +32,6 @@ import {RenderableHelper}           from '../utils/view/RenderableHelper.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 import {PrioritisedObject}          from '../data/PrioritisedObject.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
-import observeJs             from 'observe-js';
 import {OptionObserver} from '../utils/view/OptionObserver';
 
 /**
