@@ -102,9 +102,9 @@ export class ObjectHelper {
     }
 
     /* Adds given property to the object with get() and set() accessors, and saves actual data in object.shadow */
-    static addGetSetPropertyWithShadow(object, propName, prop, enumerable = true, writable = true, setCallback = null, getCallback = null, nestedPropertyPath = []) {
+    static addGetSetPropertyWithShadow(object, propName, prop, enumerable = true, writable = true, setCallback = null, getCallback = null) {
         ObjectHelper.buildPropertyShadow(object, propName, prop);
-        ObjectHelper.buildGetSetProperty(object, propName, enumerable, writable, setCallback, getCallback, nestedPropertyPath);
+        ObjectHelper.buildGetSetProperty(object, propName, enumerable, writable, setCallback, getCallback);
     }
 
     /* Creates or extends object.shadow to contain a property with name propName */
@@ -139,7 +139,7 @@ export class ObjectHelper {
      * @param {Function} getCallback A function that takes as a single argument the property that is about to be get. Should
      * return that thing as well
      */
-    static buildGetSetProperty(object, propName, enumerable = true, writable = true, setCallback = null, getCallback = null, nestedPropertyPath = []) {
+    static buildGetSetProperty(object, propName, enumerable = true, writable = true, setCallback = null, getCallback = null) {
         let descriptor = {
             enumerable: enumerable,
             configurable: true,
@@ -147,8 +147,7 @@ export class ObjectHelper {
                 if (getCallback && typeof setCallback === 'function') {
                     getCallback({
                         propertyName: propName,
-                        value: object.shadow[propName],
-                        nestedPropertyPath
+                        value: object.shadow[propName]
                     });
                 }
                 return object.shadow[propName];
@@ -161,8 +160,7 @@ export class ObjectHelper {
                         setCallback({
                             propertyName: propName,
                             newValue: value,
-                            oldValue,
-                            nestedPropertyPath
+                            oldValue
                         });
                     }
                 } else {

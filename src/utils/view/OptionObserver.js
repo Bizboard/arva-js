@@ -28,8 +28,14 @@ export class OptionObserver extends EventEmitter {
   _newOptionUpdates = {}
   _renderableUpdatesForNextTick = {}
 
-  constructor (defaultOptions, options) {
+  /* THe max supported depth in deep-checking iterations */
+  static maxSupportedDepth = 10
+
+  constructor (defaultOptions, options, debugName) {
     super()
+    this._errorName = debugName
+    window.optionObservers = window.optionObservers || []
+    window.optionObservers.push(this)
     ObjectHelper.bindAllMethods(this, this)
     this.options = options
     this.defaultOptions = defaultOptions
@@ -47,11 +53,11 @@ export class OptionObserver extends EventEmitter {
       let modelListener = this._modelListeners[model.constructor.name][model.id]
       /* Add the renderable as listening to the tree */
       this._accommodateObjectPath(modelListener.localListenerTree, [property, listeners])[renderableName] = true
-      modelListener.startListening(renderableName)
+      modelListener.startListening()
     })
     let optionRecorder = this._activeRecordings[renderableName] = ({type, propertyName, nestedPropertyPath}) => {
       if (type === 'setter') {
-        console.log('Warning: Setting an option during instancation of renderable')
+        console.log('Warning: Setting an option during instanciation of renderable')
       } else {
         this._accessObjectPath(this._listenerTree, nestedPropertyPath.concat([propertyName, listeners]))[renderableName] = true
       }
@@ -103,7 +109,7 @@ export class OptionObserver extends EventEmitter {
         }
         /* Cancel traverse in this direction */
         return true
-      } else if (!(newOptionValue && typeof newOptionValue === 'object' && newOptionValue.constructor.name === 'object') && value !== newOptionValue) {
+      } else if (!(newOptionValue && this._isPlainObject(newOptionValue)) && value !== newOptionValue) {
         /* Triggers the appriopriate events */
         optionObject[key] = newOptionValue
       } else if (newOptionsAreAlsoOptions) {
@@ -124,12 +130,13 @@ export class OptionObserver extends EventEmitter {
    * @private
    */
   _setupOptions (options, defaultOptions) {
-    options[isOption] = true
+    this._markOption(options)
     this._deepTraverse(defaultOptions, (nestedPropertyPath, defaultOptionsObject, value, key, [optionsObject]) => {
       let specifiedValue = optionsObject[key]
       if (typeof value === 'function' && (value.prototype instanceof Model || value === Model) && specifiedValue) {
-        if (!specifiedValue instanceof value) {
-          throw new Error(`${nestedPropertyPath.join('->')} is not a Model!`)
+
+        if (!(specifiedValue instanceof value)) {
+          this._throwError(`${nestedPropertyPath.join('->')} is not a Model!`)
         }
         value = specifiedValue
       }
@@ -139,36 +146,30 @@ export class OptionObserver extends EventEmitter {
       }
       let localListenerTree = this._accommodateObjectPath(this._listenerTree, nestedPropertyPath.concat(key))
       localListenerTree[listeners] = {}
-      if (value instanceof Model) {
-        //TODO This won't work if the id can be set to something else, so verify that this shouldn't be possible
-        /* We assume that the constructor name is unique */
-        let onModelChanged = (model, changedProperties) =>
-          this._onModelChanged(model, changedProperties, key, nestedPropertyPath)
-        let isListening = false
-        this._accommodateObjectPath(this._modelListeners, [value.constructor.name])[value.id] = {
-          startListening: () => {
-            if (!isListening) {
-              value.on('changed', onModelChanged)
-              isListening = true
-            }
-          },
-          stopListening: () => {
-            if (isListening) {
-              value.removeListener('changed', onModelChanged)
-              isListening = false
-            }
-          },
-          localListenerTree
-        }
+
+      if (value[isOption] && value[isOption].owner === this) {
+        /* Shallow clone at this level, which will become a deep clone when we're finished traversing */
+        value = this._shallowCloneOption(value)
       }
+
+      if (value instanceof Model) {
+        this._setupModel(nestedPropertyPath, value, localListenerTree, key);
+      }
+
       this._setupOptionLink(optionsObject, key, value, nestedPropertyPath)
-      this._addGetterSetterHook(optionsObject, key, value, nestedPropertyPath)
+
     }, [options])
   }
 
   _setupOptionLink (object, key, value, nestedPropertyPath) {
     this._addGetterSetterHook(object, key, value, nestedPropertyPath)
-    object[isOption] = true
+    this._markOption(object)
+  }
+
+  _shallowCloneOption (optionToShallowClone) {
+    let result = {}
+    Object.defineProperties(result, Object.getOwnPropertyDescriptors(optionToShallowClone))
+    return result
   }
 
   /**
@@ -227,13 +228,14 @@ export class OptionObserver extends EventEmitter {
     if (defaultOption === notFound) {
       throw Error(`Option updated without being declared as default. ${nestedPropertyPath.join('->')}`)
     }
-
+    //TODO: In order to make it more efficient, this step might be integrated in the flush instead of being done for every update
     this._deepUpdateStructure({
       changedProperties,
       parentObject,
       listenerTree: this._accessObjectPath(this._listenerTree, nestedPropertyPath),
       oldValues,
-      defaultOption
+      defaultOption,
+      nestedPropertyPath
     })
 
     for (let property of changedProperties) {
@@ -243,49 +245,72 @@ export class OptionObserver extends EventEmitter {
   }
 
   /**
-   * Recursive function used by _updateOptionsStructure to traverse the options object
+   * Recursive function used by _updateOptionsStructure to traverse the options object.
+   * Checks which renderables need update for the next tick
+   *
    * @param changedProperties
    * @param parentObject
    * @param listenerTree
-   * @param oldValues
+   * @param oldValues The old values for the changed properties
    * @private
    */
-  _deepUpdateStructure ({changedProperties, parentObject, listenerTree, oldValues, defaultOption}) {
+  //TODO It's probably more performant to integrate this with the flush function
+  _deepUpdateStructure ({changedProperties, parentObject, listenerTree, oldValues = [], defaultOption, nestedPropertyPath}) {
+    if (defaultOption === undefined) {
+      this._throwError(`Assignment to undefined option`)
+    }
 
     for (let [index, property] of changedProperties.entries()) {
       let listenerTreeForProperty = listenerTree[property]
       if (!listenerTreeForProperty) {
         listenerTreeForProperty = listenerTree[property] = {}
       }
-      let value = parentObject[property]
-      let oldValue = oldValues[index]
+      let newValue = parentObject[property]
+      let oldValue = oldValues[index] || {}
 
-      if (value && typeof value === 'object' && value.constructor.name === 'Object') {
-        /* Mark the value as an option so it's recognized as an option if passed on to other objects */
-        value[isOption] = true
-        let properties = Object.keys(value)
+      if (newValue && this._isPlainObject(newValue)) {
+
+        let properties = Object.keys(newValue)
         let oldProperties = Object.keys(oldValue)
+
+        /* Mark the value as an option so it's recognized as an option if passed on to other objects */
+        this._markOption(newValue)
+
         let removedProperties = difference(oldProperties, properties)
         let innerDefaultOption = defaultOption[property]
 
-        this._resetRemovedProperties(removedProperties, innerDefaultOption, value)
+        this._resetRemovedProperties(removedProperties, innerDefaultOption, newValue)
 
         this._deepUpdateStructure({
           changedProperties: properties,
-          parentObject: value,
+          parentObject: newValue,
           listenerTree: listenerTreeForProperty,
           oldValues: oldValue[property],
-          defaultOption: innerDefaultOption
+          defaultOption: innerDefaultOption,
+          nestedPropertyPath: nestedPropertyPath.concat(property)
         })
+      } else if (newValue instanceof Model) {
+        let oldListenerStructureBase = this._accessObjectPath(this._modelListeners, [oldValue.constructor.name])
+
+        if (oldListenerStructureBase[oldValue.id].isListening()) {
+          oldListenerStructureBase[oldValue.id].stopListening()
+          delete oldListenerStructureBase[oldValue.id]
+          this._setupModel(nestedPropertyPath, newValue, listenerTreeForProperty, property).startListening()
+        }
       }
       for (let renderableName in listenerTreeForProperty[listeners]) {
-        if (!this._renderableUpdatesForNextTick[renderableName]) {
-          this._renderableUpdatesForNextTick[renderableName] = true
-        }
+        this._renderableUpdatesForNextTick[renderableName] = true
       }
     }
   }
 
+  /**
+   * When properties are removed from options, they are reset to the value specified
+   * @param removedProperties
+   * @param defaultOption
+   * @param parentObject
+   * @private
+   */
   _resetRemovedProperties (removedProperties, defaultOption, parentObject) {
     for (let property of removedProperties) {
       parentObject[property] = defaultOption[property]
@@ -301,7 +326,7 @@ export class OptionObserver extends EventEmitter {
    */
   _isPredictablyEqual (firstThing, secondThing) {
     /* Object comparison is not reliable */
-    if (firstThing === 'object' && this.constructor.name === 'object') {
+    if (this._isPlainObject(firstThing)) {
       return false
     }
     return firstThing === secondThing
@@ -398,11 +423,15 @@ export class OptionObserver extends EventEmitter {
    * @param nestedPropertyPath
    * @private
    */
-  _deepTraverse (object, callback, extraObjectsToTraverse = [], onlyForLeaves = false, nestedPropertyPath = []) {
-    if (typeof object !== 'object') {
+  _deepTraverse (object, callback, extraObjectsToTraverse = [], onlyForLeaves = false, nestedPropertyPath = [], depthCount = 0) {
+    if (!this._isPlainObject(object)) {
       return
     }
+    if (depthCount > OptionObserver.maxSupportedDepth) {
+      this._throwError(`Encountered circular structure or an exceeded maximum depth of ${OptionObserver.maxSupportedDepth} exceeded`)
+    }
     each(object, (value, key) => {
+
       let valueIsPlainObject = value && typeof value === 'object' && value.constructor.name === 'Object'
       let valueIsLeaf = valueIsPlainObject && Object.keys(value).length === 0
       if (!onlyForLeaves || valueIsLeaf) {
@@ -412,7 +441,14 @@ export class OptionObserver extends EventEmitter {
         }
       }
       if (valueIsPlainObject) {
-        this._deepTraverse(value, callback, extraObjectsToTraverse.map((extraObjectToTraverse) => extraObjectToTraverse[key] || {}), onlyForLeaves, nestedPropertyPath.concat(key))
+        this._deepTraverse(
+          value,
+          callback,
+          extraObjectsToTraverse.map((extraObjectToTraverse) => extraObjectToTraverse[key] || {}),
+          onlyForLeaves,
+          nestedPropertyPath.concat(key),
+          depthCount + 1
+        )
       }
     })
 
@@ -431,8 +467,10 @@ export class OptionObserver extends EventEmitter {
     this._deepTraverse(this._newOptionUpdates, (nestedPropertyPath, updateObject, value, key, [optionObject]) => {
       let outerNestedPropertyPath = nestedPropertyPath.concat(key)
       let optionValue = value[changes]
-      // let optionValue = optionObject[key]
-      this._addGetterSetterHook(optionObject, key, optionValue, nestedPropertyPath)
+
+      if (this._isPlainObject(optionObject)) {
+        this._addGetterSetterHook(optionObject, key, optionValue, nestedPropertyPath)
+      }
       this._deepTraverse(optionValue, (innerNestedPropertyPath, object, value, key) => {
         this._addGetterSetterHook(object, key, value, outerNestedPropertyPath.concat(innerNestedPropertyPath))
       })
@@ -445,11 +483,18 @@ export class OptionObserver extends EventEmitter {
 
   }
 
+  /**
+   * Marks a certain property as updated
+   * @param nestedPropertyPath
+   * @param property
+   * @param value
+   * @private
+   */
   _markPropertyAsUpdated (nestedPropertyPath, property, value) {
     let allButLastProperty = nestedPropertyPath
     let lastProperty = property
     /* Mark the object as changes in the most common path */
-    //TODO COnfirm that it works
+    //TODO Confirm that it works
     let updateObject = this._accommodateObjectPathUnless(this._newOptionUpdates, allButLastProperty, (object) =>
       object[changes]
     )
@@ -457,4 +502,56 @@ export class OptionObserver extends EventEmitter {
       updateObject[lastProperty] = {[changes]: value}
     }
   }
+
+  /**
+   * Mark an object as being part of an option
+   * @param objectInOptionStructure
+   * @private
+   */
+  _markOption (objectInOptionStructure) {
+    objectInOptionStructure[isOption] = {
+      owner: this
+    }
+  }
+
+  _throwError (message) {
+    throw new Error(`${this._errorName}: ${message}`)
+  }
+
+  /**
+   * Sets up a model that will be synchronized to update the options object whenever something is updated
+   *
+   * @param nestedPropertyPath
+   * @param model
+   * @param localListenerTree
+   * @private
+   */
+  _setupModel (nestedPropertyPath, model, localListenerTree, property) {
+    //TODO This won't work if the id can be set to something else, so verify that this shouldn't be possible
+    /* We assume that the constructor name is unique */
+    let onModelChanged = (model, changedProperties) =>
+      this._onModelChanged(model, changedProperties, property, nestedPropertyPath)
+    let isListening = false
+    return this._accommodateObjectPath(this._modelListeners, [model.constructor.name])[model.id] = {
+      startListening: () => {
+        if (!isListening) {
+          model.on('changed', onModelChanged)
+          isListening = true
+        }
+      },
+      stopListening: () => {
+        if (isListening) {
+          model.removeListener('changed', onModelChanged)
+          isListening = false
+        }
+      },
+      localListenerTree,
+      isListening: () => isListening
+    }
+  }
+
+  _isPlainObject (object) {
+    return typeof object === 'object' && object.constructor.name === 'Object'
+  }
+
 }
