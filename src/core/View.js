@@ -727,11 +727,8 @@ export class View extends FamousView {
     }
 
     setNewOptions(options) {
-        //TODO merge with default options and check diff
-        this.options = options;
-        for (let renderableName of this._renderableHelper.getRenderableNames()) {
-            this._setupRenderable(renderableName);
-        }
+        this._optionObserver.recombineOptions(options);
+        this.options = this._optionObserver.getOptions();
     }
 
     _doTrueSizedSurfacesBookkeeping() {
