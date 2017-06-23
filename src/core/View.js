@@ -772,10 +772,6 @@ export class View extends FamousView {
         this._optionObserver = new OptionObserver(defaultOptions, options);
         this._optionObserver.on('needUpdate', (renderableName) => this._setupRenderable(renderableName));
         this.options = this._optionObserver.getOptions();
-        window.options = window.options || [];
-        window.optionObservers = window.optionObservers || [];
-        window.options.push(this.options);
-        window.optionObservers.push(this._optionObserver);
     }
 
     _initDataStructures() {
