@@ -32,7 +32,7 @@ import {RenderableHelper}           from '../utils/view/RenderableHelper.js';
 import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
 import {PrioritisedObject}          from '../data/PrioritisedObject.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
-import {OptionObserver} from '../utils/view/OptionObserver';
+import {OptionObserver}             from '../utils/view/OptionObserver.js';
 
 /**
  * An Arva View. Can be constructed explicitly by using new View() but is more commonly used as a base class for
@@ -846,11 +846,11 @@ export class View extends FamousView {
     }
 
     _setupRenderable(renderableName) {
-        let renderableConstructor = this._renderableConstructors[renderableName];
+        let renderableInitializer = this._renderableConstructors[renderableName];
         let currentRenderable = this[renderableName];
 
         this._optionObserver.recordForRenderable(renderableName);
-        let renderable = renderableConstructor.call(this, this.options);
+        let renderable = renderableInitializer.call(this, this.options);
 
 
         /* Allow class property to be a function that returns a renderable */
