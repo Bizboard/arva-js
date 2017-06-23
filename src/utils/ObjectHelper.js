@@ -155,11 +155,13 @@ export class ObjectHelper {
             },
             set: function (value) {
                 if (writable) {
+                    let oldValue = object.shadow[propName];
                     object.shadow[propName] = value;
                     if (setCallback && typeof setCallback === 'function') {
                         setCallback({
                             propertyName: propName,
                             newValue: value,
+                            oldValue,
                             nestedPropertyPath
                         });
                     }
