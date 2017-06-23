@@ -751,7 +751,6 @@ export class View extends FamousView {
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
         this._nodes = { _trueSizedRequested: false };
         /* This needs to be set in order for the LayoutNodeManager to be happy */
-        this.options.size = this.options.size || [true, true];
     }
 
     _initOptions(options) {
