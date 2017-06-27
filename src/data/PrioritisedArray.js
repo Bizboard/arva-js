@@ -20,10 +20,28 @@ import {ObjectHelper}               from '../utils/ObjectHelper.js';
 /**
  * An array of two-way bound data Models that are automatically synced with the currently used DataSource
  */
-export class PrioritisedArray {
+export class PrioritisedArray extends Array {
 
-    _children = [];
-    get length() { return this._children.length; }
+    /**
+     * The number of items in the (synchronized or local) data set.
+     * @returns {Number}
+     */
+    get length() {
+        /* Extending Array does not work fluently yet. The length property always returns 0,
+         * regardless of how many entries are in the array. We'll override the length prop to determine
+         * the amount of enumerable properties in our PrioritisedArray instead of using the built-in length property.
+         */
+        return Object.keys(this).length;
+    }
+
+    /**
+     * A setter on the length is necessary because internal methods of Array modify the lngth. It won't change the length thoough
+     * @param {Number} value
+     * @returns {*}
+     */
+    set length(value) {
+        return value;
+    }
 
     /**
      *
@@ -36,6 +54,7 @@ export class PrioritisedArray {
      * @returns {PrioritisedArray} PrioritisedArray instance.
      */
     constructor(dataType, dataSource = null, dataSnapshot = null, options = {}, modelOptions = {}) {
+        super();
         /**** Callbacks ****/
         this._valueChangedCallback = null;
 
@@ -68,7 +87,7 @@ export class PrioritisedArray {
         ObjectHelper.hideMethodsAndPrivatePropertiesFromObject(this);
 
         /* Hide the priority field from enumeration, so we don't save it to the dataSource. */
-        // ObjectHelper.hidePropertyFromObject(Object.getPrototypeOf(this), 'length');
+        ObjectHelper.hidePropertyFromObject(Object.getPrototypeOf(this), 'length');
 
         /* If no dataSource is given, create own one with guessed path */
         if (!dataSource) {
@@ -110,8 +129,8 @@ export class PrioritisedArray {
 
             for (let i = 0; i < this.length; i++) {
                 this._childAddedThrottler.add(() => {
-                    let model = this._children[i];
-                    let previousSiblingID = i > 0 ? this._children[i - 1].id : null;
+                    let model = this[i];
+                    let previousSiblingID = i > 0 ? this[i - 1].id : null;
                     handler.call(context, model, previousSiblingID);
                 });
             }
@@ -221,9 +240,9 @@ export class PrioritisedArray {
         if (model instanceof this._dataType) {
             for (let i = position; i < this.length; i++) {
                 /* Increase the index of items further on in the prio array */
-                this._ids[this._children[i].id]++;
+                this._ids[this[i].id]++;
             }
-            this._children.splice(position, 0, model);
+            this.splice(position, 0, model);
             this._ids[model._id] = position;
         } else {
             /* TODO: change to throw exception */
@@ -259,12 +278,12 @@ export class PrioritisedArray {
         } else {
             for (let i = position + 1; i < this.length; i++) {
                 /* Decrease the index of items further on in the prio array */
-                if (!this._ids[this._children[i].id] && this._ids[this._children[i].id] !== 0) {
-                    console.log("Internal error, decreasing index of non-existing id. For ID: " + this._children[i].id);
+                if (!this._ids[this[i].id] && this._ids[this[i].id] !== 0) {
+                    console.log("Internal error, decreasing index of non-existing id. For ID: " + this[i].id);
                 }
-                this._ids[this._children[i].id]--;
+                this._ids[this[i].id]--;
             }
-            delete this._ids[this._children[position].id];
+            delete this._ids[this[position].id];
 
         }
         this.splice(position, 1);
@@ -288,7 +307,7 @@ export class PrioritisedArray {
      * @returns {Model}
      */
     findById(id) {
-        return this._children[this.findIndexById(id)];
+        return this[this.findIndexById(id)];
     }
 
     getDataSourcePath() {
@@ -301,25 +320,11 @@ export class PrioritisedArray {
      */
     replaceContents(newContents) {
         while (this.length) {
-            this._children[0].remove();
+            this[0].remove();
         }
         for (let item of newContents) {
             this.add(LocalModel.cloneModelProperties(item));
         }
-    }
-
-    [Symbol.iterator] = function* () {
-        for(let child of this._children) {
-            yield child;
-        }
-    }
-
-        [Symbol.isConcatSpreadable] = function () {
-        return true;
-    }
-
-        [Symbol.toPrimitive] = function (hint) {
-        return this._children;
     }
 
 
@@ -471,7 +476,7 @@ export class PrioritisedArray {
         }
 
 
-        let model = this._children[previousPosition];
+        let model = this[previousPosition];
         model._onChildValue(snapshot, prevSiblingId);
         let newPosition = this.findIndexById(prevSiblingId) + 1;
 
@@ -495,10 +500,10 @@ export class PrioritisedArray {
             let id = snapshot.key;
             let previousPosition = this.findIndexById(id);
             let newPosition = this.findIndexById(prevSiblingId) + 1;
-            let tempModel = this._children[previousPosition];
+            let tempModel = this[previousPosition];
             this._moveItem(previousPosition, newPosition, tempModel);
 
-            let model = this._children[newPosition];
+            let model = this[newPosition];
 
             this._eventEmitter.emit('child_moved', model, previousPosition);
             this._eventEmitter.emit('value', this);
@@ -509,17 +514,17 @@ export class PrioritisedArray {
         this._ids[modelToMove._id] = newPosition;
         /* Update the positions of things coming inbetween */
         for (let positionAhead = previousPosition; positionAhead < newPosition; positionAhead++) {
-            this._ids[this._children[positionAhead].id]--;
+            this._ids[this[positionAhead].id]--;
         }
         for (let positionBefore = newPosition; positionBefore < previousPosition; positionBefore++) {
-            this._ids[this._children[positionBefore].id]++;
+            this._ids[this[positionBefore].id]++;
         }
 
         if (previousPosition === newPosition) {
-            this._children[newPosition] = modelToMove;
+            this[newPosition] = modelToMove;
         } else {
-            this._children.splice(previousPosition, 1);
-            this._children.splice(newPosition, 0, modelToMove);
+            this.splice(previousPosition, 1);
+            this.splice(newPosition, 0, modelToMove);
         }
     }
 
@@ -533,7 +538,7 @@ export class PrioritisedArray {
         /* TODO: figure out if we can use the snapshot's priority as our array index reliably, to avoid big loops. */
         let id = oldSnapshot.key;
         let position = this.findIndexById(id);
-        let model = this._children[position];
+        let model = this[position];
 
         if (position !== -1) {
             this.remove(position);
