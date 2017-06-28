@@ -318,7 +318,15 @@ export class PrioritisedArray {
      * @returns {*}
      */
     find() {
-        return this._children.find.apply(this, arguments);
+        return this._children.find.apply(this._children, arguments);
+    }
+
+    /**
+     * Proxies PrioArray.entries() to its underlying Array cache.
+     * @returns {*}
+     */
+    entries() {
+        return this._children.entries.apply(this._children, arguments);
     }
 
     /**
@@ -326,7 +334,7 @@ export class PrioritisedArray {
      * @returns {*}
      */
     reduce() {
-        return this._children.reduce.apply(this, arguments);
+        return this._children.reduce.apply(this._children, arguments);
     }
 
     /**
@@ -334,7 +342,7 @@ export class PrioritisedArray {
      * @returns {*}
      */
     splice() {
-        let result = this._children.splice.apply(this, arguments);
+        let result = this._children.splice.apply(this._children, arguments);
         this._updateReferenceProperties();
         return result;
     }
