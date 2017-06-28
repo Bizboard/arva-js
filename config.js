@@ -32,7 +32,7 @@ System.config({
     "lodash": "npm:lodash@4.13.1",
     "lodash-decorators": "npm:lodash-decorators@3.0.1",
     "ordered-hashmap": "npm:ordered-hashmap@1.0.0",
-    "path": "github:jspm/nodelibs-path@0.1.0",
+    "path": "npm:jspm-nodelibs-path@0.2.3",
     "process": "npm:jspm-nodelibs-process@0.2.1",
     "request-animation-frame-mock": "github:erykpiast/request-animation-frame-mock@0.1.8",
     "traceur": "github:jmcriffey/bower-traceur@0.0.92",
