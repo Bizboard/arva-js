@@ -313,12 +313,36 @@ export class PrioritisedArray {
         }
     }
 
+    /**
+     * Proxies PrioArray.find() to its underlying Array cache.
+     * @returns {*}
+     */
+    find() {
+        return this._children.find.apply(this, arguments);
+    }
+
+    /**
+     * Proxies PrioArray.splice() to its underlying Array cache.
+     * @returns {*}
+     */
+    splice() {
+        return this._children.splice.apply(this, arguments);
+    }
+
+    /**
+     * Allows 'for of' loops on the PrioArray.
+     */
     *[Symbol.iterator] () {
         for(let child of this._children) {
             yield child;
         }
     }
 
+    /**
+     * Whenever this PrioArray is typecasted, its underlying Array cache is returned.
+     * @param hint
+     * @returns {Array}
+     */
     [Symbol.toPrimitive] (hint) {
         return this._children;
     }
@@ -544,6 +568,11 @@ export class PrioritisedArray {
         }
     }
 
+    /**
+     * Updates the local properties [0]...[n] on this PrioArray instance, each of which is a getter to
+     * the entry in the underlying Array cache at the same index.
+     * @private
+     */
     _updateReferenceProperties() {
         let wantedLength = this.length;
         let currentLength = this._referenceLength;
