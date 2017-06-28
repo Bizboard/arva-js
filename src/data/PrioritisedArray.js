@@ -322,11 +322,21 @@ export class PrioritisedArray {
     }
 
     /**
+     * Proxies PrioArray.reduce() to its underlying Array cache.
+     * @returns {*}
+     */
+    reduce() {
+        return this._children.reduce.apply(this, arguments);
+    }
+
+    /**
      * Proxies PrioArray.splice() to its underlying Array cache.
      * @returns {*}
      */
     splice() {
-        return this._children.splice.apply(this, arguments);
+        let result = this._children.splice.apply(this, arguments);
+        this._updateReferenceProperties();
+        return result;
     }
 
     /**
