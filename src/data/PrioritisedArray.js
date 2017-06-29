@@ -356,6 +356,14 @@ export class PrioritisedArray {
     }
 
     /**
+     * Proxies PrioArray.filter() to its underlying Array cache.
+     * @returns {*}
+     */
+    filter() {
+        return this._children.filter.apply(this._children, arguments);
+    }
+
+    /**
      * Allows 'for of' loops on the PrioArray.
      */
     *[Symbol.iterator] () {
