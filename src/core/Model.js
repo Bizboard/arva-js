@@ -157,14 +157,14 @@ export class Model extends PrioritisedObject {
         /* If the code is minified, then this.constructor._name is defined, in that case that also goes for the inheriting classes */
         while (prototype && (prototype.constructor._name || (!this.constructor._name && prototype.constructor.name !== 'Model'))) {
             /* Get all properties except the id and constructor of this model */
-            let propNames = difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
+            let propertyNames = difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
 
-            for (let key of propNames) {
-                let descriptor = Object.getOwnPropertyDescriptor(prototype, key);
+            for (let propertyName of propertyNames) {
+                let descriptor = Object.getOwnPropertyDescriptor(prototype, propertyName);
                 if (descriptor && descriptor.get) {
-                    let value = this[key];
-                    delete this[key];
-                    ObjectHelper.addPropertyToObject(this, key, value, true, true, () => this._onSetterTriggered(key), ({newValue}) => this._onGetterTriggered(key, newValue));
+                    let value = this[propertyName];
+                    delete this[propertyName];
+                    ObjectHelper.addPropertyToObject(this, propertyName, value, true, true, () => this._onSetterTriggered(propertyName), ({newValue}) => this._onGetterTriggered({propertyName, newValue}));
                 }
             }
 

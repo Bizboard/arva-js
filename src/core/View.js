@@ -728,7 +728,6 @@ export class View extends FamousView {
 
     setNewOptions(options) {
         this._optionObserver.recombineOptions(options);
-        this.options = this._optionObserver.getOptions();
     }
 
     _doTrueSizedSurfacesBookkeeping() {
@@ -846,6 +845,10 @@ export class View extends FamousView {
     }
 
     _setupRenderable(renderableName) {
+
+        /* Re-assign the options to make sure they're up to date */
+        this.options = this._optionObserver.options;
+
         let renderableInitializer = this._renderableConstructors[renderableName];
         let currentRenderable = this[renderableName];
 
