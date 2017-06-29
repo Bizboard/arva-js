@@ -338,6 +338,14 @@ export class PrioritisedArray {
     }
 
     /**
+     * Proxies PrioArray.map() to its underlying Array cache.
+     * @returns {*}
+     */
+    map() {
+        return this._children.map.apply(this._children, arguments);
+    }
+
+    /**
      * Proxies PrioArray.splice() to its underlying Array cache.
      * @returns {*}
      */
