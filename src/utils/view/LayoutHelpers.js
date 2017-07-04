@@ -89,7 +89,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
         for (let renderableName of filledNames) {
             let [renderable, renderableCounterpart] = filledRenderables.get(renderableName);
             let { decorations } = renderable;
-            let { rotate, origin, opacity } = decorations;
+            let { rotate, origin, opacity, skew, scale } = decorations;
             decorations.dock.size = dockHelper.getFillSize();
             let { translate, innerSize } = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
             let { callback, transition } = this._getRenderableFlowInformation(renderable);
@@ -99,7 +99,9 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                 hide: !this._sizeResolver.isSizeFinal(renderable),
                 origin,
                 callback,
-                transition
+                transition,
+                skew,
+                scale
             });
         }
     }
