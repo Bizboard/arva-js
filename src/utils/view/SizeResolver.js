@@ -395,13 +395,16 @@ export class SizeResolver extends EventEmitter {
     }
 
     /**
-     * Investigates the surfaces to see in which way the size should be estimated
+     * Investigates the surfaces to see in which way the size should be estimated.
+     *
+     * Currently disabled due to browser and font difficulties
      * @param renderable
      * @returns {*}
      * @private
      */
     async _evaluateTrueSizedSurface(renderable) {
-
+        //TODO Re-enable the canvas sizing once its been stabilizied
+        return this._calculateTrueSizedSurfaceFromCanvas(renderable)
 
         let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
 
