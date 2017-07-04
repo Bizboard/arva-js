@@ -228,6 +228,9 @@ export class View extends FamousView {
      * @param ...decorators The decorators that should be applied
      */
     decorateRenderable(renderableName, ...decorators) {
+        if (!decorators.length) {
+            Utils.warn('No decorators specified to decorateRenderable(renderableName, ...decorators)');
+        }
         this._renderableHelper.decorateRenderable(renderableName, ...decorators);
         this.reflowRecursively();
     }
@@ -441,7 +444,7 @@ export class View extends FamousView {
 
         let classConstructorList = [];
 
-        /* Reverse the class list becaues rit makes more sense to make the renderables of the parent before the renderables
+        /* Reverse the class list because it makes more sense to make the renderables of the parent before the renderables
          * of this view
          */
         for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
@@ -458,59 +461,8 @@ export class View extends FamousView {
                 /* Assign to the 'flat' structure renderableConstructors */
                 this._renderableConstructors[renderableName] = renderableConstructor;
                 let { decorations } = renderableConstructor;
-                let renderable = this._setupRenderable(renderableName);
-                /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
-                if (!renderable) {
-                    continue;
-                }
+                this._setupRenderable(renderableName, decorations);
 
-                /* Allow class property to be a function that returns a renderable */
-                if (typeof renderable === 'function') {
-                    let factoryFunction = renderable;
-                    renderable = factoryFunction(this.options);
-                }
-
-                /* Clone the decorator properties, because otherwise every view of the same type willl share them between
-                 * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
-                 */
-                renderable.decorations = cloneDeep(extend({}, decorations, renderable.decorations || {}));
-
-
-                /* Since after constructor() of this View class is called, all decorated renderables will
-                 * be attempted to be initialized by Babel / the ES7 class properties spec, we'll need to
-                 * override the descriptor get/initializer to return this specific instance once.
-                 *
-                 * If we don't do this, the View will have its renderables overwritten by new renderable instances
-                 * that don't have constructor.options applied to them correctly. If we always return this specific instance
-                 * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
-                 * to the renderables of this instance, which is unwanted.
-                 */
-                let { descriptor } = decorations;
-                if (descriptor) {
-                    if (descriptor.get) {
-                        let originalGet = decorations.descriptor.get;
-                        descriptor.get = () => {
-                            descriptor.get = originalGet;
-                            return renderable;
-                        }
-                    }
-                    if (descriptor.initializer) {
-                        let originalInitializer = decorations.descriptor.initializer;
-                        descriptor.initializer = () => {
-                            descriptor.initializer = originalInitializer;
-                            return renderable;
-                        }
-                    }
-                }
-                if (!renderable) {
-                    continue;
-                }
-
-                /* Clone the decorator properties, because otherwise every view of the same type willl share them between
-                 * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
-                 */
-                renderable.decorations = cloneDeep(extend({}, decorations, renderable.decorations || {}));
-                this._assignRenderable(renderable, renderableName);
             }
         }
     }
@@ -524,10 +476,18 @@ export class View extends FamousView {
      */
     _assignRenderable(renderable, renderableName) {
         this._renderableHelper.assignRenderable(renderable, renderableName);
-        /* Do add property to object because there can be a getter defined instead of a class property,
-         * in which case we have to use the ObjectHelper
-         */
-        ObjectHelper.addPropertyToObject(this, renderableName, renderable, true, true, null, false);
+        if(Utils.renderableIsSurface(renderable)){
+            let sizeSpecification =
+                (renderable.decorations.dock && renderable.decorations.dock.size) ||
+                    renderable.decorations.size;
+            if(sizeSpecification){
+                this._sizeResolver.configureTrueSizedSurface(
+                    renderable,
+                    sizeSpecification
+                );
+            }
+        }
+        this[renderableName] = renderable;
     }
 
     _layoutDecoratedRenderables(context, options) {
@@ -764,7 +724,8 @@ export class View extends FamousView {
          * @type {Object}
          */
         this._optionObserver = new OptionObserver(defaultOptions, options, this._name());
-        this._optionObserver.on('needUpdate', (renderableName) => this._setupRenderable(renderableName));
+        this._optionObserver.on('needUpdate', (renderableName) =>
+            this._setupRenderable(renderableName));
         this.options = this._optionObserver.getOptions();
     }
 
@@ -831,30 +792,33 @@ export class View extends FamousView {
         return false;
     }
 
-    async _syncModelPropertyWithRenderable(renderableName, model, property, lastKnownValue) {
-        let newValue = lastKnownValue;
-        while (newValue === lastKnownValue) {
-            //TODO see what event emitters with weakmaps can bring to the table≠
-            //TODO Make this a promise race with some other thing so that when we start changing the renderable the thing triggers
-            await model.once('changed');
-            model.disableChangeListener();
-            newValue = model[property];
-            model.enableChangeListener();
+    /**
+     * Sets up a renderable when it is invalidated to be re-rendered (happens on creation too)
+     * @param renderableName
+     * @param decorations
+     * @returns {*}
+     * @private
+     */
+    _setupRenderable(renderableName, decorations) {
+        if(!decorations){
+            decorations = this[renderableName] && this[renderableName].decorations;
         }
-        this._setupRenderable(renderableName);
-    }
 
-    _setupRenderable(renderableName) {
 
         /* Re-assign the options to make sure they're up to date */
         this.options = this._optionObserver.options;
 
         let renderableInitializer = this._renderableConstructors[renderableName];
         let currentRenderable = this[renderableName];
+        let decoratorFunctions = decorations &&
+            decorations.dynamicFunctions
+            || [];
 
         this._optionObserver.recordForRenderable(renderableName);
         let renderable = renderableInitializer.call(this, this.options);
 
+        /* Call the dynamic decorations, while we're recording */
+        let dynamicDecorations = decoratorFunctions.map((dynamicDecorator) => dynamicDecorator(this.options))
 
         /* Allow class property to be a function that returns a renderable */
         if (typeof renderable === 'function') {
@@ -864,9 +828,14 @@ export class View extends FamousView {
 
         this._optionObserver.stopRecordingForRenderable(renderableName);
 
-        /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
+
         if (!renderable) {
-            return;
+            if (currentRenderable) {
+                this.removeRenderable(renderableName);
+                /* Removing a renderable is likely to cause a size change, so emit to notify parents */
+                this.reflowRecursively();
+            }
+            return renderable;
         }
         if (renderable instanceof RenderablePrototype) {
             let renderablePrototype = renderable;
@@ -874,13 +843,67 @@ export class View extends FamousView {
             if (currentRenderable && currentRenderable.constructor === type) {
                 currentRenderable.setNewOptions(options);
                 renderable = currentRenderable;
+                this._renderableHelper.decorateRenderable(renderableName, ...dynamicDecorations);
             } else {
                 renderable = new type(options);
                 if (currentRenderable) {
                     this.replaceRenderable(renderableName, renderable);
+                } else {
+                    this._assignNewRenderable(renderable, renderableName);
+                }
+                this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, dynamicDecorations);
+            }
+        } else {
+            this._assignNewRenderable(renderable, renderableName);
+            this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, dynamicDecorations);
+
+        }
+        return renderable;
+    }
+
+
+    /**
+     *
+     * @param renderable
+     * @param renderableName
+     * @param decorations
+     * @private
+     */
+    _assignNewRenderable(renderable, renderableName) {
+
+        let { decorations } = this._renderableConstructors[renderableName];
+
+        /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
+        if (!renderable) {
+            return;
+        }
+
+        /* Clone the decorator properties, because otherwise every view of the same type willl share them between
+         * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
+         */
+        renderable.decorations = cloneDeep(extend({}, decorations, renderable.decorations || {}));
+
+
+        /* Since after constructor() of this View class is called, all decorated renderables will
+         * be attempted to be initialized by Babel / the ES7 class properties spec, we'll need to
+         * override the descriptor get/initializer to return this specific instance once.
+         *
+         * If we don't do this, the View will have its renderables overwritten by new renderable instances
+         * that don't have constructor.options applied to them correctly. If we always return this specific instance
+         * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
+         * to the renderables of this instance, which is unwanted.
+         */
+        let { descriptor } = decorations;
+        if (descriptor) {
+            if (descriptor.initializer) {
+                let originalInitializer = decorations.descriptor.initializer;
+                descriptor.initializer = () => {
+                    descriptor.initializer = originalInitializer;
+                    return renderable;
                 }
             }
         }
-        return renderable;
+
+        this._assignRenderable(renderable, renderableName);
     }
 }
