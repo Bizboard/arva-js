@@ -862,7 +862,7 @@ export class View extends FamousView {
             renderable = factoryFunction(this.options);
         }
 
-        this._optionObserver.stopRecordingForRenderable();
+        this._optionObserver.stopRecordingForRenderable(renderableName);
 
         /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
         if (!renderable) {

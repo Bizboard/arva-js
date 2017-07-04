@@ -23,7 +23,8 @@ let listeners = Symbol(),
 
 export class OptionObserver extends EventEmitter {
   _reverseListenerTree = {}
-  _numberOfUpdatesPerRenderable = {}
+  _newReverseListenerTree = {}
+  _listenerTreeMetaData = {}
   _listenerTree = {}
   /* We have to keep track of the models, because they use their own getter/setter hooks and we can't use the builtin ones */
   _modelListeners = {}
@@ -46,10 +47,6 @@ export class OptionObserver extends EventEmitter {
     this._errorName = debugName
     ObjectHelper.bindAllMethods(this, this)
 
-    //todo remove
-    window.optionObservers = window.optionObservers || []
-    window.optionObservers.push(this)
-
     this.options = options
     this.defaultOptions = defaultOptions
     this._setupOptions(options, defaultOptions)
@@ -61,13 +58,13 @@ export class OptionObserver extends EventEmitter {
    * @param renderableName
    */
   recordForRenderable (renderableName) {
-    this._beginListenerTreeUpdates()
+    this._beginListenerTreeUpdates(renderableName)
     PrioritisedObject.setPropertyGetterSpy((model, property) => {
       /* TODO handle the case where this can be undefined */
       let modelListener = this._modelListeners[model.constructor.name][model.id]
       /* Add the renderable as listening to the tree */
       let localListenerTree = this._accommodateObjectPath(modelListener.localListenerTree, [property, listeners])
-      this._addToListenerTree(renderableName, modelListener.nestedPropertyPath, property, localListenerTree)
+      this._addToListenerTree(renderableName, modelListener.nestedPropertyPath)
       modelListener.startListening()
     })
     let optionRecorder = this._activeRecordings[renderableName] = ({type, propertyName, nestedPropertyPath}) => {
@@ -75,28 +72,70 @@ export class OptionObserver extends EventEmitter {
         this._throwError('Setting an option during instanciation of renderable')
       } else {
         let localListenerTree = this._accessObjectPath(this._listenerTree, nestedPropertyPath.concat([propertyName, listeners]))
-        this._addToListenerTree(renderableName, nestedPropertyPath, propertyName, localListenerTree)
+        this._addToListenerTree(renderableName, localListenerTree)
       }
     }
     this._activeRecordings[renderableName] = optionRecorder
     this.on('optionTrigger', optionRecorder)
+
   }
 
-  _addToListenerTree (renderableName, nestedPropertyPath, lastProperty, localListenerTree) {
+  _addToListenerTree (renderableName, localListenerTree) {
     /* Renderable already added to listener tree, so no need to do that again */
+    let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._listenerTreeMetaData[renderableName]
+
+    this._newReverseListenerTree[renderableName].push(localListenerTree)
+
+    if (listenersCanChange && !listenersChanged) {
+      /* We optimize the most common use case, which is that no listeners change.
+       *  In that case, the order of listeners will be the same, otherwise we need to accommodate*/
+
+      if (this._reverseListenerTree[renderableName][matchingListenerIndex] !== localListenerTree) {
+        this._listenerTreeMetaData[renderableName].listenersChanged = true
+      }
+
+      this._listenerTreeMetaData[renderableName].matchingListenerIndex++
+    }
+
     if (localListenerTree[renderableName]) {
       return
     }
-    let reverseListenerTree = this._accommodateObjectPath(this._reverseListenerTree, [renderableName].concat(nestedPropertyPath, lastProperty))
-    if (!reverseListenerTree[listeners]) {
-      reverseListenerTree[listeners] = []
-    }
-    reverseListenerTree.push(localListenerTree)
+
     localListenerTree[renderableName] = true
   }
 
+  _endListenerTreeUpdates (renderableName) {
+    if (this._listenerTreeMetaData[renderableName].listenersChanged) {
+      let oldListeners = this._reverseListenerTree[renderableName]
+      /* Remove the old listeners and add the new ones again. In this way, we get O(n + m) complexity
+       *  instead of O(m*n) */
+      for (let listenerTree of oldListeners) {
+        delete listenerTree[renderableName]
+      }
+      let newListeners = this._newReverseListenerTree[renderableName]
+
+      for (let listenerTree of newListeners) {
+        listenerTree[renderableName] = true
+      }
+
+    }
+    this._reverseListenerTree[renderableName] = this._newReverseListenerTree[renderableName]
+    delete this._newReverseListenerTree[renderableName]
+  }
+
   _beginListenerTreeUpdates (renderableName) {
-    this._listenersToRemove = [...this._reverseListenerTree[renderableName]]
+    /* The listener meta data sets a counter in order to match the new listeners in comparison to the old listeners*/
+    let numberOfExistingListenerPaths = this._accessObjectPath(this._reverseListenerTree, [renderableName, length])
+    if (numberOfExistingListenerPaths === notFound) {
+      numberOfExistingListenerPaths = 0
+    }
+    this._listenerTreeMetaData[renderableName] = {
+      matchingListenerIndex: 0,
+      listenersCanChange: !!numberOfExistingListenerPaths,
+      listenersChanged: false
+    }
+    this._newReverseListenerTree[renderableName] = []
+
   }
 
   /**
@@ -104,6 +143,7 @@ export class OptionObserver extends EventEmitter {
    * @param renderableName
    */
   stopRecordingForRenderable (renderableName) {
+    this._endListenerTreeUpdates(renderableName)
     PrioritisedObject.removePropertyGetterSpy()
     this.removeListener('optionTrigger', this._activeRecordings[renderableName])
     delete this._activeRecordings[renderableName]
