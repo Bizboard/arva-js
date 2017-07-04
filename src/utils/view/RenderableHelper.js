@@ -453,9 +453,7 @@ export class RenderableHelper {
                 rotate: renderable.decorations.rotate || [0, 0, 0]
             }
         };
-        if (!decorators.length) {
-            Utils.warn('No decorators specified to decorateRenderable(renderableName, ...decorators)');
-        }
+
         /* There can be existing decorators already, which are preserved. We are extending the decorators object,
          * by first creating a fake renderable that gets decorators */
         this.applyDecoratorFunctionsToRenderable(fakeRenderable, decorators)
