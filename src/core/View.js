@@ -110,7 +110,7 @@ export class View extends FamousView {
     getResolvedSize(renderableOrName) {
         let renderable = renderableOrName;
         if (typeof renderableOrName === 'string') {
-            renderable = this.renderables[renderableOrName];
+            renderable = this._realRenderables[renderableOrName];
         }
         let size = this._sizeResolver.getResolvedSize(renderable);
 
@@ -137,54 +137,64 @@ export class View extends FamousView {
     /**
      * Adds a renderable to the layout.
      * @param {Surface|FamousView|View} renderable The renderable to be added
-     * @param {String} renderableName The name (key) of the renderable
      * @param {Decorator} Decorator Any decorator(s) to apply to the renderable
      * @returns {Surface|FamousView|View} The renderable that was assigned
      */
-    addRenderable(renderable, renderableName, ...decorators) {
-        /* Due to common mistake, we check if renderableName is a string */
-        if (typeof renderableName !== 'string') {
-            Utils.warn(`The second argument of addRenderable(...) was not a string. Please pass the renderable name in ${this._name()}`);
+    addRenderable(renderable, ...decorators) {
+        let id = this._getRenderableID(renderable);
+        if (!id) {
+            Utils.warn(`Could not add invalid renderable inside ${this._name()} (no ID of renderable found)`);
         }
         this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, decorators);
-        this._assignRenderable(renderable, renderableName);
+        this._assignRenderable(renderable, id);
         this.layout.reflowLayout();
         return renderable;
     }
 
     /**
      * Removes the renderable from the view
-     * @param {String} renderableName The name of the renderable
      */
-    removeRenderable(renderableName) {
-        if (!this[renderableName]) {
-            Utils.warn(`Failed to remove renderable ${renderableName} from ${this._name()} because the renderable doesn't exist`);
+    removeRenderable(renderable) {
+        let renderableID = this._getRenderableID(renderable);
+        if (!this.renderables[renderableID]) {
+            Utils.warn(`Failed to remove renderable ${renderableID} from ${this._name()} because the renderable doesn't exist in the parent scope`);
             return;
         }
-        this._renderableHelper.removeRenderable(renderableName);
-        this[renderableName] = undefined;
+        this._renderableHelper.removeRenderable(renderableID);
+        delete this[this._IDtoLocalRenderableName[renderableID]];
         this.layout.reflowLayout();
+    }
 
+    hasRenderable(renderable) {
+        return !!this.renderables[this._getRenderableID(renderable)];
+    }
+
+    _getRenderableID(renderable) {
+        return renderable.getID ? renderable.getID() : renderable.id;
+    }
+
+    _getRenderableName(renderable){
+        return this._IDtoLocalRenderableName[this._getRenderableID(renderable)];
     }
 
     /**
      * Rearranges the order in which docked renderables are parsed for rendering, ensuring that 'renderableName' is processed
      * before 'nextRenderableName'.
-     * @param {String} renderableName
-     * @param {String} nextRenderableName
+     * @param {Renderable} renderableName
+     * @param {Renderable} nextRenderableName
      */
-    prioritiseDockBefore(renderableName, nextRenderableName) {
+    prioritiseDockBefore(renderable, nextRenderable) {
         this.reflowRecursively();
-        return this._renderableHelper.prioritiseDockBefore(renderableName, nextRenderableName);
+        return this._renderableHelper.prioritiseDockBefore(this._getRenderableID(renderable), this._getRenderableID(nextRenderable));
     }
 
     /**
-     * @param {String} renderableName
-     * @param {String} prevRenderableName
+     * @param {Renderable} renderableName
+     * @param {Renderable} prevRenderableName
      */
-    prioritiseDockAfter(renderableName, prevRenderableName) {
+    prioritiseDockAfter(renderable, prevRenderable) {
         this.reflowRecursively();
-        return this._renderableHelper.prioritiseDockAfter(renderableName, prevRenderableName);
+        return this._renderableHelper.prioritiseDockAfter(this._getRenderableID(renderable), this._getRenderableID(prevRenderable));
     }
 
     /**
@@ -193,17 +203,16 @@ export class View extends FamousView {
      * @param {Boolean} show. Whether to show or not
      * @returns {Promise} when the renderable has finished its animation
      */
-    showRenderable(renderableName, show = true) {
-        let renderable = this[renderableName];
+    showRenderable(renderable, show = true) {
         if (!renderable) {
-            Utils.warn(`Trying to show renderable ${renderableName} which does not exist!`);
+            Utils.warn(`Trying to show renderable which does not exist! (${this._name()})`);
             return;
         }
         if (!renderable.animationController) {
-            Utils.warn(`Trying to show renderable ${renderableName} which does not have an animationcontroller. Please use @layout.animate`);
+            Utils.warn(`Trying to show renderable which does not have an animationcontroller. Please use @layout.animate`);
             return;
         }
-        let decoratedSize = this[renderableName].decorations.size || (this[renderableName].decorations.dock ? this[renderableName].decorations.dock.size : undefined);
+        let decoratedSize = renderable.decorations.size || (renderable.decorations.dock ? renderable.decorations.dock.size : undefined);
         if (decoratedSize) {
             /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
              * new size to take into account. */
@@ -216,7 +225,7 @@ export class View extends FamousView {
             }
         }
 
-        return new Promise((resolve) => this._renderableHelper.showWithAnimationController(this.renderables[renderableName], renderable, show, resolve));
+        return new Promise((resolve) => this._renderableHelper.showWithAnimationController(this._realRenderables[this._getRenderableID(renderable)], renderable, show, resolve));
     }
 
     /**
@@ -224,30 +233,29 @@ export class View extends FamousView {
      * @example
      * this.decorateRenderable('myRenderable',layout.size(100, 100));
      *
-     * @param {String} renderableName The name of the renderable
-     * @param ...decorators The decorators that should be applied
+     * @param renderable
+     * @param decorators
      */
-    decorateRenderable(renderableName, ...decorators) {
+    decorateRenderable(renderable, ...decorators) {
         if (!decorators.length) {
-            Utils.warn('No decorators specified to decorateRenderable(renderableName, ...decorators)');
+            Utils.warn('No decorators specified to decorateRenderable(renderable, ...decorators)');
         }
-        this._renderableHelper.decorateRenderable(renderableName, ...decorators);
+        this._renderableHelper.decorateRenderable(this._getRenderableID(renderable), ...decorators);
         this.reflowRecursively();
     }
 
     /**
      * Sets a renderable flow state as declared in the @flow.stateStep, or @flow.defaultState
-     * @param {String} renderableName. The name of the renderable
+     * @param {String} renderable. The name of the renderable
      * @param {String} stateName. The name of the state as declared in the first argument of the decorator
      * @returns {*}
      */
-    setRenderableFlowState(renderableName = '', stateName = '') {
-        return this._renderableHelper.setRenderableFlowState(renderableName, stateName);
+    setRenderableFlowState(renderable, stateName = '') {
+        return this._renderableHelper.setRenderableFlowState(this._getRenderableID(renderable), stateName);
     }
 
     /**
-     * Sets a renderable flow state as declared in the @flow.viewState
-     * @param {String} renderableName. The name of the renderable
+     * Sets a view flow state as declared in the @flow.viewState
      * @param {String} stateName. The name of the state as declared in the first argument of the decorator
      * @returns {*}
      */
@@ -258,11 +266,11 @@ export class View extends FamousView {
     /**
      * Gets the name of a flow state of a renderable.
      *
-     * @param {String} renderableName the name of the renderable of which the flow state is concerned
      * @returns {String} stateName the name of the state that the renderable is in
+     * @param renderable
      */
-    getRenderableFlowState(renderableName = '') {
-        return this._renderableHelper.getRenderableFlowState(renderableName);
+    getRenderableFlowState(renderable) {
+        return this._renderableHelper.getRenderableFlowState(this._getRenderableID(renderable));
     }
 
     /**
@@ -276,13 +284,16 @@ export class View extends FamousView {
 
     /**
      * Replaces an existing decorated renderable with a new renderable, preserving all necessary state and decorations
-     * @param {String} renderableName. The name of the renderable
+     * @param {Renderable} oldRenderable. The name of the renderable
      * @param {Surface|FamousView|View} newRenderable Renderable to replace the old renderable with
      */
-    replaceRenderable(renderableName, newRenderable) {
-        this._renderableHelper.replaceRenderable(renderableName, newRenderable);
+    replaceRenderable(oldRenderable, newRenderable) {
+        let oldRenderableID = this._getRenderableID(oldRenderable);
+        this._renderableHelper.replaceRenderable(oldRenderableID, newRenderable, this._getRenderableID(newRenderable));
+        let localRenderableName = this._IDtoLocalRenderableName[newRenderable] = this._IDtoLocalRenderableName[oldRenderableID];
         this.reflowRecursively();
-        this[renderableName] = newRenderable;
+        this[localRenderableName] = newRenderable;
+        delete this._IDtoLocalRenderableName[oldRenderableID];
     }
 
     /**
@@ -293,6 +304,11 @@ export class View extends FamousView {
         return this._scrollView;
     }
 
+    /**
+     * Binds the options passed to the specific view class
+     * @param options
+     * @returns {RenderablePrototype}
+     */
     static with(options) {
         return new RenderablePrototype(this, options);
     }
@@ -309,11 +325,15 @@ export class View extends FamousView {
 
     /**
      * Hides a renderable that has been declared with @layout.animate
-     * @param renderableName
      * @returns {Promise} when the renderable has finished its animation
+     * @param renderable
      */
-    hideRenderable(renderableName) {
-        return this.showRenderable(renderableName, false);
+    hideRenderable(renderable) {
+        return this.showRenderable(renderable, false);
+    }
+
+    getActualRenderables() {
+        return this._realRenderables;
     }
 
     /**
@@ -353,8 +373,8 @@ export class View extends FamousView {
         if (this._sizeResolver.containsUncalculatedSurfaces()) {
             return false;
         }
-        for (let renderableName in this.renderables) {
-            let renderable = this.renderables[renderableName];
+        for (let renderableName in this._realRenderables) {
+            let renderable = this._realRenderables[renderableName];
             if (!this._sizeResolver.isSizeFinal(renderable)) {
                 return false;
             }
@@ -364,18 +384,19 @@ export class View extends FamousView {
 
     /**
      * Repeat a certain flowState indefinitely
-     * @param renderableName
+     * @param renderable
      * @param stateName
      * @param {Boolean} persistent. If true, then it will keep on repeating until explicitly cancelled by cancelRepeatFlowState.
      * If false, it will be interrupted automatically by any interrput to another state. Defaults to true
      * @returns {Promise} resolves to false if the flow state can't be repeated due to an existing running repeat
      */
-    async repeatFlowState(renderableName = '', stateName = '', persistent = true) {
-        if (!this._runningRepeatingFlowStates[renderableName]) {
-            this._runningRepeatingFlowStates[renderableName] = { persistent };
-            while (this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent)) {
+    async repeatFlowState(renderable, stateName = '', persistent = true) {
+        let renderableID = this._getRenderableID(renderable);
+        if (!this._runningRepeatingFlowStates[renderableID]) {
+            this._runningRepeatingFlowStates[renderableID] = { persistent };
+            while (this._runningRepeatingFlowStates[renderableID] && (await this.setRenderableFlowState(renderable, stateName) || persistent)) {
             }
-            delete this._runningRepeatingFlowStates[renderableName];
+            delete this._runningRepeatingFlowStates[renderableID];
             return true;
         } else {
             return false;
@@ -384,22 +405,22 @@ export class View extends FamousView {
 
     /**
      * Cancel a repeating renderable. This will cancel the animation for next flow-cycle, it won't interject the current animation cycle.
-     * @param renderableName
+     * @param renderable
      */
-    cancelRepeatFlowState(renderableName) {
+    cancelRepeatFlowState(renderable) {
         if (this._runningRepeatingFlowStates) {
-            delete this._runningRepeatingFlowStates[renderableName];
+            delete this._runningRepeatingFlowStates[this._getRenderableID(renderable)];
         }
     }
 
     /**
      * Initiate a renderable to a default flow state.
-     * @param renderableName
+     * @param renderable
      * @param stateName
      */
-    setDefaultState(renderableName, stateName) {
-        for (let step of this[renderableName].decorations.flow.states[stateName].steps) {
-            this.decorateRenderable(renderableName, ...step.transformations);
+    setDefaultState(renderable, stateName) {
+        for (let step of this[this._getRenderableName(renderable)].decorations.flow.states[stateName].steps) {
+            this.decorateRenderable(renderable, ...step.transformations);
         }
     }
 
@@ -415,7 +436,7 @@ export class View extends FamousView {
         this._dockedRenderablesHelper = new DockedLayoutHelper(this._sizeResolver);
         this._fullSizeLayoutHelper = new FullSizeLayoutHelper(this._sizeResolver);
         this._traditionalLayoutHelper = new TraditionalLayoutHelper(this._sizeResolver);
-        this._renderableHelper = new RenderableHelper(this._bindToSelf, this._setPipeToSelf, this.renderables, this._sizeResolver);
+        this._renderableHelper = new RenderableHelper(this._bindToSelf, this._setPipeToSelf, this._realRenderables, this._sizeResolver);
     }
 
     /** Requests for a parent LayoutController trying to resolve the size of this view
@@ -425,15 +446,6 @@ export class View extends FamousView {
         this._nodes = { _trueSizeRequested: true };
         //TODO: Do we really need to emit this?
         this._eventOutput.emit('layoutControllerReflow');
-    }
-
-
-    _getRenderableOptions(renderableName, decorations = this.renderables[renderableName]) {
-        let decoratorOptions = decorations.constructionOptionsMethod ? decorations.constructionOptionsMethod.call(this, this.options) : {};
-        if (!Utils.isPlainObject(decoratorOptions)) {
-            Utils.warn(`Invalid option '${decoratorOptions}' given to item ${renderableName}`);
-        }
-        return decoratorOptions;
     }
 
     /**
@@ -455,13 +467,14 @@ export class View extends FamousView {
 
         for (let currentClassConstructor of classConstructorList) {
             let renderableConstructors = this.renderableConstructors.get(currentClassConstructor);
-            for (let renderableName in renderableConstructors) {
-                let renderableConstructor = renderableConstructors[renderableName];
+            for (let localRenderableName in renderableConstructors) {
+                let renderableConstructor = renderableConstructors[localRenderableName];
 
                 /* Assign to the 'flat' structure renderableConstructors */
-                this._renderableConstructors[renderableName] = renderableConstructor;
+                this._renderableConstructors[localRenderableName] = renderableConstructor;
                 let { decorations } = renderableConstructor;
-                this._setupRenderable(renderableName, decorations);
+                renderableConstructor.localName = localRenderableName;
+                this._setupRenderable(renderableConstructor, decorations);
 
             }
         }
@@ -475,12 +488,12 @@ export class View extends FamousView {
      * @private
      */
     _assignRenderable(renderable, renderableName) {
-        this._renderableHelper.assignRenderable(renderable, renderableName);
-        if(Utils.renderableIsSurface(renderable)){
+        this._renderableHelper.assignRenderable(renderable, this._getRenderableID(renderable));
+        if (Utils.renderableIsSurface(renderable)) {
             let sizeSpecification =
                 (renderable.decorations.dock && renderable.decorations.dock.size) ||
-                    renderable.decorations.size;
-            if(sizeSpecification){
+                renderable.decorations.size;
+            if (sizeSpecification) {
                 this._sizeResolver.configureTrueSizedSurface(
                     renderable,
                     sizeSpecification
@@ -521,7 +534,7 @@ export class View extends FamousView {
                  * we wait until the first engine render tick to add our renderables to the layout, when the view will have declared them all.
                  * layout.setDataSource() will automatically pipe events from the renderables to this View. */
                 if (!this._initialised) {
-                    this.layout.setDataSource(this.renderables);
+                    this.layout.setDataSource(this._realRenderables);
                     this._renderableHelper.pipeAllRenderables();
                     this._renderableHelper.initializeAnimations();
                     this._initialised = true;
@@ -562,6 +575,10 @@ export class View extends FamousView {
         if ((this.decorations.scrollable || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')) {
             this.addRenderable(new Surface(), '_fullScreenTouchArea', layout.fullSize(), layout.translate(0, 0, -10));
         }
+    }
+
+    getID() {
+        return this.layout.id;
     }
 
     /**
@@ -699,9 +716,6 @@ export class View extends FamousView {
             if (size[0] !== oldSize[0] ||
                 size[1] !== oldSize[1]) {
                 this._sizeResolver.doTrueSizedBookkeeping();
-                ///
-                //TODO: Kept for legacy reasons, but remove all listeners to this function
-                this._eventOutput.emit('newSize', size);
                 for (let callback of this._onNewSizeCallbacks) {
                     callback(size);
                 }
@@ -725,19 +739,19 @@ export class View extends FamousView {
          */
         this._optionObserver = new OptionObserver(defaultOptions, options, this._name());
         this._optionObserver.on('needUpdate', (renderableName) =>
-            this._setupRenderable(renderableName));
+            this._setupRenderable(this._renderableConstructors[renderableName]));
         this.options = this._optionObserver.getOptions();
     }
 
     _initDataStructures() {
-        if (!this.renderables) {
-            /**
-             * The renderables "outputted" by the view that are passed to the underlying famous-flex layer
-             *
-             * @type {Object}
-             */
-            this.renderables = {};
-        }
+        /**
+         * The renderables "outputted" by the view that are passed to the underlying famous-flex layer
+         *
+         * @type {Object}
+         */
+        this._realRenderables = {};
+        this._IDtoLocalRenderableName = {};
+        this.renderables = {};
         if (!this.layouts) {
             /**
              * @deprecated
@@ -799,22 +813,23 @@ export class View extends FamousView {
      * @returns {*}
      * @private
      */
-    _setupRenderable(renderableName, decorations) {
-        if(!decorations){
-            decorations = this[renderableName] && this[renderableName].decorations;
+    _setupRenderable(renderableInitializer, decorations) {
+        if (!decorations) {
+            decorations = currentRenderable && currentRenderable.decorations
         }
 
 
         /* Re-assign the options to make sure they're up to date */
         this.options = this._optionObserver.options;
 
-        let renderableInitializer = this._renderableConstructors[renderableName];
-        let currentRenderable = this[renderableName];
         let decoratorFunctions = decorations &&
             decorations.dynamicFunctions
             || [];
 
-        this._optionObserver.recordForRenderable(renderableName);
+        let localRenderableName = renderableInitializer.localName;
+        let currentRenderable = this[localRenderableName];
+        this._optionObserver.recordForRenderable(localRenderableName);
+        /* Make sure we have proper this scoping inside the initializer */
         let renderable = renderableInitializer.call(this, this.options);
 
         /* Call the dynamic decorations, while we're recording */
@@ -826,12 +841,12 @@ export class View extends FamousView {
             renderable = factoryFunction(this.options);
         }
 
-        this._optionObserver.stopRecordingForRenderable(renderableName);
+        this._optionObserver.stopRecordingForRenderable(localRenderableName);
 
 
         if (!renderable) {
             if (currentRenderable) {
-                this.removeRenderable(renderableName);
+                this.removeRenderable(currentRenderable);
                 /* Removing a renderable is likely to cause a size change, so emit to notify parents */
                 this.reflowRecursively();
             }
@@ -843,21 +858,22 @@ export class View extends FamousView {
             if (currentRenderable && currentRenderable.constructor === type) {
                 currentRenderable.setNewOptions(options);
                 renderable = currentRenderable;
-                this._renderableHelper.decorateRenderable(renderableName, ...dynamicDecorations);
+                this._renderableHelper.decorateRenderable(this._getRenderableID(renderable), ...dynamicDecorations);
             } else {
                 renderable = new type(options);
                 if (currentRenderable) {
-                    this.replaceRenderable(renderableName, renderable);
+                    this.replaceRenderable(currentRenderable, renderable);
                 } else {
-                    this._assignNewRenderable(renderable, renderableName);
+                    this._assignNewRenderable(renderable, localRenderableName);
                 }
                 this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, dynamicDecorations);
             }
         } else {
-            this._assignNewRenderable(renderable, renderableName);
+            this._assignNewRenderable(renderable, localRenderableName);
             this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, dynamicDecorations);
 
         }
+
         return renderable;
     }
 
@@ -869,14 +885,21 @@ export class View extends FamousView {
      * @param decorations
      * @private
      */
-    _assignNewRenderable(renderable, renderableName) {
+    _assignNewRenderable(renderable, localRenderableName) {
 
-        let { decorations } = this._renderableConstructors[renderableName];
+        let renderableID = this._getRenderableID(renderable);
+        let { decorations } = this._renderableConstructors[localRenderableName];
+
+        this._IDtoLocalRenderableName[renderableID] = localRenderableName;
+
+
 
         /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
         if (!renderable) {
             return;
         }
+
+
 
         /* Clone the decorator properties, because otherwise every view of the same type willl share them between
          * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
@@ -904,6 +927,6 @@ export class View extends FamousView {
             }
         }
 
-        this._assignRenderable(renderable, renderableName);
+        this._assignRenderable(renderable, localRenderableName);
     }
 }

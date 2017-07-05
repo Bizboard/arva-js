@@ -67,7 +67,7 @@ export class DialogManager extends View {
 
 
         document.addEventListener("backbutton", ()=> this.canCancel && this.close());
-        this.renderables.background.on('click', ()=> this.canCancel && this.close());
+        this.background.on('click', ()=> this.canCancel && this.close());
     }
 
     /**
