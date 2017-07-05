@@ -7,6 +7,7 @@ import each                     from 'lodash/each'
 import Timer                    from 'famous/utilities/Timer.js'
 import EventEmitter             from 'eventemitter3'
 
+import {ArrayObserver}          from './ArrayObserver.js'
 import { ObjectHelper }           from '../ObjectHelper'
 import { combineOptions }         from '../CombineOptions'
 import { PrioritisedObject }      from '../../data/PrioritisedObject'
@@ -59,12 +60,11 @@ export class OptionObserver extends EventEmitter {
    */
   recordForRenderable (renderableName) {
     this._beginListenerTreeUpdates(renderableName)
-    PrioritisedObject.setPropertyGetterSpy((model, property) => {
+    PrioritisedObject.setPropertyGetterSpy((model, propertyName) => {
       /* TODO handle the case where this can be undefined */
       let modelListener = this._modelListeners[model.constructor.name][model.id]
       /* Add the renderable as listening to the tree */
-      let localListenerTree = this._accommodateObjectPath(modelListener.localListenerTree, [property, listeners])
-      this._addToListenerTree(renderableName, modelListener.nestedPropertyPath)
+      this._addToListenerTree(renderableName, this._accommodateObjectPath(modelListener.localListenerTree, [propertyName, listeners]))
       modelListener.startListening()
     })
     let optionRecorder = this._activeRecordings[renderableName] = ({type, propertyName, nestedPropertyPath}) => {
@@ -74,8 +74,8 @@ export class OptionObserver extends EventEmitter {
         let localListenerTree = this._accessObjectPath(this._listenerTree, nestedPropertyPath.concat([propertyName, listeners]))
         this._addToListenerTree(renderableName, localListenerTree)
       }
-    }
-    this._activeRecordings[renderableName] = optionRecorder
+    };
+    this._activeRecordings[renderableName] = optionRecorder;
     this.on('optionTrigger', optionRecorder)
 
   }
