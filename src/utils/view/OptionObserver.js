@@ -7,7 +7,7 @@ import each                     from 'lodash/each'
 import Timer                    from 'famous/utilities/Timer.js'
 import EventEmitter             from 'eventemitter3'
 
-import {ArrayObserver}          from './ArrayObserver.js'
+import { ArrayObserver }          from './ArrayObserver.js'
 import { ObjectHelper }           from '../ObjectHelper'
 import { combineOptions }         from '../CombineOptions'
 import { PrioritisedObject }      from '../../data/PrioritisedObject'
@@ -18,7 +18,10 @@ let listeners = Symbol(),
   newChanges = Symbol(),
   originalValue = Symbol(),
   optionMetaData = Symbol(),
-  oldValue = Symbol()
+  oldValue = Symbol(),
+  instanceIdentifier = Symbol()
+
+export let onOptionChange = Symbol()
 
 //TODO Fix some support for arrays (keep it simple, not oftenly used!)
 
@@ -51,7 +54,7 @@ export class OptionObserver extends EventEmitter {
     this.options = options
     this.defaultOptions = defaultOptions
     this._setupOptions(options, defaultOptions)
-    this._setupRecurringOptionChangeFlush()
+    OptionObserver._registerNewInstance(this)
   }
 
   /**
@@ -74,8 +77,8 @@ export class OptionObserver extends EventEmitter {
         let localListenerTree = this._accessObjectPath(this._listenerTree, nestedPropertyPath.concat([propertyName, listeners]))
         this._addToListenerTree(renderableName, localListenerTree)
       }
-    };
-    this._activeRecordings[renderableName] = optionRecorder;
+    }
+    this._activeRecordings[renderableName] = optionRecorder
     this.on('optionTrigger', optionRecorder)
 
   }
@@ -176,7 +179,8 @@ export class OptionObserver extends EventEmitter {
 
       let newOptionValue = newOptionObject[key]
       if (!newOptionValue && optionObject[key] !== null) {
-        if (defaultOption[key] !== newOptionValue) {
+        let defaultOptionValue = defaultOption[key]
+        if (defaultOptionValue !== newOptionValue && defaultOptionValue !== existingOptionValue) {
           this._markPropertyAsUpdated(nestedPropertyPath, key, newOptionObject[key], existingOptionValue)
         }
         return true
@@ -330,6 +334,7 @@ export class OptionObserver extends EventEmitter {
    * @private
    */
   _markPropertyAsUpdated (nestedPropertyPath, property, value, oldValue) {
+    OptionObserver._markInstanceAsDirty(this);
     let allButLastProperty = nestedPropertyPath
     let lastProperty = property
     /* Mark the object as changes in the most common path */
@@ -542,14 +547,6 @@ export class OptionObserver extends EventEmitter {
     return this._deepTraverse(this.options, callback)
   }
 
-  /**
-   * Every tick, the changes are flushed in the options object
-   * @private
-   */
-  _setupRecurringOptionChangeFlush () {
-    Timer.every(this._flushUpdates)
-  }
-
   _notifyRenderableUpdates () {
     for (let renderableName in this._renderableUpdatesForNextTick) {
       this.emit('needUpdate', renderableName)
@@ -570,6 +567,8 @@ export class OptionObserver extends EventEmitter {
   }
 
   /**
+   * The most important function of the class. It traverses an ontouched level in the hierarchy of options
+   * and acts accordingly
    *
    * @param nestedPropertyPath
    * @param defaultOption
@@ -582,12 +581,16 @@ export class OptionObserver extends EventEmitter {
    * @private
    */
   _processNewOptionUpdates ({nestedPropertyPath, defaultOption, newValue, propertyName, newValueParent, listenerTree, defaultOptionParent}) {
+    let onChangeFunction = this._accessObjectPath(newValueParent, [onOptionChange, propertyName])
+
+    if (onChangeFunction !== notFound) {
+      onChangeFunction(newValue)
+    }
 
     for (let renderableName in listenerTree[listeners]) {
       this._renderableUpdatesForNextTick[renderableName] = true
     }
     let valueToLinkTo
-    let linkIsPlainObject = false
 
     if (!newValue) {
       newValue = defaultOption
@@ -680,6 +683,44 @@ export class OptionObserver extends EventEmitter {
     }
   }
 
+  static _instances = []
+  static _dirtyInstances = []
+
+  static _tickCount = 0
+
+  /**
+   * Every tick, the changes are flushed in the options object. The _isFlushingUpdates flag gives an indication whether
+   * the flushings are in progress or not
+   *
+   * @private
+   */
+  static _flushAllUpdates () {
+    this._isFlushingUpdates = true
+    OptionObserver._tickCount++
+    OptionObserver._dirtyInstances = []
+    for (let optionObserver of OptionObserver._instances) {
+      optionObserver._flushUpdates()
+    }
+    /* Flush dirty instances until there are no more left */
+    while (Object.keys(OptionObserver._dirtyInstances).length) {
+      let dirtyInstances = {...OptionObserver._dirtyInstances}
+      OptionObserver._dirtyInstances = {}
+      for (let optionObserverID in dirtyInstances) {
+        dirtyInstances[optionObserverID]._flushUpdates()
+      }
+    }
+    this._isFlushingUpdates = false
+  }
+
+  static _registerNewInstance (newInstance) {
+    this._instances.push(newInstance)
+    newInstance[instanceIdentifier] = this._instances.length
+  }
+
+  static _markInstanceAsDirty(dirtyInstance){
+    OptionObserver._dirtyInstances[dirtyInstance[instanceIdentifier]] = dirtyInstance;
+  }
+
 }
 
-
+Timer.every(OptionObserver._flushAllUpdates)
