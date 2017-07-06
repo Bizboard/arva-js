@@ -156,17 +156,18 @@ export class View extends FamousView {
      */
     removeRenderable(renderable) {
         let renderableID = this._getRenderableID(renderable);
-        if (!this.renderables[renderableID]) {
+        if (!this._realRenderables[renderableID]) {
             Utils.warn(`Failed to remove renderable ${renderableID} from ${this._name()} because the renderable doesn't exist in the parent scope`);
             return;
         }
         this._renderableHelper.removeRenderable(renderableID);
-        delete this[this._IDtoLocalRenderableName[renderableID]];
+        /* Delete operator isn't allowed here (probably) because the initializer is non-configurable */
+        this[this._IDtoLocalRenderableName[renderableID]] = undefined;
         this.layout.reflowLayout();
     }
 
     hasRenderable(renderable) {
-        return !!this.renderables[this._getRenderableID(renderable)];
+        return !!this._realRenderables[this._getRenderableID(renderable)];
     }
 
     _getRenderableID(renderable) {
@@ -493,7 +494,7 @@ export class View extends FamousView {
             let sizeSpecification =
                 (renderable.decorations.dock && renderable.decorations.dock.size) ||
                 renderable.decorations.size;
-            if (sizeSpecification) {
+            if (sizeSpecification && (sizeSpecification[0] === true || sizeSpecification[1] === true)) {
                 this._sizeResolver.configureTrueSizedSurface(
                     renderable,
                     sizeSpecification
@@ -503,7 +504,12 @@ export class View extends FamousView {
         this[renderableName] = renderable;
     }
 
-    _layoutDecoratedRenderables(context, options) {
+    /**
+     *
+     * @param context
+     * @private
+     */
+    _layoutDecoratedRenderables(context) {
         let dockedRenderables = this._renderableHelper;
         let nativeScrollableOptions = this.decorations.nativeScrollable;
         if (nativeScrollableOptions) {
@@ -573,7 +579,7 @@ export class View extends FamousView {
 
 
         if ((this.decorations.scrollable || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')) {
-            this.addRenderable(new Surface(), '_fullScreenTouchArea', layout.fullSize(), layout.translate(0, 0, -10));
+            this.addRenderable(new Surface(), layout.fullSize(), layout.translate(0, 0, -10));
         }
     }
 
