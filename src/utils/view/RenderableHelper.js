@@ -349,7 +349,7 @@ export class RenderableHelper {
      * @param show
      * @private
      */
-    showWithAnimationController(animationController, renderable, show = true, callback) {
+    showWithAnimationController(animationController, renderable, callback, show = true, options = {}) {
         animationController._showingRenderable = show;
         let callbackIfExists = () => {
             if (callback) {
@@ -364,7 +364,7 @@ export class RenderableHelper {
         };
 
         if (show) {
-            animationController.show(renderable.containerSurface || renderable, null, emitOnFinished);
+            animationController.show(renderable.containerSurface || renderable, options, emitOnFinished);
         } else {
             animationController.hide(null, emitOnFinished);
         }
