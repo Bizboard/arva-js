@@ -53,8 +53,8 @@ export class OptionObserver extends EventEmitter {
 
     this.options = options
     this.defaultOptions = defaultOptions
-    this._setupOptions(options, defaultOptions)
     OptionObserver._registerNewInstance(this)
+    this._setupOptions(options, defaultOptions)
   }
 
   /**
@@ -176,7 +176,7 @@ export class OptionObserver extends EventEmitter {
     let newOptionsAreAlsoOptions = !!newOptions[optionMetaData]
 
     this._deepTraverse(this.options, (nestedPropertyPath, optionObject, existingOptionValue, key, [newOptionObject, defaultOption]) => {
-
+      //todo confirm whether null check is appropriate (I don't think it is)
       let newOptionValue = newOptionObject[key]
       if (!newOptionValue && optionObject[key] !== null) {
         let defaultOptionValue = defaultOption[key]
@@ -259,7 +259,10 @@ export class OptionObserver extends EventEmitter {
     this.emit('optionTrigger', info)
     if (info.type === 'setter') {
       let {nestedPropertyPath, propertyName, parentObject, oldValue} = info
-      this._updateOptionsStructure([propertyName], parentObject, nestedPropertyPath, [oldValue])
+      /* If reassignment to exactly the same thing, then don't do any update */
+      if (oldValue !== parentObject[propertyName]) {
+        this._updateOptionsStructure([propertyName], parentObject, nestedPropertyPath, [oldValue])
+      }
     }
   }
 
@@ -287,6 +290,9 @@ export class OptionObserver extends EventEmitter {
       let innerListenerTree = listenerTree[propertyName]
 
       if (this._isPlainObject(defaultOptionParent)) {
+        if (!newValue) {
+          newValue = optionObject[propertyName] = defaultOption
+        }
         this._processImmediateOptionReassignment({
           newValue, oldValue, defaultOption
         })
@@ -329,20 +335,18 @@ export class OptionObserver extends EventEmitter {
   /**
    * Marks a certain property as updated
    * @param nestedPropertyPath
-   * @param property
+   * @param propertyName
    * @param value
    * @private
    */
-  _markPropertyAsUpdated (nestedPropertyPath, property, value, oldValue) {
-    OptionObserver._markInstanceAsDirty(this);
-    let allButLastProperty = nestedPropertyPath
-    let lastProperty = property
+  _markPropertyAsUpdated (nestedPropertyPath, propertyName, value, oldValue) {
+    OptionObserver._markInstanceAsDirty(this)
     /* Mark the object as changes in the most common path */
-    let updateObject = this._accommodateObjectPathUnless(this._newOptionUpdates, allButLastProperty, (object) =>
+    let updateObject = this._accommodateObjectPathUnless(this._newOptionUpdates, nestedPropertyPath, (object) =>
       object[newChanges]
     )
     if (updateObject !== notFound) {
-      updateObject[lastProperty] = {[newChanges]: value, [originalValue]: oldValue}
+      updateObject[propertyName] = {[newChanges]: value, [originalValue]: oldValue}
     }
   }
 
@@ -448,13 +452,13 @@ export class OptionObserver extends EventEmitter {
 
   /**
    * When properties are removed from options, they are reset to the value specified
-   * @param removedProperties
-   * @param defaultOption
-   * @param parentObject
    * @private
+   * @param newValue
+   * @param oldValue
+   * @param defaultOptionValue
    */
-  _resetRemovedPropertiesIfNeeded (oldValue, newValue, defulatOptionValue) {
-    if (!newValue || !this._isPlainObject(newValue)) {
+  _resetRemovedPropertiesIfNeeded (newValue, oldValue, defaultOptionValue) {
+    if (!oldValue || !this._isPlainObject(oldValue) || !defaultOptionValue) {
       return
     }
     let properties = Object.keys(newValue)
@@ -463,7 +467,7 @@ export class OptionObserver extends EventEmitter {
     let removedProperties = difference(oldProperties, properties)
 
     for (let property of removedProperties) {
-      newValue[property] = defulatOptionValue[property]
+      newValue[property] = defaultOptionValue[property]
     }
   }
 
@@ -581,6 +585,19 @@ export class OptionObserver extends EventEmitter {
    * @private
    */
   _processNewOptionUpdates ({nestedPropertyPath, defaultOption, newValue, propertyName, newValueParent, listenerTree, defaultOptionParent}) {
+
+    let valueIsModelProperty = newValueParent instanceof Model && typeof defaultOptionParent === 'function'
+
+    if (!valueIsModelProperty && !defaultOptionParent.hasOwnProperty(propertyName)) {
+      this._throwError(`Assignment to undefined option: ${nestedPropertyPath.concat(propertyName).join('->')}`)
+    }
+
+    if (typeof defaultOption === 'function' && (defaultOption.prototype instanceof Model || defaultOption === Model)) {
+      if (!newValue || !(newValue instanceof defaultOption)) {
+        this._throwError(`Failed to specify required model: ${propertyName} (${nestedPropertyPath.join('->')})`)
+      }
+    }
+
     let onChangeFunction = this._accessObjectPath(newValueParent, [onOptionChange, propertyName])
 
     if (onChangeFunction !== notFound) {
@@ -603,23 +620,13 @@ export class OptionObserver extends EventEmitter {
       valueToLinkTo = newValue
     }
 
-    if (newValueParent instanceof Model && typeof defaultOptionParent === 'function') {
+    if (valueIsModelProperty) {
       return
     } else if (valueToLinkTo !== undefined) {
       this._setupOptionLink(newValueParent, propertyName, valueToLinkTo, nestedPropertyPath)
-
     }
 
-    if (defaultOption === undefined) {
-      this._throwError(`Assignment to undefined option`)
-    }
-    if (typeof defaultOption === 'function' && (defaultOption.prototype instanceof Model || defaultOption === Model)) {
-      if (!newValue || !(newValue instanceof defaultOption)) {
-        this._throwError(`Failed to specify required model: ${propertyName} (${nestedPropertyPath.join('->')})`)
-      }
-    }
-
-    if (newValue[optionMetaData] && newValue[optionMetaData].owners.includes(this)) {
+    if (this._isPlainObject(newValue) && newValue[optionMetaData] && newValue[optionMetaData].owners.includes(this)) {
       /* Shallow clone at this level, which will become a deep clone when we're finished traversing */
       newValue = this._shallowCloneOption(newValue)
     }
@@ -637,7 +644,7 @@ export class OptionObserver extends EventEmitter {
   }
 
   _handleNewModelUpdate (nestedPropertyPath, newValue, listenerTree, key) {
-    //TODO This implementation is a bit naive, won't work always
+    //TODO This implementation is a bit naive, won't work always (or in second though, won't it)
     let oldListenerStructureBase = this._accessObjectPath(this._modelListeners, [oldValue.constructor.name])
 
     if (oldListenerStructureBase === notFound || !oldListenerStructureBase[oldValue.id]) {
@@ -654,7 +661,6 @@ export class OptionObserver extends EventEmitter {
   }
 
   _createListenerTree () {
-    let valuesToAddListenersTo = []
     this._listenerTree = cloneDeepWith(this.defaultOptions, this._listenerTreeCloner) || {[listeners]: {}}
   }
 
@@ -670,7 +676,7 @@ export class OptionObserver extends EventEmitter {
       return value
     }
     let isPlainObject = this._isPlainObject(value)
-    if (value[listeners] && !Object.keys(value).length) {
+    if (typeof value === 'object' && value[listeners] && !Object.keys(value).length) {
       return value
     }
     if (isPlainObject) {
@@ -684,7 +690,7 @@ export class OptionObserver extends EventEmitter {
   }
 
   static _instances = []
-  static _dirtyInstances = []
+  static _dirtyInstances = {}
 
   static _tickCount = 0
 
@@ -697,11 +703,12 @@ export class OptionObserver extends EventEmitter {
   static _flushAllUpdates () {
     this._isFlushingUpdates = true
     OptionObserver._tickCount++
-    OptionObserver._dirtyInstances = []
+    /* Reset dirty instances, because we are going to traverse all instances anyways */
+    OptionObserver._dirtyInstances = {}
     for (let optionObserver of OptionObserver._instances) {
       optionObserver._flushUpdates()
     }
-    /* Flush dirty instances until there are no more left */
+    /* Flush dirty instances until there are no more dirty instances left */
     while (Object.keys(OptionObserver._dirtyInstances).length) {
       let dirtyInstances = {...OptionObserver._dirtyInstances}
       OptionObserver._dirtyInstances = {}
@@ -717,8 +724,8 @@ export class OptionObserver extends EventEmitter {
     newInstance[instanceIdentifier] = this._instances.length
   }
 
-  static _markInstanceAsDirty(dirtyInstance){
-    OptionObserver._dirtyInstances[dirtyInstance[instanceIdentifier]] = dirtyInstance;
+  static _markInstanceAsDirty (dirtyInstance) {
+    OptionObserver._dirtyInstances[dirtyInstance[instanceIdentifier]] = dirtyInstance
   }
 
 }
