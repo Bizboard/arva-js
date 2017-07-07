@@ -889,12 +889,12 @@ export class View extends FamousView {
         this._renderableHelper.decorateRenderable(this._getRenderableID(renderable), ...dynamicDecorations)
       } else {
         renderable = new type(options)
+        this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, dynamicDecorations)
         if (currentRenderable) {
           this.replaceRenderable(currentRenderable, renderable)
         } else {
           this._assignNewRenderable(renderable, localRenderableName)
         }
-        this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, dynamicDecorations)
       }
     } else {
       this._assignNewRenderable(renderable, localRenderableName)
