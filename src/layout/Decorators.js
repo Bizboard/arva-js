@@ -902,7 +902,7 @@ class Layout {
    * @param {Number} [options.transfer.zIndex] Z-index the tranferables are moved on top while animating (default: 10).
    * @param {Bool} [options.transfer.fastResize] When enabled, scales the renderable i.s.o. resizing when doing the transfer animation (default: true).
    * @param {Array} [options.transfer.items] Ids (key/value) pairs (source-id/target-id) of the renderables that should be transferred.
-   * @returns {Function}
+   * @returns {Layout}
    */
   animate (options = {}) {
     return this.createChainableDecorator((decorations) => {
