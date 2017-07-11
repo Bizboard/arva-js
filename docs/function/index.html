@@ -80,9 +80,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DockLeft">DockLeft</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DockRight">DockRight</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DockTop">DockTop</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DockTypes">DockTypes</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-StickTypes">StickTypes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Dockings">Dockings</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Sticking">Sticking</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Stickings">Stickings</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">routers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/routers/ArvaRouter.js~ArvaRouter.html">ArvaRouter</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/BlobHelper.js~BlobHelper.html">BlobHelper</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/DialogManager.js~DialogManager.html">DialogManager</a></span></span></li>
@@ -430,8 +430,7 @@
       <div>
         
         
-        <div data-ice="description"><p>Function used to show things in a dynamic manner, depending on the options passed.</p>
-</div>
+        
       </div>
     </td>
     <td>
@@ -1772,15 +1771,14 @@
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1133">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1117">source</a></span></span>
     </span>
   </h3>
 
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {dynamic} from &apos;<span><a href="file/src/layout/Decorators.js.html#lineNumber1133">arva-js/layout/Decorators.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {dynamic} from &apos;<span><a href="file/src/layout/Decorators.js.html#lineNumber1117">arva-js/layout/Decorators.js</a></span>&apos;</code></pre></div>
   
   
-  <div data-ice="description"><p>Function used to show things in a dynamic manner, depending on the options passed.</p>
-</div>
+  
 
   
 
@@ -1813,17 +1811,7 @@
 
   
 
-  <div data-ice="example">
-    <h4>Example:</h4>
-    
-  <div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">@dynamic(options =&gt;
- @layout.size(options.width, options.height)
-)
-mainComponent = MainComponent.with({options: this.options})</code></pre>
-    </div>
-</div>
+  
 
   
 
@@ -1842,7 +1830,7 @@ mainComponent = MainComponent.with({options: this.options})</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1150">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1134">source</a></span></span>
     </span>
   </h3>
 
@@ -1929,7 +1917,7 @@ mainComponent = MainComponent.with({options: this.options})</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1179">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1163">source</a></span></span>
     </span>
   </h3>
 
@@ -1994,8 +1982,8 @@ mainComponent = MainComponent.with({options: this.options})</code></pre>
     
   <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">@event.on(&apos;click&apos;, function() {this._handleClick})
-thing = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">@layout.on(&apos;click&apos;, function() {this._handleClick})
+thing = new Surface({properties: {backgroundColor: &apos;red&apos;}});
 
 _handleClick() { ... }</code></pre>
     </div>
@@ -2018,7 +2006,7 @@ _handleClick() { ... }</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1200">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1184">source</a></span></span>
     </span>
   </h3>
 
@@ -2084,9 +2072,9 @@ _handleClick() { ... }</code></pre>
   <div class="example-doc" data-ice="exampleDoc">
       
       <pre class="prettyprint source-code"><code data-ice="exampleCode">@layout.size(100,100)
-   .stick.center()
-   .once(&apos;click&apos;, function() {this._handleClick})
-thing = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+@layout.stick.center()
+@layout.once(&apos;click&apos;, function() {this._handleClick})
+thing = new Surface({properties: {backgroundColor: &apos;red&apos;}});
 
 _handleClick() { ... }</code></pre>
     </div>
@@ -2109,7 +2097,7 @@ _handleClick() { ... }</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1217">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1201">source</a></span></span>
     </span>
   </h3>
 
@@ -2169,9 +2157,9 @@ the piping, otherwise an exception will be thrown.</p>
   <div class="example-doc" data-ice="exampleDoc">
       
       <pre class="prettyprint source-code"><code data-ice="exampleCode">@layout.fullSize()
-@event.pipe(&apos;dbsv&apos;)
+@layout.pipe(&apos;dbsv&apos;)
 //Pipe events to another renderable declared above, called &apos;dbsv&apos;
-scrollableSurface = Surface.with();</code></pre>
+scrollableSurface = new Surface();</code></pre>
     </div>
 </div>
 
@@ -2192,7 +2180,7 @@ scrollableSurface = Surface.with();</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1246">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1230">source</a></span></span>
     </span>
   </h3>
 
@@ -2303,7 +2291,7 @@ class MyView extends View {
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1275">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1259">source</a></span></span>
     </span>
   </h3>
 
@@ -2408,7 +2396,7 @@ on initial show.</p>
       
       <pre class="prettyprint source-code"><code data-ice="exampleCode">// Initial size is [100, 100], and rendered at center of parent.
 @flow.defaultState(&apos;active&apos;, {}, layout.size(100, 100), layout.stick.center())
-myRenderable = Surface.with();</code></pre>
+myRenderable = new Surface();</code></pre>
     </div>
 </div>
 
@@ -2429,7 +2417,7 @@ myRenderable = Surface.with();</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1360">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1344">source</a></span></span>
     </span>
   </h3>
 
@@ -2510,7 +2498,7 @@ being the same usage as @flow.stateStep().</p>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1303">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1287">source</a></span></span>
     </span>
   </h3>
 
@@ -2615,7 +2603,7 @@ are defined, flowing into that state will sequentially execute all defined steps
       <pre class="prettyprint source-code"><code data-ice="exampleCode">// Initial size is [0, 0], and rendered at top left of parent, because no @flow.defaultStep() was done,
 // and no other decorators are applied to the renderable.
 @flow.stateStep(&apos;active&apos;, {}, layout.size(100, 100), layout.stick.center())
-myRenderable = Surface.with();</code></pre>
+myRenderable = new Surface();</code></pre>
     </div>
 </div>
 
@@ -2636,7 +2624,7 @@ myRenderable = Surface.with();</code></pre>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1341">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1325">source</a></span></span>
     </span>
   </h3>
 
@@ -2702,15 +2690,15 @@ class MyView extends View {
 
   @flow.defaultState(&apos;shown&apos;, {}, layout.opacity(1), layout.fullSize())
   @flow.stateStep(&apos;hidden&apos;, {}, layout.opacity(0))
-  loader = Surface.with();
+  loader = new Surface();
 
   @flow.defaultState(&apos;inactive&apos;, {}, layout.opacity(0), layout.size(100, 100), layout.stick.top())
   @flow.stateStep(&apos;active&apos;, {}, layout.opacity(1))
-  button1 = Surface.with();
+  button1 = new Surface();
 
   @flow.defaultState(&apos;inactive&apos;, {}, layout.opacity(0), layout.size(100, 100), layout.stick.bottom())
   @flow.stateStep(&apos;active&apos;, {}, layout.opacity(1))
-  button1 = Surface.with();
+  button1 = new Surface();
 }</code></pre>
     </div>
 </div>

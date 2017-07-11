@@ -22,12 +22,11 @@ and maintainable.*
 Enjoy the benefit of 60 fps animations cross-platform in an enterprise grade style.
 
 ## Documentation
-You can read the latest documentation about Arva <a href="https://github.com/Bizboard/arva-js/wiki">here</a>.
+You can read the latest documentation about Arva <a href="http://arva.io/arva-js/">here</a>.
 
 ## Installation
-> **Important note:** We don't support installing Arva from npm and bower (yet). We know these platforms are very popular and we will consider these for the near future. 
-
-To get started, clone the Arva Seed project as described <a href="https://github.com/Bizboard/arva-js/wiki/Installation">in the documentation</a>.
+ -  Clone the arva-example.
+ -  Hack away.
 
 ## License
 [NPOSL-3.0](https://opensource.org/licenses/NPOSL-3.0) - A variant of the Open Software License 3.0, this license requires that the organization using it is a non-profit and that no revenue is generated from sale of the software.

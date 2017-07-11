@@ -80,9 +80,9 @@
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DockLeft">DockLeft</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DockRight">DockRight</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DockTop">DockTop</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DockTypes">DockTypes</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-StickTypes">StickTypes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Dockings">Dockings</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Sticking">Sticking</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-Stickings">Stickings</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">routers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/routers/ArvaRouter.js~ArvaRouter.html">ArvaRouter</a></span></span></li>
 <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/BlobHelper.js~BlobHelper.html">BlobHelper</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/DialogManager.js~DialogManager.html">DialogManager</a></span></span></li>
@@ -318,10 +318,7 @@ let createChainableDecorator = function (method, type) {
  */
 class Layout {
 
-    /**
-     * @ignore
-     * Add to self in order to make the scope working
-     */
+  /* Add to self in order to make the scope working */
   createChainableDecorator = createChainableDecorator
 
   /**
@@ -329,12 +326,12 @@ class Layout {
    * Use this in combination with a @layout.custom decorator on the view in which this renderable resides.
    *
    * @example
-   * @layout.renderable()
-   * renderable = Surface.with();
+   * @layout.renderable
+   * renderable = new Surface();
    *
    * @returns {Layout} A chainable function
    */
-  renderable ()  {
+  renderable = () =&gt; {
     return this.createChainableDecorator(() =&gt; {
     }, decoratorTypes.childDecorator)
   }
@@ -345,11 +342,11 @@ class Layout {
    * @example
    * @layout.fullSize()
    * // View will have a red background
-   * background = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+   * background = new Surface({properties: {backgroundColor: &apos;red&apos;}});
    *
    * @returns {Layout} A decorator function
    */
-  fullSize ()  {
+  fullSize = () =&gt; {
     return this.createChainableDecorator((decorations) =&gt; {
       decorations.fullSize = true
     }, decoratorTypes.childDecorator)
@@ -363,8 +360,8 @@ class Layout {
    * @example
    * // there&apos;s a 20px space before this box
    * @layout.dockSpace(20)
-   *  .size(100, 100)
-   *  .dock.left()
+   * @layout.size(100, 100)
+   * @layout.dock.left()
    * box = new Surface({properties: {backgroundColor: &apos;red&apos;}});
    *
    * @param {Number} space The space that is inserted before the renderable.
@@ -413,17 +410,16 @@ class Layout {
   }
 
   /**
-   *
-   * @typedef {Object} DockTypes
-   * @property {dockLeft} left Dock to the left
-   * @property {dockRight} right Dock to the right
-   * @property {dockBottom} bottom Dock to the bottom
-   * @property {dockTop} top Dock to the top
+   * @typedef {Object} Dockings
+   * @property {DockLeft} left Dock to the left
+   * @property {DockRight} right Dock to the right
+   * @property {DockBottom} bottom Dock to the bottom
+   * @property {DockTop} top Dock to the top
    */
 
   /**
-   * Docks things. See method descriptors for &quot;Dockings&quot;
-   * @type {DockTypes}
+   * &quot;Docks&quot; stuff.
+   * @type Dockings
    */
   get dock () {
     return {
@@ -439,10 +435,10 @@ class Layout {
        *
        * @example
        * @layout.dock.left(30, 0, 10)
-       *   .size(15, undefined)
-       *   .origin(0.5, 0)
-       *   .align(0.5, 0)
-       * dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+       * @layout.size(15, undefined)
+       * @layout.origin(0.5, 0)
+       * @layout.align(0.5, 0)
+       * dockedRenderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});
        *
        * @memberOf dock
        * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
@@ -468,9 +464,9 @@ class Layout {
        *
        * @example
        * @layout.dock.right(30, 0, 10)
-       *   .size(15, undefined)
-       *   .origin(0.5, 0)
-       *   .align(0.5, 0)
+       * @layout.size(15, undefined)
+       * @layout.origin(0.5, 0)
+       * @layout.align(0.5, 0)
        * dockedRenderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});
        *
        * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
@@ -496,10 +492,10 @@ class Layout {
        *
        * @example
        * @layout.dock.top(30, 0, 10)
-       *    .size(15, undefined)
-       *    .origin(0.5, 0)
-       *    .align(0.5, 0)
-       * dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+       * @layout.size(15, undefined)
+       * @layout.origin(0.5, 0)
+       * @layout.align(0.5, 0)
+       * dockedRenderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});
        *
        *
        * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
@@ -525,10 +521,10 @@ class Layout {
        *
        * @example
        * @layout.dock.bottom(30, 0, 10)
-       *    .size(15, undefined)
-       *    .origin(0.5, 0)
-       *    .align(0.5, 0)
-       * dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+       * @layout.size(15, undefined)
+       * @layout.origin(0.5, 0)
+       * @layout.align(0.5, 0)
+       * dockedRenderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});
        *
        *
        * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
@@ -549,7 +545,7 @@ class Layout {
        *
        * @example
        * @layout.dock.fill()
-       * filledRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+       * filledRenderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});
        *
        * @returns {Layout} A chainable function
        */
@@ -563,7 +559,7 @@ class Layout {
        * @example
        * @layout.dock.fill()
        * @flow.stateStep(&apos;nonFilled&apos;, layout.dock.none(), layout.size(100, 100))
-       * filledRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+       * filledRenderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});
        *
        * @returns {Layout} A chainable function
        */
@@ -581,9 +577,9 @@ class Layout {
    *
    * @example
    * @layout.draggable({xRange: [0, 100}, yRange: [0, 200]})
-   * .size(100, 100)
+   * @layout.size(100, 100)
    * // Makes a draggable square that is red
-   * draggableRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;});
+   * draggableRenderable = new Surface({properties: {backgroundColor: &apos;red&apos;});
      *
    * @param {Object} [draggableOptions]. Same options that can be passed to a Famous Draggable.
    * @param {Number} [options.snapX] grid width for snapping during drag
@@ -608,9 +604,9 @@ class Layout {
    *
    * @example
    * @layout.size(100, 100)
-   *  .swipable({xRange: [0, 100], snapX: true})
+   * @layout.swipable({xRange: [0, 100], snapX: true})
    * //Make a red box that can slide to the right
-   * swipable = Surface.with({properties: {backgroundColor: &apos;red&apos;});
+   * swipable = new Surface({properties: {backgroundColor: &apos;red&apos;});
      *
    * @param {Object} options
    * @param {Boolean} [options.snapX] Whether to snap to the x axis
@@ -637,9 +633,9 @@ class Layout {
    *
    * @example
    * @layout.size(40,40)
-   *   .clip(20, 20)
+   * @layout.clip(20, 20)
    * // Shows a quarter of a circle
-   * renderable = Surface.with({properties: {backgroundColor: &apos;red&apos;, borderRadius: &apos;50%&apos;});
+   * renderable = new Surface({properties: {backgroundColor: &apos;red&apos;, borderRadius: &apos;50%&apos;});
      *
    * @param {Number} width The width of the ContainerSurface
    * @param {Number} heigh The height of the ContainerSurface
@@ -672,7 +668,7 @@ class Layout {
    * @layout.size(function(contextWidth) {return Math.max(contextWidth, this.options.maxWidth)}, ~300)
    * // Creates a renderable where the width is equal to the text width and the height is whatever is bigger,
    * // options.maxWidth, or the context size
-   * text = Surface.with({content: &apos;This is some text&apos;, properties: {backgroundColor: &apos;red&apos;}});
+   * text = new Surface({content: &apos;This is some text&apos;, properties: {backgroundColor: &apos;red&apos;}});
    *
    * @param {Number|Function|Boolean} x
    * @param {Number|Function|Boolean} y
@@ -698,9 +694,9 @@ class Layout {
    *
    * @example
    * @layout.size(100,100)
-   *    .rotate(0, 0, Math.PI)
+   * @layout.rotate(0, 0, Math.PI)
    * // Writes text upside down
-   * renderable = Surface.with({content: &apos;upside down text&apos;});
+   * renderable = new Surface({content: &apos;upside down text&apos;});
    *
    * @param {Number} x The rotation around the x axis (flips vertically)
    * @param {Number} y The rotation around the y axis (flips horizontally)
@@ -718,9 +714,9 @@ class Layout {
    *
    * @example
    * @layout.size(100,100)
-   *    .rotate(0, 0, Math.PI)
+   * @layout.rotate(0, 0, Math.PI)
    * // Writes text upside down
-   * renderable = Surface.with({content: &apos;upside down text&apos;});
+   * renderable = new Surface({content: &apos;upside down text&apos;});
    *
    * @param {Number} x The rotation around the x axis (flips vertically)
    * @param {Number} y The rotation around the y axis (flips horizontally)
@@ -740,10 +736,10 @@ class Layout {
    *
    * @example
    * @layout.opacity(0.5)
-   *    .size(100, 10)
-   *    .place.center()
+   * @layout.size(100, 10)
+   * @layout.place.center()
    * // Writes text that is half invisible
-   * renderable = Surface.with({content: &apos;Half invisible&apos;});
+   * renderable = new Surface({content: &apos;Half invisible&apos;});
    *
    * @param {Number} opacity The opacity, between 0 and 1
    * @returns {Layout} A chainable function
@@ -795,7 +791,7 @@ class Layout {
   }
 
   /**
-   * @typedef {Object} StickTypes
+   * @typedef {Object} Stickings
    * @property {Sticking} center stick in the center
    * @property {Sticking} bottomRight stick to the bottom right
    * @property {Sticking} bottomLeft stick to the bottom left
@@ -817,10 +813,10 @@ class Layout {
    *
    * @example
    * @layout.size(100,~300)
-   *    .stick.center()
-   * renderable = Surface.with({content: &apos;centered text&apos;});
+   * @layout.stick.center()
+   * renderable = new Surface({content: &apos;centered text&apos;});
    *
-   * @type {StickTypes}
+   * @type {Stickings}
    */
   get stick () {
     return {
@@ -876,10 +872,10 @@ class Layout {
    *
    * @example
    * @layout.origin(0.5, 0)
-   *    .size(100,100)
-   *    .align(0.5, 0.5)
+   * @layout.align(0.5, 0.5)
+   * @layout.size(100,100)
    * //Displays a red box horizontically centered and displays just below the vertical mid point
-   * renderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+   * renderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});
    *
    *
    * @param {Number} x. The x of the origin.
@@ -897,9 +893,9 @@ class Layout {
    *
    * @example
    * @layout.align(0.5, 0.5)
-   *    .size(100,100)
+   * @layout.size(100,100)
    * //Displays a red box just below the vertical mid point and past the horizontal mid point
-   * renderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+   * renderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});
    *
    * @param {Number} x. The proportion of the context width that is going to be translated.
    * @param {Number} y. The proportion of the context height that is going to be translated.
@@ -921,9 +917,9 @@ class Layout {
    * @layout.translate(0, 0, 20)
    * class myView extends View{
    *  @layout.translate(0, 0, -20)
-   *    .fullSize()
+   *  @layout.fullSize()
    *  // Will display relatively at z level 0 (20 minus 20)
-   *  myBackground = Surface.with({properties: {backgroudColor: &apos;red&apos;}});
+   *  myBackground = new Surface({properties: {backgroudColor: &apos;red&apos;}});
    * }
    *
    * @param {Number} x Moves the renderable along the x axis.
@@ -957,9 +953,9 @@ class Layout {
    * @layout.translateFrom(0, 0, 20)
    * class myView extends View{
    *  @layout.translateFrom(0, 0, -20)
-   *    .fullSize()
+   *  @layout.fullSize()
    *  // Will display relatively at z level 0 (20 minus 20)
-   *  myBackground = Surface.with({properties: {backgroudColor: &apos;red&apos;}});
+   *  myBackground = new Surface({properties: {backgroudColor: &apos;red&apos;}});
    * }
    *
    * @param {Number} x Moves the renderable along the x axis.
@@ -989,9 +985,9 @@ class Layout {
    * @example
    *  class myView extends View{
    *  @layout.scale(2, 2, 2)
-   *    .fullSize()
+   *  @layout.fullscreen
    *  // Will scale the renderable by 2 in the x,y,z dimension
-   *  myBackground = Surface.with({properties: {backgroudColor: &apos;red&apos;}});
+   *  myBackground = new Surface({properties: {backgroudColor: &apos;red&apos;}});
    * }
    *
    * @param {Number} x Scales the renderable along the x axis.
@@ -1013,9 +1009,9 @@ class Layout {
    * @example
    *  class myView extends View{
    *  @layout.skew(2, 2, 2)
-   *    .fullSize()
+   *  @layout.fullscreen
    *  // Will skew the renderable by 2 in the x,y,z dimension
-   *  myBackground = Surface.with({properties: {backgroudColor: &apos;red&apos;}});
+   *  myBackground = new Surface({properties: {backgroudColor: &apos;red&apos;}});
    * }
    *
    * @param {Number} x Skews the renderable along the x axis.
@@ -1031,15 +1027,15 @@ class Layout {
 
   /**
    *
-   * Creates an animation to show/hide the renderable. Renderables can be shown by calling
+   * Creates an animation controller to show/hide the renderable. Renderables can be shown by calling
    * this.showRenderable(renderableName) and hidden using this.hideRenderable(renderableName) or
    * this.showRenderable(renderableName, false). When a renderable has been shown, it will emit the event &apos;shown&apos;.
    *
    * @example
    * @layout.stick.center()
-   *    .size(100,100)
-   *    .animate({transition: {duration: 350}})
-   * renderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+   * @layout.size(100,100)
+   * @layout.animate({transition: {duration: 350}})
+   * renderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});
    *
    *
    *
@@ -1123,14 +1119,14 @@ class Layout {
   }
 
   /**
-   * Make content scroll natively powered by the browser.
+   * Experimental feature of scrolling natively.
    *
    * @param {Object} [options] Options on how to scroll
    * @param {Boolean} [options.scrollY] Defaults to true
    * @param {Boolean} [options.scrollX] Defaults to false
    * @returns {Layout} A chainable function
    */
-  nativeScrollable (options = {}) {
+  nativeScrollable = (options = {}) =&gt; {
     let {scrollY = true, scrollX = false} = options
     return this.createChainableDecorator((decorations) =&gt; {
       decorations.nativeScrollable = {scrollY, scrollX}
@@ -1150,11 +1146,11 @@ class Layout {
      *
      *  //Will be displayed with margin
    *  @layout.dock.top(20)
-   *  onTop = Surface.with({content: &quot;hello world&quot;});
+   *  onTop = new Surface({content: &quot;hello world&quot;});
    *
    *  //Will be displayed without margin since we&apos;re using @layout.stick
    *  @layout.stick.bottom
-   *  onButtom = Surface.with({content: &quot;hey hey&quot;});
+   *  onButtom = new Surface({content: &quot;hey hey&quot;});
    * }
    *
 
@@ -1183,11 +1179,11 @@ class Layout {
      *
      *  //Will be displayed with margin to the top and sides, and will at max be 720px wide.
    *  @layout.dock.top(20)
-   *  onTop = Surface.with({content: &quot;hello world&quot;});
+   *  onTop = new Surface({content: &quot;hello world&quot;});
    *
    *  //Will be displayed without margin since we&apos;re using @layout.stick instead of @layout.dock
    *  @layout.stick.bottom()
-   *  onButtom = Surface.with({content: &quot;hey hey&quot;});
+   *  onButtom = new Surface({content: &quot;hey hey&quot;});
    * }
    *
    * @param {Number} maxContentWidth Maximum width the content should be allowed to be.
@@ -1221,17 +1217,17 @@ class Layout {
    *
    * @example
    * @layout.custom((context) =&gt; {
-   *  context.set(&apos;myRenderable&apos;, {
-   *  size: [100, 100]
-   * })
-   * class MyView extends View {
-   *  constructor(options) {
-   *      super(options);
-   *      this.renderables.myRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
-   *  }
-   * }
-   *
-   *
+     *  context.set(&apos;myRenderable&apos;, {
+     *  size: [100, 100]
+     * })
+     * class MyView extends View {
+     *  constructor(options) {
+     *      super(options);
+     *      this.renderables.myRenderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});
+     *  }
+     * }
+     *
+     *
    * @param customLayoutFunction
    * @returns {Layout} A chainable function
    */
@@ -1254,18 +1250,6 @@ function getPreviousResults (lastResult) {
   return gatheredResults
 }
 
-/**
- * Function used to show things in a dynamic manner, depending on the options passed.
- *
- * @example
- * @dynamic(options =&gt;
- *  @layout.size(options.width, options.height)
- * )
- * mainComponent = MainComponent.with({options: this.options})
- *
- *
- * @param dynamicFunction
- */
 export const dynamic = (dynamicFunction) =&gt;
   createChainableDecorator((decorations) =&gt; {
     if (!decorations.dynamicFunctions) {
@@ -1302,8 +1286,8 @@ export const event = {
    * Adds an event listener to the renderable when specific event happened.
    *
    * @example
-   * @event.on(&apos;click&apos;, function() {this._handleClick})
-   * thing = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+   * @layout.on(&apos;click&apos;, function() {this._handleClick})
+   * thing = new Surface({properties: {backgroundColor: &apos;red&apos;}});
    *
    * _handleClick() { ... }
    *
@@ -1322,9 +1306,9 @@ export const event = {
    *
    * @example
    * @layout.size(100,100)
-   *    .stick.center()
-   *    .once(&apos;click&apos;, function() {this._handleClick})
-   * thing = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+   * @layout.stick.center()
+   * @layout.once(&apos;click&apos;, function() {this._handleClick})
+   * thing = new Surface({properties: {backgroundColor: &apos;red&apos;}});
    *
    * _handleClick() { ... }
    *
@@ -1343,9 +1327,9 @@ export const event = {
    *
    * @example
    * @layout.fullSize()
-   * @event.pipe(&apos;dbsv&apos;)
+   * @layout.pipe(&apos;dbsv&apos;)
    * //Pipe events to another renderable declared above, called &apos;dbsv&apos;
-   * scrollableSurface = Surface.with();
+   * scrollableSurface = new Surface();
    *
    * @param pipeToName
    * @returns {Function}
@@ -1397,7 +1381,7 @@ export const flow = {
    * @example
    * // Initial size is [100, 100], and rendered at center of parent.
    * @flow.defaultState(&apos;active&apos;, {}, layout.size(100, 100), layout.stick.center())
-   * myRenderable = Surface.with();
+   * myRenderable = new Surface();
    *
    * @param {String} stateName The state name to assign to this state step.
    * @param {Object} [stateOptions] Flow options to use in the state step.
@@ -1425,7 +1409,7 @@ export const flow = {
    * // Initial size is [0, 0], and rendered at top left of parent, because no @flow.defaultStep() was done,
    * // and no other decorators are applied to the renderable.
    * @flow.stateStep(&apos;active&apos;, {}, layout.size(100, 100), layout.stick.center())
-   * myRenderable = Surface.with();
+   * myRenderable = new Surface();
    *
    * @param {String} stateName The state name to assign to this state step.
    * @param {Object} [stateOptions] Flow options to use in the state step.
@@ -1460,15 +1444,15 @@ export const flow = {
      *
    *   @flow.defaultState(&apos;shown&apos;, {}, layout.opacity(1), layout.fullSize())
    *   @flow.stateStep(&apos;hidden&apos;, {}, layout.opacity(0))
-   *   loader = Surface.with();
+   *   loader = new Surface();
    *
    *   @flow.defaultState(&apos;inactive&apos;, {}, layout.opacity(0), layout.size(100, 100), layout.stick.top())
    *   @flow.stateStep(&apos;active&apos;, {}, layout.opacity(1))
-   *   button1 = Surface.with();
+   *   button1 = new Surface();
    *
    *   @flow.defaultState(&apos;inactive&apos;, {}, layout.opacity(0), layout.size(100, 100), layout.stick.bottom())
    *   @flow.stateStep(&apos;active&apos;, {}, layout.opacity(1))
-   *   button1 = Surface.with();
+   *   button1 = new Surface();
    * }
    *
    * @param {Object} states An object keyed by View-level state names, with values of arrays of objects.

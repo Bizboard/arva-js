@@ -997,13 +997,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
@@ -1825,13 +1825,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/prioritisedarray.js~prioritisedarray#length",
-    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-get-length",
+    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-set-length",
     "src/data/PrioritisedArray.js~PrioritisedArray#length",
     "member"
   ],
   [
     "src/data/prioritisedarray.js~prioritisedarray#length",
-    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-set-length",
+    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-get-length",
     "src/data/PrioritisedArray.js~PrioritisedArray#length",
     "member"
   ],
@@ -1951,13 +1951,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#priority",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-priority",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-priority",
     "src/data/PrioritisedObject.js~PrioritisedObject#priority",
     "member"
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#priority",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-priority",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-priority",
     "src/data/PrioritisedObject.js~PrioritisedObject#priority",
     "member"
   ],
@@ -2095,13 +2095,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#datareference",
-    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-set-dataReference",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-get-dataReference",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#dataReference",
     "member"
   ],
   [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#datareference",
-    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-get-dataReference",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-set-dataReference",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#dataReference",
     "member"
   ],
@@ -2533,13 +2533,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/datasources/sharepoint/spsoapadapter/worker/sharepointclient.js~sharepointclient#refreshtimer",
-    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-set-refreshTimer",
+    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-get-refreshTimer",
     "src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient#refreshTimer",
     "member"
   ],
   [
     "src/data/datasources/sharepoint/spsoapadapter/worker/sharepointclient.js~sharepointclient#refreshtimer",
-    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-get-refreshTimer",
+    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-set-refreshTimer",
     "src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient#refreshTimer",
     "member"
   ],
@@ -3120,6 +3120,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/layout/decorators.js~layout#createchainabledecorator",
+    "class/src/layout/Decorators.js~Layout.html#instance-member-createChainableDecorator",
+    "src/layout/Decorators.js~Layout#createChainableDecorator",
+    "member"
+  ],
+  [
     "src/layout/decorators.js~layout#custom",
     "class/src/layout/Decorators.js~Layout.html#instance-method-custom",
     "src/layout/Decorators.js~Layout#custom",
@@ -3157,15 +3163,15 @@ window.esdocSearchIndex = [
   ],
   [
     "src/layout/decorators.js~layout#fullsize",
-    "class/src/layout/Decorators.js~Layout.html#instance-method-fullSize",
+    "class/src/layout/Decorators.js~Layout.html#instance-member-fullSize",
     "src/layout/Decorators.js~Layout#fullSize",
-    "method"
+    "member"
   ],
   [
     "src/layout/decorators.js~layout#nativescrollable",
-    "class/src/layout/Decorators.js~Layout.html#instance-method-nativeScrollable",
+    "class/src/layout/Decorators.js~Layout.html#instance-member-nativeScrollable",
     "src/layout/Decorators.js~Layout#nativeScrollable",
-    "method"
+    "member"
   ],
   [
     "src/layout/decorators.js~layout#opacity",
@@ -3181,9 +3187,9 @@ window.esdocSearchIndex = [
   ],
   [
     "src/layout/decorators.js~layout#renderable",
-    "class/src/layout/Decorators.js~Layout.html#instance-method-renderable",
+    "class/src/layout/Decorators.js~Layout.html#instance-member-renderable",
     "src/layout/Decorators.js~Layout#renderable",
-    "method"
+    "member"
   ],
   [
     "src/layout/decorators.js~layout#rotate",
@@ -3270,21 +3276,21 @@ window.esdocSearchIndex = [
     "typedef"
   ],
   [
-    "src/layout/decorators.js~layout.docktypes",
-    "typedef/index.html#static-typedef-DockTypes",
-    "src/layout/Decorators.js~Layout.DockTypes",
-    "typedef"
-  ],
-  [
-    "src/layout/decorators.js~layout.sticktypes",
-    "typedef/index.html#static-typedef-StickTypes",
-    "src/layout/Decorators.js~Layout.StickTypes",
+    "src/layout/decorators.js~layout.dockings",
+    "typedef/index.html#static-typedef-Dockings",
+    "src/layout/Decorators.js~Layout.Dockings",
     "typedef"
   ],
   [
     "src/layout/decorators.js~layout.sticking",
     "typedef/index.html#static-typedef-Sticking",
     "src/layout/Decorators.js~Layout.Sticking",
+    "typedef"
+  ],
+  [
+    "src/layout/decorators.js~layout.stickings",
+    "typedef/index.html#static-typedef-Stickings",
+    "src/layout/Decorators.js~Layout.Stickings",
     "typedef"
   ],
   [

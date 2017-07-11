@@ -1,7 +1,7 @@
 {
-  "coverage": "56.26%",
-  "expectCount": 583,
-  "actualCount": 328,
+  "coverage": "55.99%",
+  "expectCount": 584,
+  "actualCount": 327,
   "files": {
     "src/core/App.js": {
       "expectCount": 8,
@@ -42,8 +42,8 @@
         21,
         13,
         204,
-        361,
-        17
+        17,
+        361
       ]
     },
     "src/utils/BlobHelper.js": {
@@ -57,8 +57,8 @@
       "undocumentLines": [
         15,
         24,
-        20,
-        16
+        16,
+        20
       ]
     },
     "src/components/logic/branding/BrandingEngineSingleton.js": {
@@ -79,8 +79,8 @@
         14,
         19,
         44,
-        23,
         29,
+        23,
         51,
         118,
         130,
@@ -165,8 +165,8 @@
       "undocumentLines": [
         17,
         99,
-        23,
         19,
+        23,
         50,
         51
       ]
@@ -211,13 +211,15 @@
       ]
     },
     "src/layout/Decorators.js": {
-      "expectCount": 40,
-      "actualCount": 36,
+      "expectCount": 41,
+      "actualCount": 35,
       "undocumentLines": [
-        554,
-        1141,
-        1229,
-        1109
+        550,
+        186,
+        1117,
+        1125,
+        1213,
+        1105
       ]
     },
     "src/data/local/LocalModel.js": {
@@ -390,8 +392,8 @@
         45,
         546,
         214,
-        22,
         26,
+        22,
         57,
         35,
         53,
