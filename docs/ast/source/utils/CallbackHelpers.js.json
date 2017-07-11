@@ -78,7 +78,6 @@
             "leadingComments": null
           }
         ],
-        "importKind": "value",
         "source": {
           "type": "StringLiteral",
           "start": 77,
@@ -442,8 +441,7 @@
           },
           "leadingComments": [],
           "trailingComments": []
-        },
-        "exportKind": "value"
+        }
       },
       {
         "type": "ExportNamedDeclaration",
@@ -753,8 +751,7 @@
           },
           "leadingComments": [],
           "trailingComments": []
-        },
-        "exportKind": "value"
+        }
       },
       {
         "type": "ExportNamedDeclaration",
@@ -1033,8 +1030,7 @@
           },
           "leadingComments": [],
           "trailingComments": []
-        },
-        "exportKind": "value"
+        }
       }
     ],
     "directives": []

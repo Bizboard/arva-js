@@ -8,7 +8,7 @@ import {SharePointClient}               from './SharePointClient.js';
 
 let clients = {};
 
-onmessage = async function (messageEvent) {
+let onmessage = async function (messageEvent) {
     let message = messageEvent.data;
     let {subscriberID, operation} = message;
     let client = clients[subscriberID];

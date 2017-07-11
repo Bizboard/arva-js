@@ -1,8 +1,7 @@
 # Arva
-[![Join the chat at https://gitter.im/Bizboard/arva-js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Bizboard/arva-js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Dependency Status](http://img.shields.io/gemnasium/Bizboard/arva-js.svg)](https://gemnasium.com/Bizboard/arva-js)
 
-Arva is an ES6/7 MV* framework for cross-platform applications that provides a
-remarkable development experience. You'll be able to code faster, write
+Arva is an ES6/7 framework for cross-platform applications that provides a
+different type of development experience. You'll be able to code faster, write
 more robust and manageable code, and you'll be able to easily build views that scale on a large number of device resolutions.
 
 ## Why Arva?
@@ -11,7 +10,7 @@ more robust and manageable code, and you'll be able to easily build views that s
 * **Ease of development** *Uses novel ES6/7 features to make code concise
 and maintainable.*
 * **Animations** *Highly customizable 60fps animations of everything on-screen.*
-* **Data integration** *Realtime data synchronisation without headaches, seamlessly integrating with Firebase as well as SharePoint.*
+* **Data integration** *Realtime data synchronisation without headaches, seamlessly integrating with Firebase, SharePoint, and (coming soon) graphQL.*
 
 ## Core components
 

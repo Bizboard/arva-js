@@ -95,7 +95,6 @@
             "leadingComments": null
           }
         ],
-        "importKind": "value",
         "source": {
           "type": "StringLiteral",
           "start": 130,
@@ -200,7 +199,6 @@
             }
           }
         ],
-        "importKind": "value",
         "source": {
           "type": "StringLiteral",
           "start": 190,
@@ -464,8 +462,7 @@
           },
           "leadingComments": [],
           "trailingComments": []
-        },
-        "exportKind": "value"
+        }
       }
     ],
     "directives": []

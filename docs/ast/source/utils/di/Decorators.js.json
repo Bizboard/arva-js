@@ -95,7 +95,6 @@
             "leadingComments": null
           }
         ],
-        "importKind": "value",
         "source": {
           "type": "StringLiteral",
           "start": 31,
@@ -5951,8 +5950,7 @@
             }
           }
         ],
-        "source": null,
-        "exportKind": "value"
+        "source": null
       },
       {
         "type": "ExportNamedDeclaration",
@@ -5970,7 +5968,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "FunctionDeclaration",
           "start": 679,
@@ -6443,7 +6440,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "FunctionDeclaration",
           "start": 890,
@@ -7139,7 +7135,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "FunctionDeclaration",
           "start": 1264,
@@ -9749,7 +9744,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "ClassDeclaration",
           "start": 274,
@@ -9949,7 +9943,7 @@
               }
             }
           ],
-          "__esdoc__pseudo_export": false
+          "__PseudoExport__": false
         },
         "leadingComments": null
       },
@@ -9969,7 +9963,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "ClassDeclaration",
           "start": 339,
@@ -10053,7 +10046,7 @@
               }
             }
           ],
-          "__esdoc__pseudo_export": false,
+          "__PseudoExport__": false,
           "trailingComments": []
         },
         "leadingComments": null
@@ -10074,7 +10067,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "ClassDeclaration",
           "start": 365,
@@ -10311,7 +10303,7 @@
               }
             ]
           },
-          "__esdoc__pseudo_export": false,
+          "__PseudoExport__": false,
           "leadingComments": [],
           "trailingComments": []
         },
@@ -10333,7 +10325,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "ClassDeclaration",
           "start": 448,
@@ -10555,7 +10546,7 @@
               }
             ]
           },
-          "__esdoc__pseudo_export": false,
+          "__PseudoExport__": false,
           "leadingComments": [],
           "trailingComments": []
         },
@@ -10577,7 +10568,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "ClassDeclaration",
           "start": 526,
@@ -10626,7 +10616,7 @@
             },
             "body": []
           },
-          "__esdoc__pseudo_export": false,
+          "__PseudoExport__": false,
           "leadingComments": [],
           "trailingComments": []
         },
@@ -10648,7 +10638,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "ClassDeclaration",
           "start": 550,
@@ -10749,7 +10738,7 @@
               }
             }
           ],
-          "__esdoc__pseudo_export": false,
+          "__PseudoExport__": false,
           "leadingComments": []
         },
         "leadingComments": null
@@ -10770,7 +10759,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "FunctionDeclaration",
           "start": 2855,
@@ -11099,7 +11087,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "FunctionDeclaration",
           "start": 3077,

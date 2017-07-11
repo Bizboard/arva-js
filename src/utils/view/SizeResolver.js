@@ -32,6 +32,8 @@ export class SizeResolver extends EventEmitter {
     }
 
     /**
+     *
+     *
      * Determines the decorated size. If there is true sizing involved, then it will not return the resolved true size.
      * Instead, this can be accessed through getResolvedSize()
      * @param {Renderable} renderable. The renderable for which we need the size

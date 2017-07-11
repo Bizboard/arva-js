@@ -1562,8 +1562,7 @@
               }
             }
           }
-        ],
-        "exportKind": "value"
+        ]
       },
       {
         "type": "ExportNamedDeclaration",
@@ -4209,8 +4208,7 @@
               }
             }
           }
-        ],
-        "exportKind": "value"
+        ]
       },
       {
         "type": "ExportNamedDeclaration",
@@ -4721,8 +4719,7 @@
           },
           "leadingComments": [],
           "trailingComments": []
-        },
-        "exportKind": "value"
+        }
       }
     ],
     "directives": []

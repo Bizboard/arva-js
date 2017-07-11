@@ -224,8 +224,7 @@
               }
             }
           }
-        ],
-        "exportKind": "value"
+        ]
       }
     ],
     "directives": []
