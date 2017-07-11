@@ -69,8 +69,15 @@ exports.onHandleAST = function (ev) {
         }
         /* Extracts documented inner properties in objects and fakes them at the end of the file */
         try {
-            if (item && item.type === 'ExportNamedDeclaration' && item.declaration && item.declaration.type === 'VariableDeclaration' && item.declaration.declarations && item.declaration.declarations.length) {
+            if (item && item.type === 'ExportNamedDeclaration' &&
+                item.declaration &&
+                item.declaration.type === 'VariableDeclaration' &&
+                item.declaration.declarations &&
+                item.declaration.declarations.length
+            ) {
+
                 var propertyName = item.declaration.declarations[0].id.name;
+                console.log(`propertyName: ${JSON.stringify(propertyName)}`);
                 item.declaration.declarations.forEach(function searchForObjectExpression(declaration) {
                     var leadingCommentsInsertion = [];
                     if (declaration.init && declaration.init.type === 'ObjectExpression' && declaration.init.properties) {

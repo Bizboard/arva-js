@@ -1,25 +1,27 @@
+
+
 # Arva
 
-Arva is an ES6/7 framework for cross-platform applications that provides a
-different type of development experience. You'll be able to code faster, write
-more robust and manageable code, and you'll be able to easily build views that scale on a large number of device resolutions.
+Arva Foundation is the core of the Arva User Experience Platform where developers have complete freedom to hack their creations.
+Built to be a complete substitute for frameworks like React and Angular, Arva plays well with others by emphasising on ECMAScript syntax
+and aiming for compatability with the W3C Components specification.
 
 ## Why Arva?
 
-* **Cross-platform** *Applications compile into apps for web, Android, iOS, Mac OS, Windows, Linux, and Smart TVs.*
 * **Ease of development** *Uses novel ES6/7 features to make code concise
 and maintainable.*
-* **Animations** *Highly customizable 60fps animations of everything on-screen.*
+* ***Visual transitions are important today***. No easy way existed to develop them without being a rockstar developer.
+* ***Animation performance in the browser is bad***. We handle it with a 60fps baseline.
+* ***Open source*** As part of the Arva User Experience Platform (no vendor lock-in).
 * **Data integration** *Realtime data synchronisation without headaches, seamlessly integrating with Firebase, SharePoint, and (coming soon) graphQL.*
 
-## Core components
+## Building blocks
 
 * **App** *The entry point of your application, defining the controllers and their routes.*
 * **Controllers** *Manage the control flow and business logic of your application.*
 * **Views** *Define the way your app looks, feels, and interacts.*
 * **Models** *Take care of two-way realtime data binding.*
 
-Enjoy the benefit of 60 fps animations cross-platform in an enterprise grade style.
 
 ## Documentation
 You can read the latest documentation about Arva <a href="http://arva.io/arva-js/">here</a>.

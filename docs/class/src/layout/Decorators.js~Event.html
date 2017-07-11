@@ -3,7 +3,7 @@
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../">
-  <title data-ice="title">src/utils/ObjectHelper.js | Arva API Document</title>
+  <title data-ice="title">Event | Arva API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -127,288 +127,417 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/utils/ObjectHelper.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+<div class="content" data-ice="content"><div class="header-notice">
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode"></code></pre></div>
+  <span data-ice="access">public</span>
+  <span data-ice="kind">class</span>
+  
+  
+  
+  <span data-ice="source">| <span><a href="file/src/layout/Decorators.js.html#lineNumber1144">source</a></span></span>
+</div>
+
+<div class="self-detail detail">
+  <h1 data-ice="name">Event</h1>
+
+  <div data-ice="instanceDocs" class="instance-docs">
+    <span>You can directly use an instance of this class.</span>
+    
+  <span data-ice="instanceDoc"><span><a href="variable/index.html#static-variable-event">event</a></span></span>
+</div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+</div>
 
 
- @author: Tom Clement (tjclement)
- @license NPOSL-3.0
- @copyright Bizboard, 2015
-
- */
-
-import _each                from &apos;lodash/each.js&apos;
-import merge                from &apos;lodash/merge.js&apos;;
-import extend               from &apos;lodash/extend.js&apos;;
-
-export class ObjectHelper {
-
-    /* Sets enumerability of methods and all properties starting with &apos;_&apos; on an object to false,
-     * effectively hiding them from for(x in object) loops.   */
-    static hideMethodsAndPrivatePropertiesFromObject(object) {
-        for (let propName in object) {
-
-            let prototype = Object.getPrototypeOf(object);
-            let descriptor = prototype ? Object.getOwnPropertyDescriptor(prototype, propName) : undefined;
-            if (descriptor &amp;&amp; (descriptor.get || descriptor.set) &amp;&amp; !propName.startsWith(&apos;_&apos;)) {
-                /* This is a public getter/setter, so we can skip it */
-                continue;
-            }
-
-            let property = object[propName];
-            if (typeof property === &apos;function&apos; || propName.startsWith(&apos;_&apos;)) {
-                ObjectHelper.hidePropertyFromObject(object, propName);
-            }
-        }
-    }
-
-    /* Sets enumerability of methods on an object to false,
-     * effectively hiding them from for(x in object) loops.   */
-    static hideMethodsFromObject(object) {
-        for (let propName in object) {
-            let property = object[propName];
-            if (typeof property === &apos;function&apos;) {
-                ObjectHelper.hidePropertyFromObject(object, propName);
-            }
-        }
-    }
-
-    /* Sets enumerability of an object&apos;s property to false,
-     * effectively hiding it from for(x in object) loops.   */
-    static hidePropertyFromObject(object, propName) {
-        let prototype = object;
-        let descriptor = Object.getOwnPropertyDescriptor(object, propName);
-        while (!descriptor) {
-            prototype = Object.getPrototypeOf(prototype);
-
-            if (prototype.constructor.name === &apos;Object&apos; || prototype.constructor.name === &apos;Array&apos;) {
-                return;
-            }
-
-            descriptor = Object.getOwnPropertyDescriptor(prototype, propName);
-        }
-        descriptor.enumerable = false;
-        Object.defineProperty(prototype, propName, descriptor);
-        Object.defineProperty(object, propName, descriptor);
-    }
-
-    /* Sets enumerability of all of an object&apos;s properties (including methods) to false,
-     * effectively hiding them from for(x in object) loops.   */
-    static hideAllPropertiesFromObject(object) {
-        for (let propName in object) {
-            ObjectHelper.hidePropertyFromObject(object, propName);
-        }
-    }
-
-    /* Adds a property with enumerable: false to object */
-    static addHiddenPropertyToObject(object, propName, prop, writable = true, useAccessors = true) {
-        return ObjectHelper.addPropertyToObject(object, propName, prop, false, writable, undefined, null, useAccessors);
-    }
-
-    /* Adds a property with given enumerability and writability to object. If writable, uses a hidden object.shadow
-     * property to save the actual data state, and object[propName] with gettter/setter to the shadow. Allows for a
-     * callback to be triggered upon every set.   */
-    static addPropertyToObject(object, propName, prop, enumerable = true, writable = true, setCallback = null, getCallback = null, useAccessors = true) {
-        /* If property is non-writable, we won&apos;t need a shadowed prop for the getters/setters */
-        if (!writable || !useAccessors) {
-            let descriptor = {
-                enumerable: enumerable,
-                writable: writable,
-                value: prop
-            };
-            Object.defineProperty(object, propName, descriptor);
-        } else {
-            ObjectHelper.addGetSetPropertyWithShadow(object, propName, prop, enumerable, writable, setCallback, getCallback);
-        }
-    }
-
-    static deepAddAllGetSetPropertyWithShadow(object, enumerable = true, writable = true, setCallback = null, getCallback = null, nestedPropertyPath = []) {
-        _each(object, function (value, key) {
-            if (typeof value === &apos;object&apos; &amp;&amp; value.constructor.name === &apos;Object&apos;) {
-                ObjectHelper.deepAddAllGetSetPropertyWithShadow(value, enumerable, writable, setCallback, getCallback, nestedPropertyPath.concat(key));
-            }
-            ObjectHelper.addGetSetPropertyWithShadow(object, key, value, enumerable, writable, setCallback, getCallback, nestedPropertyPath);
-        });
-    }
-
-    /* Adds given property to the object with get() and set() accessors, and saves actual data in object.shadow */
-    static addGetSetPropertyWithShadow(object, propName, prop, enumerable = true, writable = true, setCallback = null, getCallback = null) {
-        ObjectHelper.buildPropertyShadow(object, propName, prop);
-        ObjectHelper.buildGetSetProperty(object, propName, enumerable, writable, setCallback, getCallback);
-    }
-
-    /* Creates or extends object.shadow to contain a property with name propName */
-    static buildPropertyShadow(object, propName, prop) {
-        let shadow = {};
-
-        try {
-            /* If a shadow property already exists, we should extend instead of overwriting it. */
-            if (&apos;shadow&apos; in object) {
-                shadow = object.shadow;
-            }
-        } catch (error) {
-            return;
-        }
-
-        shadow[propName] = prop;
-        Object.defineProperty(object, &apos;shadow&apos;, {
-            writable: true,
-            configurable: true,
-            enumerable: false,
-            value: shadow
-        });
-    }
-
-    /**
-     *
-     * @param {Object} object The object that we are binding to
-     * @param {String} propName The name of the property that should be overriden
-     * @param {Boolean} enumerable
-     * @param {Boolean} writable
-     * @param {Function} setCallback
-     * @param {Function} getCallback A function that takes as a single argument the property that is about to be get. Should
-     * return that thing as well
-     */
-    static buildGetSetProperty(object, propName, enumerable = true, writable = true, setCallback = null, getCallback = null) {
-        let descriptor = {
-            enumerable: enumerable,
-            configurable: true,
-            get: function () {
-                if (getCallback &amp;&amp; typeof setCallback === &apos;function&apos;) {
-                    getCallback({
-                        propertyName: propName,
-                        value: object.shadow[propName]
-                    });
-                }
-                return object.shadow[propName];
-            },
-            set: function (value) {
-                if (writable) {
-                    let oldValue = object.shadow[propName];
-                    object.shadow[propName] = value;
-                    if (setCallback &amp;&amp; typeof setCallback === &apos;function&apos;) {
-                        setCallback({
-                            propertyName: propName,
-                            newValue: value,
-                            oldValue
-                        });
-                    }
-                } else {
-                    throw new ReferenceError(&apos;Attempted to write to non-writable property &apos; + propName + &apos;.&apos;);
-                }
-            }
-        };
-
-        Object.defineProperty(object, propName, descriptor);
-    }
-
-    /* Calls object[&apos;functionName&apos;].bind(bindTarget) on all of object&apos;s functions. */
-    static bindAllMethods(object, bindTarget) {
-        /* TODO: There is a bug here that will bind properties that were defined through this.x = &lt;something&gt;. This is
-         * the desired effect because this.x.prototype will be redefined */
-
-        /* Bind all current object&apos;s methods to bindTarget. */
-        let methodDescriptors = ObjectHelper.getMethodDescriptors(object);
-        for (let methodName in methodDescriptors) {
-            /* Skip the constructor as it serves as no purpose and it breaks the minification */
-            if (methodName === &apos;constructor&apos;) {
-                continue;
-            }
-            let propertyDescriptor = methodDescriptors[methodName];
-            if (propertyDescriptor &amp;&amp; propertyDescriptor.get) {
-                propertyDescriptor.get = propertyDescriptor.get.bind(bindTarget);
-            } else if (propertyDescriptor.set) {
-                propertyDescriptor.set = propertyDescriptor.set.bind(bindTarget);
-            } else if (propertyDescriptor.writable) {
-                propertyDescriptor.value = propertyDescriptor.value.bind(bindTarget);
-            }
-            Object.defineProperty(object, methodName, propertyDescriptor);
-        }
-    }
 
 
-    static getMethodDescriptors(object) {
 
-        let methodDescriptors = {};
+<div data-ice="methodSummary"><h2>Method Summary</h2><table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Public Methods</td></tr></thead>
+  <tbody>
+  
+  <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/layout/Decorators.js~Event.html#instance-method-on">on</a></span></span><span data-ice="signature">(eventName: <span>*</span>, callback: <span>*</span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Adds an event listener to the renderable when specific event happened.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/layout/Decorators.js~Event.html#instance-method-once">once</a></span></span><span data-ice="signature">(eventName: <span>*</span>, callback: <span>*</span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Adds an event listener to the renderable when specific event happened once.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/layout/Decorators.js~Event.html#instance-method-pipe">pipe</a></span></span><span data-ice="signature">(pipeToName: <span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Pipes events from one renderable to another.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
 
-        for (let propertyName of Object.getOwnPropertyNames(object)) {
-            let propertyDescriptor = Object.getOwnPropertyDescriptor(object, propertyName) || {};
-            /* Initializers can be ignored since they are bound anyways */
-            if (!propertyDescriptor.initializer &amp;&amp; (propertyDescriptor.get || typeof object[propertyName] === &apos;function&apos;)) {
-                methodDescriptors[propertyName] = propertyDescriptor;
-            }
-        }
 
-        /* Recursively find prototype&apos;s methods until we hit the Object prototype. */
-        let prototype = Object.getPrototypeOf(object);
-        if (prototype.constructor.name !== &apos;Object&apos; &amp;&amp; prototype.constructor.name !== &apos;Array&apos;) {
-            methodDescriptors = extend(ObjectHelper.getMethodDescriptors(prototype), methodDescriptors);
-        }
 
-        return methodDescriptors;
 
-    }
 
-    /* Returns a new object with all enumerable properties of the given object */
-    static getEnumerableProperties(object) {
 
-        return ObjectHelper.getPrototypeEnumerableProperties(object, object);
 
-    }
+<div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
-    static getPrototypeEnumerableProperties(rootObject, prototype) {
-        let result = {};
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-on">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">on</span><span data-ice="signature">(eventName: <span>*</span>, callback: <span>*</span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1186">source</a></span></span>
+    </span>
+  </h3>
 
-        /* Collect all propertise in the prototype&apos;s keys() enumerable */
-        let propNames = Object.keys(prototype);
-        for (let name of propNames) {
-            let value = rootObject[name];
+  
+  
+  
+  <div data-ice="description"><p>Adds an event listener to the renderable when specific event happened.</p>
+</div>
 
-            /* Value must be a non-null primitive or object to be pushable to a dataSource */
-            if (value !== null &amp;&amp; value !== undefined &amp;&amp; typeof value !==
-                &apos;function&apos;) {
-                if (typeof value === &apos;object&apos; &amp;&amp; !(value instanceof Array)) {
-                    result[name] = ObjectHelper.getEnumerableProperties(value);
-                } else {
-                    result[name] = value;
-                }
-            }
-        }
+  
 
-        /* Collect all properties with accessors (getters/setters) that are enumerable, too */
-        let descriptorNames = Object.getOwnPropertyNames(prototype);
-        descriptorNames = descriptorNames.filter(function (name) {
-            return propNames.indexOf(name) &lt; 0;
-        });
-        for (let name of descriptorNames) {
-            let descriptor = Object.getOwnPropertyDescriptor(prototype, name);
-            if (descriptor &amp;&amp; descriptor.enumerable) {
-                let value = rootObject[name];
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">eventName</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">callback</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
 
-                /* Value must be a non-null primitive or object to be pushable to a dataSource */
-                if (value !== null &amp;&amp; value !== undefined &amp;&amp; typeof value !== &apos;function&apos;) {
-                    if (typeof value === &apos;object&apos; &amp;&amp; !(value instanceof Array)) {
-                        result[name] = ObjectHelper.getEnumerableProperties(value);
-                    } else {
-                        result[name] = value;
-                    }
-                }
-            }
-        }
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>A chainable function</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
 
-        /* Collect all enumerable properties in the prototype&apos;s prototype as well */
-        let superPrototype = Object.getPrototypeOf(prototype);
-        let ignorableTypes = [&apos;Object&apos;, &apos;Array&apos;, &apos;EventEmitter&apos;];
-        if (ignorableTypes.indexOf(superPrototype.constructor.name) === -1) {
-            let prototypeEnumerables = ObjectHelper.getPrototypeEnumerableProperties(rootObject, superPrototype);
-            merge(result, prototypeEnumerables);
-        }
+  
 
-        return result;
-    }
-}
-</code></pre>
+  
 
+  
+
+  
+
+  <div data-ice="example">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">@event.on(&apos;click&apos;, function() {this._handleClick})
+thing = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+
+_handleClick() { ... }</code></pre>
+    </div>
+</div>
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-once">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">once</span><span data-ice="signature">(eventName: <span>*</span>, callback: <span>*</span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1207">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Adds an event listener to the renderable when specific event happened once.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">eventName</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">callback</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></td>
+          <td class="return-desc" data-ice="returnDescription"><p>A chainable function</p>
+</td>
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="example">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">@layout.size(100,100)
+   .stick.center()
+   .once(&apos;click&apos;, function() {this._handleClick})
+thing = Surface.with({properties: {backgroundColor: &apos;red&apos;}});
+
+_handleClick() { ... }</code></pre>
+    </div>
+</div>
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-pipe">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">pipe</span><span data-ice="signature">(pipeToName: <span>*</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1224">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Pipes events from one renderable to another. The other renderable has to be declared above the one that is doing
+the piping, otherwise an exception will be thrown.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">pipeToName</td>
+      <td data-ice="type"><span>*</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="example">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">@layout.fullSize()
+@event.pipe(&apos;dbsv&apos;)
+//Pipe events to another renderable declared above, called &apos;dbsv&apos;
+scrollableSurface = Surface.with();</code></pre>
+    </div>
+</div>
+
+  
+
+  
+  
+</div>
+</div>
 </div>
 
 <footer class="footer">

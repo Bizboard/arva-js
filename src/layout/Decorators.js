@@ -283,6 +283,7 @@ class Layout {
      * @property {dockRight} right Dock to the right
      * @property {dockBottom} bottom Dock to the bottom
      * @property {dockTop} top Dock to the top
+     * @property {fill} fill Fill the rest of the space
      */
 
     /**
@@ -292,7 +293,7 @@ class Layout {
     get dock() {
         return {
             /**
-             * @typedef {Function} DockLeft
+             * @typedef {dockLeft} dockLeft
              * Docks the renderable to the left.
              *
              * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
@@ -321,7 +322,7 @@ class Layout {
             }.bind(this),
 
             /**
-             * @typedef {Function} DockRight
+             * @typedef {Function} dockRight
              * Docks the renderable to the right.
              *
              * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
@@ -349,7 +350,7 @@ class Layout {
             }.bind(this),
 
             /**
-             * @typedef {Function} DockTop
+             * @typedef {Function} dockTop
              * Docks the renderable to the top.
              *
              * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
@@ -378,7 +379,7 @@ class Layout {
             }.bind(this),
 
             /**
-             * @typedef {Function} DockBottom
+             * @typedef {Function} dockBottom
              * Docks the renderable to the bottom.
              *
              * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
@@ -407,6 +408,7 @@ class Layout {
             }.bind(this),
 
             /**
+             * @typedef {Function} fill
              * Fills the space that is left after the docking with this renderable. When using layout.size, it will use that
              * size as an inner size. This works similarly to other docking, from where translate, size, origin, align, etc
              * can be specified.
@@ -660,19 +662,19 @@ class Layout {
 
     /**
      * @typedef {Object} StickTypes
-     * @property {Sticking} center stick in the center
-     * @property {Sticking} bottomRight stick to the bottom right
-     * @property {Sticking} bottomLeft stick to the bottom left
-     * @property {Sticking} topRight stick to the top right
-     * @property {Sticking} topLeft stick to the top left
-     * @property {Sticking} left stick to the left
-     * @property {Sticking} right stick to the right
-     * @property {Sticking} bottom stick to the bottom
-     * @property {Sticking} top stick to the top
+     * @property {Function} center stick in the center
+     * @property {Function} bottomRight stick to the bottom right
+     * @property {Function} bottomLeft stick to the bottom left
+     * @property {Function} topRight stick to the top right
+     * @property {Function} topLeft stick to the top left
+     * @property {Function} left stick to the left
+     * @property {Function} right stick to the right
+     * @property {Function} bottom stick to the bottom
+     * @property {Function} top stick to the top
      */
 
     /**
-     * @typedef {Function} Sticking
+     * @typedef {Function} StickTypes
      * @returns {Layout} A chainable layout function
      */
 

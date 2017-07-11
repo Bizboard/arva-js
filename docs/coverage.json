@@ -38,8 +38,8 @@
         44,
         332,
         359,
-        389,
         21,
+        389,
         13,
         204,
         17,
@@ -57,8 +57,8 @@
       "undocumentLines": [
         15,
         24,
-        16,
-        20
+        20,
+        16
       ]
     },
     "src/components/logic/branding/BrandingEngineSingleton.js": {
@@ -79,8 +79,8 @@
         14,
         19,
         44,
-        29,
         23,
+        29,
         51,
         118,
         130,
@@ -147,6 +147,18 @@
         26
       ]
     },
+    "src/layout/Decorators.js": {
+      "expectCount": 41,
+      "actualCount": 35,
+      "undocumentLines": [
+        1144,
+        1237,
+        556,
+        1235,
+        1387,
+        1111
+      ]
+    },
     "src/utils/request/RequestClient.js": {
       "expectCount": 3,
       "actualCount": 2,
@@ -165,8 +177,8 @@
       "undocumentLines": [
         17,
         99,
-        19,
         23,
+        19,
         50,
         51
       ]
@@ -208,18 +220,6 @@
         55,
         47,
         63
-      ]
-    },
-    "src/layout/Decorators.js": {
-      "expectCount": 41,
-      "actualCount": 35,
-      "undocumentLines": [
-        550,
-        186,
-        1117,
-        1125,
-        1213,
-        1105
       ]
     },
     "src/data/local/LocalModel.js": {
@@ -311,8 +311,8 @@
         35,
         94,
         271,
-        22,
         26,
+        22,
         39
       ]
     },
@@ -392,8 +392,8 @@
         45,
         546,
         214,
-        26,
         22,
+        26,
         57,
         35,
         53,
@@ -407,8 +407,8 @@
       "undocumentLines": [
         21,
         97,
-        27,
         23,
+        27,
         46,
         529
       ]
@@ -502,18 +502,18 @@
       "undocumentLines": [
         162,
         322,
-        707,
-        528,
-        799,
+        708,
+        529,
+        800,
         362,
-        609,
+        610,
         166,
         250,
         399,
-        556,
-        774,
-        785,
-        737
+        557,
+        775,
+        786,
+        738
       ]
     },
     "src/utils/CallbackHelpers.js": {

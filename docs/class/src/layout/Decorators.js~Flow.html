@@ -2,8 +2,8 @@
 <html>
 <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl" href="../">
-  <title data-ice="title">Typedef | Arva API Document</title>
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">Flow | Arva API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -127,9 +127,55 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">Typedef</h1>
-<div data-ice="summaries"><table class="summary" data-ice="summary">
-  <thead><tr><td data-ice="title" colspan="3">Static Public Summary</td></tr></thead>
+<div class="content" data-ice="content"><div class="header-notice">
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode"></code></pre></div>
+  <span data-ice="access">public</span>
+  <span data-ice="kind">class</span>
+  
+  
+  
+  <span data-ice="source">| <span><a href="file/src/layout/Decorators.js.html#lineNumber1237">source</a></span></span>
+</div>
+
+<div class="self-detail detail">
+  <h1 data-ice="name">Flow</h1>
+
+  <div data-ice="instanceDocs" class="instance-docs">
+    <span>You can directly use an instance of this class.</span>
+    
+  <span data-ice="instanceDoc"><span><a href="variable/index.html#static-variable-flow">flow</a></span></span>
+</div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+</div>
+
+
+
+
+
+<div data-ice="methodSummary"><h2>Method Summary</h2><table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Public Methods</td></tr></thead>
   <tbody>
   
   <tr data-ice="target">
@@ -145,13 +191,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-DockTypes">DockTypes</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+          <span data-ice="name"><span><a href="class/src/layout/Decorators.js~Flow.html#instance-method-defaultOptions">defaultOptions</a></span></span><span data-ice="signature">(flowOptions: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Sets the default flow options for a View.</p>
+</div>
       </div>
     </td>
     <td>
@@ -172,13 +219,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-StickTypes">StickTypes</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+          <span data-ice="name"><span><a href="class/src/layout/Decorators.js~Flow.html#instance-method-defaultState">defaultState</a></span></span><span data-ice="signature">(stateName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, stateOptions: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, transformations: <span>Array.Function</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Functions the same as @flow.stateStep(), and additionally also immediately applies the decorators passed into the &apos;transformations&apos; argument.</p>
+</div>
       </div>
     </td>
     <td>
@@ -199,13 +247,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-StickTypes">StickTypes</a></span></span><span data-ice="signature">: <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
+          <span data-ice="name"><span><a href="class/src/layout/Decorators.js~Flow.html#instance-method-multipleStateStep">multipleStateStep</a></span></span><span data-ice="signature">(stateName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, states: <span>Array.Object</span>): <span><a href="class/src/layout/Decorators.js~Flow.html">Flow</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>A wrapper around @flow.stateStep, to allow defining multiple steps with the same state name.</p>
+</div>
       </div>
     </td>
     <td>
@@ -226,13 +275,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-dockBottom">dockBottom</a></span></span><span data-ice="signature">(size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, space: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>, zIndex: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
+          <span data-ice="name"><span><a href="class/src/layout/Decorators.js~Flow.html#instance-method-stateStep">stateStep</a></span></span><span data-ice="signature">(stateName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, stateOptions: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, transformations: <span>Array.Function</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
+        <div data-ice="description"><p>Used to define a state that the renderable is able to flow to.</p>
+</div>
       </div>
     </td>
     <td>
@@ -253,94 +303,14 @@
         <p>
           
           
-          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-dockLeft">dockLeft</a></span></span><span data-ice="signature">(size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, space: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>, zIndex: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="typedef/index.html#static-typedef-dockLeft">dockLeft</a></span></span>
+          <span data-ice="name"><span><a href="class/src/layout/Decorators.js~Flow.html#instance-method-viewStates">viewStates</a></span></span><span data-ice="signature">(states: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
         </p>
       </div>
       <div>
         
         
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-dockRight">dockRight</a></span></span><span data-ice="signature">(size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, space: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>, zIndex: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-dockTop">dockTop</a></span></span><span data-ice="signature">(size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, space: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>, zIndex: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
-      </div>
-    </td>
-    <td>
-      
-      
-    </td>
-  </tr>
-<tr data-ice="target">
-    <td>
-      <span class="access" data-ice="access">public</span>
-      
-      
-      
-      <span class="override" data-ice="override"></span>
-    </td>
-    <td>
-      <div>
-        <p>
-          
-          
-          <span data-ice="name"><span><a href="typedef/index.html#static-typedef-fill">fill</a></span></span><span data-ice="signature">: <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
-        </p>
-      </div>
-      <div>
-        
-        
-        
+        <div data-ice="description"><p>Defines the View-level states, that exist of concurrently and sequentially executed renderable-level states.</p>
+</div>
       </div>
     </td>
     <td>
@@ -351,33 +321,42 @@
 </tbody>
 </table>
 </div>
-<div data-ice="details"><h2 data-ice="title">Static Public </h2>
+
+
+
+
+
+
+
+<div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-typedef-DockTypes">
+  <h3 data-ice="anchor" id="instance-method-defaultOptions">
     <span class="access" data-ice="access">public</span>
     
     
     
     
     
-    <span data-ice="name">DockTypes</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+    <span data-ice="name">defaultOptions</span><span data-ice="signature">(flowOptions: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1263">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Sets the default flow options for a View. These options will be overridden by
+each of its renderables, if they have flow options defined through e.g. flow.stateStep()</p>
+</div>
 
   
 
   <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Properties:</h4>
+  <h4 data-ice="title">Params:</h4>
   <table class="params">
     <thead>
     <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
@@ -385,38 +364,38 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">left</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-dockLeft">dockLeft</a></span></td>
+      <td data-ice="name" data-depth="0">flowOptions</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Dock to the left</p>
+      <td data-ice="description"><p>Options to set as default.</p>
 </td>
     </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">right</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-dockRight">dockRight</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Dock to the right</p>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">flowOptions.delay</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The amount of milliseconds to wait in between state transitions.</p>
 </td>
     </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">bottom</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-dockBottom">dockBottom</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Dock to the bottom</p>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">flowOptions.transition</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>A Famo.us-compatible transition object defining the animation specifics.</p>
 </td>
     </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">top</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-dockTop">dockTop</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Dock to the top</p>
+<tr data-ice="property" data-depth="2">
+      <td data-ice="name" data-depth="2">flowOptions.transition.curve</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The animation curve to use when flowing from one state to another, e.g. Easing.outCubic.</p>
 </td>
     </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">fill</td>
-      <td data-ice="type"><span><a href="typedef/index.html#static-typedef-fill">fill</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Fill the rest of the space</p>
+<tr data-ice="property" data-depth="2">
+      <td data-ice="name" data-depth="2">flowOptions.transition.duration</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The amount of milliseconds a flow animation should take.</p>
 </td>
     </tr>
 </tbody>
@@ -424,7 +403,19 @@
 </div>
 </div>
 
-  
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
 
   
 
@@ -434,7 +425,16 @@
 
   
 
-  
+  <div data-ice="example">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">@flow.defaultOptions({ transition: { curve: Easing.outCubic, duration: 200 } })
+class MyView extends View {
+}</code></pre>
+    </div>
+</div>
 
   
 
@@ -442,30 +442,33 @@
   
 </div>
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-typedef-StickTypes">
+  <h3 data-ice="anchor" id="instance-method-defaultState">
     <span class="access" data-ice="access">public</span>
     
     
     
     
     
-    <span data-ice="name">StickTypes</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></span>
+    <span data-ice="name">defaultState</span><span data-ice="signature">(stateName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, stateOptions: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, transformations: <span>Array.Function</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumberundefined">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1292">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Functions the same as @flow.stateStep(), and additionally also immediately applies the decorators passed into the &apos;transformations&apos; argument.
+Used to define a state step, without having to also manually apply the same decorators to the renderable to ensure it is rendered this way
+on initial show.</p>
+</div>
 
   
 
   <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Properties:</h4>
+  <h4 data-ice="title">Params:</h4>
   <table class="params">
     <thead>
     <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
@@ -473,66 +476,52 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">center</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
+      <td data-ice="name" data-depth="0">stateName</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>stick in the center</p>
+      <td data-ice="description"><p>The state name to assign to this state step.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">bottomRight</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>stick to the bottom right</p>
+      <td data-ice="name" data-depth="0">stateOptions</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>Flow options to use in the state step.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">stateOptions.delay</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The amount of milliseconds to wait in between state transitions.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">stateOptions.transition</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>A Famo.us-compatible transition object defining the animation specifics.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="2">
+      <td data-ice="name" data-depth="2">stateOptions.transition.curve</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The animation curve to use when flowing from one state to another, e.g. Easing.outCubic.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="2">
+      <td data-ice="name" data-depth="2">stateOptions.transition.duration</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The amount of milliseconds a flow animation should take.</p>
 </td>
     </tr>
 <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">bottomLeft</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
+      <td data-ice="name" data-depth="0">transformations</td>
+      <td data-ice="type"><span>Array.Function</span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>stick to the bottom left</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">topRight</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>stick to the top right</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">topLeft</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>stick to the top left</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">left</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>stick to the left</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">right</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>stick to the right</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">bottom</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>stick to the bottom</p>
-</td>
-    </tr>
-<tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">top</td>
-      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"><p>stick to the top</p>
+      <td data-ice="description"><p>Decorators to assign to this state, and to apply initially, passed in as regular comma-separated arguments.</p>
 </td>
     </tr>
 </tbody>
@@ -540,113 +529,13 @@
 </div>
 </div>
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-typedef-StickTypes">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span data-ice="name">StickTypes</span><span data-ice="signature">: <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumberundefined">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  
-
-  
-
-  <div data-ice="properties">
-</div>
-
   <div class="return-params" data-ice="returnParams">
     <h4>Return:</h4>
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>A chainable layout function</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-typedef-dockBottom">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span data-ice="name">dockBottom</span><span data-ice="signature">(size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, space: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>, zIndex: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber406">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  
-
-  
-
-  <div data-ice="properties">
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>A chainable function</p>
-</td>
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
+          
         </tr>
       </tbody>
     </table>
@@ -667,11 +556,9 @@
     
   <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">@layout.dock.bottom(30, 0, 10)
-   .size(15, undefined)
-   .origin(0.5, 0)
-   .align(0.5, 0)
-dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Initial size is [100, 100], and rendered at center of parent.
+@flow.defaultState(&apos;active&apos;, {}, layout.size(100, 100), layout.stick.center())
+myRenderable = Surface.with();</code></pre>
     </div>
 </div>
 
@@ -681,29 +568,55 @@ dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}}
   
 </div>
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-typedef-dockLeft">
+  <h3 data-ice="anchor" id="instance-method-multipleStateStep">
     <span class="access" data-ice="access">public</span>
     
     
     
     
     
-    <span data-ice="name">dockLeft</span><span data-ice="signature">(size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, space: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>, zIndex: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="typedef/index.html#static-typedef-dockLeft">dockLeft</a></span></span>
+    <span data-ice="name">multipleStateStep</span><span data-ice="signature">(stateName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, states: <span>Array.Object</span>): <span><a href="class/src/layout/Decorators.js~Flow.html">Flow</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber320">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1377">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>A wrapper around @flow.stateStep, to allow defining multiple steps with the same state name.</p>
+</div>
 
   
 
-  <div data-ice="properties">
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">stateName</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>State name to assign states to.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">states</td>
+      <td data-ice="type"><span>Array.Object</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>An array of {stateOptions: [..], transformations: [..]} objects, with stateOptions and transformations
+being the same usage as @flow.stateStep().</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
 </div>
 
   <div class="return-params" data-ice="returnParams">
@@ -711,9 +624,124 @@ dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}}
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>A chainable function</p>
+          <td class="return-type" data-ice="returnType"><span><a href="class/src/layout/Decorators.js~Flow.html">Flow</a></span></td>
+          
+        </tr>
+      </tbody>
+    </table>
+    <div data-ice="returnProperties">
+</div>
+  </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-stateStep">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span data-ice="name">stateStep</span><span data-ice="signature">(stateName: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span>, stateOptions: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>, transformations: <span>Array.Function</span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1321">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Used to define a state that the renderable is able to flow to. When multiple state steps with the same state name
+are defined, flowing into that state will sequentially execute all defined steps with that state name.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">stateName</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>The state name to assign to this state step.</p>
 </td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">stateOptions</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>Flow options to use in the state step.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">stateOptions.delay</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The amount of milliseconds to wait in between state transitions.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" data-depth="1">stateOptions.transition</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>A Famo.us-compatible transition object defining the animation specifics.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="2">
+      <td data-ice="name" data-depth="2">stateOptions.transition.curve</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The animation curve to use when flowing from one state to another, e.g. Easing.outCubic.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="2">
+      <td data-ice="name" data-depth="2">stateOptions.transition.duration</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>The amount of milliseconds a flow animation should take.</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">transformations</td>
+      <td data-ice="type"><span>Array.Function</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Decorators to assign to this state, and to apply initially, passed in as regular comma-separated arguments.</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  <div class="return-params" data-ice="returnParams">
+    <h4>Return:</h4>
+    <table>
+      <tbody>
+        <tr>
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
+          
         </tr>
       </tbody>
     </table>
@@ -734,11 +762,10 @@ dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}}
     
   <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">@layout.dock.left(30, 0, 10)
-  .size(15, undefined)
-  .origin(0.5, 0)
-  .align(0.5, 0)
-dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});</code></pre>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Initial size is [0, 0], and rendered at top left of parent, because no @flow.defaultStep() was done,
+// and no other decorators are applied to the renderable.
+@flow.stateStep(&apos;active&apos;, {}, layout.size(100, 100), layout.stick.center())
+myRenderable = Surface.with();</code></pre>
     </div>
 </div>
 
@@ -748,29 +775,48 @@ dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}}
   
 </div>
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-typedef-dockRight">
+  <h3 data-ice="anchor" id="instance-method-viewStates">
     <span class="access" data-ice="access">public</span>
     
     
     
     
     
-    <span data-ice="name">dockRight</span><span data-ice="signature">(size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, space: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>, zIndex: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
+    <span data-ice="name">viewStates</span><span data-ice="signature">(states: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span>): <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber348">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber1359">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  
+  <div data-ice="description"><p>Defines the View-level states, that exist of concurrently and sequentially executed renderable-level states.
+When e.g. View.setViewFlowState(&apos;active&apos;) is called, the renderable states defined in the view-level state &apos;active&apos; are executed.</p>
+</div>
 
   
 
-  <div data-ice="properties">
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" data-depth="0">states</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>An object keyed by View-level state names, with values of arrays of objects.</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
 </div>
 
   <div class="return-params" data-ice="returnParams">
@@ -778,9 +824,8 @@ dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}}
     <table>
       <tbody>
         <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>A chainable function</p>
-</td>
+          <td class="return-type" data-ice="returnType"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></td>
+          
         </tr>
       </tbody>
     </table>
@@ -801,142 +846,22 @@ dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}}
     
   <div class="example-doc" data-ice="exampleDoc">
       
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">@layout.dock.right(30, 0, 10)
-  .size(15, undefined)
-  .origin(0.5, 0)
-  .align(0.5, 0)
-dockedRenderable = new Surface({properties: {backgroundColor: &apos;red&apos;}});</code></pre>
-    </div>
-</div>
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Calling setViewFlowState(&apos;active&apos;) will first hide the loader, and when that is completed, show both buttons at the same time.
+@flow.viewStates({ &apos;active&apos;: [{loader: &apos;hidden&apos;}, { button1: &apos;active&apos;, button2: &apos;active&apos; }] })
+class MyView extends View {
 
-  
+  @flow.defaultState(&apos;shown&apos;, {}, layout.opacity(1), layout.fullSize())
+  @flow.stateStep(&apos;hidden&apos;, {}, layout.opacity(0))
+  loader = Surface.with();
 
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-typedef-dockTop">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span data-ice="name">dockTop</span><span data-ice="signature">(size: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span> | <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span>, space: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>, zIndex: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></span>): <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber377">source</a></span></span>
-    </span>
-  </h3>
+  @flow.defaultState(&apos;inactive&apos;, {}, layout.opacity(0), layout.size(100, 100), layout.stick.top())
+  @flow.stateStep(&apos;active&apos;, {}, layout.opacity(1))
+  button1 = Surface.with();
 
-  
-  
-  
-  
-
-  
-
-  <div data-ice="properties">
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>A chainable function</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  <div data-ice="example">
-    <h4>Example:</h4>
-    
-  <div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">@layout.dock.top(30, 0, 10)
-   .size(15, undefined)
-   .origin(0.5, 0)
-   .align(0.5, 0)
-dockedRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});</code></pre>
-    </div>
-</div>
-
-  
-
-  
-  
-</div>
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="static-typedef-fill">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    
-    <span data-ice="name">fill</span><span data-ice="signature">: <span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span>: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function">Function</a></span></span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/layout/Decorators.js.html#lineNumber422">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  
-
-  
-
-  <div data-ice="properties">
-</div>
-
-  <div class="return-params" data-ice="returnParams">
-    <h4>Return:</h4>
-    <table>
-      <tbody>
-        <tr>
-          <td class="return-type" data-ice="returnType"><span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></td>
-          <td class="return-desc" data-ice="returnDescription"><p>A chainable function</p>
-</td>
-        </tr>
-      </tbody>
-    </table>
-    <div data-ice="returnProperties">
-</div>
-  </div>
-
-  
-
-  
-
-  
-
-  
-
-  <div data-ice="example">
-    <h4>Example:</h4>
-    
-  <div class="example-doc" data-ice="exampleDoc">
-      
-      <pre class="prettyprint source-code"><code data-ice="exampleCode">@layout.dock.fill()
-filledRenderable = Surface.with({properties: {backgroundColor: &apos;red&apos;}});</code></pre>
+  @flow.defaultState(&apos;inactive&apos;, {}, layout.opacity(0), layout.size(100, 100), layout.stick.bottom())
+  @flow.stateStep(&apos;active&apos;, {}, layout.opacity(1))
+  button1 = Surface.with();
+}</code></pre>
     </div>
 </div>
 
