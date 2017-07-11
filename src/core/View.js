@@ -212,7 +212,7 @@ export class View extends FamousView {
    * @param option
    * @returns {Promise}
    */
-  toggleRenderable (renderable, show, option = {}) {
+  toggleRenderable (renderable, show, options = {}) {
     if (!renderable) {
       Utils.warn(`Trying to show renderable which does not exist! (${this._name()})`)
       return
@@ -761,14 +761,14 @@ export class View extends FamousView {
     if (!Utils.isPlainObject(options)) {
       Utils.warn(`View ${this._name()} initialized with invalid non-object arguments`)
     }
-    let {defaultOptions = {}} = this.decorations
+    let {defaultOptions = {}, preprocessBindings} = this.decorations
 
     /**
      * A copy of the options that were passed in the constructor
      *
      * @type {Object}
      */
-    this._optionObserver = new OptionObserver(defaultOptions, options, this._name())
+    this._optionObserver = new OptionObserver(defaultOptions, options, preprocessBindings, this._name())
     this._optionObserver.on('needUpdate', (renderableName) =>
       this._setupRenderable(this._renderableConstructors[renderableName], renderableName))
     this.options = this._optionObserver.getOptions()
@@ -857,20 +857,24 @@ export class View extends FamousView {
 
     let localRenderableName = renderableInitializer.localName
     let currentRenderable = this[localRenderableName]
-    this._optionObserver.recordForRenderable(localRenderableName)
-    /* Make sure we have proper this scoping inside the initializer */
-    let renderable = renderableInitializer.call(this, this.options)
+    let renderable;
+    let dynamicDecorations;
+    this._optionObserver.recordForRenderable(localRenderableName, () => {
+      /* Make sure we have proper this scoping inside the initializer */
+      renderable = renderableInitializer.call(this, this.options)
 
-    /* Call the dynamic decorations, while we're recording */
-    let dynamicDecorations = decoratorFunctions.map((dynamicDecorator) => dynamicDecorator(this.options))
+      /* Call the dynamic decorations, while we're recording */
+      dynamicDecorations = decoratorFunctions.map((dynamicDecorator) => dynamicDecorator(this.options))
 
-    /* Allow class property to be a function that returns a renderable */
-    if (typeof renderable === 'function') {
-      let factoryFunction = renderable
-      renderable = factoryFunction(this.options)
-    }
+      /* Allow class property to be a function that returns a renderable */
+      if (typeof renderable === 'function') {
+        let factoryFunction = renderable
+        renderable = factoryFunction(this.options)
+      }
+    })
 
-    this._optionObserver.stopRecordingForRenderable(localRenderableName)
+
+    this._optionObserver._stopRecordingForEntry(localRenderableName)
 
     if (!renderable) {
       if (currentRenderable) {

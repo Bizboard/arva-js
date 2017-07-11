@@ -102,7 +102,7 @@ export const bindings = {
    * @example
    * @options.setup({color: 'blue'})
    * class MyView extends View{
-     *
+   *
    * @returns {Function} A decorator function
    */
   setup: (defaultOptions) => {
@@ -118,7 +118,27 @@ export const bindings = {
       }
       optionChangeListeners[optionNameToBind] = transformFunction
     }
+  },
+  /**
+   * Defines a preprocess function to use before the options are assigned. This can be used to simplify the
+   * flow of your app. The preprocess function should modify the contents of the options passed.
+   * Return value is ignored. It is important that the function doesn't modify defaultOptions
+   *
+   * @example
+   * @bindings.preprocess((options, defaultOptions) => {
+   *  // Shortcut way of specifying the sideMenu.menuItem.backgroundColor
+   *  options.sideMenu = combineOptions(defaultOptions.sideMenu, {menuItem: {backgroundColor: options.backgroundColor}})
+   * })
+   *
+   * @param preprocessFunction
+   * @returns {function(*)}
+   */
+  preprocess: (preprocessFunction) => {
+    return (target) => {
+      prepPrototypeDecorations(target.prototype).preprocessBindings = preprocessFunction
+    }
   }
+
 }
 
 let decoratorTypes = {childDecorator: 1, viewDecorator: 2, viewOrChild: 3}
@@ -902,7 +922,7 @@ class Layout {
    * @param {Number} [options.transfer.zIndex] Z-index the tranferables are moved on top while animating (default: 10).
    * @param {Bool} [options.transfer.fastResize] When enabled, scales the renderable i.s.o. resizing when doing the transfer animation (default: true).
    * @param {Array} [options.transfer.items] Ids (key/value) pairs (source-id/target-id) of the renderables that should be transferred.
-   * @returns {Layout}
+   * @returns {Function}
    */
   animate (options = {}) {
     return this.createChainableDecorator((decorations) => {

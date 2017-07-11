@@ -13,15 +13,15 @@ import { combineOptions }         from '../CombineOptions'
 import { PrioritisedObject }      from '../../data/PrioritisedObject'
 import { Model }                  from '../../core/Model'
 
-let listeners = Symbol(),
-  notFound = Symbol(),
-  newChanges = Symbol(),
-  originalValue = Symbol(),
-  optionMetaData = Symbol(),
-  oldValue = Symbol(),
-  instanceIdentifier = Symbol()
+let listeners = Symbol('listeners'),
+  notFound = Symbol('notFound'),
+  newChanges = Symbol('newChanges'),
+  originalValue = Symbol('originalValue'),
+  optionMetaData = Symbol('optionMetaData'),
+  oldValue = Symbol('oldValue'),
+  instanceIdentifier = Symbol('instanceIdentifier')
 
-export let onOptionChange = Symbol()
+export let onOptionChange = Symbol('onOptionChange')
 
 //TODO Fix some support for arrays (keep it simple, not oftenly used!)
 
@@ -35,76 +35,183 @@ export class OptionObserver extends EventEmitter {
   _activeRecordings = {}
   /* This contains the option difference to indicate a value change */
   _newOptionUpdates = {}
-  _renderableUpdatesForNextTick = {}
+  _updatesForNextTick = {}
+  _forbiddenUpdatesForNextTick = {}
+  _listeningToSetters = true
 
   /* The max supported depth in deep-checking iterations */
   static maxSupportedDepth = 10
+  /* Used for preprocessing of options, which is a special type of update */
+  static preprocess = Symbol('preprocess')
 
   /**
    *
    * @param defaultOptions
    * @param options
+   * @param preprocessBindings
    * @param debugName Used for displaying error messages and being able to trace them back more easily
    */
-  constructor (defaultOptions, options, debugName) {
+  constructor (defaultOptions, options, preprocessBindings, debugName) {
     super()
     this._errorName = debugName
     ObjectHelper.bindAllMethods(this, this)
-
-    this.options = options
-    this.defaultOptions = defaultOptions
+    this._preprocessBindings = preprocessBindings
     OptionObserver._registerNewInstance(this)
+    this.defaultOptions = defaultOptions
+    this.options = options
     this._setupOptions(options, defaultOptions)
+    if (!window.optionObservers) {
+      window.optionObservers = []
+    }
+    window.optionObservers.push(this)
+
   }
 
   /**
    * Records the updates that happen in options and models (intended to be called before the construction of that renderable)
    * @param renderableName
    */
-  recordForRenderable (renderableName) {
-    this._beginListenerTreeUpdates(renderableName)
+  recordForRenderable (renderableName, callback) {
+    this._recordForEntry(renderableName, false)
+    callback()
+    this._stopRecordingForEntry(renderableName)
+  }
+
+  _recordForPreprocessing (callback) {
+    this._recordForEntry(OptionObserver.preprocess, true)
+    callback()
+    this._stopRecordingForEntry(OptionObserver.preprocess)
+  }
+
+  /**
+   * Records for a specific entry
+   * @param {String} entryName
+   * @param {Boolean} allowSetters
+   * @private
+   */
+  _recordForEntry (entryName, allowSetters) {
+    this._beginListenerTreeUpdates(entryName)
     PrioritisedObject.setPropertyGetterSpy((model, propertyName) => {
       /* TODO handle the case where this can be undefined */
       let modelListener = this._modelListeners[model.constructor.name][model.id]
       /* Add the renderable as listening to the tree */
-      this._addToListenerTree(renderableName, this._accommodateObjectPath(modelListener.localListenerTree, [propertyName, listeners]))
+      let localListenerTree = this._accommodateObjectPath(modelListener.localListenerTree,
+        [propertyName])
+      localListenerTree[listeners] = {}
+      this._addToListenerTree(entryName, localListenerTree)
       modelListener.startListening()
     })
-    let optionRecorder = this._activeRecordings[renderableName] = ({type, propertyName, nestedPropertyPath}) => {
+    let optionRecorder = this._activeRecordings[entryName] = ({type, propertyName, nestedPropertyPath}) => {
       if (type === 'setter') {
-        this._throwError('Setting an option during instanciation of renderable')
+        if (allowSetters) {
+          /* Be sure to avoid infinite loops if there are setters that trigger getters that are matched to this
+           *  recording */
+          this._preventEntryFromBeingUpdated(entryName)
+        } else {
+          this._throwError('Setting an option during instanciation of renderable')
+        }
       } else {
-        let localListenerTree = this._accessObjectPath(this._listenerTree, nestedPropertyPath.concat([propertyName, listeners]))
-        this._addToListenerTree(renderableName, localListenerTree)
+        let localListenerTree = this._accessObjectPath(this._listenerTree, nestedPropertyPath.concat(propertyName))
+        this._addToListenerTree(entryName, localListenerTree)
       }
     }
-    this._activeRecordings[renderableName] = optionRecorder
+    this._activeRecordings[entryName] = optionRecorder
     this.on('optionTrigger', optionRecorder)
-
   }
 
   _addToListenerTree (renderableName, localListenerTree) {
+
+    for (let nestedProperty in localListenerTree) {
+      this._addToListenerTree(renderableName, localListenerTree[nestedProperty])
+    }
+
+    let listenerStructure = localListenerTree[listeners]
     /* Renderable already added to listener tree, so no need to do that again */
     let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._listenerTreeMetaData[renderableName]
 
-    this._newReverseListenerTree[renderableName].push(localListenerTree)
+    this._newReverseListenerTree[renderableName].push(listenerStructure)
 
     if (listenersCanChange && !listenersChanged) {
       /* We optimize the most common use case, which is that no listeners change.
        *  In that case, the order of listeners will be the same, otherwise we need to accommodate*/
 
-      if (this._reverseListenerTree[renderableName][matchingListenerIndex] !== localListenerTree) {
+      if (this._reverseListenerTree[renderableName][matchingListenerIndex] !== listenerStructure) {
         this._listenerTreeMetaData[renderableName].listenersChanged = true
       }
 
       this._listenerTreeMetaData[renderableName].matchingListenerIndex++
     }
 
-    if (localListenerTree[renderableName]) {
+    if (listenerStructure[renderableName]) {
       return
     }
 
-    localListenerTree[renderableName] = true
+    listenerStructure[renderableName] = true
+
+  }
+
+  /**
+   * Executes the preprocess function. The preprocess function is treated similarly to that of a renderable,
+   * but it's identified with the symbol OptionObserver.preprocess instead of a string
+   *
+   * Different examples of preprocessing situations:
+   * Scenario 1: Construction
+   * A. The preprocessing function is called
+   * B. Getters are detected for the pre-process function
+   * C. this.options isn't set, so nothing more happens
+   *
+   * Scenario 2. Setter trigger of a preprocess function
+   * A. After flushing, it is concluded to belong to the preprocess function (and other renderables)
+   * B. The preprocess function is triggered immediately and firstly when flushing change events
+   * C. The preprocess function re-executes the function and getters are triggered again
+   * D. this.options is defined, and it setters will be notified.
+   * E. An inner flush is forced within the flush, and it there might be new renderables needing update now
+   * F. The flush completes and resets the _updatesForNextTick
+   * G. The outer flush continues, and has nothing more to do
+   * H. Since we made changes within a flush, the static OptionObserver loop _flushAllUpdates, will call the flush function once again, but doing nothing
+   *
+   * Scenario 3. Recombine options
+   * A. After flushing, it is concluded that the option changes belong to the preprocess function (and other renderables)
+   * B. Continues same as scenario 2.
+   *
+   * @private
+   */
+  _doPreprocessing (incomingOptions) {
+    if (!this._preprocessBindings) {
+      return
+    }
+
+    //TODO make this work. 1 add the bindings to the options from defaultOptions by traversing options. 2. record 3. define the setters as the diff between
+
+    this._deepTraverse(this.defaultOptions, (nestedPropertyPath, defaultOptionParent, defaultOption, propertyName, [incomingOptionParent]) => {
+      this._setupOptionLink(incomingOptionParent, propertyName, incomingOptionParent[propertyName], nestedPropertyPath)
+      /* Unspecified option, bailing out */
+      if (!incomingOptions[propertyName]) {
+        return true
+      }
+    }, [incomingOptions])
+    this._recordForPreprocessing(() =>
+      this._preprocessBindings(incomingOptions, this.defaultOptions))
+    /* Prevent the preprocess from being triggered within the next flush. This is important
+     * to do in case the preprocess function sets variables that it also gets, (ie if(!options.color) options.color = 'red')
+     */
+    this._forbiddenUpdatesForNextTick[OptionObserver.preprocess] = true
+    /*if (this.options) {
+     this._deepTraverse(incomingOptions, (nestedPropertyPath, incomingOptionParent, incomingOption, propertyName, [defaultOptionParent, originalOptionParent]) => {
+     /!* Specifying unkown option, bail out *!/
+     if (!defaultOptionParent[propertyName]) {
+     return true
+     }
+     let oldValue = originalOptionParent[propertyName]
+     if (incomingOption !== oldValue) {
+     this._updateOptionsStructure([propertyName], incomingOptionParent, nestedPropertyPath, [oldValue])
+     }
+     }, [this.defaultOptions, this.options || {}])
+     if (Object.keys(this._updatesForNextTick)) {
+     this._flushUpdates()
+     }
+     }*/
+
   }
 
   _endListenerTreeUpdates (renderableName) {
@@ -143,13 +250,13 @@ export class OptionObserver extends EventEmitter {
 
   /**
    * Called when a renderable shouldn't be recorded anymore
-   * @param renderableName
+   * @param entryName
    */
-  stopRecordingForRenderable (renderableName) {
-    this._endListenerTreeUpdates(renderableName)
+  _stopRecordingForEntry (entryName) {
+    this._endListenerTreeUpdates(entryName)
     PrioritisedObject.removePropertyGetterSpy()
-    this.removeListener('optionTrigger', this._activeRecordings[renderableName])
-    delete this._activeRecordings[renderableName]
+    this.removeListener('optionTrigger', this._activeRecordings[entryName])
+    delete this._activeRecordings[entryName]
   }
 
   /**
@@ -174,9 +281,9 @@ export class OptionObserver extends EventEmitter {
    */
   recombineOptions (newOptions) {
     let newOptionsAreAlsoOptions = !!newOptions[optionMetaData]
-
+    /*this._doPreprocessing(newOptions, this.options, true)*/
     this._deepTraverse(this.options, (nestedPropertyPath, optionObject, existingOptionValue, key, [newOptionObject, defaultOption]) => {
-      //todo confirm whether null check is appropriate (I don't think it is)
+      //todo confirm whether this check is appropriate (I don't think it is)
       let newOptionValue = newOptionObject[key]
       if (!newOptionValue && optionObject[key] !== null) {
         let defaultOptionValue = defaultOption[key]
@@ -201,22 +308,31 @@ export class OptionObserver extends EventEmitter {
   _setupOptions (options, defaultOptions) {
     let rootProperties = Object.keys(defaultOptions)
     this._createListenerTree()
+    this._doPreprocessing(options)
     this._updateOptionsStructure(rootProperties, options, [], rootProperties.map((rootProperty) => undefined))
     //TODO block events so that we don't have to do a lot on startup
     this._flushUpdates()
   }
 
-  _setupOptionLink (object, key, value, nestedPropertyPath) {
+  _setupOptionLink (object, key, newValue, nestedPropertyPath) {
+
+    if (this._isPlainObject(newValue) && newValue[optionMetaData] && newValue[optionMetaData].owners.includes(this)) {
+      /* Shallow clone at this level, which will become a deep clone when we're finished traversing */
+      newValue = this._shallowCloneOption(newValue)
+    }
+
     /* Only add the getter/setter hook if there isn't one yet */
-    this._addGetterSetterHook(object, key, value, nestedPropertyPath)
+    this._addGetterSetterHook(object, key, newValue, nestedPropertyPath)
     //TODO there might be more optimal ways of doing this, the option will be marked 4-5 times on setup
     this._markAsOption(object)
-    this._markAsOption(value)
-
+    this._markAsOption(newValue)
+    return newValue
   }
 
-  //TODO call when appropriate
   _shallowCloneOption (optionToShallowClone) {
+    if (!this._isPlainObject(optionToShallowClone)) {
+      return optionToShallowClone
+    }
     let result = {}
     Object.defineProperties(result, Object.getOwnPropertyDescriptors(optionToShallowClone))
     return result
@@ -257,7 +373,7 @@ export class OptionObserver extends EventEmitter {
    */
   _onEventTriggered (info) {
     this.emit('optionTrigger', info)
-    if (info.type === 'setter') {
+    if (info.type === 'setter' && this._listeningToSetters) {
       let {nestedPropertyPath, propertyName, parentObject, oldValue} = info
       /* If reassignment to exactly the same thing, then don't do any update */
       if (oldValue !== parentObject[propertyName]) {
@@ -282,6 +398,9 @@ export class OptionObserver extends EventEmitter {
 
   _flushUpdates () {
     /* Do a traverse only for the leafs of the new updates, to avoid doing extra work */
+    if (this._updatesForNextTick[OptionObserver.preprocess]) {
+      this._doPreprocessing(this.options)
+    }
     this._deepTraverse(this._newOptionUpdates, (nestedPropertyPath, updateObjectParent, updateObject, propertyName, [optionObject, defaultOptionParent, listenerTree]) => {
 
       let newValue = updateObject[newChanges],
@@ -290,9 +409,6 @@ export class OptionObserver extends EventEmitter {
       let innerListenerTree = listenerTree[propertyName]
 
       if (this._isPlainObject(defaultOptionParent)) {
-        if (!newValue) {
-          newValue = optionObject[propertyName] = defaultOption
-        }
         this._processImmediateOptionReassignment({
           newValue, oldValue, defaultOption
         })
@@ -327,8 +443,8 @@ export class OptionObserver extends EventEmitter {
         })
       }, [optionObject[propertyName], innerListenerTree])
     }, [this.options, this.defaultOptions, this._listenerTree], true)
+    this._handleResultingUpdates()
     this._newOptionUpdates = {}
-    this._notifyRenderableUpdates()
 
   }
 
@@ -345,9 +461,24 @@ export class OptionObserver extends EventEmitter {
     let updateObject = this._accommodateObjectPathUnless(this._newOptionUpdates, nestedPropertyPath, (object) =>
       object[newChanges]
     )
+    /* We rest upon the assumption that no function can access a nested path (options.nested.myString)
+     * without also accessing intermediary properties (options.nested getter is triggered). If this isn't
+     * true for some reason, updates will be missed */
     if (updateObject !== notFound) {
+      let localListenerTree = this._accessObjectPath(this._listenerTree, nestedPropertyPath.concat([propertyName, listeners]))
+      for (let entryName of this._getUpdatesEntriesForLocalListenerTree(localListenerTree)) {
+        this._updatesForNextTick[entryName] = true
+      }
       updateObject[propertyName] = {[newChanges]: value, [originalValue]: oldValue}
     }
+  }
+
+  _getUpdatesEntriesForLocalListenerTree (localListenerTree) {
+
+    return Object.keys(localListenerTree)
+      .concat(localListenerTree[OptionObserver.preprocess] ? OptionObserver.preprocess : []).filter((entryName) =>
+        !this._forbiddenUpdatesForNextTick[entryName]
+      )
   }
 
   /**
@@ -414,7 +545,7 @@ export class OptionObserver extends EventEmitter {
   /**
    * Deep traverses an object
    * @param object
-   * @param callback
+   * @param callback with arguments (nestedPropertyPath, object, value, key, {Array} extraObjectsToTraverse)
    * @param {Array} extraObjectsToTraverse A couple of extra objects that are assumed to have the same structure
    * @param onlyForLeaves
    * @param nestedPropertyPath
@@ -533,10 +664,22 @@ export class OptionObserver extends EventEmitter {
    */
   _accessObjectPath (object, path) {
     for (let pathString of path) {
-      object = object[pathString]
-      if (!object) {
+      if (!object || !object.hasOwnProperty(pathString)) {
         return notFound
       }
+      object = object[pathString]
+    }
+    return object
+  }
+
+  _iterateInObjectPath (object, path, callback) {
+    for (let pathString of path) {
+      let objectToPassToCallback = notFound
+      if (object.hasOwnProperty(pathString)) {
+        object = object[pathString]
+        objectToPassToCallback = object
+      }
+      callback(objectToPassToCallback)
     }
     return object
   }
@@ -551,11 +694,17 @@ export class OptionObserver extends EventEmitter {
     return this._deepTraverse(this.options, callback)
   }
 
-  _notifyRenderableUpdates () {
-    for (let renderableName in this._renderableUpdatesForNextTick) {
+  _handleResultingUpdates () {
+    if (this._updatesForNextTick[OptionObserver.preprocess]) {
+      delete this._updatesForNextTick[OptionObserver.preprocess]
+      /* TODO extract the incomingOption by checking this._newOptionUpdates */
+      /*this._doPreprocessing()*/
+    }
+    for (let renderableName in this._updatesForNextTick) {
       this.emit('needUpdate', renderableName)
     }
-    this._renderableUpdatesForNextTick = {}
+    this._updatesForNextTick = {}
+    this._forbiddenUpdatesForNextTick = {}
   }
 
   /**
@@ -604,12 +753,13 @@ export class OptionObserver extends EventEmitter {
       onChangeFunction(newValue)
     }
 
-    for (let renderableName in listenerTree[listeners]) {
-      this._renderableUpdatesForNextTick[renderableName] = true
+    if (valueIsModelProperty) {
+      return
     }
+
     let valueToLinkTo
 
-    if (!newValue) {
+    if (newValue === undefined) {
       newValue = defaultOption
       if (this._isPlainObject(newValue)) {
         valueToLinkTo = {}
@@ -620,25 +770,18 @@ export class OptionObserver extends EventEmitter {
       valueToLinkTo = newValue
     }
 
-    if (valueIsModelProperty) {
-      return
-    } else if (valueToLinkTo !== undefined) {
+    if (valueToLinkTo !== undefined) {
       this._setupOptionLink(newValueParent, propertyName, valueToLinkTo, nestedPropertyPath)
     }
 
-    if (this._isPlainObject(newValue) && newValue[optionMetaData] && newValue[optionMetaData].owners.includes(this)) {
-      /* Shallow clone at this level, which will become a deep clone when we're finished traversing */
-      newValue = this._shallowCloneOption(newValue)
-    }
+    //TODO clean up code if needed (why is it even needed?)
+    for (let property of Object.keys(defaultOptionParent)
+      .filter((property) => this._isPlainObject(defaultOptionParent[property]) && newValueParent[property] === undefined)
+      ) { newValueParent[property] = {} }
 
     if (newValue instanceof Model) {
       this._handleNewModelUpdate(nestedPropertyPath, newValue, listenerTree, propertyName)
     }
-
-    //TODO clean up code
-    for (let property of Object.keys(defaultOptionParent)
-      .filter((property) => this._isPlainObject(defaultOptionParent[property]) && !newValueParent[property])
-      ) { newValueParent[property] = {} }
 
     return newValue
   }
@@ -676,6 +819,7 @@ export class OptionObserver extends EventEmitter {
       return value
     }
     let isPlainObject = this._isPlainObject(value)
+    /* If the object already has the listeners set*/
     if (typeof value === 'object' && value[listeners] && !Object.keys(value).length) {
       return value
     }
@@ -728,6 +872,9 @@ export class OptionObserver extends EventEmitter {
     OptionObserver._dirtyInstances[dirtyInstance[instanceIdentifier]] = dirtyInstance
   }
 
+  _preventEntryFromBeingUpdated (entryName) {
+    this._forbiddenUpdatesForNextTick[entryName] = true
+  }
 }
 
 Timer.every(OptionObserver._flushAllUpdates)
