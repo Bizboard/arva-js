@@ -23,8 +23,11 @@ import {ObjectHelper}               from '../utils/ObjectHelper.js';
 export class PrioritisedArray {
 
     _children = [];
-    _referenceLength = 0; /* The amount of numerical properties on this PrioArray that refer to this._children */
-    get length() { return this._children.length; }
+    _referenceLength = 0;
+    /* The amount of numerical properties on this PrioArray that refer to this._children */
+    get length() {
+        return this._children.length;
+    }
 
     /**
      *
@@ -91,6 +94,9 @@ export class PrioritisedArray {
             this._buildFromDataSource(dataSource);
         }
     }
+
+
+
 
     /**
      * Subscribes to events emitted by this PrioritisedArray.
@@ -320,6 +326,27 @@ export class PrioritisedArray {
     find() {
         return this._children.find.apply(this._children, arguments);
     }
+    /**
+     * Proxies PrioArray.findIndex() to its underlying Array cache.
+     * @returns {*}
+     */
+    findIndex() {
+        return this._children.findIndex.apply(this._children, arguments);
+    }
+    /**
+     * Proxies PrioArray.keys() to its underlying Array cache.
+     * @returns {*}
+     */
+    keys() {
+        return this._children.keys.apply(this._children, arguments);
+    }
+    /**
+     * Proxies PrioArray.keys() to its underlying Array cache.
+     * @returns {*}
+     */
+    includes() {
+        return this._children.includes.apply(this._children, arguments);
+    }
 
     /**
      * Proxies PrioArray.entries() to its underlying Array cache.
@@ -346,6 +373,7 @@ export class PrioritisedArray {
     }
 
     /**
+     * //TODO Why is this necessary? Would be better never to access this method
      * Proxies PrioArray.splice() to its underlying Array cache.
      * @returns {*}
      */
@@ -364,10 +392,63 @@ export class PrioritisedArray {
     }
 
     /**
+     * Proxies PrioArray.concat() to its underlying Array cache.
+     * @returns {*}
+     */
+    concat() {
+        return this._children.filter.apply(this._children, arguments);
+    }
+
+
+    /**
+     * Proxies PrioArray.every() to its underlying Array cache.
+     * @returns {*}
+     */
+    every() {
+        return this._children.every.apply(this._children, arguments);
+    }
+    /**
+     * Proxies PrioArray.filter() to its underlying Array cache.
+     * @returns {*}
+     */
+    includes() {
+        return this._children.includes.apply(this._children, arguments);
+    }
+    /**
+     * Proxies PrioArray.join() to its underlying Array cache.
+     * @returns {*}
+     */
+    join() {
+        return this._children.join.apply(this._children, arguments);
+    }
+    /**
+     * Proxies PrioArray.lastIndexOf() to its underlying Array cache.
+     * @returns {*}
+     */
+    lastIndexOf() {
+        return this._children.lastIndexOf.apply(this._children, arguments);
+    }
+    /**
+     * Proxies PrioArray.reduceRight() to its underlying Array cache.
+     * @returns {*}
+     */
+    reduceRight() {
+        return this._children.reduceRight.apply(this._children, arguments);
+    }
+    /**
+     * Proxies PrioArray.some() to its underlying Array cache.
+     * @returns {*}
+     */
+    some() {
+        return this._children.some.apply(this._children, arguments);
+    }
+
+
+    /**
      * Allows 'for of' loops on the PrioArray.
      */
-    *[Symbol.iterator] () {
-        for(let child of this._children) {
+    *[Symbol.iterator]() {
+        for (let child of this._children) {
             yield child;
         }
     }
@@ -377,7 +458,7 @@ export class PrioritisedArray {
      * @param hint
      * @returns {Array}
      */
-    [Symbol.toPrimitive] (hint) {
+    [Symbol.toPrimitive](hint) {
         return this._children;
     }
 
@@ -612,12 +693,15 @@ export class PrioritisedArray {
         let currentLength = this._referenceLength;
         let difference = wantedLength - currentLength;
 
-        if(difference > 0) {
-            for(let i = 0; i < difference; i++) {
-                Object.defineProperty(this, `${currentLength + i}`, {get: () => this._children[currentLength + i], configurable: true});
+        if (difference > 0) {
+            for (let i = 0; i < difference; i++) {
+                Object.defineProperty(this, `${currentLength + i}`, {
+                    get: () => this._children[currentLength + i],
+                    configurable: true
+                });
             }
         } else if (difference < 0) {
-            for(let i = 0; i < (difference * -1); i++) {
+            for (let i = 0; i < (difference * -1); i++) {
                 delete this[currentLength - 1 - i];
             }
         }
