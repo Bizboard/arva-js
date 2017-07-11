@@ -28,6 +28,7 @@ export class SizeResolver extends EventEmitter {
         super();
         this._resolvedSizesCache = new Map();
         this._sizeIsFinalFor = new Map();
+        this._sizeIsResolvedFor = new Map();
         this._trueSizedSurfaceInfo = new Map();
     }
 
@@ -269,11 +270,15 @@ export class SizeResolver extends EventEmitter {
      * @returns {Boolean} sizeIsFinal
      */
     isSizeFinal(renderable) {
-        let consideredFinal = this._sizeIsFinalFor.get(renderable);
+        let consideredFinal = this._sizeIsFinalFor.get(renderable) || this._sizeIsResolvedFor.get(renderable);
 
         /* Return true if nothing is known, to be sure not to make false negatives */
         if (consideredFinal === undefined) {
-            return true;
+            consideredFinal = true;
+        }
+        /* If the size has been considered final once, we should mark the renderable as being final forever */
+        if(consideredFinal === true){
+            this._sizeIsResolvedFor.set(renderable, true);
         }
         return consideredFinal;
     }
