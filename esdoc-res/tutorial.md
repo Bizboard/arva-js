@@ -59,7 +59,7 @@ Is the same as
 
 ## Two-way data binding
 
-Data can go two way. An example of data that becomes modified is the value of the [InputSurface](http://localhost:63342/arva-js/docs/class/src/surfaces/InputSurface.js~InputSurface.html).
+Data can go two ways. An example of data that becomes modified is the value of the [InputSurface](http://localhost:63342/arva-js/docs/class/src/surfaces/InputSurface.js~InputSurface.html).
 ```
     @layout.dock.top()
         .size(undefined, true)
