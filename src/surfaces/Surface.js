@@ -3,5 +3,4 @@
  */
 import FamousSurface from 'famous/core/Surface.js';
 
-
 export const Surface = FamousSurface;
