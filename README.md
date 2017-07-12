@@ -8,9 +8,7 @@ and aiming for compatability with the W3C Components specification.
 
 ## Why Arva?
 
-* **Ease of development** *Uses novel ES6/7 features to make code concise
-and maintainable.*
-* ***Visual transitions are important today***. No easy way existed to develop them without being a rockstar developer.
+* ***Visual magic***. No easy way existed to develop transitions without being a rockstar developer.
 * ***Animation performance in the browser is bad***. We handle it with a 60fps baseline.
 * ***Open source*** As part of the Arva User Experience Platform (no vendor lock-in).
 * **Data integration** *Realtime data synchronisation without headaches, seamlessly integrating with Firebase, SharePoint, and (coming soon) graphQL.*

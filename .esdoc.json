@@ -5,6 +5,11 @@
   "plugins": [
     {"name": "./esdoc-res/arvalizer.js"}
   ],
+  "manual": {
+    "globalIndex": false,
+    "overview": ["./esdoc-res/overview.md"]
+  },
+  "lint": false,
   "experimentalProposal": {
     "classProperties": true,
     "objectRestSpread": true,

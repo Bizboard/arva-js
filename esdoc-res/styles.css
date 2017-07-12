@@ -270,3 +270,18 @@ table.params tbody td:nth-child(2) {
 }
 
 
+.manual-color-reference,
+.manual-color-overview,
+.manual-color-design {
+    color: rgb(241, 241, 241) !important;
+    background-color: transparent !important;
+}
+
+
+.manual-color-reference {
+    font-size:18px;
+}
+
+.manual-color:after{
+    content: " "
+}
