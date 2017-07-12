@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">Overview</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+<link data-ice="userStyle" rel="stylesheet" href="user/css/0-styles.css">
+</head>
+<body class="layout-container manual-root" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  <a href="./manual/overview/tutorial.html" data-ice="manualHeaderLink">Manual</a>
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div class="manual-toc-root">
+  
+<div data-ice="manual" data-toc-name="overview">
+    <ul class="manual-toc">
+      
+    <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html" data-ice="link">Data binding and Views</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#chained-decorators" data-ice="link">Chained decorators</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#two-way-data-binding" data-ice="link">Two-way data binding</a></li>
+</ul>
+  </div>
+<div data-ice="manual" data-toc-name="reference">
+    <ul class="manual-toc">
+      
+    <li data-ice="manualNav" class="indent-h1 manual-color manual-color-reference" data-section-count="&#x25A0;&#x25A0;&#x25A0;&#x25A0;&#x25A0;" data-link="identifiers.html"><a href="identifiers.html" data-ice="link">Reference</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="identifiers.html"><a href="identifiers.html#class" data-ice="link">Class</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="identifiers.html"><a href="identifiers.html#function" data-ice="link">Function</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="identifiers.html"><a href="identifiers.html#variable" data-ice="link">Variable</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="identifiers.html"><a href="identifiers.html#typedef" data-ice="link">Typedef</a></li>
+</ul>
+  </div>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><div class="github-markdown">
+  <div class="manual-breadcrumb-list">
+    <a href="./manual/./index.html">Manual</a>
+    <span>&#xBB;</span>
+    <span data-ice="title">Overview</span>
+  </div>
+  <div data-ice="content"><h1 id="data-binding-and-views">Data binding and Views</h1>
+<p>Every view is passed options by using the static method <code>with</code>:</p>
+<pre><code><code class="source-code prettyprint">class HomeView extends View {
+    @layout.fullSize()
+    background = Surface.with({properties: {backgroundColor: &apos;red&apos;}})
+}</code>
+</code></pre><p>(See the full source code of the view <a href="https://pastebin.com/WzUJW3Vc">here</a>)</p>
+<p>In order to change the background color dynamically, the background color is defined as an option:</p>
+<pre><code><code class="source-code prettyprint">@bindings.setup({
+    backgroundColor: &apos;red&apos;
+})
+class HomeView extends View {
+....</code>
+</code></pre><p>The <code>backgroundColor</code> can then be referenced inside the view:</p>
+<pre><code><code class="source-code prettyprint">    background = Surface.with({properties: {backgroundColor: this.options.backgroundColor}})</code>
+</code></pre><p>It can be changed in different ways, one being <a href="http://localhost:63342/arva-js/docs/variable/index.html#static-variable-event">events</a>.</p>
+<pre><code><code class="source-code prettyprint">    @event.on(&apos;click&apos;, function() {
+        this.options.backgroundColor = &apos;green&apos;;
+    })
+    background = Surface.with({properties: {backgroundColor: this.options.backgroundColor}})</code>
+</code></pre><h2 id="chained-decorators">Chained decorators</h2>
+<p>All decorators of the same type (<a href="http://localhost:63342/arva-js/docs/variable/index.html#static-variable-layout">layout</a>, <a href="http://localhost:63342/arva-js/docs/variable/index.html#static-variable-event">event</a>, and <a href="http://localhost:63342/arva-js/docs/variable/index.html#static-variable-flow">flow</a>) can be chained when used.</p>
+<pre><code><code class="source-code prettyprint">    @layout.dock.top()
+        .size(undefined, true)
+    centeredText = Surface.with({content: &apos;This is centered!&apos;})</code>
+</code></pre><p>Is the same as</p>
+<pre><code><code class="source-code prettyprint">    @layout.dock.top()
+    @layout.size(undefined, true)
+    centeredText = Surface.with({content: &apos;This is centered!&apos;})</code>
+</code></pre><h2 id="two-way-data-binding">Two-way data binding</h2>
+<p>Data can go two way. An example of data that becomes modified is the value of the <a href="http://localhost:63342/arva-js/docs/class/src/surfaces/InputSurface.js~InputSurface.html">InputSurface</a>.</p>
+<pre><code><code class="source-code prettyprint">    @layout.dock.top()
+        .size(undefined, true)
+    question = InputSurface.with({
+        placeholder: &apos;What is your name?&apos;,
+        @bindings.onChange((value) =&gt; {
+            this.options.myName = value;
+        })
+        value: this.options.myName
+    })
+
+    @layout.dock.top()
+        .size(undefined, true)
+    answer = Surface.with({
+        content: this.options.myName ? `Your name is ${this.options.myName}` : `You have no name`
+    })</code>
+</code></pre></div>
+</div>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

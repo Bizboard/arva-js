@@ -90,6 +90,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "arva-js/src/surfaces/dropdown.js~dropdown",
+    "class/src/surfaces/Dropdown.js~Dropdown.html",
+    "<span>Dropdown</span> <span class=\"search-result-import-path\">arva-js/src/surfaces/Dropdown.js</span>",
+    "class"
+  ],
+  [
     "arva-js/src/layout/decorators.js~event",
     "class/src/layout/Decorators.js~Event.html",
     "<span>Event</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
@@ -159,6 +165,12 @@ window.esdocSearchIndex = [
     "arva-js/src/utils/di/injector.js~injector",
     "class/src/utils/di/Injector.js~Injector.html",
     "<span>Injector</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/Injector.js</span>",
+    "class"
+  ],
+  [
+    "arva-js/src/surfaces/inputsurface.js~inputsurface",
+    "class/src/surfaces/InputSurface.js~InputSurface.html",
+    "<span>InputSurface</span> <span class=\"search-result-import-path\">arva-js/src/surfaces/InputSurface.js</span>",
     "class"
   ],
   [
@@ -304,6 +316,12 @@ window.esdocSearchIndex = [
     "class/src/utils/di/Decorators.js~SuperConstructor.html",
     "<span>SuperConstructor</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/Decorators.js</span>",
     "class"
+  ],
+  [
+    "arva-js/src/surfaces/surface.js~surface",
+    "variable/index.html#static-variable-Surface",
+    "<span>Surface</span> <span class=\"search-result-import-path\">arva-js/src/surfaces/Surface.js</span>",
+    "variable"
   ],
   [
     "arva-js/src/utils/throttler.js~throttler",
@@ -955,13 +973,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
@@ -1783,13 +1801,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/prioritisedarray.js~prioritisedarray#length",
-    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-get-length",
+    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-set-length",
     "src/data/PrioritisedArray.js~PrioritisedArray#length",
     "member"
   ],
   [
     "src/data/prioritisedarray.js~prioritisedarray#length",
-    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-set-length",
+    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-get-length",
     "src/data/PrioritisedArray.js~PrioritisedArray#length",
     "member"
   ],
@@ -1909,13 +1927,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#priority",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-priority",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-priority",
     "src/data/PrioritisedObject.js~PrioritisedObject#priority",
     "member"
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#priority",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-priority",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-priority",
     "src/data/PrioritisedObject.js~PrioritisedObject#priority",
     "member"
   ],
@@ -2491,13 +2509,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/datasources/sharepoint/spsoapadapter/worker/sharepointclient.js~sharepointclient#refreshtimer",
-    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-get-refreshTimer",
+    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-set-refreshTimer",
     "src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient#refreshTimer",
     "member"
   ],
   [
     "src/data/datasources/sharepoint/spsoapadapter/worker/sharepointclient.js~sharepointclient#refreshtimer",
-    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-set-refreshTimer",
+    "class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html#instance-get-refreshTimer",
     "src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient#refreshTimer",
     "member"
   ],
@@ -2869,13 +2887,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource.currentuser",
-    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-get-currentUser",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-set-currentUser",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource.currentUser",
     "member"
   ],
   [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource.currentuser",
-    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-set-currentUser",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-get-currentUser",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource.currentUser",
     "member"
   ],
@@ -3442,6 +3460,90 @@ window.esdocSearchIndex = [
     "class/src/routers/ArvaRouter.js~ArvaRouter.html#instance-member-specs",
     "src/routers/ArvaRouter.js~ArvaRouter#specs",
     "member"
+  ],
+  [
+    "src/surfaces/dropdown.js",
+    "file/src/surfaces/Dropdown.js.html",
+    "src/surfaces/Dropdown.js",
+    "file"
+  ],
+  [
+    "src/surfaces/dropdown.js~dropdown#constructor",
+    "class/src/surfaces/Dropdown.js~Dropdown.html#instance-constructor-constructor",
+    "src/surfaces/Dropdown.js~Dropdown#constructor",
+    "method"
+  ],
+  [
+    "src/surfaces/dropdown.js~dropdown#content",
+    "class/src/surfaces/Dropdown.js~Dropdown.html#instance-member-content",
+    "src/surfaces/Dropdown.js~Dropdown#content",
+    "member"
+  ],
+  [
+    "src/surfaces/dropdown.js~dropdown#deploy",
+    "class/src/surfaces/Dropdown.js~Dropdown.html#instance-method-deploy",
+    "src/surfaces/Dropdown.js~Dropdown#deploy",
+    "method"
+  ],
+  [
+    "src/surfaces/dropdown.js~dropdown#elementtype",
+    "class/src/surfaces/Dropdown.js~Dropdown.html#instance-member-elementType",
+    "src/surfaces/Dropdown.js~Dropdown#elementType",
+    "member"
+  ],
+  [
+    "src/surfaces/dropdown.js~dropdown.with",
+    "class/src/surfaces/Dropdown.js~Dropdown.html#static-method-with",
+    "src/surfaces/Dropdown.js~Dropdown.with",
+    "method"
+  ],
+  [
+    "src/surfaces/inputsurface.js",
+    "file/src/surfaces/InputSurface.js.html",
+    "src/surfaces/InputSurface.js",
+    "file"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface#blur",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#instance-method-blur",
+    "src/surfaces/InputSurface.js~InputSurface#blur",
+    "method"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface#constructor",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#instance-constructor-constructor",
+    "src/surfaces/InputSurface.js~InputSurface#constructor",
+    "method"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface#focus",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#instance-method-focus",
+    "src/surfaces/InputSurface.js~InputSurface#focus",
+    "method"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface#setvalue",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#instance-method-setValue",
+    "src/surfaces/InputSurface.js~InputSurface#setValue",
+    "method"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface.tabindex",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#static-member-tabIndex",
+    "src/surfaces/InputSurface.js~InputSurface.tabIndex",
+    "member"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface.with",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#static-method-with",
+    "src/surfaces/InputSurface.js~InputSurface.with",
+    "method"
+  ],
+  [
+    "src/surfaces/surface.js",
+    "file/src/surfaces/Surface.js.html",
+    "src/surfaces/Surface.js",
+    "file"
   ],
   [
     "src/utils/blobhelper.js",

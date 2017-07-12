@@ -16,7 +16,7 @@
 
 <header>
   <a href="./">Home</a>
-  <a href="./manual/overview/overview.html" data-ice="manualHeaderLink">Manual</a>
+  <a href="./manual/overview/tutorial.html" data-ice="manualHeaderLink">Manual</a>
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
   
@@ -35,12 +35,9 @@
 <div data-ice="manual" data-toc-name="overview">
     <ul class="manual-toc">
       
-    <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world" data-ice="link">Hello world</a></li>
-<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world-2" data-ice="link">Hello world 2</a></li>
-<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world-3" data-ice="link">Hello world 3</a></li>
-<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world-3" data-ice="link">Hello world 3</a></li>
-<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world-3" data-ice="link">Hello world 3</a></li>
-<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world-4" data-ice="link">Hello world 4</a></li>
+    <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html" data-ice="link">Data binding and Views</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#chained-decorators" data-ice="link">Chained decorators</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#two-way-data-binding" data-ice="link">Two-way data binding</a></li>
 </ul>
   </div>
 <div data-ice="manual" data-toc-name="reference">
@@ -64,10 +61,45 @@
   <div class="manual-cards">
     
   <div class="manual-card-wrap" data-ice="cards">
-      <h1 data-ice="label" class="manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;"><span data-ice="label-inner">Hello world 4</span></h1>
+      <h1 data-ice="label" class="manual-color manual-color-overview" data-section-count="&#x25A0;"><span data-ice="label-inner">Data binding and Views</span></h1>
       <div class="manual-card">
-        <div data-ice="card"><h1>Hello world 4</h1><p>dsa</p></div>
-        <a data-ice="link" href="manual/overview/overview.html#hello-world-4"></a>
+        <div data-ice="card"><h1>Data binding and Views</h1><p>Every view is passed options by using the static method <code>with</code>:</p><pre><code><code class="source-code prettyprint">class HomeView extends View {
+    @layout.fullSize()
+    background = Surface.with({properties: {backgroundColor: &apos;red&apos;}})
+}</code>
+</code></pre><p>(See the full source code of the view <a href="https://pastebin.com/WzUJW3Vc">here</a>)</p><p>In order to change the background color dynamically, the background color is defined as an option:</p><pre><code><code class="source-code prettyprint">@bindings.setup({
+    backgroundColor: &apos;red&apos;
+})
+class HomeView extends View {
+....</code>
+</code></pre><p>The <code>backgroundColor</code> can then be referenced inside the view:</p><pre><code><code class="source-code prettyprint">    background = Surface.with({properties: {backgroundColor: this.options.backgroundColor}})</code>
+</code></pre><p>It can be changed in different ways, one being <a href="http://localhost:63342/arva-js/docs/variable/index.html#static-variable-event">events</a>.</p><pre><code><code class="source-code prettyprint">    @event.on(&apos;click&apos;, function() {
+        this.options.backgroundColor = &apos;green&apos;;
+    })
+    background = Surface.with({properties: {backgroundColor: this.options.backgroundColor}})</code>
+</code></pre><h2>Chained decorators</h2><p>All decorators of the same type (<a href="http://localhost:63342/arva-js/docs/variable/index.html#static-variable-layout">layout</a>, <a href="http://localhost:63342/arva-js/docs/variable/index.html#static-variable-event">event</a>, and <a href="http://localhost:63342/arva-js/docs/variable/index.html#static-variable-flow">flow</a>) can be chained when used.</p><pre><code><code class="source-code prettyprint">    @layout.dock.top()
+        .size(undefined, true)
+    centeredText = Surface.with({content: &apos;This is centered!&apos;})</code>
+</code></pre><p>Is the same as</p><pre><code><code class="source-code prettyprint">    @layout.dock.top()
+    @layout.size(undefined, true)
+    centeredText = Surface.with({content: &apos;This is centered!&apos;})</code>
+</code></pre><h2>Two-way data binding</h2><p>Data can go two way. An example of data that becomes modified is the value of the <a href="http://localhost:63342/arva-js/docs/class/src/surfaces/InputSurface.js~InputSurface.html">InputSurface</a>.</p><pre><code><code class="source-code prettyprint">    @layout.dock.top()
+        .size(undefined, true)
+    question = InputSurface.with({
+        placeholder: &apos;What is your name?&apos;,
+        @bindings.onChange((value) =&gt; {
+            this.options.myName = value;
+        })
+        value: this.options.myName
+    })
+
+    @layout.dock.top()
+        .size(undefined, true)
+    answer = Surface.with({
+        content: this.options.myName ? `Your name is ${this.options.myName}` : `You have no name`
+    })</code>
+</code></pre></div>
+        <a data-ice="link" href="manual/overview/tutorial.html"></a>
       </div>
     </div>
 <div class="manual-card-wrap" data-ice="cards">
@@ -503,6 +535,33 @@ You can specify which Route should be default by calling <code>router.setDefault
         <p>
           
           
+          <span data-ice="name"><span><a href="class/src/surfaces/Dropdown.js~Dropdown.html">Dropdown</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
           <span data-ice="name"><span><a href="class/src/layout/Decorators.js~Event.html">Event</a></span></span>
         </p>
       </div>
@@ -749,6 +808,33 @@ You can specify which Route should be default by calling <code>router.setDefault
           
           
           <span data-ice="name"><span><a href="class/src/utils/di/Injector.js~Injector.html">Injector</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/surfaces/InputSurface.js~InputSurface.html">InputSurface</a></span></span>
         </p>
       </div>
       <div>
@@ -2143,6 +2229,33 @@ You can specify which Route should be default by calling <code>router.setDefault
   <tbody>
   
   <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="variable/index.html#static-variable-Surface">Surface</a></span></span><span data-ice="signature">: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
     <td>
       <span class="access" data-ice="access">public</span>
       

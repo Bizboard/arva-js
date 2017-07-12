@@ -20,11 +20,20 @@ export class InputSurface extends FamousInputSurface {
 
     /**
      * An InputSurface that will produce a HTML <input> tag, or similar
-     * @param options
+     *   This extends the Surface class.
+     *
+     * @class InputSurface
+     * @extends Surface
+     * @constructor
+     * @param {Object} [options] overrides of default options
+     * @param {string} [options.placeholder] placeholder text hint that describes the expected value of an <input> element
+     * @param {string} [options.type] specifies the type of element to display (e.g. 'datetime', 'text', 'button', etc.)
+     * @param {string} [options.value] value of text
      */
     constructor(options = {}) {
 
-        super({...options,
+        super({
+            ...options,
             attributes: {
                 ...options.attributes,
                 tabIndex: InputSurface.tabIndex++
@@ -37,7 +46,7 @@ export class InputSurface extends FamousInputSurface {
     }
 
     static with(options) {
-        return super.with({...options, properties: {...neutralAppearanceProperties, ...options.properties}})
+        return super.with({ ...options, properties: { ...neutralAppearanceProperties, ...options.properties } })
     }
 
     setValue(value, emitEvent = false) {
@@ -45,8 +54,8 @@ export class InputSurface extends FamousInputSurface {
         if (this.options.isFormField) {
             this._setBorderBottomColor(value);
         }
-        let result =  super.setValue(...arguments);
-        if(emitEvent){
+        let result = super.setValue(...arguments);
+        if (emitEvent) {
             this._onNewValue(value);
         }
         return result;
@@ -63,7 +72,7 @@ export class InputSurface extends FamousInputSurface {
     }
 
     _setBorderBottomColor(textInput) {
-        this.setProperties({borderBottom: `1px solid ${!textInput.length ? 'gray' : 'black'}`})
+        this.setProperties({ borderBottom: `1px solid ${!textInput.length ? 'gray' : 'black'}` })
 
     }
 
@@ -76,7 +85,7 @@ export class InputSurface extends FamousInputSurface {
     }
 
     _onNewValue(currentValue) {
-        if(this.options.emojiEnabled) {
+        if (this.options.emojiEnabled) {
             currentValue = replaceEmojiAtEnd(currentValue);
             this.setValue(currentValue);
         }
@@ -89,7 +98,7 @@ export class InputSurface extends FamousInputSurface {
         this.emit('valueChange', currentValue);
 
         let optionChangeListeners = this.options[onOptionChange];
-        if(optionChangeListeners && optionChangeListeners.value){
+        if (optionChangeListeners && optionChangeListeners.value) {
             optionChangeListeners.value(currentValue);
         }
     }

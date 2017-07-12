@@ -7,7 +7,7 @@
   ],
   "manual": {
     "globalIndex": false,
-    "overview": ["./esdoc-res/overview.md"]
+    "overview": ["./esdoc-res/tutorial.md"]
   },
   "lint": false,
   "experimentalProposal": {
