@@ -770,7 +770,7 @@ export class View extends FamousView {
      */
     this._optionObserver = new OptionObserver(defaultOptions, options, preprocessBindings, this._name())
     this._optionObserver.on('needUpdate', (renderableName) =>
-      this._setupRenderable(this._renderableConstructors[renderableName], renderableName))
+      this._setupRenderable(this._renderableConstructors[renderableName], this[renderableName].decorations))
     this.options = this._optionObserver.getOptions()
   }
 
