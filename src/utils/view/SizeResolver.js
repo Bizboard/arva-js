@@ -119,7 +119,7 @@ export class SizeResolver extends EventEmitter {
                     ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView);
                 if (size[dim] === true && twoDimensionalSize[dim] === undefined && sizeConsideredFinal) {
                     Utils.warn(`True sized renderable '${renderable.constructor.name}' is taking up the entire context size.`);
-                    return twoDimensionalSize[dim];
+                    return contextSize[dim];
                 } else {
                     let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
                     let resultingSize = twoDimensionalSize[dim] !== undefined ? twoDimensionalSize[dim] : approximatedSize;
