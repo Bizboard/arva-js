@@ -97,7 +97,7 @@ export class OptionObserver extends EventEmitter {
       /* Add the renderable as listening to the tree */
       let localListenerTree = this._accommodateObjectPath(modelListener.localListenerTree,
         [propertyName])
-      localListenerTree[listeners] = {}
+      localListenerTree[listeners] = localListenerTree[listeners] || {}
       this._addToListenerTree(entryName, localListenerTree)
       modelListener.startListening()
     })
