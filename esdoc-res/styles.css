@@ -285,3 +285,11 @@ table.params tbody td:nth-child(2) {
 .manual-color:after{
     content: " "
 }
+
+img[alt=animation]{
+    width: 200px;
+}
+
+img[alt=button]{
+    width: 50px;
+}

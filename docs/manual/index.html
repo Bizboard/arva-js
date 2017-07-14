@@ -16,7 +16,7 @@
 
 <header>
   <a href="./">Home</a>
-  <a href="./manual/overview/overview.html" data-ice="manualHeaderLink">Manual</a>
+  <a href="./manual/overview/tutorial.html" data-ice="manualHeaderLink">Manual</a>
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
   
@@ -35,12 +35,14 @@
 <div data-ice="manual" data-toc-name="overview">
     <ul class="manual-toc">
       
-    <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world" data-ice="link">Hello world</a></li>
-<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world-2" data-ice="link">Hello world 2</a></li>
-<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world-3" data-ice="link">Hello world 3</a></li>
-<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world-3" data-ice="link">Hello world 3</a></li>
-<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world-3" data-ice="link">Hello world 3</a></li>
-<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/overview.html"><a href="manual/overview/overview.html#hello-world-4" data-ice="link">Hello world 4</a></li>
+    <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#what-s-arva-" data-ice="link">What&apos;s Arva?</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#animations-and-states" data-ice="link">Animations and states</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#data-binding-and-views" data-ice="link">Data binding and Views</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#chained-decorators" data-ice="link">Chained decorators</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#two-way-data-binding" data-ice="link">Two-way data binding</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#but-what-about-react-" data-ice="link">But what about React?</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#state-updates" data-ice="link">State updates</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#layout-and-animation" data-ice="link">Layout and Animation</a></li>
 </ul>
   </div>
 <div data-ice="manual" data-toc-name="reference">
@@ -64,10 +66,123 @@
   <div class="manual-cards">
     
   <div class="manual-card-wrap" data-ice="cards">
-      <h1 data-ice="label" class="manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;"><span data-ice="label-inner">Hello world 4</span></h1>
+      <h1 data-ice="label" class="manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;"><span data-ice="label-inner">But what about React?</span></h1>
       <div class="manual-card">
-        <div data-ice="card"><h1>Hello world 4</h1><p>dsa</p></div>
-        <a data-ice="link" href="manual/overview/overview.html#hello-world-4"></a>
+        <div data-ice="card"><h1>But what about React?</h1><p>At first glance, it might not be evident what the benefit of Arva is over other frameworks. In particular, the 
+absence of JSX or templating language seems foreign as almost every other framework is using their own custom language. 
+An app written with Arva is written with plain (draft stage) ECMAScript syntax. The strict adherence to this standard future-proofs Arva to 
+be able to run natively in the browser, and also opens up for more super powers as the ECMAScript standard progresses further.</p><p>Another important difference to recall is that Arva is MVC framework, where heavy data logic is put in the controller, rather
+than being a view-only framework, as is the case with frameworks like React. React and Arva do in this regard have different approaches, 
+since React is a framework intended as a component of a bigger picture, whereas Arva is the stand-alone solution for your entire app.</p><p>Let&apos;s consider a very simple example of an Arva view and its (approximate) counter-part in React, 
+to serve as a basis for further discussion.</p><pre><code class="lang-javascript"><code class="source-code prettyprint">@bindings.setup({
+    titleText: &apos;Welcome&apos;
+})
+class HomeView extends View {
+    @layout.dock.top(44)
+    topBar = TopBar.with({titleText:this.options.titleText})
+
+    @layout.dock.fill()
+    content = Content.with()
+
+    changeTitle(newTitle) {
+        this.options.titleText = newTitle 
+    }
+}</code>
+</code></pre><p>And now in React. Note that this definition won&apos;t include positioning and sizing, which would need custom CSS/HTML configurations.</p><pre><code class="lang-javascript"><code class="source-code prettyprint">class HomeComponent extends Component {
+    constructor(props, context){
+        super(props, context);
+        this.state = {
+            titleText: props.titleText
+        }
+    }
+    changeTitle(newTitle) {
+        this.setState({titleText: newTitle})
+    }
+
+    render() {
+        return (
+            &lt;TopBar titleText=this.state.titleText/&gt;
+            &lt;Content /&gt;
+        )
+    }
+
+}
+HomeComponent.defaultProps = {titleText: &apos;Welcome&apos;};</code>
+</code></pre><h2>State updates</h2><p>React is focused on building sound app logic, on simple views using the pure <code>render</code> function. Arva does not have a 
+render function, which means that when an update is needed (<code>setState</code> in React, or option assignment in Arva), Arva
+can go a different route. When titleText is called, the function assigning <code>HomeView.topBar</code> will be called again
+(<code>TopBar.with({titleText:this.options.titleText})</code>), so that the TopBar updates. </p><p>In the case React, the render() function will be called upon invalidation, causing a re-render of both the TopBar <em>and</em> the content.</p><p>We chose to optimize state updates by taking control over the <code>options</code> object of each view, linking the accesses of each
+option to their relevant child views. When the child views are updated, the new options will be diffed with the old ones
+in order to restrict what children should be updated inside <em>that</em> view. The getters and setters work for an arbitrary
+level of nestedness inside the <code>options</code> object.</p><p>Based on the above description, one might object with the concern that performing deep checks for every update sounds 
+really inefficient. In response to that we&apos;ve learned by experience that the different <code>options</code> objects are generally
+not nested nor overly complicated, but rather the <em>View hierarchy</em> tends to be much more intricate. By avoiding huge
+renders of completely updated view hierarchy we instead focus on limiting this and focusing on detecting a limited
+subset of <code>option</code> updates. For React developers, you might think of the options propagation to children as
+ if every View was a <code>PureComponent</code>.</p><h2>Layout and Animation</h2><p>By not using JSX or other markup, we can use ES2017 decorators to focus on layout. Layout is abstracted away from the user
+in order to provide flexible animations. The actual HTML output of Arva results in absolutely positioned elements in a rather
+ flat structure, in order to be as flexible as possible. When using a normal framework that requires you to define the
+ HTML manually, animations are usually implemented in a bit more awkward fashion.</p><p>All positioning and sizing done through decorators is hardware accelerated, so
+the programmer can comfortably know that the animations defined won&apos;t stress the browser unnecessarily. 
+The decorator structure of Arva provides a natural solution for layout definition. In order to clarify why this is important,
+ consider the example we covered in a previous section</p><p><img src="./manual/asset/button.gif" alt="button"></p><p>The animation declaration is optimized in being as straight forward as possible, so that transition states are defined
+in an additive nature from the previous position, while tasks like centering content in relation to parent and proportional
+ size are still easy to achieve.</p><p>Here&apos;s the code, with plenty of comments, for clarity:</p><pre><code class="lang-javascript"><code class="source-code prettyprint">
+    /* We start with the top part of the hamburger, 
+     * which starts in a horizontal state, which we named &apos;straight&apos;
+     */
+    @flow.defaultState(&apos;straight&apos;, {}, layout
+    /* We center it and translate 8 pixels upwards */
+            .stick.center()
+            .translate(0, -8, 0)
+    /* Size is 60% of parent size and 3 pixels high */ 
+            .size(0.6, 3)
+    /* No rotation */
+            .rotate(0, 0, 0))
+    /* This is the animation for going to the X. 
+     * We call the state of this part &quot;tilted&quot;. */
+    @flow.stateStep(&apos;tilted&apos;, {}, layout
+    /* The first part of tilting the stick involves 
+     * centering all three lines together.
+     * That means that we center the top part, by translating it to the middle */
+        .translate(0, 0, 0))
+    @flow.stateStep(&apos;tilted&apos;, {}, layout
+    /* We then rotate it 45 degrees, which is the same as Math.PI / 4 */
+        .rotate(0, 0, Math.PI / 4)
+    )
+    /* We defined a simple component with a white background 
+     * which is used for every &quot;stick&quot; of the icon 
+     */
+    topStick = WhiteShape.with();
+
+    /* The middle part is easy. We just hide it when the icon turns into 
+     * the X (since that&apos;s just two lines instaed of three) */
+    @flow.defaultState(&apos;shown&apos;, {}, layout
+        .stick.center()
+        .translate(0, 0, 0)
+        .size(0.6, 3)
+        .opacity(1))
+    @flow.stateStep(&apos;hidden&apos;, {}, layout
+        .opacity(0))
+    centerStick = WhiteShape.with();
+
+    /* The bottom part is very similar to the top one, 
+     * but with a rotation going in the opposite direction, 
+     * and a translate 8 pixels down instead of 8 pixels up 
+     */
+    @flow.stateStep(&apos;tilted&apos;, {}, layout
+        .translate(0, 0, 0))
+    @flow.stateStep(&apos;tilted&apos;, {}, layout
+        .rotate(0, 0, -Math.PI / 4)
+    )
+    @flow.defaultState(&apos;straight&apos;, {}, layout
+        .translate(0, 8, 0)
+        .stick.center()
+        .rotate(0, 0, 0)
+        .size(0.6, 3))
+    bottomStick = WhiteShape.with();</code>
+</code></pre></div>
+        <a data-ice="link" href="manual/overview/tutorial.html#but-what-about-react-"></a>
       </div>
     </div>
 <div class="manual-card-wrap" data-ice="cards">
@@ -503,6 +618,33 @@ You can specify which Route should be default by calling <code>router.setDefault
         <p>
           
           
+          <span data-ice="name"><span><a href="class/src/surfaces/Dropdown.js~Dropdown.html">Dropdown</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
           <span data-ice="name"><span><a href="class/src/layout/Decorators.js~Event.html">Event</a></span></span>
         </p>
       </div>
@@ -749,6 +891,33 @@ You can specify which Route should be default by calling <code>router.setDefault
           
           
           <span data-ice="name"><span><a href="class/src/utils/di/Injector.js~Injector.html">Injector</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="class/src/surfaces/InputSurface.js~InputSurface.html">InputSurface</a></span></span>
         </p>
       </div>
       <div>
@@ -2143,6 +2312,33 @@ You can specify which Route should be default by calling <code>router.setDefault
   <tbody>
   
   <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          <span data-ice="name"><span><a href="variable/index.html#static-variable-Surface">Surface</a></span></span><span data-ice="signature">: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
     <td>
       <span class="access" data-ice="access">public</span>
       

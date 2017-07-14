@@ -1,7 +1,7 @@
 {
-  "coverage": "55.99%",
-  "expectCount": 584,
-  "actualCount": 327,
+  "coverage": "54.84%",
+  "expectCount": 598,
+  "actualCount": 328,
   "files": {
     "src/core/App.js": {
       "expectCount": 8,
@@ -38,8 +38,8 @@
         44,
         332,
         359,
-        21,
         389,
+        21,
         13,
         204,
         17,
@@ -57,8 +57,8 @@
       "undocumentLines": [
         15,
         24,
-        20,
-        16
+        16,
+        20
       ]
     },
     "src/components/logic/branding/BrandingEngineSingleton.js": {
@@ -147,6 +147,18 @@
         26
       ]
     },
+    "src/surfaces/Dropdown.js": {
+      "expectCount": 6,
+      "actualCount": 0,
+      "undocumentLines": [
+        17,
+        20,
+        38,
+        37,
+        18,
+        45
+      ]
+    },
     "src/layout/Decorators.js": {
       "expectCount": 41,
       "actualCount": 35,
@@ -177,8 +189,8 @@
       "undocumentLines": [
         17,
         99,
-        23,
         19,
+        23,
         50,
         51
       ]
@@ -208,6 +220,18 @@
         42,
         222,
         158
+      ]
+    },
+    "src/surfaces/InputSurface.js": {
+      "expectCount": 7,
+      "actualCount": 1,
+      "undocumentLines": [
+        18,
+        69,
+        64,
+        52,
+        19,
+        48
       ]
     },
     "src/utils/KeyboardHelper.js": {
@@ -311,8 +335,8 @@
         35,
         94,
         271,
-        26,
         22,
+        26,
         39
       ]
     },
@@ -461,6 +485,13 @@
         19,
         81,
         21
+      ]
+    },
+    "src/surfaces/Surface.js": {
+      "expectCount": 1,
+      "actualCount": 0,
+      "undocumentLines": [
+        6
       ]
     },
     "src/utils/Throttler.js": {
