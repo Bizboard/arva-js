@@ -120,11 +120,7 @@ export class OptionObserver extends EventEmitter {
   }
 
   _addToListenerTree (renderableName, localListenerTree) {
-
-    for (let nestedProperty in localListenerTree) {
-      this._addToListenerTree(renderableName, localListenerTree[nestedProperty])
-    }
-
+      
     let listenerStructure = localListenerTree[listeners]
     /* Renderable already added to listener tree, so no need to do that again */
     let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._listenerTreeMetaData[renderableName]
