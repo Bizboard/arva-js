@@ -6,7 +6,7 @@ which includes CSS deep-dives and directives like `display: inline-block` `margi
  
 Even modern paradigms like flexbox won't be necessary anymore. Let's get started.
 
-## Animations and states
+# Animations and states
 
 Animation states can be defined using the [flow](http://localhost:63342/arva-js/docs/variable/index.html#static-variable-flow) operator.
 

@@ -86,7 +86,7 @@ header li {
 }
 
 a {
-    color: #6266e6;
+    color: #0084FF;
 }
 /*a:hover {
     color: #b7a3f7;
@@ -159,7 +159,7 @@ h1 {
     color: #000;
     margin: 1em 0 .5em;
     border-bottom:none;
-    font-weight: 800;
+    font-weight: normal;
     line-height: 1.5em;
     word-wrap: break-word;
 }
@@ -249,7 +249,7 @@ span.kind-variable {
 }
 
 html {
-    font-family: Lato, sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 h3[data-ice="anchor"]{
@@ -293,3 +293,16 @@ img[alt=animation]{
 img[alt=button]{
     width: 50px;
 }
+
+
+.kind-typedef{
+    border: 1px solid rgba(219, 0, 30, 0.48);
+    color: rgba(219, 0, 30, 0.48);
+    backround:none;
+}
+
+
+.layout-container > header {
+    position: absolute;
+}
+
