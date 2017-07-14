@@ -135,7 +135,7 @@ exports.onHandleHTML = function (ev) {
 
     var headIndex = ev.data.html.indexOf('<head>');
     if(~headIndex){
-        ev.data.html =  ev.data.html.slice(0, headIndex) + `<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>` + ev.data.html.slice(headIndex);
+        ev.data.html =  ev.data.html.slice(0, headIndex) + `<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">` + ev.data.html.slice(headIndex);
     }
     /* Replace the manual overview page (doesn't look so good) by the overview.html  */
     ev.data.html = ev.data.html.replace(/<a href="(.\/manual\/)index.html"/g, `<a href="$1overview/tutorial.html"`);

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'><head>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"><head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../../../">
   <title data-ice="title">src/utils/view/OptionObserver.js | Arva API Document</title>
@@ -230,7 +230,7 @@ export class OptionObserver extends EventEmitter {
       /* Add the renderable as listening to the tree */
       let localListenerTree = this._accommodateObjectPath(modelListener.localListenerTree,
         [propertyName])
-      localListenerTree[listeners] = {}
+      localListenerTree[listeners] = localListenerTree[listeners] || {}
       this._addToListenerTree(entryName, localListenerTree)
       modelListener.startListening()
     })
@@ -253,11 +253,7 @@ export class OptionObserver extends EventEmitter {
   }
 
   _addToListenerTree (renderableName, localListenerTree) {
-
-    for (let nestedProperty in localListenerTree) {
-      this._addToListenerTree(renderableName, localListenerTree[nestedProperty])
-    }
-
+      
     let listenerStructure = localListenerTree[listeners]
     /* Renderable already added to listener tree, so no need to do that again */
     let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._listenerTreeMetaData[renderableName]
@@ -417,10 +413,14 @@ export class OptionObserver extends EventEmitter {
     /*this._doPreprocessing(newOptions, this.options, true)*/
     this._deepTraverse(this.options, (nestedPropertyPath, optionObject, existingOptionValue, key, [newOptionObject, defaultOption]) =&gt; {
       //todo confirm whether this check is appropriate (I don&apos;t think it is)
-      let newOptionValue = newOptionObject[key]
+      let newOptionValue = newOptionObject[key];
       if (!newOptionValue &amp;&amp; optionObject[key] !== null) {
-        let defaultOptionValue = defaultOption[key]
-        if (defaultOptionValue !== newOptionValue &amp;&amp; defaultOptionValue !== existingOptionValue) {
+        let defaultOptionValue = defaultOption[key];
+        if (defaultOptionValue !== newOptionValue &amp;&amp; (defaultOptionValue !== existingOptionValue &amp;&amp;
+          /* If new value is undefined, and the previous one was already the default, then don&apos;t update (will go false)*/
+          !(this._isPlainObject(existingOptionValue) &amp;&amp; existingOptionValue[optionMetaData].isDefault)
+          || newOptionsAreAlsoOptions)
+        ) {
           this._markPropertyAsUpdated(nestedPropertyPath, key, newOptionObject[key], existingOptionValue)
         }
         return true
@@ -895,7 +895,9 @@ export class OptionObserver extends EventEmitter {
     if (newValue === undefined) {
       newValue = defaultOption
       if (this._isPlainObject(newValue)) {
-        valueToLinkTo = {}
+        valueToLinkTo = {};
+        this._markAsOption(valueToLinkTo);
+        valueToLinkTo[optionMetaData].isDefault = true;
       }
     }
 

@@ -4,7 +4,7 @@ Arva solves the problem of **layout** and **animation** without the need to both
 Arva astracts away some of the concerns that many front-end developers face, 
 where even modern paradigms like `flex-box` won't be necessary anymore.
 
-## Animations and states
+# Animations and states
 
 Animation states can be defined using the [flow](http://localhost:63342/arva-js/docs/variable/index.html#static-variable-flow) operator.
 
