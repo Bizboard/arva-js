@@ -283,7 +283,7 @@ Here's the code, with plenty of comments, for clarity:
  
 # The bigger picture 
 
-We will continue to improve arva JS in all aspects, including performance, UX possibilities and code brevity. It's a framework
+We will continue to improve Arva JS in every aspect, including performance, UX possibilities and code brevity. It's a framework
 that is going to be frequently revised and evaluated for its goals.
 
 Arva JS is sometimes referred to as *Arva foundation* or *Arva engine* and is a part of a bigger scheme of making 
