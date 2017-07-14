@@ -284,9 +284,14 @@ export class View extends FamousView {
   /**
    * Sets a view flow state as declared in the @flow.viewState
    * @param {String} stateName. The name of the state as declared in the first argument of the decorator
-   * @returns {*}
+   * @returns {Promise}
    */
   setViewFlowState (stateName = '') {
+    this._eventOutput.emit('viewFlowStateChanged', stateName);
+    if(!this.decorations.viewFlow.viewStates[stateName]){
+      Utils.warn(`Trying to to set flow state ${this._name()}:${stateName}, which doesn't exist!`);
+      return Promise.resolve()
+    }
     return this._renderableHelper.setViewFlowState(stateName, this.decorations.viewFlow)
   }
 
@@ -463,7 +468,12 @@ export class View extends FamousView {
     this._dockedRenderablesHelper = new DockedLayoutHelper(this._sizeResolver)
     this._fullSizeLayoutHelper = new FullSizeLayoutHelper(this._sizeResolver)
     this._traditionalLayoutHelper = new TraditionalLayoutHelper(this._sizeResolver)
-    this._renderableHelper = new RenderableHelper(this._bindToSelf, this._setPipeToSelf, this._realRenderables, this._sizeResolver)
+    this._renderableHelper = new RenderableHelper(
+      this._bindToSelf,
+      this._setPipeToSelf,
+      this._getIDFromLocalName,
+      this._realRenderables,
+      this._sizeResolver)
   }
 
   /** Requests for a parent LayoutController trying to resolve the size of this view
@@ -954,5 +964,9 @@ export class View extends FamousView {
     }
 
     this._assignRenderable(renderable, localRenderableName)
+  }
+
+  _getIDFromLocalName(localName) {
+    return this._getRenderableID(this[localName]);
   }
 }
