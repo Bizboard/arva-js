@@ -2,29 +2,30 @@
  * Created by lundfall on 02/09/16.
  */
 
-import OrderedHashMap               from 'ordered-hashmap'
-import merge                        from 'lodash/merge.js'
-import Modifier                     from 'famous/core/Modifier.js'
-import Transform                    from 'famous/core/Transform.js'
-import RenderNode                   from 'famous/core/RenderNode.js'
-import Timer                        from 'famous/utilities/Timer.js'
-import MouseSync                    from 'famous/inputs/MouseSync.js'
-import TouchSync                    from 'famous/inputs/TouchSync.js'
-import GenericSync                  from 'famous/inputs/GenericSync.js'
-import Easing                       from 'famous/transitions/Easing.js'
-import Draggable                    from 'famous/modifiers/Draggable.js'
-import AnimationController          from 'famous-flex/AnimationController.js'
-import ContainerSurface             from 'famous/surfaces/ContainerSurface.js'
-import Transitionable               from 'famous/transitions/Transitionable.js'
+import OrderedHashMap               from 'ordered-hashmap';
+import merge                        from 'lodash/merge.js';
+import Modifier                     from 'famous/core/Modifier.js';
+import Transform                    from 'famous/core/Transform.js';
+import RenderNode                   from 'famous/core/RenderNode.js';
+import Timer                        from 'famous/utilities/Timer.js';
+import MouseSync                    from 'famous/inputs/MouseSync.js';
+import TouchSync                    from 'famous/inputs/TouchSync.js';
+import GenericSync                  from 'famous/inputs/GenericSync.js';
+import Easing                       from 'famous/transitions/Easing.js';
+import Draggable                    from 'famous/modifiers/Draggable.js';
+import AnimationController          from 'famous-flex/AnimationController.js';
+import ContainerSurface             from 'famous/surfaces/ContainerSurface.js';
+import Transitionable               from 'famous/transitions/Transitionable.js';
 
-import { Throttler }                  from 'arva-js/utils/Throttler.js'
+import {Throttler}                  from 'arva-js/utils/Throttler.js';
 
-import { Utils }                      from './Utils.js'
-import { limit }                      from '../Limiter.js'
+import {Utils}                      from './Utils.js';
+import {limit}                      from '../Limiter.js';
 import {
   callbackToPromise,
   waitMilliseconds
-}                                   from '../CallbackHelpers.js'
+}                                   from '../CallbackHelpers.js';
+
 
 export class RenderableHelper {
 
@@ -32,33 +33,35 @@ export class RenderableHelper {
    * Creates a utility for maintaining proper state of decorated renderables
    * @param {Function} bindMethod
    * @param {Function} pipeMethod
+   * @param {Function} getRenderableLocalNameMethod
    * @param {Object|Renderable} outputRenderables
    * @param sizeResolver
    */
-  constructor (bindMethod, pipeMethod, outputRenderables, sizeResolver) {
-    this._bindMethod = bindMethod
-    this._renderableCounterparts = outputRenderables
-    this._sizeResolver = sizeResolver
-    this._pipeToView = pipeMethod
-    this.waitingAnimations = []
-    this._renderables = {}
-    this._groupedRenderables = {}
-    this._pipedRenderables = {}
-    this._groupedRenderables = {}
+  constructor(bindMethod, pipeMethod, getIDfromLocalNameMethod, outputRenderables, sizeResolver) {
+    this._bindMethod = bindMethod;
+    this._renderableCounterparts = outputRenderables;
+    this._sizeResolver = sizeResolver;
+    this._pipeToView = pipeMethod;
+    this._getIDfromLocalName = getIDfromLocalNameMethod;
+    this.waitingAnimations = [];
+    this._renderables = {};
+    this._groupedRenderables = {};
+    this._pipedRenderables = {};
+    this._groupedRenderables = {};
   }
 
-  assignRenderable (renderable, renderableName) {
-    this._renderables[renderableName] = renderable
-    let renderableEquivalent = renderable
+  assignRenderable(renderable, renderableName) {
+    this._renderables[renderableName] = renderable;
+    let renderableEquivalent = renderable;
     if (renderable.decorations) {
-      renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName)
+      renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName);
     }
-    this._renderableCounterparts[renderableName] = renderableEquivalent
-    this._setupAllRenderableListeners(renderableName)
+    this._renderableCounterparts[renderableName] = renderableEquivalent;
+    this._setupAllRenderableListeners(renderableName);
   }
 
-  getRenderableNames () {
-    return Object.keys(this._renderables)
+  getRenderableNames() {
+    return Object.keys(this._renderables);
   }
 
   /**
@@ -67,18 +70,18 @@ export class RenderableHelper {
    * @param {Boolean} enabled set to false to unset all the events
    * @private
    */
-  _setupAllRenderableListeners (renderableName, enabled = true) {
+  _setupAllRenderableListeners(renderableName, enabled = true) {
     /* If the this._renderableCounterparts equivalent doesn't have the pipe function as is the case with the draggable, then use the regular renderable */
-    let renderableOrEquivalent = this._getPipeableRenderableFromName(renderableName)
+    let renderableOrEquivalent = this._getPipeableRenderableFromName(renderableName);
     if (enabled) {
-      this._pipeRenderable(renderableOrEquivalent, renderableName)
+      this._pipeRenderable(renderableOrEquivalent, renderableName);
     } else {
-      this._unpipeRenderable(renderableOrEquivalent, renderableName)
+      this._unpipeRenderable(renderableOrEquivalent, renderableName);
     }
-    let {decorations} = this._renderables[renderableName]
+    let { decorations } = this._renderables[renderableName];
     if (decorations) {
-      this._setDecorationPipes(renderableOrEquivalent, decorations.pipes, enabled)
-      this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions, enabled)
+      this._setDecorationPipes(renderableOrEquivalent, decorations.pipes, enabled);
+      this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions, enabled);
     }
   }
 
@@ -88,19 +91,19 @@ export class RenderableHelper {
    * @param enable. If false, removes the events.
    * @private
    */
-  _setDecorationEvents (renderable, subscriptions, enable = true) {
+  _setDecorationEvents(renderable, subscriptions, enable = true) {
     for (let subscription of subscriptions || []) {
-      let subscriptionType = subscription.type || 'on'
+      let subscriptionType = subscription.type || 'on';
       if (!enable) {
         /* In famous, you remove a listener by calling removeListener, but some classes might have another event
          * listener that is called off
          */
-        subscriptionType = renderable.removeListener ? 'removeListener' : 'off'
+        subscriptionType = renderable.removeListener ? 'removeListener' : 'off';
       }
-      let eventName = subscription.eventName
-      let callback = subscription.callback
+      let eventName = subscription.eventName;
+      let callback = subscription.callback;
       if (subscriptionType in renderable) {
-        renderable[subscriptionType](eventName, this._bindMethod(callback))
+        renderable[subscriptionType](eventName, this._bindMethod(callback));
       }
     }
   }
@@ -112,16 +115,16 @@ export class RenderableHelper {
    * @param {Boolean} enabled. Set to false to unpipe
    * @private
    */
-  _setDecorationPipes (renderable, pipes, enabled = true) {
+  _setDecorationPipes(renderable, pipes, enabled = true) {
     for (let pipeToName of pipes || []) {
-      let target = pipeToName ? this._renderables[pipeToName] : this
-      let pipeFn = (enabled ? '' : 'un') + 'pipe'
+      let target = pipeToName ? this._renderables[pipeToName] : this;
+      let pipeFn = (enabled ? '' : 'un') + 'pipe';
       /* In order to keep things consistent and easier to use, we pipe from the renderable equivalent */
       if (renderable[pipeFn]) {
-        renderable[pipeFn](target)
+        renderable[pipeFn](target);
       }
       if (renderable[pipeFn] && target._eventOutput) {
-        renderable[pipeFn](target._eventOutput)
+        renderable[pipeFn](target._eventOutput);
       }
     }
 
@@ -132,9 +135,9 @@ export class RenderableHelper {
    * @param {String} renderableName The name of the renderable
    * @private
    */
-  _unpipeRenderable (renderableName) {
+  _unpipeRenderable(renderableName) {
     if (this._pipeToView(this._pipedRenderables[renderableName], false)) {
-      delete this._pipedRenderables[renderableName]
+      delete this._pipedRenderables[renderableName];
     }
   }
 
@@ -144,10 +147,10 @@ export class RenderableHelper {
    * @param {String} renderableName. The name of the renderable that is going to be piped.
    * @private
    */
-  _pipeRenderable (renderable, renderableName) {
+  _pipeRenderable(renderable, renderableName) {
     /* Auto pipe events from the renderable to the view */
     if (this._pipeToView(renderable, true)) {
-      this._pipedRenderables[renderableName] = renderable
+      this._pipedRenderables[renderableName] = renderable;
     }
   }
 
@@ -158,8 +161,8 @@ export class RenderableHelper {
    * @returns {Renderable} the renderable or its counterpart
    * @private
    */
-  _getPipeableRenderableFromName (renderableName) {
-    return this._renderableCounterparts[renderableName].pipe ? this._renderableCounterparts[renderableName] : this._renderables[renderableName]
+  _getPipeableRenderableFromName(renderableName) {
+    return this._renderableCounterparts[renderableName].pipe ? this._renderableCounterparts[renderableName] : this._renderables[renderableName];
   }
 
   /**
@@ -169,19 +172,19 @@ export class RenderableHelper {
    * @returns {Renderable} newRenderable The renderable that is normally stored this._renderableCounterpart[renderableName]
    * @private
    */
-  _addDecoratedRenderable (renderable, renderableName) {
-    let {flow, size, dock} = renderable.decorations
+  _addDecoratedRenderable(renderable, renderableName) {
+    let { flow, size, dock } = renderable.decorations;
 
     if (size) {
-      this._bindSizeFunctions(size)
+      this._bindSizeFunctions(size);
     }
     if (dock && dock.size) {
-      this._bindSizeFunctions(dock.size)
+      this._bindSizeFunctions(dock.size);
     }
-    let renderableCounterpart = this._processsDecoratedRenderableCounterpart(renderable, renderableName)
+    let renderableCounterpart = this._processsDecoratedRenderableCounterpart(renderable, renderableName);
 
-    this._addRenderableToDecoratorGroup(renderable, renderableCounterpart, renderableName)
-    return renderableCounterpart
+    this._addRenderableToDecoratorGroup(renderable, renderableCounterpart, renderableName);
+    return renderableCounterpart;
   }
 
   /**
@@ -189,10 +192,10 @@ export class RenderableHelper {
    * @param {Array|Number} size
    * @private
    */
-  _bindSizeFunctions (size) {
+  _bindSizeFunctions(size) {
     for (let index = 0; index < 2; index++) {
       if (typeof size[index] === 'function') {
-        size[index] = this._bindMethod(size[index])
+        size[index] = this._bindMethod(size[index]);
       }
     }
   }
@@ -201,14 +204,14 @@ export class RenderableHelper {
    * Returns true if there are any flowy renderables.
    * @returns {Boolean} hasFlowyRenderables
    */
-  hasFlowyRenderables () {
+  hasFlowyRenderables() {
     for (let groupName in this._groupedRenderables) {
-      let renderableGroup = this._groupedRenderables[groupName]
+      let renderableGroup = this._groupedRenderables[groupName];
       if (!renderableGroup.keys().every((renderableName) => !renderableGroup.get(renderableName)[0].decorations.flow)) {
-        return true
+        return true;
       }
     }
-    return false
+    return false;
   }
 
   /**
@@ -219,53 +222,53 @@ export class RenderableHelper {
    * @returns {AnimationController|ContainerSurface|RenderNode|*} The renderable counterpart
    * @private
    */
-  _processsDecoratedRenderableCounterpart (renderable, renderableName) {
-    let {draggableOptions, swipableOptions, clip, animation, flow} = renderable.decorations
+  _processsDecoratedRenderableCounterpart(renderable, renderableName) {
+    let { draggableOptions, swipableOptions, clip, animation, flow } = renderable.decorations;
 
     /* If we clip, then we need to create a containerSurface */
     if (clip) {
-      let clipSize = clip.size
+      let clipSize = clip.size;
       /* Resolve clipSize specified as undefined */
       let containerSurface = new ContainerSurface({
         size: clipSize,
-        properties: {overflow: 'hidden', ...clip.properties}
-      })
-      containerSurface.add(renderable)
+        properties: { overflow: 'hidden', ...clip.properties }
+      });
+      containerSurface.add(renderable);
       if (renderable.pipe) {
-        renderable.pipe(containerSurface._eventOutput)
+        renderable.pipe(containerSurface._eventOutput);
       }
-      renderable.containerSurface = containerSurface
+      renderable.containerSurface = containerSurface;
     }
 
     if (animation) {
-      this._processAnimatedRenderable(renderable, renderableName, animation)
+      this._processAnimatedRenderable(renderable, renderableName, animation);
     }
 
     if (swipableOptions) {
-      renderable = this._initSwipable(swipableOptions, renderable)
+      renderable = this._initSwipable(swipableOptions, renderable);
     } else if (draggableOptions && !renderable.node) {
-      renderable.node = new RenderNode()
-      let draggable = new Draggable(draggableOptions)
-      renderable.draggable = draggable
-      renderable.node.add(draggable).add(renderable)
-      renderable.pipe(draggable)
+      renderable.node = new RenderNode();
+      let draggable = new Draggable(draggableOptions);
+      renderable.draggable = draggable;
+      renderable.node.add(draggable).add(renderable);
+      renderable.pipe(draggable);
       //TODO: We don't do an unpiping of the draggable, which might be dangerous
-      this._pipeToView(draggable)
+      this._pipeToView(draggable);
     }
 
     if (renderable.node) {
       /* Assign output handler */
-      renderable.node._eventOutput = renderable._eventOutput
+      renderable.node._eventOutput = renderable._eventOutput;
     }
 
-    let renderableCounterpart = renderable.animationController || renderable.containerSurface || renderable.node || renderable
+    let renderableCounterpart = renderable.animationController || renderable.containerSurface || renderable.node || renderable;
     /* If a renderable has an AnimationController used to animate it, add that to this._renderableCounterparts.
      * If a renderable has an ContainerSurface used to clip it, add that to this._renderableCounterparts.
      * this._renderableCounterparts is used in the LayoutController in this.layout to render this view. */
     if (flow) {
-      renderableCounterpart.isFlowy = true
+      renderableCounterpart.isFlowy = true;
     }
-    return renderableCounterpart
+    return renderableCounterpart;
   }
 
   /**
@@ -274,10 +277,10 @@ export class RenderableHelper {
    * @returns {void}
    * @private
    */
-  pipeAllRenderables () {
+  pipeAllRenderables() {
     for (let renderableName in this.renderables) {
       if (!this._pipedRenderables[renderableName]) {
-        this._pipeRenderable(this._getPipeableRenderableFromName(renderableName), renderableName)
+        this._pipeRenderable(this._getPipeableRenderableFromName(renderableName), renderableName);
       }
     }
   }
@@ -285,21 +288,21 @@ export class RenderableHelper {
   /**
    * Initialize all animation set by @layout.animate
    */
-  initializeAnimations () {
+  initializeAnimations() {
     for (let animation of (this.waitingAnimations || [])) {
-      let renderableToWaitFor = this._renderables[animation.waitFor]
+      let renderableToWaitFor = this._renderables[animation.waitFor];
       if (renderableToWaitFor && renderableToWaitFor.on) {
-        renderableToWaitFor.on('shown', function subscription () {
-          animation.showMethod()
+        renderableToWaitFor.on('shown', function subscription() {
+          animation.showMethod();
           if ('off' in renderableToWaitFor) {
-            renderableToWaitFor.off('shown', subscription)
+            renderableToWaitFor.off('shown', subscription);
           }
           if ('removeListener' in renderableToWaitFor) {
-            renderableToWaitFor.removeListener('shown', subscription)
+            renderableToWaitFor.removeListener('shown', subscription);
           }
-        })
+        });
       } else {
-        Utils.warn(`Attempted to delay showing renderable ${animation.waitFor}, which does not exist or contain an on() method.`)
+        Utils.warn(`Attempted to delay showing renderable ${animation.waitFor}, which does not exist or contain an on() method.`);
       }
     }
   }
@@ -311,30 +314,31 @@ export class RenderableHelper {
    * @param options
    * @private
    */
-  _processAnimatedRenderable (renderable, renderableName, options) {
+  _processAnimatedRenderable(renderable, renderableName, options) {
 
     let pipeRenderable = () => {
       if (renderable.pipe) renderable.pipe(renderable.animationController._eventOutput)
-    }
+    };
 
     /* If there's already an animationcontroller present, just change the options */
-    let renderableCounterpart = this._renderableCounterparts[renderableName]
+    let renderableCounterpart = this._renderableCounterparts[renderableName];
     if (renderableCounterpart instanceof AnimationController) {
-      renderable.animationController = renderableCounterpart
-      renderable.animationController.setOptions(options)
-      pipeRenderable()
+      renderable.animationController = renderableCounterpart;
+      renderable.animationController.setOptions(options);
+      pipeRenderable();
     } else {
-      let animationController = renderable.animationController = new AnimationController(options)
-      pipeRenderable()
-      let showMethod = this.showWithAnimationController.bind(this, animationController, renderable)
+      let animationController = renderable.animationController = new AnimationController(options);
+      pipeRenderable();
+      let showMethod = this.showWithAnimationController.bind(this, animationController, renderable);
 
       if (options.delay && options.delay > 0 && options.showInitially) {
-        Timer.setTimeout(showMethod, options.delay)
+        Timer.setTimeout(showMethod, options.delay);
       } else if (options.waitFor) {
-        this.waitingAnimations.push({showMethod: showMethod, waitFor: options.waitFor})
+        this.waitingAnimations.push({ showMethod: showMethod, waitFor: options.waitFor });
       } else if (options.showInitially) {
-        showMethod()
+        showMethod();
       }
+
 
     }
   }
@@ -347,53 +351,54 @@ export class RenderableHelper {
    * @param show
    * @private
    */
-  showWithAnimationController (animationController, renderable, callback, show = true, options = {}) {
-    animationController._showingRenderable = show
+  showWithAnimationController(animationController, renderable, callback, show = true, options = {}) {
+    animationController._showingRenderable = show;
     let callbackIfExists = () => {
       if (callback) {
-        callback()
+        callback();
       }
-    }
+    };
     let emitOnFinished = () => {
       if (renderable.emit) {
-        renderable.emit(show ? 'shown' : 'hidden')
+        renderable.emit(show ? 'shown' : 'hidden');
       }
-      callbackIfExists()
-    }
+      callbackIfExists();
+    };
 
     if (show) {
-      animationController.show(renderable.containerSurface || renderable, options, emitOnFinished)
+      animationController.show(renderable.containerSurface || renderable, options, emitOnFinished);
     } else {
-      animationController.hide(null, emitOnFinished)
+      animationController.hide(null, emitOnFinished);
     }
   }
 
-  _addRenderableToDecoratorGroup (renderable, renderableCounterpart, renderableName) {
+  _addRenderableToDecoratorGroup(renderable, renderableCounterpart, renderableName) {
     /* Group the renderable */
-    let groupName = this._getGroupName(renderable)
+    let groupName = this._getGroupName(renderable);
 
     if (groupName) {
       if (!(groupName in this._groupedRenderables)) {
-        this._groupedRenderables[groupName] = new OrderedHashMap()
+        this._groupedRenderables[groupName] = new OrderedHashMap();
       }
       /* We save the both the renderable and the renderable counterpart in pairs */
-      this._groupedRenderables[groupName].set(renderableName, [renderable, renderableCounterpart])
+      this._groupedRenderables[groupName].set(renderableName, [renderable, renderableCounterpart]);
     }
   }
 
-  _getGroupName (renderable) {
-    let {decorations} = renderable
+
+  _getGroupName(renderable) {
+    let { decorations } = renderable;
 
     if (!!decorations.dock) {
       /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
-      return decorations.dock.dockMethod === 'fill' ? 'filled' : 'docked'
+      return decorations.dock.dockMethod === 'fill' ? 'filled' : 'docked';
     } else if (!!decorations.fullSize) {
-      return 'fullSize'
+      return 'fullSize';
     } else if (decorations.size || decorations.origin || decorations.align || decorations.translate) {
-      return 'traditional'
+      return 'traditional';
     } else {
       /* This occurs e.g. when a renderable is only marked @renderable, and its parent view has a @layout.custom decorator to define its context. */
-      return 'ignored'
+      return 'ignored';
     }
   }
 
@@ -402,35 +407,35 @@ export class RenderableHelper {
    * @param {String} The name of the group
    * @returns {OrderedHashMap} A map containing Array-pairs of [renderable, renderableCounterpart] containing the renderables of the specified type.
    */
-  getRenderableGroup (groupName) {
-    return this._groupedRenderables[groupName]
+  getRenderableGroup(groupName) {
+    return this._groupedRenderables[groupName];
   }
 
   /**
    * Removes the renderable from the view
    * @param {String} renderableName The name of the renderable
    */
-  removeRenderable (renderableName) {
-    let renderable = this._renderables[renderableName]
-    this._setDecorationPipes(renderableName, false)
-    this._setDecorationEvents(renderableName, false)
-    this._unpipeRenderable(renderableName, renderableName)
-    this._removeRenderableFromDecoratorGroup(renderable, renderableName)
-    delete this._renderableCounterparts[renderableName]
-    delete this._renderables[renderableName]
+  removeRenderable(renderableName) {
+    let renderable = this._renderables[renderableName];
+    this._setDecorationPipes(renderableName, false);
+    this._setDecorationEvents(renderableName, false);
+    this._unpipeRenderable(renderableName, renderableName);
+    this._removeRenderableFromDecoratorGroup(renderable, renderableName);
+    delete this._renderableCounterparts[renderableName];
+    delete this._renderables[renderableName];
   }
 
   //Done
-  _removeRenderableFromDecoratorGroup (renderable, renderableName) {
-    let groupName = this._getGroupName(renderable)
-    this._removeRenderableFromGroupWithName(renderableName, groupName)
+  _removeRenderableFromDecoratorGroup(renderable, renderableName) {
+    let groupName = this._getGroupName(renderable);
+    this._removeRenderableFromGroupWithName(renderableName, groupName);
   }
 
-  _removeRenderableFromGroupWithName (renderableName, groupName) {
-    let group = this._groupedRenderables[groupName]
-    group.remove(renderableName)
+  _removeRenderableFromGroupWithName(renderableName, groupName) {
+    let group = this._groupedRenderables[groupName];
+    group.remove(renderableName);
     if (!group.count()) {
-      delete this._groupedRenderables[groupName]
+      delete this._groupedRenderables[groupName];
     }
   }
 
@@ -442,55 +447,55 @@ export class RenderableHelper {
    * @param {String} renderableName The name of the renderable
    * @param ...decorators The decorators that should be applied
    */
-  decorateRenderable (renderableName, ...decorators) {
-    let renderable = this._renderables[renderableName]
+  decorateRenderable(renderableName, ...decorators) {
+    let renderable = this._renderables[renderableName];
     /* Add translate and rotate to be sure that there decorators translateFrom and rotateFrom work */
     let fakeRenderable = {
       decorations: {
         translate: renderable.decorations.translate || [0, 0, 0],
         rotate: renderable.decorations.rotate || [0, 0, 0]
       }
-    }
+    };
 
     /* There can be existing decorators already, which are preserved. We are extending the decorators object,
      * by first creating a fake renderable that gets decorators */
     this.applyDecoratorFunctionsToRenderable(fakeRenderable, decorators)
-    let {decorations} = fakeRenderable
-    let renderableOrEquivalent = this._getPipeableRenderableFromName(renderableName)
+    let { decorations } = fakeRenderable;
+    let renderableOrEquivalent = this._getPipeableRenderableFromName(renderableName);
     /* We might need to do extra piping */
-    this._setDecorationPipes(renderableOrEquivalent, decorations.pipes)
-    this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions)
+    this._setDecorationPipes(renderableOrEquivalent, decorations.pipes);
+    this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions);
 
     /* If the renderable is surface, we need to do some special things if there is a true size being used */
     if (Utils.renderableIsSurface(renderable)) {
-      let sizesToCheck = []
-      let {size, dock} = decorations
+      let sizesToCheck = [];
+      let { size, dock } = decorations;
       if (size) {
-        sizesToCheck.push(size)
+        sizesToCheck.push(size);
       }
       if (dock) {
-        sizesToCheck.push(dock.size)
+        sizesToCheck.push(dock.size);
       }
-      let renderableSize = [undefined, undefined]
-      let trueSizedInfo = this._sizeResolver.getSurfaceTrueSizedInfo(renderable)
+      let renderableSize = [undefined, undefined];
+      let trueSizedInfo = this._sizeResolver.getSurfaceTrueSizedInfo(renderable);
       for (let sizeToCheck of sizesToCheck) {
         for (let dimension of [0, 1]) {
           if (this._sizeResolver.isValueTrueSized(sizeToCheck[dimension])) {
             if (!trueSizedInfo) {
-              this._sizeResolver.configureTrueSizedSurface(renderable, sizeToCheck)
+              this._sizeResolver.configureTrueSizedSurface(renderable, sizeToCheck);
             }
           }
         }
       }
     }
-    let oldRenderableGroupName = this._getGroupName(renderable)
-    let shouldDisableDock = (fakeRenderable.decorations.disableDock && renderable.decorations.dock)
-    let shouldDisableFullSize = (fakeRenderable.decorations.size && renderable.decorations.fullSize)
+    let oldRenderableGroupName = this._getGroupName(renderable);
+    let shouldDisableDock = (fakeRenderable.decorations.disableDock && renderable.decorations.dock);
+    let shouldDisableFullSize = (fakeRenderable.decorations.size && renderable.decorations.fullSize);
     if (shouldDisableDock) {
-      delete renderable.decorations.dock
+      delete renderable.decorations.dock;
     }
     if (shouldDisableFullSize) {
-      delete renderable.decorations.fullSize
+      delete renderable.decorations.fullSize;
     }
 
     /* Merge existing flow decorations so they won't be discarded */
@@ -499,23 +504,23 @@ export class RenderableHelper {
     }
 
     /* Extend the object */
-    Object.assign(renderable.decorations, fakeRenderable.decorations)
+    Object.assign(renderable.decorations, fakeRenderable.decorations);
     /* See if we have to redo the grouping */
-    let needToChangeDecoratorGroup = (oldRenderableGroupName !== this._getGroupName(renderable)) || shouldDisableDock || shouldDisableFullSize
+    let needToChangeDecoratorGroup = (oldRenderableGroupName !== this._getGroupName(renderable)) || shouldDisableDock || shouldDisableFullSize;
     /* Process new renderable equivalent, if that applies */
-    let renderableCounterpart = this._renderableCounterparts[renderableName] = this._processsDecoratedRenderableCounterpart(renderable, renderableName)
+    let renderableCounterpart = this._renderableCounterparts[renderableName] = this._processsDecoratedRenderableCounterpart(renderable, renderableName);
     if (needToChangeDecoratorGroup) {
-      this._removeRenderableFromGroupWithName(renderableName, oldRenderableGroupName)
-      this._addRenderableToDecoratorGroup(renderable, renderableCounterpart, renderableName)
+      this._removeRenderableFromGroupWithName(renderableName, oldRenderableGroupName);
+      this._addRenderableToDecoratorGroup(renderable, renderableCounterpart, renderableName);
     }
 
   }
 
-  applyDecoratorFunctionsToRenderable (renderable, decorators) {
+  applyDecoratorFunctionsToRenderable(renderable, decorators) {
     for (let decorator of decorators) {
       /* There can be existing decorators already, which are preserved. We are extending the decorators object,
        * by first creating a fake renderable that gets decorators */
-      decorator(renderable)
+      decorator(renderable);
     }
   }
 
@@ -525,210 +530,217 @@ export class RenderableHelper {
    * @param newRenderable
    * @param newRenderableName
    */
-  replaceRenderable (oldRenderableName, newRenderable, newRenderableName) {
-    let renderable = this._renderables[oldRenderableName]
-    let renderableHasAnimationController = (this._renderableCounterparts[oldRenderableName] instanceof AnimationController)
+  replaceRenderable(oldRenderableName, newRenderable, newRenderableName) {
+    let renderable = this._renderables[oldRenderableName];
+    let renderableHasAnimationController = (this._renderableCounterparts[oldRenderableName] instanceof AnimationController);
     /* If there isn't a renderable equivalent animationController that does the piping, then we need to redo the event piping */
     if (!renderableHasAnimationController) {
       /* Remove the listeners */
-      this._setupAllRenderableListeners(oldRenderableName, false)
+      this._setupAllRenderableListeners(oldRenderableName, false);
     }
-    newRenderable.decorations = {...newRenderable.decorations, ...renderable.decorations}
-    let newRenderableCounterpart = this._processsDecoratedRenderableCounterpart(newRenderable, oldRenderableName)
+    newRenderable.decorations = { ...newRenderable.decorations, ...renderable.decorations };
+    let newRenderableCounterpart = this._processsDecoratedRenderableCounterpart(newRenderable, oldRenderableName);
     if (!renderableHasAnimationController) {
-      this._renderableCounterparts[oldRenderableName] = newRenderableCounterpart
-      this._setupAllRenderableListeners(oldRenderableName, true)
+      this._renderableCounterparts[oldRenderableName] = newRenderableCounterpart;
+      this._setupAllRenderableListeners(oldRenderableName, true);
     }
-    let renderableGroup = this._groupedRenderables[this._getGroupName(renderable)]
-    let indexOfRenderable = renderableGroup.indexOf(oldRenderableName)
-    renderableGroup.remove(oldRenderableName)
-    renderableGroup.insert(indexOfRenderable, newRenderableName, [newRenderable, newRenderableCounterpart])
-    this._renderables[newRenderableName] = this._renderables[oldRenderableName]
-    this._renderableCounterparts[newRenderableName] = this._renderableCounterparts[oldRenderableName]
-    delete this._renderables[oldRenderableName]
-    delete this._renderableCounterparts[oldRenderableName]
+    let renderableGroup = this._groupedRenderables[this._getGroupName(renderable)];
+    let indexOfRenderable = renderableGroup.indexOf(oldRenderableName);
+    renderableGroup.remove(oldRenderableName);
+    renderableGroup.insert(indexOfRenderable, newRenderableName, [newRenderable, newRenderableCounterpart]);
+    this._renderables[newRenderableName] = this._renderables[oldRenderableName];
+    this._renderableCounterparts[newRenderableName] = this._renderableCounterparts[oldRenderableName];
+    delete this._renderables[oldRenderableName];
+    delete this._renderableCounterparts[oldRenderableName];
   }
 
-  async setRenderableFlowState (renderableName = '', stateName = '') {
 
-    let renderable = this._renderables[renderableName]
+  async setRenderableFlowState(renderableName = '', stateName = '') {
+
+    let renderable = this._renderables[renderableName];
     if (!renderable || !renderable.decorations || !renderable.decorations.flow) {
-      return Utils.warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`)
+      return Utils.warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
     }
-    let flowOptions = renderable.decorations.flow
+    let flowOptions = renderable.decorations.flow;
 
     /* Keep track of which flow state changes are running. We only allow one at a time per renderable.
      * The latest one is always the valid one.
      */
-    let flowWasInterrupted = false
+    let flowWasInterrupted = false;
 
-    flowOptions.currentState = stateName
-    for (let {transformations, options} of flowOptions.states[stateName].steps) {
-      flowOptions.currentTransition = options.transition
-      this.decorateRenderable(renderableName, ...transformations)
+    flowOptions.currentState = stateName;
+    for (let { transformations, options } of flowOptions.states[stateName].steps) {
+      flowOptions.currentTransition = options.transition;
+      this.decorateRenderable(renderableName, ...transformations);
 
       /* Make sure FlowLayoutNode.set() is called next render tick */
-      this._sizeResolver.requestReflow()
+      this._sizeResolver.requestReflow();
 
       /* Set the callback of the renderable so it's passed to the flowLayoutNode */
-      let resolveData = await new Promise((resolve) => renderable.decorations.flow.callback = resolve)
+      let resolveData = await new Promise((resolve) => renderable.decorations.flow.callback = resolve);
 
       /* Optionally, we insert a delay in between ending the previous state change, and starting on the new one. */
       if (options.delay) {
-        await waitMilliseconds(options.delay)
+        await waitMilliseconds(options.delay);
       }
 
       /* If the flow has been interrupted */
       if (resolveData.reason === 'flowInterrupted') {
-        flowWasInterrupted = true
-        break
+        flowWasInterrupted = true;
+        break;
       }
 
-      let emit = (renderable._eventOutput && renderable._eventOutput.emit || renderable.emit).bind(renderable._eventOutput || renderable)
-      emit('flowStep', {state: stateName})
+
+      let emit = (renderable._eventOutput && renderable._eventOutput.emit || renderable.emit).bind(renderable._eventOutput || renderable);
+      emit('flowStep', { state: stateName });
     }
 
-    return !flowWasInterrupted
+    return !flowWasInterrupted;
   }
 
-  async setViewFlowState (stateName = '', flowOptions) {
-    let steps = flowOptions.viewStates[stateName]
+  async setViewFlowState(stateName = '', flowOptions) {
+    let steps = flowOptions.viewStates[stateName];
 
     if (!steps) {
-      (console.warn || console.log)(`Flow state name '${stateName}' does not exist`)
-      return false
+      Utils.warn(`Flow state name '${stateName}' does not exist`);
+      return false;
+    }
+    /* If there is just one step, it might not be an array */
+    if(!Array.isArray(steps)){
+      steps = [steps];
     }
 
     /* This is intended to be overwritten by other asynchronous calls to this method, see the stateName check below. */
-    flowOptions.currentState = stateName
+    flowOptions.currentState = stateName;
 
     for (let step of steps) {
-      await Promise.all(this.generateWaitQueueFromViewStateStep(step))
+      await Promise.all(this.generateWaitQueueFromViewStateStep(step));
 
       /* If another state has been set since the invocation of this method, skip any remaining transformations. */
       if (flowOptions.currentState !== stateName) {
-        break
+        break;
       }
     }
 
-    return true
+    return true;
   }
 
-  generateWaitQueueFromViewStateStep (step) {
-    let waitQueue = []
-    for (let renderableName in step) {
-      let state = step[renderableName]
-      waitQueue.push(this.setRenderableFlowState(renderableName, state))
+  generateWaitQueueFromViewStateStep(step) {
+    let waitQueue = [];
+    for (let localRenderableName in step) {
+      let state = step[localRenderableName];
+      waitQueue.push(this.setRenderableFlowState(this._getIDfromLocalName(localRenderableName), state));
     }
-    return waitQueue
+    return waitQueue;
   }
 
-  getRenderableFlowState (renderableName = '') {
-    let renderable = this._renderables[renderableName]
+
+  getRenderableFlowState(renderableName = '') {
+    let renderable = this._renderables[renderableName];
     if (!renderable || !renderable.decorations || !renderable.decorations.flow) {
-      return Utils.warn(`getRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`)
+      return Utils.warn(`getRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
     }
-    let flowOptions = renderable.decorations.flow
-    return flowOptions.currentState
+    let flowOptions = renderable.decorations.flow;
+    return flowOptions.currentState;
   }
 
-  getViewFlowState (flowOptions = {}) {
-    return flowOptions.currentState
+  getViewFlowState(flowOptions = {}) {
+    return flowOptions.currentState;
   }
 
   /**
    * Create the swipable and register all the event logic for a swipable renderable
    * @private
    */
-  _initSwipable (swipableOptions = {}, renderable = {}) {
+  _initSwipable(swipableOptions = {}, renderable = {}) {
     GenericSync.register({
       'mouse': MouseSync,
       'touch': TouchSync
-    })
+    });
 
     let sync = new GenericSync({
       'mouse': {},
       'touch': {}
-    })
+    });
 
-    renderable.pipe(sync)
+    renderable.pipe(sync);
 
     /* Translation modifier */
     var positionModifier = new Modifier({
       transform: function () {
-        let [x, y] = position.get()
-        return Transform.translate(x, y, 0)
+        let [x, y] = position.get();
+        return Transform.translate(x, y, 0);
       }
-    })
+    });
 
-    var position = new Transitionable([0, 0])
+    var position = new Transitionable([0, 0]);
 
     sync.on('update', (data) => {
-      let [x, y] = position.get()
-      x += !swipableOptions.snapX ? data.delta[0] : 0
-      y += !swipableOptions.snapY ? data.delta[1] : 0
-      let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions
-      y = limit(yRange[0], y, yRange[1])
-      x = limit(xRange[0], x, xRange[1])
-      position.set([x, y])
-    })
+      let [x, y] = position.get();
+      x += !swipableOptions.snapX ? data.delta[0] : 0;
+      y += !swipableOptions.snapY ? data.delta[1] : 0;
+      let { yRange = [0, 0], xRange = [0, 0] } = swipableOptions;
+      y = limit(yRange[0], y, yRange[1]);
+      x = limit(xRange[0], x, xRange[1]);
+      position.set([x, y]);
+    });
 
     sync.on('end', (data) => {
-      let [x, y] = position.get()
-      data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0] * 2 : data.velocity[0]
-      let endX = swipableOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175)
-      let endY = swipableOptions.snapY ? 0 : y + data.delta[1] + (data.velocity[1] * 175)
-      let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions
-      endY = limit(yRange[0], endY, yRange[1])
-      endX = limit(xRange[0], endX, xRange[1])
+      let [x, y] = position.get();
+      data.velocity[0] = Math.abs(data.velocity[0]) < 0.5 ? data.velocity[0] * 2 : data.velocity[0];
+      let endX = swipableOptions.snapX ? 0 : x + data.delta[0] + (data.velocity[0] * 175);
+      let endY = swipableOptions.snapY ? 0 : y + data.delta[1] + (data.velocity[1] * 175);
+      let { yRange = [0, 0], xRange = [0, 0] } = swipableOptions;
+      endY = limit(yRange[0], endY, yRange[1]);
+      endX = limit(xRange[0], endX, xRange[1]);
       position.set([endX, endY], {
         curve: Easing.outCirc,
         duration: (750 - Math.abs((data.velocity[0] * 150)))
-      })
+      });
 
-      this._determineSwipeEvents(renderable, swipableOptions, endX, endY)
+      this._determineSwipeEvents(renderable, swipableOptions, endX, endY);
 
-    })
+    });
 
-    renderable.node = new RenderNode()
-    renderable.node.add(positionModifier).add(renderable)
+    renderable.node = new RenderNode();
+    renderable.node.add(positionModifier).add(renderable);
 
-    return renderable
+    return renderable;
   }
 
-  _determineSwipeEvents (renderable, swipableOptions = {}, endX = 0, endY = 0) {
+  _determineSwipeEvents(renderable, swipableOptions = {}, endX = 0, endY = 0) {
 
-    if (!renderable || !renderable._eventOutput) return
+    if (!renderable || !renderable._eventOutput) return;
 
-    let xThreshold = swipableOptions.xThreshold || [undefined, undefined]
-    let yThreshold = swipableOptions.yThreshold || [undefined, undefined]
+    let xThreshold = swipableOptions.xThreshold || [undefined, undefined];
+    let yThreshold = swipableOptions.yThreshold || [undefined, undefined];
 
     if (xThreshold[1] && endX > xThreshold[1]) {
       renderable._eventOutput.emit('swiped', {
         direction: 0,
         displacement: 'right'
-      })
+      });
     }
 
     if (xThreshold[0] && endX < xThreshold[0]) {
       renderable._eventOutput.emit('swiped', {
         direction: 0,
         displacement: 'left'
-      })
+      });
     }
 
     if (yThreshold[1] && endY > yThreshold[1]) {
       renderable._eventOutput.emit('swiped', {
         direction: 1,
         displacement: 'bottom'
-      })
+      });
     }
 
     if (yThreshold[0] && endY < yThreshold[0]) {
       renderable._eventOutput.emit('swiped', {
         direction: 1,
         displacement: 'top'
-      })
+      });
     }
   }
 
@@ -738,36 +750,36 @@ export class RenderableHelper {
    * @param {String} renderableName
    * @param {String} nextRenderableName
    */
-  prioritiseDockBefore (renderableName, nextRenderableName) {
-    let dockedRenderables = this._groupedRenderables.docked
+  prioritiseDockBefore(renderableName, nextRenderableName) {
+    let dockedRenderables = this._groupedRenderables.docked;
     if (!dockedRenderables) {
-      Utils.warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': no docked renderables present.`)
-      return false
+      Utils.warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': no docked renderables present.`);
+      return false;
     }
-    let result = this._prioritiseDockAtIndex(renderableName, dockedRenderables.indexOf(nextRenderableName))
+    let result = this._prioritiseDockAtIndex(renderableName, dockedRenderables.indexOf(nextRenderableName));
     if (!result) {
       Utils.warn(`Could not prioritise '${renderableName}' before '${nextRenderableName}': could not find one of the renderables by name.
-                        The following docked renderables are present: ${dockedRenderables.keys()}`)
+                        The following docked renderables are present: ${dockedRenderables.keys()}`);
     }
-    return result
+    return result;
   }
 
   /**
    * @param {String} renderableName
    * @param {String} prevRenderableName
    */
-  prioritiseDockAfter (renderableName, prevRenderableName) {
-    let dockedRenderables = this._groupedRenderables.docked
+  prioritiseDockAfter(renderableName, prevRenderableName) {
+    let dockedRenderables = this._groupedRenderables.docked;
     if (!dockedRenderables) {
-      Utils.warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': no docked renderables present.`)
-      return false
+      Utils.warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': no docked renderables present.`);
+      return false;
     }
-    let result = this._prioritiseDockAtIndex(renderableName, dockedRenderables.indexOf(prevRenderableName) + 1)
+    let result = this._prioritiseDockAtIndex(renderableName, dockedRenderables.indexOf(prevRenderableName) + 1);
     if (!result) {
       Utils.warn(`Could not prioritise '${renderableName}' after '${prevRenderableName}': could not find one of the renderables by name.
-                        The following docked renderables are present: ${dockedRenderables.keys()}`)
+                        The following docked renderables are present: ${dockedRenderables.keys()}`);
     }
-    return result
+    return result;
   }
 
   /**
@@ -777,18 +789,18 @@ export class RenderableHelper {
    * @returns {boolean}
    * @private
    */
-  _prioritiseDockAtIndex (renderableName, index) {
-    let dockedRenderables = this._groupedRenderables.docked
-    let renderableToRearrange = dockedRenderables.get(renderableName)
+  _prioritiseDockAtIndex(renderableName, index) {
+    let dockedRenderables = this._groupedRenderables.docked;
+    let renderableToRearrange = dockedRenderables.get(renderableName);
 
     if (index < 0 || !renderableToRearrange) {
-      return false
+      return false;
     }
 
-    dockedRenderables.remove(renderableName)
-    dockedRenderables.insert(index, renderableName, renderableToRearrange)
+    dockedRenderables.remove(renderableName);
+    dockedRenderables.insert(index, renderableName, renderableToRearrange);
 
-    return true
+    return true;
 
   }
 
