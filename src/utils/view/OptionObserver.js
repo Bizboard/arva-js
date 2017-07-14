@@ -280,10 +280,14 @@ export class OptionObserver extends EventEmitter {
     /*this._doPreprocessing(newOptions, this.options, true)*/
     this._deepTraverse(this.options, (nestedPropertyPath, optionObject, existingOptionValue, key, [newOptionObject, defaultOption]) => {
       //todo confirm whether this check is appropriate (I don't think it is)
-      let newOptionValue = newOptionObject[key]
+      let newOptionValue = newOptionObject[key];
       if (!newOptionValue && optionObject[key] !== null) {
-        let defaultOptionValue = defaultOption[key]
-        if (defaultOptionValue !== newOptionValue && defaultOptionValue !== existingOptionValue) {
+        let defaultOptionValue = defaultOption[key];
+        if (defaultOptionValue !== newOptionValue && (defaultOptionValue !== existingOptionValue &&
+          /* If new value is undefined, and the previous one was already the default, then don't update (will go false)*/
+          !(this._isPlainObject(existingOptionValue) && existingOptionValue[optionMetaData].isDefault)
+          || newOptionsAreAlsoOptions)
+        ) {
           this._markPropertyAsUpdated(nestedPropertyPath, key, newOptionObject[key], existingOptionValue)
         }
         return true
@@ -758,7 +762,9 @@ export class OptionObserver extends EventEmitter {
     if (newValue === undefined) {
       newValue = defaultOption
       if (this._isPlainObject(newValue)) {
-        valueToLinkTo = {}
+        valueToLinkTo = {};
+        this._markAsOption(valueToLinkTo);
+        valueToLinkTo[optionMetaData].isDefault = true;
       }
     }
 
