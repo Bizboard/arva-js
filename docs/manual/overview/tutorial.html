@@ -35,7 +35,7 @@
 <div data-ice="manual" data-toc-name="overview">
     <ul class="manual-toc">
       
-    <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#what-s-arva-" data-ice="link">What&apos;s Arva?</a></li>
+    <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#what-s-arva-js-" data-ice="link">What&apos;s Arva JS?</a></li>
 <li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#animations-and-states" data-ice="link">Animations and states</a></li>
 <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#data-binding-and-views" data-ice="link">Data binding and Views</a></li>
 <li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#chained-decorators" data-ice="link">Chained decorators</a></li>
@@ -43,6 +43,7 @@
 <li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#but-what-about-react-" data-ice="link">But what about React?</a></li>
 <li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#state-updates" data-ice="link">State updates</a></li>
 <li data-ice="manualNav" class="indent-h2" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#layout-and-animation" data-ice="link">Layout and Animation</a></li>
+<li data-ice="manualNav" class="indent-h1 manual-color manual-color-overview" data-section-count="&#x25A0;&#x25A0;" data-link="manual/overview/tutorial.html"><a href="manual/overview/tutorial.html#the-bigger-picture" data-ice="link">The bigger picture</a></li>
 </ul>
   </div>
 <div data-ice="manual" data-toc-name="reference">
@@ -64,15 +65,16 @@
     <span>&#xBB;</span>
     <span data-ice="title">Overview</span>
   </div>
-  <div data-ice="content"><h1 id="what-s-arva-">What&apos;s Arva?</h1>
-<p>Arva solves the problem of <strong>layout</strong> and <strong>animation</strong> without the need to bother with CSS nor HTML. While CSS is still used for <strong>styling</strong> of the content, whereas <strong>positioning</strong> and <strong>sizing</strong> is handled through different processes. 
-Arva astracts away some of the concerns that many front-end developers face, 
-where even modern paradigms like <code>flex-box</code> won&apos;t be necessary anymore.</p>
+  <div data-ice="content"><h1 id="what-s-arva-js-">What&apos;s Arva JS?</h1>
+<p>Arva JS solves the problem of <strong>layout</strong> and <strong>animation</strong> without the need to bother with CSS nor HTML. While CSS is still used for <strong>styling</strong> of the content, whereas <strong>positioning</strong> and <strong>sizing</strong> is handled through different processes. 
+Arva astracts away some of the concerns that many front-end developers face,
+which includes CSS deep-dives and directives like <code>display: inline-block</code> <code>margin:auto</code>, <code>position:relative</code>, <code>clear:left</code>, <code>float: right</code>, <code>zoom: 1</code> <code>overflow: auto</code>, <code>-webkit-box-sizing: border-box</code> and so on.</p>
+<p>Even modern paradigms like flexbox won&apos;t be necessary anymore. Let&apos;s get started.</p>
 <h2 id="animations-and-states">Animations and states</h2>
 <p>Animation states can be defined using the <a href="http://localhost:63342/arva-js/docs/variable/index.html#static-variable-flow">flow</a> operator.</p>
-<p>The core concept of Flow is that renderables can have multiple <strong>states</strong>, 
+<p>The core concept of Flow is that the renderables can have multiple <strong>states</strong>, 
 each of which contain a collection of layout properties. </p>
-<p>When the renderable changes from one state to another using the regular decorators,
+<p>When the renderable changes from one state to another using the <a href="http://localhost:63342/arva-js/docs/variable/index.html#static-variable-layout">layout</a> operations,
 their <strong>layout properties</strong> are tweened into each other, creating the effect of seamless animation.</p>
 <pre><code class="lang-javascript"><code class="source-code prettyprint">    @flow.stateStep(&apos;hidden&apos;, layout.opacity(0))
     @flow.stateStep(&apos;shown&apos;, layout.opacity(1))
@@ -80,7 +82,7 @@ their <strong>layout properties</strong> are tweened into each other, creating t
 </code></pre>
 <p>For a contextual example of using flow and animation, we made a sample component for showing and hiding a menu:</p>
 <p><img src="./manual/asset/animation-demo.gif" alt="animation"></p>
-<p><a href="https://github.com/Arva/demo">Source code can be found here under &apos;data-binding&apos;</a></p>
+<p><a href="https://github.com/Arva/demo">Source code can be found here under &apos;stateful-animations&apos;</a></p>
 <h1 id="data-binding-and-views">Data binding and Views</h1>
 <p>Every view is passed options by using the static method <code>with</code>:</p>
 <pre><code><code class="source-code prettyprint">class HomeView extends View {
@@ -137,8 +139,8 @@ value of your car after a crash:</p>
 absence of JSX or templating language seems foreign as almost every other framework is using their own custom language. 
 An app written with Arva is written with plain (draft stage) ECMAScript syntax. The strict adherence to this standard future-proofs Arva to 
 be able to run natively in the browser, and also opens up for more super powers as the ECMAScript standard progresses further.</p>
-<p>Another important difference to recall is that Arva is MVC framework, where heavy data logic is put in the controller, rather
-than being a view-only framework, as is the case with frameworks like React. React and Arva do in this regard have different approaches, 
+<p>Another important difference to recall is that Arva is an MVC framework, where heavy data logic is put in the controller, rather
+than being view-only, as is the case with frameworks like React. React and Arva do in this regard have different approaches, 
 since React is a framework intended as a component of a bigger picture, whereas Arva is the stand-alone solution for your entire app.</p>
 <p>Let&apos;s consider a very simple example of an Arva view and its (approximate) counter-part in React, 
 to serve as a basis for further discussion.</p>
@@ -203,7 +205,7 @@ in order to provide flexible animations. The actual HTML output of Arva results 
 <p>All positioning and sizing done through decorators is hardware accelerated, so
 the programmer can comfortably know that the animations defined won&apos;t stress the browser unnecessarily. 
 The decorator structure of Arva provides a natural solution for layout definition. In order to clarify why this is important,
- consider the example we covered in a previous section</p>
+ we will revisit the example we covered in a previous section, with the animating hamburger icon:</p>
 <p><img src="./manual/asset/button.gif" alt="button"></p>
 <p>The animation declaration is optimized in being as straight forward as possible, so that transition states are defined
 in an additive nature from the previous position, while tasks like centering content in relation to parent and proportional
@@ -211,7 +213,7 @@ in an additive nature from the previous position, while tasks like centering con
 <p>Here&apos;s the code, with plenty of comments, for clarity:</p>
 <pre><code class="lang-javascript"><code class="source-code prettyprint">
     /* We start with the top part of the hamburger, 
-     * which starts in a horizontal state, which we named &apos;straight&apos;
+     * which starts in a horizontal state, which we name &apos;straight&apos;
      */
     @flow.defaultState(&apos;straight&apos;, {}, layout
     /* We center it and translate 8 pixels upwards */
@@ -233,7 +235,7 @@ in an additive nature from the previous position, while tasks like centering con
         .rotate(0, 0, Math.PI / 4)
     )
     /* We defined a simple component with a white background 
-     * which is used for every &quot;stick&quot; of the icon 
+     * which is used for every portion of the icon 
      */
     topStick = WhiteShape.with();
 
@@ -264,6 +266,12 @@ in an additive nature from the previous position, while tasks like centering con
         .size(0.6, 3))
     bottomStick = WhiteShape.with();</code>
 </code></pre>
+<h1 id="the-bigger-picture">The bigger picture</h1>
+<p>We will continue to improve arva JS in all aspects, including performance, UX possibilities and code brevity. It&apos;s a framework
+that is going to be frequently revised and evaluated for its goals.</p>
+<p>Arva JS is sometimes referred to as <em>Arva foundation</em> or <em>Arva engine</em> and is a part of a bigger scheme of making 
+easy and attractive development possible for more people. <em>Arva Studio</em> is under development in order to provide a no-code
+springboard for rapid application development. </p>
 </div>
 </div>
 </div>

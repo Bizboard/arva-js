@@ -1,8 +1,10 @@
-# What's Arva?
+# What's Arva JS?
 
-Arva solves the problem of **layout** and **animation** without the need to bother with CSS nor HTML. While CSS is still used for **styling** of the content, whereas **positioning** and **sizing** is handled through different processes. 
-Arva astracts away some of the concerns that many front-end developers face, 
-where even modern paradigms like `flex-box` won't be necessary anymore.
+Arva JS solves the problem of **layout** and **animation** without the need to bother with CSS nor HTML. While CSS is still used for **styling** of the content, whereas **positioning** and **sizing** is handled through different processes. 
+Arva astracts away some of the concerns that many front-end developers face,
+which includes CSS deep-dives and directives like `display: inline-block` `margin:auto`, `position:relative`, `clear:left`, `float: right`, `zoom: 1` `overflow: auto`, `-webkit-box-sizing: border-box` and so on.
+ 
+Even modern paradigms like flexbox won't be necessary anymore. Let's get started.
 
 ## Animations and states
 
@@ -25,7 +27,7 @@ For a contextual example of using flow and animation, we made a sample component
 
 ![animation](asset/animation-demo.gif)
 
-[Source code can be found here under 'data-binding'](https://github.com/Arva/demo)
+[Source code can be found here under 'stateful-animations'](https://github.com/Arva/demo)
 
 
 
@@ -127,8 +129,8 @@ absence of JSX or templating language seems foreign as almost every other framew
 An app written with Arva is written with plain (draft stage) ECMAScript syntax. The strict adherence to this standard future-proofs Arva to 
 be able to run natively in the browser, and also opens up for more super powers as the ECMAScript standard progresses further.
 
-Another important difference to recall is that Arva is MVC framework, where heavy data logic is put in the controller, rather
-than being a view-only framework, as is the case with frameworks like React. React and Arva do in this regard have different approaches, 
+Another important difference to recall is that Arva is an MVC framework, where heavy data logic is put in the controller, rather
+than being view-only, as is the case with frameworks like React. React and Arva do in this regard have different approaches, 
 since React is a framework intended as a component of a bigger picture, whereas Arva is the stand-alone solution for your entire app.
 
 Let's consider a very simple example of an Arva view and its (approximate) counter-part in React, 
@@ -212,7 +214,7 @@ in order to provide flexible animations. The actual HTML output of Arva results 
 All positioning and sizing done through decorators is hardware accelerated, so
 the programmer can comfortably know that the animations defined won't stress the browser unnecessarily. 
 The decorator structure of Arva provides a natural solution for layout definition. In order to clarify why this is important,
- consider the example we covered in a previous section
+ we will revisit the example we covered in a previous section, with the animating hamburger icon:
   
 ![button](asset/button.gif)
   
@@ -225,7 +227,7 @@ Here's the code, with plenty of comments, for clarity:
 ```javascript
     
     /* We start with the top part of the hamburger, 
-     * which starts in a horizontal state, which we named 'straight'
+     * which starts in a horizontal state, which we name 'straight'
      */
     @flow.defaultState('straight', {}, layout
     /* We center it and translate 8 pixels upwards */
@@ -247,7 +249,7 @@ Here's the code, with plenty of comments, for clarity:
         .rotate(0, 0, Math.PI / 4)
     )
     /* We defined a simple component with a white background 
-     * which is used for every "stick" of the icon 
+     * which is used for every portion of the icon 
      */
     topStick = WhiteShape.with();
 
@@ -279,9 +281,15 @@ Here's the code, with plenty of comments, for clarity:
     bottomStick = WhiteShape.with();
 ```
  
+# The bigger picture 
 
+We will continue to improve arva JS in all aspects, including performance, UX possibilities and code brevity. It's a framework
+that is going to be frequently revised and evaluated for its goals.
+
+Arva JS is sometimes referred to as *Arva foundation* or *Arva engine* and is a part of a bigger scheme of making 
+easy and attractive development possible for more people. *Arva Studio* is under development in order to provide a no-code
+springboard for rapid application development. 
  
  
-
 
 
