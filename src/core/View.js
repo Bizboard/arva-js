@@ -29,7 +29,7 @@ import {
   from '../utils/view/LayoutHelpers.js'
 import { RenderableHelper }           from '../utils/view/RenderableHelper.js'
 import { ReflowingScrollView }        from '../components/ReflowingScrollView.js'
-import { PrioritisedObject }          from '../data/PrioritisedObject.js'
+import { MappedArray }                from '../utils/view/ArrayObserver.js'
 import { combineOptions }             from '../utils/CombineOptions.js'
 import { OptionObserver }             from '../utils/view/OptionObserver.js'
 
@@ -96,6 +96,10 @@ export class View extends FamousView {
    * Reflows the layout while also informing any subscribing parents that a reflow has to take place
    */
   reflowRecursively () {
+    if (!this.layout) {
+      /* Reflowing before construction, no need to bother */
+      return
+    }
     this.layout.reflowLayout()
     this._eventOutput.emit('recursiveReflow')
   }
@@ -143,7 +147,8 @@ export class View extends FamousView {
       Utils.warn(`Could not add invalid renderable inside ${this._name()} (no ID of renderable found)`)
     }
     this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, decorators)
-    this._assignRenderable(renderable, id)
+    this._assignRenderable(renderable)
+    this[id] = renderable
     this.layout.reflowLayout()
     return renderable
   }
@@ -287,9 +292,9 @@ export class View extends FamousView {
    * @returns {Promise}
    */
   setViewFlowState (stateName = '') {
-    this._eventOutput.emit('viewFlowStateChanged', stateName);
-    if(!this.decorations.viewFlow.viewStates[stateName]){
-      Utils.warn(`Trying to to set flow state ${this._name()}:${stateName}, which doesn't exist!`);
+    this._eventOutput.emit('viewFlowStateChanged', stateName)
+    if (!this.decorations.viewFlow.viewStates[stateName]) {
+      Utils.warn(`Trying to to set flow state ${this._name()}:${stateName}, which doesn't exist!`)
       return Promise.resolve()
     }
     return this._renderableHelper.setViewFlowState(stateName, this.decorations.viewFlow)
@@ -519,10 +524,9 @@ export class View extends FamousView {
   /**
    * Assigns a renderable to this view, without setting this[renderableName]
    * @param {Surface|FamousView|View} renderable the renderable that is going to be added
-   * @param {String} renderableName the name of the renderable
    * @private
    */
-  _assignRenderable (renderable, renderableName) {
+  _assignRenderable (renderable) {
     this._renderableHelper.assignRenderable(renderable, this._getRenderableID(renderable))
     if (Utils.renderableIsSurface(renderable)) {
       let sizeSpecification =
@@ -535,7 +539,6 @@ export class View extends FamousView {
         )
       }
     }
-    this[renderableName] = renderable
   }
 
   /**
@@ -780,7 +783,8 @@ export class View extends FamousView {
      */
     this._optionObserver = new OptionObserver(defaultOptions, options, preprocessBindings, this._name())
     this._optionObserver.on('needUpdate', (renderableName) =>
-      this._setupRenderable(this._renderableConstructors[renderableName], this[renderableName].decorations))
+      this._setupRenderable(this._renderableConstructors[renderableName],
+        this[renderableName][0] && this[renderableName][0].decorations || this[renderableName].decorations))
     this.options = this._optionObserver.getOptions()
   }
 
@@ -867,8 +871,9 @@ export class View extends FamousView {
 
     let localRenderableName = renderableInitializer.localName
     let currentRenderable = this[localRenderableName]
-    let renderable;
-    let dynamicDecorations;
+    let renderable
+    let dynamicDecorations
+    let renderableIsArray = false
     this._optionObserver.recordForRenderable(localRenderableName, () => {
       /* Make sure we have proper this scoping inside the initializer */
       renderable = renderableInitializer.call(this, this.options)
@@ -881,39 +886,44 @@ export class View extends FamousView {
         let factoryFunction = renderable
         renderable = factoryFunction(this.options)
       }
-    })
 
-
-    this._optionObserver._stopRecordingForEntry(localRenderableName)
-
-    if (!renderable) {
-      if (currentRenderable) {
-        this.removeRenderable(currentRenderable)
-        /* Removing a renderable is likely to cause a size change, so emit to notify parents */
-        this.reflowRecursively()
+      if (Array.isArray(renderable)) {
+        throw new Error('Passing plain arrays as renderables is not yet supported. Please use the map function.')
       }
-      return renderable
-    }
-    if (renderable instanceof RenderablePrototype) {
-      let renderablePrototype = renderable
-      let {options, type} = renderablePrototype
-      if (currentRenderable && currentRenderable.constructor === type) {
-        currentRenderable.setNewOptions(options)
-        renderable = currentRenderable
-        this._renderableHelper.decorateRenderable(this._getRenderableID(renderable), ...dynamicDecorations)
-      } else {
-        renderable = new type(options)
-        this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, dynamicDecorations)
-        if (currentRenderable) {
-          this.replaceRenderable(currentRenderable, renderable)
-        } else {
-          this._assignNewRenderable(renderable, localRenderableName)
+
+      if (renderable instanceof MappedArray) {
+        renderableIsArray = true
+        let renderables = renderable.getArray()
+        if (currentRenderable && !Array.isArray(currentRenderable)) {
+          throw new Error('Cannot dynamically reassign renderable to array')
         }
-      }
-    } else {
-      this._assignNewRenderable(renderable, localRenderableName)
-      this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, dynamicDecorations)
+        let currentRenderables = currentRenderable || []
 
+        let index;
+        let actualRenderables = new Array(renderables.length)
+        for (index = 0; index < renderables.length; index++) {
+          actualRenderables[index] = this._arrangeRenderableAssignment(currentRenderables[index],
+            renderables[index],
+            dynamicDecorations,
+            localRenderableName,
+            decorations,
+            true)
+          if (index) {
+            /* Make sure that the order is correct */
+            this.prioritiseDockAfter(actualRenderables[index], actualRenderables[index - 1]);
+          }
+        }
+
+        for (; index < currentRenderables.length; index++) {
+          this.removeRenderable(currentRenderables[index])
+        }
+
+        this._readjustRenderableInitializer(localRenderableName, actualRenderables)
+        this[localRenderableName] = actualRenderables
+      }
+    })
+    if (!renderableIsArray) {
+      this._arrangeRenderableAssignment(currentRenderable, renderable, dynamicDecorations, localRenderableName, decorations)
     }
 
     return renderable
@@ -922,16 +932,18 @@ export class View extends FamousView {
   /**
    *
    * @param renderable
-   * @param renderableName
+   * @param {String} [localRenderableName]
    * @param decorations
+   * @param {Boolean} isArray If set to true, renderable is array and actions will be taken accordingly
    * @private
    */
-  _assignNewRenderable (renderable, localRenderableName) {
+  _assignNewRenderable (renderable, localRenderableName, decorations, isArray) {
 
     let renderableID = this._getRenderableID(renderable)
-    let {decorations} = this._renderableConstructors[localRenderableName]
 
-    this._IDtoLocalRenderableName[renderableID] = localRenderableName
+    if (localRenderableName) {
+      this._IDtoLocalRenderableName[renderableID] = localRenderableName
+    }
 
     /* Allow decorated class properties to be set to false, null, or undefined, in order to skip rendering */
     if (!renderable) {
@@ -942,7 +954,58 @@ export class View extends FamousView {
      * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
      */
     renderable.decorations = cloneDeep(extend({}, decorations, renderable.decorations || {}))
+    if (!isArray) {
+      this._readjustRenderableInitializer(localRenderableName, renderable)
+      this[localRenderableName] = renderable
+    }
+    this._assignRenderable(renderable)
+  }
 
+  _getIDFromLocalName (localName) {
+    return this._getRenderableID(this[localName])
+  }
+
+  /**
+   *
+   * @param newRenderable
+   * @param dynamicDecorations
+   * @param {String} [localRenderableName]
+   * @returns {Renderable}
+   * @private
+   */
+  _arrangeRenderableAssignment (oldRenderable, newRenderable, dynamicDecorations, localRenderableName, decorations, isArray = false) {
+    if (!newRenderable) {
+      if (oldRenderable) {
+        this.removeRenderable(oldRenderable)
+        /* Removing a renderable is likely to cause a size change, so emit to notify parents */
+        this.reflowRecursively()
+      }
+      return newRenderable
+    }
+    if (newRenderable instanceof RenderablePrototype) {
+      let renderablePrototype = newRenderable
+      let {options, type} = renderablePrototype
+      if (oldRenderable && oldRenderable.constructor === type) {
+        oldRenderable.setNewOptions(options)
+        newRenderable = oldRenderable
+        this._renderableHelper.decorateRenderable(this._getRenderableID(newRenderable), ...dynamicDecorations)
+        return newRenderable
+      }
+      newRenderable = new type(options)
+      this._renderableHelper.applyDecoratorFunctionsToRenderable(newRenderable, dynamicDecorations)
+      if (oldRenderable) {
+        this.replaceRenderable(oldRenderable, newRenderable)
+      } else {
+        this._assignNewRenderable(newRenderable, localRenderableName, decorations, isArray)
+      }
+      return newRenderable
+    }
+    this._assignNewRenderable(newRenderable, localRenderableName, decorations, isArray)
+    this._renderableHelper.applyDecoratorFunctionsToRenderable(newRenderable, dynamicDecorations)
+    return newRenderable
+  }
+
+  _readjustRenderableInitializer (localRenderableName, renderable) {
     /* Since after constructor() of this View class is called, all decorated renderables will
      * be attempted to be initialized by Babel / the ES7 class properties spec, we'll need to
      * override the descriptor get/initializer to return this specific instance once.
@@ -952,21 +1015,14 @@ export class View extends FamousView {
      * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
      * to the renderables of this instance, which is unwanted.
      */
-    let {descriptor} = decorations
+    let {descriptor} = this._renderableConstructors[localRenderableName].decorations
     if (descriptor) {
       if (descriptor.initializer) {
-        let originalInitializer = decorations.descriptor.initializer
+        let originalInitializer = descriptor.initializer
         descriptor.initializer = () => {
-          descriptor.initializer = originalInitializer
           return renderable
         }
       }
     }
-
-    this._assignRenderable(renderable, localRenderableName)
-  }
-
-  _getIDFromLocalName(localName) {
-    return this._getRenderableID(this[localName]);
   }
 }

@@ -4,19 +4,52 @@
 import EventEmitter     from 'eventemitter3'
 import { ObjectHelper }               from 'arva-js/utils/ObjectHelper.js'
 
-class ArrayObserver extends EventEmitter {
-  constructor (array) {
+let isObserved = Symbol('isObserved')
+
+export class ArrayObserver extends EventEmitter {
+
+  dirtyPositions = {}
+
+  /**
+   *
+   * @param array
+   * @param hookFunction
+   */
+  constructor (array, hookFunction = () => {}) {
     super()
     if (!Array.isArray(array)) {
       throw new Error(`Array observer created without array!`)
     }
+    this._hookFunction = hookFunction
     this._array = array
-    this._adjustForNewLength()
+    Object.defineProperty(this._array, isObserved, {value: true, enumerable: false})
+    this.rebuild()
     this._overrideMethods()
-
+    this._hijackMapper()
   }
 
-  //TODO listen for access and replacement
+  static isArrayObserved (array) {
+    return !!array[isObserved]
+  }
+
+  rebuild () {
+    if (this._arrayLength) {
+      for (let index = this._array.length - 1; index < this._arrayLength; index++) {
+        this._addHookAtIndex(index)
+      }
+    } else {
+      /* Initializing for the first time */
+      for (let [index] of this._array.entries()) {
+        this._addHookAtIndex(index)
+      }
+    }
+    for (let index in this._dirtyPositions) {
+      this._addHookAtIndex(index)
+    }
+
+    this._arrayLength = this._array.length
+    this._dirtyPositions = {}
+  }
 
   _overrideModificaitionMethod (methodName, newMethod) {
     let originalMethod = this._array[methodName]
@@ -24,26 +57,36 @@ class ArrayObserver extends EventEmitter {
       value: function () {
         let result = originalMethod.apply(this._array, arguments)
         newMethod.call(this, ...arguments, result)
-        this._adjustForNewLength()
         this.emit('modified', {methodName})
         return result
       }.bind(this), enumerable: false
     })
   }
 
-  _adjustForNewLength () {
-    if (this._arrayLength) {
-      //todo fill in, if needed
-    }
-    for (let index = 0; index < this._array.length; index++) {
-      ObjectHelper.addGetSetPropertyWithShadow(this._array, index, this._array[index], false, true, ({newValue}) => {
-        this.emit('replaced', {item: newValue, index})
-      }, () => {
-        this.emit('accessed', {index})
-      })
+  _addHookAtIndex (index) {
+    if (this._hasHookAtIndex(index)) {
+      return
     }
 
-    this._arrayLength = this._array.length
+    ObjectHelper.addGetSetPropertyWithShadow(this._array, index, this._array[index], false, true, ({newValue}) => {
+      this.emit('replaced', {item: newValue, index})
+      this._dirtyPositions[index] = true
+    }, () => {
+      this.emit('accessed', {index})
+    })
+    this._hookFunction(index, this._array[index])
+  }
+
+  _hijackMapper (callback) {
+    this._overrideReadMethod('map', (originalMapFunction, passedMapper) => {
+      this.emit('mapCalled', originalMapFunction, passedMapper);
+      let mappedEntries = originalMapFunction.call(this._array, passedMapper);
+      return new MappedArray(mappedEntries);
+    })
+  }
+
+  _hasHookAtIndex (index) {
+    return !!Object.getOwnPropertyDescriptor(this._array, index).get
   }
 
   _overrideMethods () {
@@ -54,17 +97,13 @@ class ArrayObserver extends EventEmitter {
     this._overrideModificaitionMethod('unshift', this._unshift)
     this._overrideModificaitionMethod('sort', this._sort)
     this._overrideModificaitionMethod('splice', this._splice)
-    this._overrideReadMethod('map')
-    this._overrideReadMethod('foreach')
   }
 
-  _overrideReadMethod(methodName){
+  _overrideReadMethod (methodName, replacement) {
     let originalMethod = this._array[methodName]
     Object.defineProperty(this._array, methodName, {
       value: function () {
-        let result = originalMethod.apply(this._array, arguments)
-        this.emit('read', {methodName})
-        return result
+        return replacement(originalMethod, ...arguments)
       }.bind(this), enumerable: false
     })
   }
@@ -126,7 +165,15 @@ class ArrayObserver extends EventEmitter {
       }
     }
   }
+}
 
+export class MappedArray {
+  constructor (array){
+    this._array = array;
+  }
+  getArray(){
+    return this._array
+  }
 }
 //TODO remove this!
 window.o = [1, 2, 3]
