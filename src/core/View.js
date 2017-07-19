@@ -79,6 +79,7 @@ export class View extends FamousView {
 
     this._createLayoutController()
     this._initTrueSizedBookkeeping()
+    this._addExtraRenderables()
 
   }
 
@@ -903,11 +904,11 @@ export class View extends FamousView {
 
         let index, totalLength = renderables.length
 
-        if(!renderables.length){
+        if (!renderables.length) {
           /* Insert an empty surface in order to preserver order of the sequence of (docked) renderables
            * TODO: This is dirty but inevitable, think of other solutions */
-          let placeholderRenderable = Surface.with();
-          renderables = [placeholderRenderable];
+          let placeholderRenderable = Surface.with()
+          renderables = [placeholderRenderable]
           dynamicDecorations = () =>
             layout.dock.left(0).size(0)
 
@@ -1020,7 +1021,18 @@ export class View extends FamousView {
     return newRenderable
   }
 
+  /**
+   * Resets the initializer for a class property
+   * @param localRenderableName
+   * @param renderable
+   * @private
+   */
   _readjustRenderableInitializer (localRenderableName, renderable) {
+    /* If there is no initializer declared for the renderable, that could mean that the renderable has been
+     * passed "from above" through layout.extra. No action needed */
+    if (!this._renderableConstructors[localRenderableName]) {
+      return
+    }
     /* Since after constructor() of this View class is called, all decorated renderables will
      * be attempted to be initialized by Babel / the ES7 class properties spec, we'll need to
      * override the descriptor get/initializer to return this specific instance once.
@@ -1033,11 +1045,24 @@ export class View extends FamousView {
     let {descriptor} = this._renderableConstructors[localRenderableName].decorations
     if (descriptor) {
       if (descriptor.initializer) {
-        let originalInitializer = descriptor.initializer
         descriptor.initializer = () => {
           return renderable
         }
       }
+    }
+  }
+
+  _addExtraRenderables () {
+    let extraLayout = this.options[layout.extra] || {}
+    if(!extraLayout.renderableConstructors){
+      return;
+    }
+    let {value: [, extraRenderableInitializers]} = extraLayout.renderableConstructors.entries().next();
+    for (let localRenderableName in extraRenderableInitializers) {
+      let renderableInitializer = extraRenderableInitializers[localRenderableName]
+      this._arrangeRenderableAssignment(this[localRenderableName], renderableInitializer(),
+        renderableInitializer.decorations && renderableInitializer.decorations.dynamicFunctions || [],
+        localRenderableName, renderableInitializer.decorations)
     }
   }
 }
