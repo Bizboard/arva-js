@@ -175,6 +175,9 @@ let createChainableDecorator = function (method, type) {
   return methodToReturn
 }
 
+
+let extraLayout = Symbol('extraLayout')
+
 /**
  * Describes a set of decorators used for layouting of a renderable in a View.
  */
@@ -284,6 +287,13 @@ class Layout {
    * @property {fill} fill Fill the rest of the space
    */
 
+  /**
+   * Extra layout
+   * @type {DockTypes}
+   */
+  get extra () {
+    return extraLayout;
+  }
   /**
    * Docks things. See method descriptors for "Dockings"
    * @type {DockTypes}
