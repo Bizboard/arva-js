@@ -102,9 +102,9 @@ export class ObjectHelper {
     }
 
     /* Adds given property to the object with get() and set() accessors, and saves actual data in object.shadow */
-    static addGetSetPropertyWithShadow(object, propName, prop, enumerable = true, writable = true, setCallback = null, getCallback = null) {
+    static addGetSetPropertyWithShadow(object, propName, prop, enumerable = true, writable = true, setCallback = null, getCallback = null, appendToGetter = false) {
         ObjectHelper.buildPropertyShadow(object, propName, prop);
-        ObjectHelper.buildGetSetProperty(object, propName, enumerable, writable, setCallback, getCallback);
+        ObjectHelper.buildGetSetProperty(object, propName, enumerable, writable, setCallback, getCallback, appendToGetter);
     }
 
     /* Creates or extends object.shadow to contain a property with name propName */
@@ -139,7 +139,18 @@ export class ObjectHelper {
      * @param {Function} getCallback A function that takes as a single argument the property that is about to be get. Should
      * return that thing as well
      */
-    static buildGetSetProperty(object, propName, enumerable = true, writable = true, setCallback = null, getCallback = null) {
+    static buildGetSetProperty(object, propName, enumerable = true, writable = true, setCallback = null, getCallback = null, appendToGetter = false) {
+        if(appendToGetter){
+          let existingPropertyDescriptor = Object.getOwnPropertyDescriptor(object, propName);
+          if(existingPropertyDescriptor.get){
+            let existingGetCallBack = getCallback, previousGetCallback = existingPropertyDescriptor.get;
+            getCallback = () => {
+              previousGetCallback();
+              existingGetCallBack();
+            }
+          }
+        }
+
         let descriptor = {
             enumerable: enumerable,
             configurable: true,

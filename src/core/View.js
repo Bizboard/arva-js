@@ -508,15 +508,17 @@ export class View extends FamousView {
 
     for (let currentClassConstructor of classConstructorList) {
       let renderableConstructors = this.renderableConstructors.get(currentClassConstructor)
+      let previousName
       for (let localRenderableName in renderableConstructors) {
         let renderableConstructor = renderableConstructors[localRenderableName]
 
         /* Assign to the 'flat' structure renderableConstructors */
         this._renderableConstructors[localRenderableName] = renderableConstructor
         let {decorations} = renderableConstructor
+        renderableConstructor.previousName = previousName
         renderableConstructor.localName = localRenderableName
         this._setupRenderable(renderableConstructor, decorations)
-
+        previousName = localRenderableName
       }
     }
   }
@@ -783,8 +785,8 @@ export class View extends FamousView {
      */
     this._optionObserver = new OptionObserver(defaultOptions, options, preprocessBindings, this._name())
     this._optionObserver.on('needUpdate', (renderableName) =>
-      this._setupRenderable(this._renderableConstructors[renderableName],
-        this[renderableName][0] && this[renderableName][0].decorations || this[renderableName].decorations))
+      this._setupRenderable(this._renderableConstructors[renderableName], this._renderableConstructors[renderableName].decorations)
+    )
     this.options = this._optionObserver.getOptions()
   }
 
@@ -899,8 +901,21 @@ export class View extends FamousView {
         }
         let currentRenderables = currentRenderable || []
 
-        let index;
-        let actualRenderables = new Array(renderables.length)
+        let index, totalLength = renderables.length
+
+        if(!renderables.length){
+          /* Insert an empty surface in order to preserver order of the sequence of (docked) renderables
+           * TODO: This is dirty but inevitable, think of other solutions */
+          let placeholderRenderable = Surface.with();
+          renderables = [placeholderRenderable];
+          dynamicDecorations = () =>
+            layout.dock.left(0).size(0)
+
+        }
+
+        let actualRenderables = new Array(totalLength)
+
+
         for (index = 0; index < renderables.length; index++) {
           actualRenderables[index] = this._arrangeRenderableAssignment(currentRenderables[index],
             renderables[index],
@@ -910,7 +925,7 @@ export class View extends FamousView {
             true)
           if (index) {
             /* Make sure that the order is correct */
-            this.prioritiseDockAfter(actualRenderables[index], actualRenderables[index - 1]);
+            this.prioritiseDockAfter(actualRenderables[index], actualRenderables[index - 1])
           }
         }
 

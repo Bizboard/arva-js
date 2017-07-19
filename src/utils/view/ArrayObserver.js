@@ -34,7 +34,7 @@ export class ArrayObserver extends EventEmitter {
 
   rebuild () {
     if (this._arrayLength) {
-      for (let index = this._array.length - 1; index < this._arrayLength; index++) {
+      for (let index = this._arrayLength; index < this._array.length; index++) {
         this._addHookAtIndex(index)
       }
     } else {
@@ -68,8 +68,8 @@ export class ArrayObserver extends EventEmitter {
       return
     }
 
-    ObjectHelper.addGetSetPropertyWithShadow(this._array, index, this._array[index], false, true, ({newValue}) => {
-      this.emit('replaced', {item: newValue, index})
+    ObjectHelper.addGetSetPropertyWithShadow(this._array, index, this._array[index], false, true, ({newValue, oldValue}) => {
+      this.emit('replaced', {newValue, oldValue, index})
       this._dirtyPositions[index] = true
     }, () => {
       this.emit('accessed', {index})
@@ -78,10 +78,11 @@ export class ArrayObserver extends EventEmitter {
   }
 
   _hijackMapper (callback) {
+    //TODO Finalize and optimize
     this._overrideReadMethod('map', (originalMapFunction, passedMapper) => {
-      this.emit('mapCalled', originalMapFunction, passedMapper);
-      let mappedEntries = originalMapFunction.call(this._array, passedMapper);
-      return new MappedArray(mappedEntries);
+      this.emit('mapCalled', originalMapFunction, passedMapper)
+      let mappedEntries = originalMapFunction.call(this._array, passedMapper)
+      return new MappedArray(mappedEntries)
     })
   }
 
@@ -110,33 +111,24 @@ export class ArrayObserver extends EventEmitter {
 
   _pop (removedElement) {
     if (this._array.length) {
-      this.emit('removed', {index: this._array.length, item: removedElement})
+      this.emit('removed', {index: this._array.length, oldValue: removedElement})
     }
   }
 
   _push (element, newLength) {
-    this.emit('added', {index: newLength - 1, item: element})
+    this.emit('added', {index: newLength - 1, newValue: element})
   }
 
   _reverse (reversedArray) {
-    for (let [index, item] of reversedArray.entries()) {
-      this.emit('replaced', {item, index})
-    }
+    //todo anything to do here?
   }
 
   _shift (shiftedElement) {
-    let index, item
-    this.emit('accessed', {index: 0, item: shiftedElement})
-    for ([index, item] of this._array.entries()) {
-      this.emit('replaced', {item, index})
-    }
-    this.emit('removed', {index: this._array.length, item})
+    this.emit('removed', {index: this._array.length, oldValue: this._array[this._array.length - 1]})
   }
 
   _sort () {
-    for (let [index, item] of this._array.entries()) {
-      this.emit('replaced', {item, index})
-    }
+    //todo anything todo here?
   }
 
   _splice (start, deleteCount, ...itemsToAddAndDeletedElements) {
@@ -148,30 +140,25 @@ export class ArrayObserver extends EventEmitter {
     let maxIndex = Math.max(deletedElements.length, itemsToAdd.length)
     for (let index = start; index < maxIndex; index++) {
       if (index < deletedElements.length) {
-        this.emit('removed')
+        this.emit('removed', {index, oldValue: deletedElements[index]})
       }
     }
 
   }
 
-  _unshift (newLength) {
-    let item, index
-    for ([index, item] of this._array.entries()) {
-      if (index === this._array.length - 1) {
-        this.emit('added', {index: index, item})
-      }
-      else {
-        this.emit('replaced', {item, index})
-      }
+  _unshift (newLength, ...newItems) {
+    for (let index = this._array.length - newItems.length; index < this._array.length; index++) {
+      this.emit('added', {index, newValue: this._array[index]})
     }
   }
 }
 
 export class MappedArray {
-  constructor (array){
-    this._array = array;
+  constructor (array) {
+    this._array = array
   }
-  getArray(){
+
+  getArray () {
     return this._array
   }
 }
