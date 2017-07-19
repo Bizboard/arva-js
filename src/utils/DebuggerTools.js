@@ -1,13 +1,14 @@
 /**
  * Created by lundfall on 06/07/2017.
  */
-
-import Entity           from 'famous/core/Entity.js'
+import {Surface}          from 'arva-js/surfaces/Surface.js';
+import Entity             from 'famous/core/Entity.js'
 import { View }           from 'arva-js/core/View.js'
 import { ObjectHelper }   from 'arva-js/utils/ObjectHelper.js'
 import { OptionObserver } from 'arva-js/utils/view/OptionObserver.js'
-import { Utils } from 'arva-js/utils/view/Utils.js'
-import EventEmitter     from 'famous/core/EventEmitter.js'
+import { Utils }          from 'arva-js/utils/view/Utils.js'
+import { layout }         from 'arva-js/layout/Decorators.js'
+import EventEmitter       from 'famous/core/EventEmitter.js'
 
 window.getFromID = (id) => {
   return Entity.get(id)
@@ -26,6 +27,14 @@ View.prototype._createLayoutController = function () {
   originalConstructLayoutController.call(this, ...arguments)
   this.layout._view = this
 }
+
+let secretRedBackground = Symbol('secretRedBackground');
+View.prototype.makeRED = function () {
+  this._arrangeRenderableAssignment(this[secretRedBackground], Surface.with({properties: {backgroundColor: 'red'}}),
+    [], secretRedBackground, [layout.fullSize()])
+  this.reflowRecursively();
+}
+
 let originalWarn = Utils.prototype._warn
 Utils._warn = function () {
   originalWarn.call(this, ...arguments)
