@@ -273,7 +273,7 @@ export class ArvaRouter extends Router {
     goBackInHistory() {
         /* Default behaviour: go back in history in the arva router */
         let previousRoute = this.getPreviousRoute();
-        if(previousRoute){
+        if (previousRoute) {
             this.go(previousRoute.controller, previousRoute.method, previousRoute.params || null);
         }
     }
