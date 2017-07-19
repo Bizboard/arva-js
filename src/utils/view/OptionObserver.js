@@ -935,7 +935,8 @@ export class OptionObserver extends EventEmitter {
       return value
     }
     if (isPlainObject || isArray) {
-      let listenersIfExists = isArray ? value[0][listeners] : value[listeners]
+
+      let listenersIfExists = isArray ? (value[0] && value[0][listeners]) : value[listeners]
       if (!listenersIfExists) {
         let valueToClone = {...value, [listeners]: {}}
         if (isArray) {
