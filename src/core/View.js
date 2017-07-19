@@ -79,7 +79,7 @@ export class View extends FamousView {
 
     this._createLayoutController()
     this._initTrueSizedBookkeeping()
-    this._addExtraRenderables()
+    this._setupExtraRenderables()
 
   }
 
@@ -751,7 +751,10 @@ export class View extends FamousView {
   }
 
   setNewOptions (options) {
-    this._optionObserver.recombineOptions(options)
+    this._optionObserver.recombineOptions(options);
+    /* Re-assign the options to make sure they're up to date */
+    this.options = this._optionObserver.options;
+    this._setupExtraRenderables();
   }
 
   _doTrueSizedSurfacesBookkeeping () {
@@ -865,8 +868,7 @@ export class View extends FamousView {
       decorations = currentRenderable && currentRenderable.decorations
     }
 
-    /* Re-assign the options to make sure they're up to date */
-    this.options = this._optionObserver.options
+
 
     let decoratorFunctions = decorations &&
       decorations.dynamicFunctions
@@ -1052,7 +1054,7 @@ export class View extends FamousView {
     }
   }
 
-  _addExtraRenderables () {
+  _setupExtraRenderables () {
     let extraLayout = this.options[layout.extra] || {}
     if(!extraLayout.renderableConstructors){
       return;

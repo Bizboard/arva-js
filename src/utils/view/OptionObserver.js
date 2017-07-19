@@ -12,6 +12,7 @@ import { ObjectHelper }           from '../ObjectHelper'
 import { combineOptions }         from '../CombineOptions'
 import { PrioritisedObject }      from '../../data/PrioritisedObject'
 import { Model }                  from '../../core/Model'
+import { layout }                 from '../../layout/Decorators'
 
 let listeners = Symbol('listeners'),
   notFound = Symbol('notFound'),
@@ -291,7 +292,7 @@ export class OptionObserver extends EventEmitter {
         this._markPropertyAsUpdated(nestedPropertyPath, key, newOptionObject[key], existingOptionValue)
       }
     }, [newOptions, this.defaultOptions])
-
+    this._copyImportantSymbols(newOptions, this.options);
 
     /* Flush the updates in order to trigger the updates immediately */
     this._flushUpdates()
@@ -1008,6 +1009,17 @@ export class OptionObserver extends EventEmitter {
       this._addToListenerTree(entryName, localListenerTree)
       modelListener.startListening()
     })
+  }
+
+  /**
+   * Copies symbols that aren't enumerable and/or defined (so they won't be copied in the process of flushing updates)
+   *
+   * @param copyFrom
+   * @param copyTo
+   * @private
+   */
+  _copyImportantSymbols (copyFrom, copyTo) {
+    copyTo[layout.extra] = copyFrom[layout.extra];
   }
 }
 
