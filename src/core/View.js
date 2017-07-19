@@ -270,6 +270,10 @@ export class View extends FamousView {
    * @param decorators
    */
   decorateRenderable (renderable, ...decorators) {
+    if(typeof renderable == 'string'){
+      Utils.warn(`decorateRenderable called with string argument. Please use this.decorateRenderable(this[renderableName],...) instead of this.decorateRenderable(renderableName,...)`)
+      return;
+    }
     if (!decorators.length) {
       Utils.warn('No decorators specified to decorateRenderable(renderable, ...decorators)')
     }
