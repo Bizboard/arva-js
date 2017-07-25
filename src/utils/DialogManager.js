@@ -22,9 +22,7 @@ export class DialogManager extends View {
     @layout.translate(0, 0, 9000)
     background = new Surface({
         properties: {
-            /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0.2+0,0.6+100 */
-            background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.6) 100%)', /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-            filter: "progid:DXImageTransform.Microsoft.gradient( startColorstr='#33000000', endColorstr='#99000000',GradientType=1 )" /* IE6-9 fallback on horizontal gradient */
+            backgroundColor: "rgba(0,0,0,0.4)"
         }
     });
 
