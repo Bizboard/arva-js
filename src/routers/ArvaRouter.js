@@ -239,7 +239,7 @@ export class ArvaRouter extends Router {
 
             return true;
         } else {
-            console.log('Controller doesn\'t exist!');
+            console.log(`Controller ${controller} doesn\'t exist!`);
         }
 
         return false;
