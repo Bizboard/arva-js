@@ -47,6 +47,7 @@ export class Model extends PrioritisedObject {
          * This causes changes to be synched to and from the dataSource. */
         this._replaceModelAccessorsWithDatabinding();
 
+        ObjectHelper.addHiddenPropertyToObject(this, 'options', options, false);
 
         /* Calculate path to model in dataSource, used if no dataSource or path are given.
          *

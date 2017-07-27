@@ -13,6 +13,7 @@ import { combineOptions }         from '../CombineOptions'
 import { PrioritisedObject }      from '../../data/PrioritisedObject'
 import { Model }                  from '../../core/Model'
 import { layout }                 from '../../layout/Decorators'
+import { PrioritisedArray } from '../../data/PrioritisedArray'
 
 let listeners = Symbol('listeners'),
   notFound = Symbol('notFound'),
@@ -24,7 +25,6 @@ let listeners = Symbol('listeners'),
 
 export let onOptionChange = Symbol('onOptionChange')
 
-//TODO Fix some support for arrays (keep it simple, not oftenly used!)
 
 export class OptionObserver extends EventEmitter {
   _reverseListenerTree = {}
@@ -803,9 +803,14 @@ export class OptionObserver extends EventEmitter {
       }
     }
 
-    if (typeof defaultOption === 'function' && (defaultOption.prototype instanceof Model || defaultOption === Model)) {
+    if (typeof defaultOption === 'function' &&
+      ( (defaultOption.prototype instanceof Model || defaultOption === Model) ||
+        (defaultOption.prototype instanceof PrioritisedArray || defaultOption === PrioritisedArray)
+      )
+    ) {
       if (!newValue || !(newValue instanceof defaultOption)) {
-        this._throwError(`Failed to specify required model: ${propertyName} (${nestedPropertyPath.join('->')})`)
+        this._throwError(`Failed to specify required: ${nestedPropertyPath.concat(propertyName).join('->')}.
+          ${newValue} is not of type ${defaultOption.name}!`);
       }
     }
 

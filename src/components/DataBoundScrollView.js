@@ -11,80 +11,86 @@
 
 import sortBy                       from 'lodash/sortBy.js'
 import findIndex                    from 'lodash/findIndex.js'
+import Timer                        from 'famous/utilities/Timer.js'
+import ListLayout                   from 'famous-flex/layouts/ListLayout.js'
 
 import { debounce }                   from 'lodash-decorators'
 
-import { combineOptions }             from '../utils/CombineOptions.js'
 import { Throttler }                  from '../utils/Throttler.js'
 import { Utils }                      from '../utils/view/Utils.js'
 import { ReflowingScrollView }        from './ReflowingScrollView.js'
+import { combineOptions }             from '../utils/CombineOptions.js'
+import { RenderablePrototype }      from 'famous/utilities/RenderablePrototype.js'
 import { ScrollController }           from '../core/ScrollController.js'
-import Timer                        from 'famous/utilities/Timer.js'
-import ListLayout                   from 'famous-flex/layouts/ListLayout.js'
+
+//TODO If groupBy returns falsey value, such as 0, the group won't correctly be removed
 
 /**
  * A FlexScrollView with enhanced functionality for maintaining a two-way connection with a PrioritisedArray.
  */
 export class DataBoundScrollView extends ScrollController {
 
-  /**
-   * Be sure to specify either a getSize function in the class of the itemTemplate, or to specify the size in the
-   * layoutOptions.
-   *
-   * @param {Object} options The options passed inherit from previous classes. Avoid using the dataSource option since
-   * the DataBoundScrollView creates its own dataSource from options.dataStore.
-   * @param {PrioritisedArray} [options.dataStore] The data that should be read to create entries.
-   * @param {PrioritisedArray} [options.dataStores] Instead of passing one dataStore, this option can be used to pass multiple
-   * @param {Function} [options.itemTemplate] A function that returns a renderable representing each data item.
-   * @param {Function} [options.placeholderTemplate] A function that returns a renderable to display when there are
-   * no items present.
-   * @param {Function} [options.headerTemplate] A function that returns a renderable to display as a header.
-   * @param {Function} [options.orderBy] An ordering function that takes two data models (model1, model2).
-   * If it returns true, then model1 should go before model2.
-   * @param {Function} [options.groupBy] A function that takes a model and returns a value to group by. If set, then
-   * the groupTemplate option also needs to be set.
-   * @param {Function} [options.groupTemplate] A function that takes as a single argument, the groupBy value, and returns
-   * a renderable to insert before a group belonging to that value.
-   * @param {function} [options.dataFilter] Filter what data is relevant to the view. Should be a function taking as
-   * an argument a model and from there returning a boolean.
-   * @param {Boolean} [options.stickHeaders] If set to true, then the group headers will stick to the top when scrolling.
-   * Beware that this is slightly buggy as of now and might require some fine tuning to provide a better UX.
-   * @param {Function} [options.customInsertSpec] A function that takes as a single argument a model and returns a spec
-   * that is used when inserting a new item.
-   * @param {Boolean} [options.chatScrolling] If set to true, the scroll will remain at the bottom if at bottom already
-   * when new messages are added.
-   *
-   * If this function returns true, then model1 will be placed before model2.
-   *
-   */
-  constructor (options = {}) {
-    super(combineOptions({
-      scrollFriction: {
-        strength: 0.0015
-      },
-      autoPipeEvents: true,
-      throttleDelay: 0, /* If set to 0, no delay is added in between adding items to the DataBoundScrollView. */
-      dataSource: [],
-      sortingDirection: 'ascending',
-      flow: true,
-      flowOptions: {
-        spring: {               // spring-options used when transitioning between states
-          dampingRatio: 0.8,  // spring damping ratio
-          period: 1000        // duration of the animation
-        },
-        insertSpec: {           // render-spec used when inserting renderables
-          opacity: 0          // start opacity is 0, causing a fade-in effect,
-        }
-      },
-      dataFilter: () => true,
-      ensureVisible: null,
-      layoutOptions: {
-        isSectionCallback: options.stickyHeaders ? function (renderNode) {
-          return renderNode.groupId !== undefined
-        } : undefined
-      },
-      chatScrolling: false
-    }, options))
+    /**
+     * Be sure to specify either a getSize function in the class of the itemTemplate, or to specify the size in the
+     * layoutOptions.
+     *
+     * @param {Object} options The options passed inherit from previous classes. Avoid using the dataSource option since
+     * the DataBoundScrollView creates its own dataSource from options.dataSource.
+     * @param {PrioritisedArray} [options.dataSource] The data that should be read to create entries.
+     * @param {PrioritisedArray} [options.dataSources] Instead of passing one dataSource, this option can be used to pass multiple
+     * @param {Function} [options.itemTemplate] A function that returns a renderable representing each data item.
+     * @param {Function} [options.placeholderTemplate] A function that returns a renderable to display when there are
+     * no items present.
+     * @param {Function} [options.headerTemplate] A function that returns a renderable to display as a header.
+     * @param {Function} [options.orderBy] An ordering function that takes two data models (model1, model2).
+     * If it returns true, then model1 should go before model2.
+     * @param {Function} [options.groupBy] A function that takes a model and returns a value to group by. If set, then
+     * the groupTemplate option also needs to be set.
+     * @param {Function} [options.groupTemplate] A function that takes as a single argument, the groupBy value, and returns
+     * a renderable to insert before a group belonging to that value.
+     * @param {function} [options.dataFilter] Filter what data is relevant to the view. Should be a function taking as
+     * an argument a model and from there returning a boolean.
+     * @param {Boolean} [options.stickHeaders] If set to true, then the group headers will stick to the top when scrolling.
+     * Beware that this is slightly buggy as of now and might require some fine tuning to provide a better UX.
+     * @param {Function} [options.customInsertSpec] A function that takes as a single argument a model and returns a spec
+     * that is used when inserting a new item.
+     * @param {Boolean} [options.chatScrolling] If set to true, the scroll will remain at the bottom if at bottom already
+     * when new messages are added.
+     *
+     * If this function returns true, then model1 will be placed before model2.
+     *
+     */
+    constructor (options = {}) {
+        options = combineOptions({
+            scrollFriction: {
+                strength: 0.0015
+            },
+            autoPipeEvents: true,
+            throttleDelay: 0, /* If set to 0, no delay is added in between adding items to the DataBoundScrollView. */
+            sortingDirection: 'ascending',
+            flow: true,
+            flowOptions: {
+                spring: {               // spring-options used when transitioning between states
+                    dampingRatio: 0.8,  // spring damping ratio
+                    period: 1000        // duration of the animation
+                },
+                insertSpec: {           // render-spec used when inserting renderables
+                    opacity: 0          // start opacity is 0, causing a fade-in effect,
+                }
+            },
+            dataFilter: () => true,
+            ensureVisible: null,
+            layoutOptions: {
+                isSectionCallback: options.stickyHeaders ? function (renderNode) {
+                    return renderNode.groupId !== undefined
+                } : undefined
+            },
+            chatScrolling: false
+        }, options)
+        let optionsToPassToSuper = {...options, dataSource: []}
+        super(optionsToPassToSuper)
+        /* Jump through hoops in order to be able to use the dataSource as a different meaning than what ScrollController.js does */
+        this.options.dataSource = options.dataSource
 
     this._internalDataSource = {}
     this._internalGroups = {}
@@ -129,10 +135,10 @@ export class DataBoundScrollView extends ScrollController {
    * Gets a renderable from a specific ID
    *
    * @param {String} id The id of data
-   * @param {Number} [dataStoreIndex] the index of the dataStore that is used, if several of them are specified
+   * @param {Number} [dataSourceIndex] the index of the dataSource that is used, if several of them are specified
    */
-  getRenderableFromID (id, dataStoreIndex = 0) {
-    let data = this._findData(id, dataStoreIndex)
+  getRenderableFromID (id, dataSourceIndex = 0) {
+    let data = this._findData(id, dataSourceIndex)
     if (data) {
       return data.renderable
     }
@@ -166,25 +172,25 @@ export class DataBoundScrollView extends ScrollController {
   }
 
   /**
-   * Sets the dataStore to use. This will repopulate the view and remove any (if present) old items.
-   * We decorate it with debounce in order to (naively) avoid race conditions when setting the dataStore frequently after each other
-   * @param dataStore
+   * Sets the dataSource to use. This will repopulate the view and remove any (if present) old items.
+   * We decorate it with debounce in order to (naively) avoid race conditions when setting the dataSource frequently after each other
+   * @param dataSource
    */
   @debounce(500)
-  setDataStore (dataStore) {
+  setDataStore (dataSource) {
     this.clearDataStore()
-    this.options.dataStore = dataStore
-    this._bindDataSource(dataStore)
+    this.options.dataSource = dataSource
+    this._bindDataSource(dataSource)
   }
 
   /**
-   * Sets the multiple dataStores to use. The "multiple" version of setDataStore(dataStore).
-   * @param {Array} dataStores
+   * Sets the multiple dataSources to use. The "multiple" version of setDataStore(dataSource).
+   * @param {Array} dataSources
    */
   @debounce(500)
-  setDataStores (dataStores) {
-    let {dataStore, dataStores: previousDataStores} = this.options
-    if (dataStore) {
+  setDataStores (dataSources) {
+    let {dataSource, dataSources: previousDataStores} = this.options
+    if (dataSource) {
       this.clearDataStore()
     } else if (previousDataStores) {
       for (let index in previousDataStores) {
@@ -192,29 +198,29 @@ export class DataBoundScrollView extends ScrollController {
       }
     }
 
-    this.options.dataStores = dataStores
-    this._bindMultipleDataSources(dataStores)
+    this.options.dataSources = dataSources
+    this._bindMultipleDataSources(dataSources)
 
   }
 
   /**
-   * Gets the currently set dataStore.
+   * Gets the currently set dataSource.
    * @returns {*}
    */
-  getDataStore () {
-    return this.options.dataStore
+  getDataSource () {
+    return this.options.dataSource
   }
 
   /**
-   * Gets the currently set dataStore.
+   * Gets the currently set dataSource.
    * @returns {*}
    */
-  getDataStores () {
-    return this.options.dataStores
+  getDataSources () {
+    return this.options.dataSources
   }
 
   /**
-   * Reloads the dataFilter option of the DataBoundScrollView, and verifies whether the items in the dataStore are allowed by the new filter.
+   * Reloads the dataFilter option of the DataBoundScrollView, and verifies whether the items in the dataSource are allowed by the new filter.
    * It removes any currently visible items that aren't allowed anymore, and adds any non-visible ones that are allowed now.
    * @param {Function} [newFilter] New filter function to verify item visibility with.
    * @returns {Promise} Resolves when filter has been applied
@@ -226,16 +232,16 @@ export class DataBoundScrollView extends ScrollController {
     }
 
     let filterPromises = []
-    if (this.options.dataStores) {
-      for (let [dataStoreIndex, dataStore] of this.options.dataStores.entries() || []) {
-        for (let entry of dataStore) {
-          filterPromises.push(this._reloadEntryFromFilter(entry, this.options.dataFilter, dataStoreIndex))
+    if (this.options.dataSources) {
+      for (let [dataSourceIndex, dataSource] of this.options.dataSources.entries() || []) {
+        for (let entry of dataSource) {
+          filterPromises.push(this._reloadEntryFromFilter(entry, this.options.dataFilter, dataSourceIndex))
         }
 
       }
       return Promise.all(filterPromises)
-    } else if (this.options.dataStore) {
-      for (let entry of this.options.dataStore || []) {
+    } else if (this.options.dataSource) {
+      for (let entry of this.options.dataSource || []) {
         filterPromises.push(this._reloadEntryFromFilter(entry, this.options.dataFilter, 0))
       }
       return Promise.all(filterPromises)
@@ -246,31 +252,37 @@ export class DataBoundScrollView extends ScrollController {
    *
    * @param entry
    * @param newFilter
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @private
    */
-  async _reloadEntryFromFilter (entry, newFilter, dataStoreIndex) {
-    let alreadyExists = this._internalDataSource[`${entry.id}${dataStoreIndex}`] !== undefined
+  async _reloadEntryFromFilter (entry, newFilter, dataSourceIndex) {
+    let alreadyExists = this._internalDataSource[`${entry.id}${dataSourceIndex}`] !== undefined
     let result = await newFilter(entry)
 
-    this._handleNewFilterResult(result, alreadyExists, entry, dataStoreIndex)
+    this._handleNewFilterResult(result, alreadyExists, entry, dataSourceIndex)
   }
 
   /**
    * Clears the dataSource by removing all entries
    */
   clearDataStore (index = 0) {
-    for (let entry of this.options.dataStore || []) {
-      this._removeItem(entry, 0)
-      /* Determine if there are multiple or single dataStore */
-      let {dataStore, dataStores} = this.options
-      if (dataStores && !dataStore) {
-        dataStore = dataStores[index]
-      }
-      for (let entry of dataStore || []) {
-        this._removeItem(entry, index)
-      }
+    /* Determine if there are multiple or single dataSource */
+    let {dataSource, dataSources} = this.options
+    if (dataSources && !dataSource) {
+      dataSource = dataSources[index]
     }
+    for (let entry of dataSource || []) {
+      this._removeItem(entry, index)
+    }
+  }
+
+  /**
+   * Determines whether the last element showing is the actual last element
+   * @returns {boolean} True if the last element showing is the actual last element
+   */
+  isAtBottom () {
+    let lastVisibleItem = this.getLastVisibleItem()
+    return (lastVisibleItem && lastVisibleItem.renderNode === this._dataSource._.tail._value)
   }
 
   /**
@@ -310,19 +322,19 @@ export class DataBoundScrollView extends ScrollController {
    * @param shouldShow
    * @param alreadyExists
    * @param entry
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @private
    */
-  _handleNewFilterResult (shouldShow, alreadyExists, entry, dataStoreIndex) {
+  _handleNewFilterResult (shouldShow, alreadyExists, entry, dataSourceIndex) {
     if (shouldShow) {
       /* This entry should be in the view, add it if it doesn't exist yet. */
       if (!alreadyExists) {
-        this._addItem(entry, undefined, dataStoreIndex)
+        this._addItem(entry, undefined, dataSourceIndex)
       }
     } else {
       /* This entry should not be in the view, remove if present. */
       if (alreadyExists) {
-        this._removeItem(entry, dataStoreIndex)
+        this._removeItem(entry, dataSourceIndex)
       }
     }
   }
@@ -361,7 +373,17 @@ export class DataBoundScrollView extends ScrollController {
    * @private
    */
   _addGroupItem (groupByValue, insertIndex) {
-    let newSurface = this.options.groupTemplate(groupByValue)
+    let {groupTemplate} = this.options;
+    if(typeof groupTemplate !== 'function'){
+      throw new Error('Cannot group items without specifying a group template (groupBy was specified)');
+    }
+
+
+    let newSurface = groupTemplate(groupByValue);
+    if(newSurface instanceof RenderablePrototype){
+      newSurface = new newSurface.type(newSurface.options);
+    }
+
     newSurface.groupId = groupByValue
     this._internalGroups[groupByValue] = {position: insertIndex, itemsCount: 0}
     this.insert(insertIndex, newSurface)
@@ -373,11 +395,11 @@ export class DataBoundScrollView extends ScrollController {
    *
    * @param child
    * @param previousSiblingID
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @returns {*|Number}
    * @private
    */
-  _getInsertIndex (child, previousSiblingID, dataStoreIndex) {
+  _getInsertIndex (child, previousSiblingID, dataSourceIndex) {
     /* By default, add item at the end if the orderBy function does not specify otherwise. */
     let firstIndex = this._getZeroIndex()
     let insertIndex = this._dataSource.getLength()
@@ -399,8 +421,8 @@ export class DataBoundScrollView extends ScrollController {
               break
             }
 
-            let {dataId, dataStoreIndex} = sequence._value
-            if (dataId && this.options.orderBy(child, this._internalDataSource[`${dataId}${dataStoreIndex}`].model)) {
+            let {dataId, dataSourceIndex} = sequence._value
+            if (dataId && this.options.orderBy(child, this._internalDataSource[`${dataId}${dataSourceIndex}`].model)) {
               break
             }
           } else {
@@ -422,9 +444,9 @@ export class DataBoundScrollView extends ScrollController {
             /* Check the first and last item of every group (they're sorted) */
             for (let position of group.itemsCount > 1 ? [group.position + 1, group.position + group.itemsCount - 1] : [group.position + 1]) {
 
-              let {dataId, dataStoreIndex} = this._viewSequence.findByIndex(position)._value
+              let {dataId, dataSourceIndex} = this._viewSequence.findByIndex(position)._value
 
-              if (this.options.orderBy(child, this._internalDataSource[`${dataId}${dataStoreIndex}`].model)) {
+              if (this.options.orderBy(child, this._internalDataSource[`${dataId}${dataSourceIndex}`].model)) {
                 foundOrderedIndex = group.position
                 break
               }
@@ -466,7 +488,7 @@ export class DataBoundScrollView extends ScrollController {
    */
   _insertGroup (insertIndex, groupByValue) {
     let groupIndex = this._findGroup(groupByValue)
-    if (groupByValue) {
+    if (groupByValue !== undefined) {
       let groupExists = groupIndex !== -1
       if (!groupExists) {
         /* No group of this value exists yet, so we'll need to create one. */
@@ -484,10 +506,10 @@ export class DataBoundScrollView extends ScrollController {
    *
    * @param child
    * @param previousSiblingID
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @private
    */
-  async _addItem (child, previousSiblingID = undefined, dataStoreIndex) {
+  async _addItem (child, previousSiblingID = undefined, dataSourceIndex) {
 
     if (this._findData(child.id)) {
       console.log('Child already exists ', child.id)
@@ -497,19 +519,19 @@ export class DataBoundScrollView extends ScrollController {
      *  to insert something. Because itemTemplates and dataFilter are (potentially) asynchronous, we must take care. */
     let onInsertIndexKnown
     let insertIndexPromise = new Promise((resolve) => onInsertIndexKnown = resolve)
-    this._insertId(child.id, insertIndexPromise, null, child, {}, dataStoreIndex, null)
+    this._insertId(child.id, insertIndexPromise, null, child, {}, dataSourceIndex, null)
 
     this._removePlaceholder()
 
-    let newSurface = await this.options.itemTemplate(child)
+    let newRenderable = await this._createNewRenderable(child, this.options.itemTemplate);
 
     /* If the entry was removed while trying to add it, we should abort here */
-    if (this._removedEntries[`${child.id}${dataStoreIndex}`]) {
+    if (this._removedEntries[`${child.id}${dataSourceIndex}`]) {
       onInsertIndexKnown(-1)
-      delete this._internalDataSource[`${child.id}${dataStoreIndex}`]
+      delete this._internalDataSource[`${child.id}${dataSourceIndex}`]
     }
 
-    let insertIndex = this._getInsertIndex(child, previousSiblingID, dataStoreIndex)
+    let insertIndex = this._getInsertIndex(child, previousSiblingID, dataSourceIndex)
 
     /* If we're using groups, check if we need to insert a group item before this child. */
     let groupByValue
@@ -523,54 +545,65 @@ export class DataBoundScrollView extends ScrollController {
       /* Increase the count of the number of items in the group */
       this._internalGroups[groupByValue].itemsCount++
     }
-    newSurface.dataId = child.id
+    newRenderable.dataId = child.id
     onInsertIndexKnown(insertIndex)
 
-    newSurface.dataStoreIndex = dataStoreIndex
-    this._subscribeToClicks(newSurface, child)
+    newRenderable.dataSourceIndex = dataSourceIndex
+    this._subscribeToClicks(newRenderable, child)
     /* If we're scrolling as with a chat window, then scroll to last child if we're at the bottom */
 
-    if (this.options.chatScrolling && (insertIndex === this._dataSource.getLength() || this._initialLoad) && this.isAtBottom()) {
-      this.stickToBottom()
+    if (this.options.chatScrolling && insertIndex === this._dataSource.getLength()) {
+      if (this.isAtBottom() || !this._allChildrenAdded) {
+        this._lastChild = child
+      }
     }
     let insertSpec
     if (this.options.customInsertSpec) {
       insertSpec = this.options.customInsertSpec(child)
     }
-    this.insert(insertIndex, newSurface, insertSpec)
+    this.insert(insertIndex, newRenderable, insertSpec)
 
     this._updatePosition(insertIndex)
-    this._insertId(child.id, insertIndex, newSurface, child, {}, dataStoreIndex, groupByValue)
+    this._insertId(child.id, insertIndex, newRenderable, child, {}, dataSourceIndex, groupByValue)
 
-    if (this.options.ensureVisible != null || this.options.chatScrolling) {
-      let shouldEnsureVisibleUndefined = this.options.ensureVisible == null
-      let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false
-      if (this.options.chatScrolling) {
-        if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) {
-          this.stickToBottom()
-        }
-      } else if (shouldEnsureVisible) {
-        this.ensureVisible(newSurface)
+      if (this.options.ensureVisible != null || this.options.chatScrolling) {
+          let shouldEnsureVisibleUndefined = this.options.ensureVisible == null
+          let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false
+          if (this.options.chatScrolling) {
+              if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) {
+                  this.stickToBottom()
+              }
+          } else if (shouldEnsureVisible) {
+              this.ensureVisible(newSurface)
+          }
       }
+
+  }
+
+  async _createNewRenderable (data, template) {
+    let result = await template(data)
+    if (result instanceof RenderablePrototype) {
+      result = new result.type(result.options)
     }
+    return result
   }
 
   /**
    *
    * @param child
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @private
    */
-  async _replaceItem (child, dataStoreIndex) {
+  async _replaceItem (child, dataSourceIndex) {
 
-    let data = this._findData(child.id, dataStoreIndex)
+    let data = this._findData(child.id, dataSourceIndex)
 
     if (!data) {
-      Utils.warn(`Child with ID ${child.id} is not present (anymore) in dataStore with index ${dataStoreIndex}`)
+      Utils.warn(`Child with ID ${child.id} is not present (anymore) in dataSource with index ${dataSourceIndex}`)
       return false
     }
 
-    let {position, groupValue} = data
+    let {position, groupValue, renderable} = data
     let newGroupValue = null
 
     if (this._isGrouped) {
@@ -578,15 +611,10 @@ export class DataBoundScrollView extends ScrollController {
     }
 
     if (newGroupValue !== groupValue) {
-      this._removeItem(child, dataStoreIndex, groupValue)
-      this._addItem(child, undefined, dataStoreIndex)
+      this._removeItem(child, dataSourceIndex, groupValue)
+      this._addItem(child, undefined, dataSourceIndex)
     } else {
-      let newSurface = await this.options.itemTemplate(child)
-      newSurface.dataId = child.id
-      newSurface.dataStoreIndex = dataStoreIndex
-      this._subscribeToClicks(newSurface, child)
-      this._insertId(child.id, position, newSurface, child, {}, dataStoreIndex)
-      this._replace(position, newSurface, true)
+      this._replaceRenderableAtPosition(renderable, child, dataSourceIndex, position)
     }
 
   }
@@ -613,16 +641,16 @@ export class DataBoundScrollView extends ScrollController {
   /**
    *
    * @param child
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @private
    */
-  _removeItem (child, dataStoreIndex, groupValue = null) {
-    let internalChild = this._internalDataSource[`${child.id}${dataStoreIndex}`] || {}
+  _removeItem (child, dataSourceIndex, groupValue = null) {
+    let internalChild = this._internalDataSource[`${child.id}${dataSourceIndex}`] || {}
     let index = internalChild.position
     if (index > -1) {
       this._updatePosition(index, -1)
       this.remove(index)
-      delete this._internalDataSource[`${child.id}${dataStoreIndex}`]
+      delete this._internalDataSource[`${child.id}${dataSourceIndex}`]
     }
 
     /* If we're using groups, check if we need to remove the group that this child belonged to. */
@@ -633,7 +661,7 @@ export class DataBoundScrollView extends ScrollController {
         group.itemsCount--
       }
 
-      this._removeGroupIfNecessary(groupByValue, dataStoreIndex)
+      this._removeGroupIfNecessary(groupByValue, dataSourceIndex)
 
     }
 
@@ -646,27 +674,19 @@ export class DataBoundScrollView extends ScrollController {
 
   /**
    *
-   * @param oldId
+   * @param child
    * @param prevChildId
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @private
    */
-  _moveItem (oldId, prevChildId = null, dataStoreIndex) {
-
-    let oldData = this._findData(oldId && oldId.position || oldId)
+  _moveItem (child, prevChildId = null, dataSourceIndex) {
+    let oldData = this._findData(child.id, dataSourceIndex)
     let oldIndex = oldData && oldData.position
-
-    /* sometimes oldId is data ('oldData')*/
-    if (oldId && oldId.position) {
-      oldData = oldId
-      oldIndex = oldId.position
-    }
-
-    let previousSiblingIndex = this._getNextVisibleIndex(prevChildId, dataStoreIndex)
+    let previousSiblingIndex = this._getNextVisibleIndex(prevChildId, dataSourceIndex)
     if (oldIndex !== undefined && oldIndex !== previousSiblingIndex) {
       this.move(oldIndex, previousSiblingIndex)
-      this._internalDataSource[`${previousSiblingIndex}${dataStoreIndex}`] = oldData
-      this._internalDataSource[`${previousSiblingIndex}${dataStoreIndex}`].position = oldIndex
+      this._internalDataSource[`${previousSiblingIndex}${dataSourceIndex}`] = oldData
+      this._internalDataSource[`${previousSiblingIndex}${dataSourceIndex}`].position = oldIndex
     }
   }
 
@@ -718,44 +738,45 @@ export class DataBoundScrollView extends ScrollController {
 
   /**
    *
-   * @param dataStores
+   * @param dataSources
    * @private
    */
-  _bindMultipleDataSources (dataStores) {
-    for (let [index, dataStore] of dataStores.entries()) {
-      this._bindDataSource(dataStore, index)
+  _bindMultipleDataSources (dataSources) {
+    for (let [index, dataSource] of dataSources.entries()) {
+      this._bindDataSource(dataSource, index)
     }
   }
 
   /**
    *
-   * @param dataStore
+   * @param dataSource
    * @param index
    * @private
    */
-  _bindDataSource (dataStore, index = 0) {
+  _bindDataSource (dataSource, index = 0) {
 
     if (this.options.chatScrolling) {
+      //TODO: This won't work with multiple dataSources
+      dataSource.on('ready', () => this._allChildrenAdded = true)
       this._initialLoad = true
-      this.once('userScroll', () => this._initialLoad = false)
-      this.options.dataStore.on('ready', () => this._initialLoad = false)
+      dataSource.on('ready', () => this._initialLoad = false)
     }
-    this._setupDataStoreListeners(dataStore, index, true)
+    this._setupDataStoreListeners(dataSource, index, true)
   }
 
   /**
    *
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @param child
    * @param previousSiblingID
    * @private
    */
-  _onChildAdded (dataStoreIndex, child, previousSiblingID) {
+  _onChildAdded (dataSourceIndex, child, previousSiblingID) {
     if (!child) {
       console.log('Warning: Child added recieved with undefined child, in DataBoundScrollView')
     }
     /* Mark the entry as undeleted */
-    this._removedEntries[`${child.id}${dataStoreIndex}`] = false
+    this._removedEntries[`${child.id}${dataSourceIndex}`] = false
     this._throttler.add(async () => {
       if (this.options.dataFilter &&
         (typeof this.options.dataFilter === 'function')) {
@@ -763,45 +784,45 @@ export class DataBoundScrollView extends ScrollController {
         let result = await this.options.dataFilter(child)
 
         if (result) {
-          await this._addItem(child, previousSiblingID, dataStoreIndex,)
+          await this._addItem(child, previousSiblingID, dataSourceIndex)
         }
       } else {
         /* There is no dataFilter method, so we can add this child. */
-        await this._addItem(child, previousSiblingID, dataStoreIndex)
+        await this._addItem(child, previousSiblingID, dataSourceIndex)
       }
     })
   }
 
   /**
    *
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @param child
    * @param previousSiblingID
    * @private
    */
   //TODO: This won't reorder children, which is a problem
-  async _onChildChanged (dataStoreIndex, child, previousSiblingID) {
+  async _onChildChanged (dataSourceIndex, child, previousSiblingID) {
     this._throttler.add(async () => {
-      let changedItemIndex = await this._findIndexFromID(dataStoreIndex, child.id)
+      let changedItemIndex = await this._findIndexFromID(dataSourceIndex, child.id)
 
       if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
 
         let result = this.options.dataFilter ? await this.options.dataFilter(child) : true
-        changedItemIndex = await this._findIndexFromID(dataStoreIndex, child.id)
+        changedItemIndex = await this._findIndexFromID(dataSourceIndex, child.id)
 
         if (this.options.dataFilter &&
           typeof this.options.dataFilter === 'function' && !result) {
-          this._removeItem(child, dataStoreIndex)
+          this._removeItem(child, dataSourceIndex)
         } else {
           /* If the entry was removed in the meantime, return */
-          if (this._removedEntries[`${child.id}${dataStoreIndex}`]) {
+          if (this._removedEntries[`${child.id}${dataSourceIndex}`]) {
             return
           }
 
           if (changedItemIndex === -1) {
-            this._addItem(child, previousSiblingID, dataStoreIndex)
+            this._addItem(child, previousSiblingID, dataSourceIndex)
           } else {
-            this._replaceItem(child, dataStoreIndex)
+            this._replaceItem(child, dataSourceIndex)
           }
         }
       }
@@ -810,42 +831,43 @@ export class DataBoundScrollView extends ScrollController {
 
   /**
    *
-   * @param {Number} dataStoreIndex The index of the data store that is being modified
+   * @param {Number} dataSourceIndex The index of the data store that is being modified
    * @param child
    * @param previousSiblingID
    * @private
    */
-  _onChildMoved (dataStoreIndex, child, previousSiblingID) {
-    let current = this._findData(child.id, dataStoreIndex)
+  _onChildMoved (dataSourceIndex, child, previousSiblingID) {
+    let current = this._findData(child.id, dataSourceIndex)
     this._throttler.add(() => {
-      this._moveItem(current, previousSiblingID)
+      this._moveItem(current, previousSiblingID, dataSourceIndex)
     })
   }
 
   /**
    *
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @param child
    * @private
    */
-  _onChildRemoved (dataStoreIndex, child) {
+  _onChildRemoved (dataSourceIndex, child) {
     /* Mark the entry as removed */
-    this._removedEntries[`${child.id}${dataStoreIndex}`] = true
+    this._removedEntries[`${child.id}${dataSourceIndex}`] = true
     this._throttler.add(() => {
-      this._removeItem(child, dataStoreIndex)
+      this._removeItem(child, dataSourceIndex)
     })
   }
+  ;
 
   /**
    *
    * @param id
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @returns {*}
    * @private
    */
-  _getNextVisibleIndex (id, dataStoreIndex) {
+  _getNextVisibleIndex (id, dataSourceIndex) {
     let viewIndex = -1
-    let viewData = this._findData(dataStoreIndex, id)
+    let viewData = this._findData(dataSourceIndex, id)
 
     if (viewData) {
       viewIndex = viewData.position
@@ -853,19 +875,19 @@ export class DataBoundScrollView extends ScrollController {
 
     if (viewIndex === -1) {
 
-      let modelIndex = findIndex(this.options.dataStore, function (model) {
+      let modelIndex = findIndex(this.options.dataSource, function (model) {
         return model.id === id
       })
 
       if (modelIndex === 0 || modelIndex === -1) {
         return this._isDescending ? this._dataSource ? this._dataSource.getLength() - 1 : 0 : 0
       } else {
-        let nextModel = this.options.dataStore[this._isDescending ? modelIndex + 1 : modelIndex - 1]
-        let nextIndex = this._findData(nextModel.id, nextModel.dataStoreIndex).position
+        let nextModel = this.options.dataSource[this._isDescending ? modelIndex + 1 : modelIndex - 1]
+        let nextIndex = this._findData(nextModel.id, nextModel.dataSourceIndex).position
         if (nextIndex > -1) {
           return this._isDescending ? nextIndex === 0 ? 0 : nextIndex - 1 : this._dataSource.getLength() === nextIndex + 1 ? nextIndex : nextIndex + 1
         } else {
-          return this._getNextVisibleIndex(nextModel.id, dataStoreIndex)
+          return this._getNextVisibleIndex(nextModel.id, dataSourceIndex)
         }
       }
     } else {
@@ -885,8 +907,8 @@ export class DataBoundScrollView extends ScrollController {
     let index = 0
 
     while (item) {
-      let {dataId, dataStoreIndex} = item._value
-      if (item._value.dataId && this._internalDataSource[`${dataId}${dataStoreIndex}`] && orderByFunction(child, this._internalDataSource[`${dataId}${dataStoreIndex}`].model)) {
+      let {dataId, dataSourceIndex} = item._value
+      if (item._value.dataId && this._internalDataSource[`${dataId}${dataSourceIndex}`] && orderByFunction(child, this._internalDataSource[`${dataId}${dataSourceIndex}`].model)) {
         return index
       }
 
@@ -933,12 +955,12 @@ export class DataBoundScrollView extends ScrollController {
   /**
    *
    * @param id
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @returns {*|undefined}
    * @private
    */
-  _findData (id, dataStoreIndex) {
-    let data = this._internalDataSource[`${id}${dataStoreIndex}`] || undefined
+  _findData (id, dataSourceIndex) {
+    let data = this._internalDataSource[`${id}${dataSourceIndex}`] || undefined
     return data
   }
 
@@ -949,15 +971,15 @@ export class DataBoundScrollView extends ScrollController {
    * @param renderable
    * @param model
    * @param options
-   * @param dataStoreIndex
+   * @param dataSourceIndex
    * @private
    */
-  _insertId (id = null, position, renderable = {}, model = {}, options = {}, dataStoreIndex, groupValue = null) {
+  _insertId (id = null, position, renderable = {}, model = {}, options = {}, dataSourceIndex, groupValue = null) {
     if (id === undefined || id === null) return
 
-    this._internalDataSource[`${id}${dataStoreIndex}`] = {position, renderable, model, groupValue}
+    this._internalDataSource[`${id}${dataSourceIndex}`] = {position, renderable, model, groupValue}
     for (let element of Object.keys(options)) {
-      this._internalDataSource[`${id}${dataStoreIndex}`][element] = options[element]
+      this._internalDataSource[`${id}${dataSourceIndex}`][element] = options[element]
     }
   }
 
@@ -981,7 +1003,7 @@ export class DataBoundScrollView extends ScrollController {
     let item = this._dataSource._.head
     let {layoutOptions} = this.options
     if (this.options.layout !== ListLayout || (this.options.layoutOptions.direction && this.options.layoutOptions.direction !== 1)) {
-      console.log(`'Trying to calculate the size of a DataBoundScrollView, which can't be done in the current configuration`)
+      console.log('\'Trying to calculate the size of a DataBoundScrollView, which can\'t be done in the current configuration')
       return [undefined, undefined]
     }
     let height = layoutOptions && layoutOptions.margins ? layoutOptions.margins[0] + layoutOptions.margins[2] : 0
@@ -1007,25 +1029,47 @@ export class DataBoundScrollView extends ScrollController {
 
   /**
    *
-   * @param dataStore
+   * @param dataSource
    * @param index
    * @param {Boolean} shouldActivate
    * @private
    */
-  _setupDataStoreListeners (dataStore, index, shouldActivate) {
+  _setupDataStoreListeners (dataSource, index, shouldActivate) {
     let methodName = shouldActivate ? 'on' : 'off'
-    let method = dataStore[methodName]
+    let method = dataSource[methodName]
     method('child_added', this._onChildAdded.bind(this, index))
     method('child_changed', this._onChildChanged.bind(this, index))
     method('child_removed', this._onChildRemoved.bind(this, index))
-    /* Only listen for child_moved if there is one single dataStore. TODO: See if we want to change this behaviour to support moved children within the dataStore */
-    if (!this.options.dataStores) {
+    /* Only listen for child_moved if there is one single dataSource. TODO: See if we want to change this behaviour to support moved children within the dataSource */
+    if (!this.options.dataSources) {
       method('child_moved', this._onChildMoved.bind(this, 0))
     }
   }
 
-  _findIndexFromID (dataStoreIndex, id) {
-    let internalDataSourceData = this._findData(id, dataStoreIndex) || {position: -1}
+  _findIndexFromID (dataSourceIndex, id) {
+    let internalDataSourceData = this._findData(id, dataSourceIndex) || {position: -1}
     return internalDataSourceData.position
+  }
+
+  static with (options) {
+    return new RenderablePrototype(this, options)
+  }
+
+  async _replaceRenderableAtPosition (existingRenderable, child, dataSourceIndex, position) {
+    let newRenderable = await this.options.itemTemplate(child)
+    if (newRenderable instanceof RenderablePrototype) {
+      if (existingRenderable.constructor === newRenderable.type) {
+        existingRenderable.setNewOptions(newRenderable.options)
+        return
+      } else {
+        newRenderable = new newRenderable.type(newRenderable.options)
+      }
+    }
+    newRenderable.dataId = child.id
+    newRenderable.dataSourceIndex = dataSourceIndex
+    this._subscribeToClicks(newRenderable, child)
+    this._insertId(child.id, position, newRenderable, child, {}, dataSourceIndex)
+    this._replace(position, newRenderable, true)
+
   }
 }
