@@ -102,8 +102,6 @@ export class ScrollController extends FamousView {
             }
         }, true);
         this._layoutNodeManager.setNodeOptions(this.options.flowOptions);
-        /* Enable touch move. TODO: When stable and tested, remove this */
-        Engine.enableTouchMove();
         this._initNativeScrollGroup();
 
         /* TODO: Remove duplicates this._viewSequence, this._dataSource. Kept for DBSV compatibility */

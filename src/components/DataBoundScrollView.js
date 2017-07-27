@@ -9,10 +9,10 @@
 
  */
 
-import sortBy                       from 'lodash/sortBy.js'
-import findIndex                    from 'lodash/findIndex.js'
-import Timer                        from 'famous/utilities/Timer.js'
-import ListLayout                   from 'famous-flex/layouts/ListLayout.js'
+import sortBy                         from 'lodash/sortBy.js'
+import findIndex                      from 'lodash/findIndex.js'
+import Timer                          from 'famous/utilities/Timer.js'
+import ListLayout                     from 'famous-flex/layouts/ListLayout.js'
 
 import { debounce }                   from 'lodash-decorators'
 
@@ -20,7 +20,7 @@ import { Throttler }                  from '../utils/Throttler.js'
 import { Utils }                      from '../utils/view/Utils.js'
 import { ReflowingScrollView }        from './ReflowingScrollView.js'
 import { combineOptions }             from '../utils/CombineOptions.js'
-import { RenderablePrototype }      from 'famous/utilities/RenderablePrototype.js'
+import { RenderablePrototype }        from 'famous/utilities/RenderablePrototype.js'
 import { ScrollController }           from '../core/ScrollController.js'
 
 //TODO If groupBy returns falsey value, such as 0, the group won't correctly be removed
@@ -121,13 +121,13 @@ export class DataBoundScrollView extends ScrollController {
       return this
     }
 
-    if (this.options.dataStore && this.options.dataStores) {
-      throw new Error('Both the single dataStore and the multiple dataStores is set, please decide for one or the other')
+    if (this.options.dataSource && this.options.dataSources) {
+      throw new Error('Both the single dataSource and the multiple dataSources is set, please decide for one or the other')
     }
-    if (this.options.dataStores) {
-      this._bindMultipleDataSources(this.options.dataStores)
-    } else if (this.options.dataStore) {
-      this._bindDataSource(this.options.dataStore)
+    if (this.options.dataSources) {
+      this._bindMultipleDataSources(this.options.dataSources)
+    } else if (this.options.dataSource) {
+      this._bindDataSource(this.options.dataSource)
     }
   }
 
