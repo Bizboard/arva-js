@@ -19,6 +19,7 @@ import {Throttler}                  from '../utils/Throttler.js';
 import {Utils}                      from '../utils/view/Utils.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
 import {combineOptions}             from '../utils/CombineOptions.js';
+import { RenderablePrototype }      from 'famous/utilities/RenderablePrototype.js'
 
 /**
  * A FlexScrollView with enhanced functionality for maintaining a two-way connection with a PrioritisedArray.
@@ -1059,5 +1060,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
     _findIndexFromID(dataStoreIndex, id) {
         let internalDataSourceData = this._findData(id, dataStoreIndex) || { position: -1 };
         return internalDataSourceData.position;
+    }
+
+    static with(options) {
+      return new RenderablePrototype(this, options);
     }
 }
