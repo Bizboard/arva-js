@@ -1007,8 +1007,8 @@ export class View extends FamousView {
     if (newRenderable instanceof RenderablePrototype) {
       let renderablePrototype = newRenderable
       let {options, type} = renderablePrototype
-      if (oldRenderable && oldRenderable.constructor === type) {
-        oldRenderable.setNewOptions(options)
+      if (oldRenderable && oldRenderable.constructor === type && oldRenderable.setNewOptions) {
+        oldRenderable.setNewOptions(options);
         newRenderable = oldRenderable
         this._renderableHelper.decorateRenderable(this._getRenderableID(newRenderable), ...dynamicDecorations)
         return newRenderable
