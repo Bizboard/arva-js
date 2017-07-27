@@ -1797,8 +1797,7 @@
               }
             }
           }
-        ],
-        "exportKind": "value"
+        ]
       }
     ],
     "directives": []

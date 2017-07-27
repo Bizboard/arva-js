@@ -548,8 +548,7 @@
               }
             }
           }
-        ],
-        "exportKind": "value"
+        ]
       }
     ],
     "directives": []

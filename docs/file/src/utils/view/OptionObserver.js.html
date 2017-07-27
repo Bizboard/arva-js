@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html>
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"><head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../../">
+  <title data-ice="title">src/utils/view/OptionObserver.js | Arva API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+<link data-ice="userStyle" rel="stylesheet" href="user/css/0-styles.css">
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  <a href="./manual/overview/tutorial.html" data-ice="manualHeaderLink">Manual</a>
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/DataBoundScrollView.js~DataBoundScrollView.html">DataBoundScrollView</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/Dialog.js~Dialog.html">Dialog</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/ReflowingScrollView.js~ReflowingScrollView.html">ReflowingScrollView</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">components/logic/branding</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html">BrandingEngine</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/components/logic/branding/BrandingEngineSingleton.js~BrandingEngineSingleton.html">BrandingEngineSingleton</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">core</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/App.js~App.html">App</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Controller.js~Controller.html">Controller</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Model.js~Model.html">Model</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/Router.js~Router.html">Router</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/core/View.js~View.html">View</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/DataSource.js~DataSource.html">DataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedArray.js~PrioritisedArray.html">PrioritisedArray</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/PrioritisedObject.js~PrioritisedObject.html">PrioritisedObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/Snapshot.js~Snapshot.html">Snapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html">FirebaseDataSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html">SharePointDataSource</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/DataModelGenerator.js~DataModelGenerator.html">DataModelGenerator</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SharePointSnapshot.js~SharePointSnapshot.html">SharePointSnapshot</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Settings.js~Settings.html">Settings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/SharePoint.js~SharePoint.html">SharePoint</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/datasources/SharePoint/SPSoapAdapter/Worker</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SharePointClient.js~SharePointClient.html">SharePointClient</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/datasources/SharePoint/SPSoapAdapter/Worker/SoapClient.js~SoapClient.html">SoapClient</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/local</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalModel.js~LocalModel.html">LocalModel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html">LocalPrioritisedArray</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">data/storage</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/storage/FileSource.js~FileSource.html">FileSource</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/data/storage/FirebaseFileSource.js~FirebaseFileSource.html">FirebaseFileSource</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">layout</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/layout/Decorators.js~Event.html">Event</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/layout/Decorators.js~Flow.html">Flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/layout/Decorators.js~Layout.html">Layout</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-dynamic">dynamic</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-TrueSizedLayoutDockHelper">TrueSizedLayoutDockHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-bindings">bindings</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-event">event</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flow">flow</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-layout">layout</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-flowStates">flowStates</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DockTypes">DockTypes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-StickTypes">StickTypes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-StickTypes">StickTypes</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-dockBottom">dockBottom</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-dockLeft">dockLeft</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-dockRight">dockRight</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-dockTop">dockTop</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-fill">fill</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">routers</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/routers/ArvaRouter.js~ArvaRouter.html">ArvaRouter</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">surfaces</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/surfaces/Dropdown.js~Dropdown.html">Dropdown</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/surfaces/InputSurface.js~InputSurface.html">InputSurface</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-Surface">Surface</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/BlobHelper.js~BlobHelper.html">BlobHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/DialogManager.js~DialogManager.html">DialogManager</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Injection.js~Injection.html">Injection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/KeyboardHelper.js~KeyboardHelper.html">KeyboardHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/ObjectHelper.js~ObjectHelper.html">ObjectHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/Throttler.js~Throttler.html">Throttler</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-callbackToPromise">callbackToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-successAndErrorToPromise">successAndErrorToPromise</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-waitMilliseconds">waitMilliseconds</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-combineOptions">combineOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-limit">limit</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/di</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~ClassProvider.html">ClassProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~FactoryProvider.html">FactoryProvider</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Inject.html">Inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~Provide.html">Provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~SuperConstructor.html">SuperConstructor</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Decorators.js~TransientScope.html">TransientScope</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/di/Injector.js~Injector.html">Injector</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-annotate">annotate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-hasAnnotation">hasAnnotation</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-inject">inject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-provide">provide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-readAnnotations">readAnnotations</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-createProviderFromFnOrClass">createProviderFromFnOrClass</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isFunction">isFunction</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isObject">isObject</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-isUpperCase">isUpperCase</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-toString">toString</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-ownKeys">ownKeys</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/dialog</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/dialog/DialogWrapper.js~DialogWrapper.html">DialogWrapper</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/hotfixes</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-invalidateLayoutForElement">invalidateLayoutForElement</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/request</div><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ExistsRequest">ExistsRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-GetRequest">GetRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-PostRequest">PostRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-UrlParser">UrlParser</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-ParseStringToXml">ParseStringToXml</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">utils/view</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~BaseLayoutHelper.html">BaseLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~DockedLayoutHelper.html">DockedLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~FullSizeLayoutHelper.html">FullSizeLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/LayoutHelpers.js~TraditionalLayoutHelper.html">TraditionalLayoutHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/OptionObserver.js~OptionObserver.html">OptionObserver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/RenderableHelper.js~RenderableHelper.html">RenderableHelper</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/SizeResolver.js~SizeResolver.html">SizeResolver</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/utils/view/Utils.js~Utils.html">Utils</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-onOptionChange">onOptionChange</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/utils/view/OptionObserver.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * Created by lundfall on 23/02/2017.
+ */
+import cloneDeepWith            from &apos;lodash/cloneDeepWith&apos;
+import difference               from &apos;lodash/difference&apos;
+import each                     from &apos;lodash/each&apos;
+import Timer                    from &apos;famous/utilities/Timer.js&apos;
+import EventEmitter             from &apos;eventemitter3&apos;
+
+import { ArrayObserver }          from &apos;./ArrayObserver.js&apos;
+import { ObjectHelper }           from &apos;../ObjectHelper&apos;
+import { combineOptions }         from &apos;../CombineOptions&apos;
+import { PrioritisedObject }      from &apos;../../data/PrioritisedObject&apos;
+import { Model }                  from &apos;../../core/Model&apos;
+
+let listeners = Symbol(&apos;listeners&apos;),
+  notFound = Symbol(&apos;notFound&apos;),
+  newChanges = Symbol(&apos;newChanges&apos;),
+  originalValue = Symbol(&apos;originalValue&apos;),
+  optionMetaData = Symbol(&apos;optionMetaData&apos;),
+  oldValue = Symbol(&apos;oldValue&apos;),
+  instanceIdentifier = Symbol(&apos;instanceIdentifier&apos;)
+
+export let onOptionChange = Symbol(&apos;onOptionChange&apos;)
+
+//TODO Fix some support for arrays (keep it simple, not oftenly used!)
+
+export class OptionObserver extends EventEmitter {
+  _reverseListenerTree = {}
+  _newReverseListenerTree = {}
+  _listenerTreeMetaData = {}
+  _listenerTree = {}
+  /* We have to keep track of the models, because they use their own getter/setter hooks and we can&apos;t use the builtin ones */
+  _modelListeners = {}
+  _activeRecordings = {}
+  /* This contains the option difference to indicate a value change */
+  _newOptionUpdates = {}
+  _updatesForNextTick = {}
+  _forbiddenUpdatesForNextTick = {}
+  _listeningToSetters = true
+
+  /* The max supported depth in deep-checking iterations */
+  static maxSupportedDepth = 10
+  /* Used for preprocessing of options, which is a special type of update */
+  static preprocess = Symbol(&apos;preprocess&apos;)
+
+  /**
+   *
+   * @param defaultOptions
+   * @param options
+   * @param preprocessBindings
+   * @param debugName Used for displaying error messages and being able to trace them back more easily
+   */
+  constructor (defaultOptions, options, preprocessBindings, debugName) {
+    super()
+    this._errorName = debugName
+    ObjectHelper.bindAllMethods(this, this)
+    this._preprocessBindings = preprocessBindings
+    OptionObserver._registerNewInstance(this)
+    this.defaultOptions = defaultOptions
+    this.options = options
+    this._setupOptions(options, defaultOptions)
+    if (!window.optionObservers) {
+      window.optionObservers = []
+    }
+    window.optionObservers.push(this)
+
+  }
+
+  /**
+   * Records the updates that happen in options and models (intended to be called before the construction of that renderable)
+   * @param renderableName
+   */
+  recordForRenderable (renderableName, callback) {
+    this._recordForEntry(renderableName, false)
+    callback()
+    this._stopRecordingForEntry(renderableName)
+  }
+
+  _recordForPreprocessing (callback) {
+    this._recordForEntry(OptionObserver.preprocess, true)
+    callback()
+    this._stopRecordingForEntry(OptionObserver.preprocess)
+  }
+
+  /**
+   * Records for a specific entry
+   * @param {String} entryName
+   * @param {Boolean} allowSetters
+   * @private
+   */
+  _recordForEntry (entryName, allowSetters) {
+    this._beginListenerTreeUpdates(entryName)
+    PrioritisedObject.setPropertyGetterSpy((model, propertyName) =&gt; {
+      /* TODO handle the case where this can be undefined */
+      let modelListener = this._modelListeners[model.constructor.name][model.id]
+      /* Add the renderable as listening to the tree */
+      let localListenerTree = this._accommodateObjectPath(modelListener.localListenerTree,
+        [propertyName])
+      localListenerTree[listeners] = localListenerTree[listeners] || {}
+      this._addToListenerTree(entryName, localListenerTree)
+      modelListener.startListening()
+    })
+    let optionRecorder = this._activeRecordings[entryName] = ({type, propertyName, nestedPropertyPath}) =&gt; {
+      if (type === &apos;setter&apos;) {
+        if (allowSetters) {
+          /* Be sure to avoid infinite loops if there are setters that trigger getters that are matched to this
+           *  recording */
+          this._preventEntryFromBeingUpdated(entryName)
+        } else {
+          this._throwError(&apos;Setting an option during instanciation of renderable&apos;)
+        }
+      } else {
+        let localListenerTree = this._accessObjectPath(this._listenerTree, nestedPropertyPath.concat(propertyName))
+        this._addToListenerTree(entryName, localListenerTree)
+      }
+    }
+    this._activeRecordings[entryName] = optionRecorder
+    this.on(&apos;optionTrigger&apos;, optionRecorder)
+  }
+
+  _addToListenerTree (renderableName, localListenerTree) {
+      
+    let listenerStructure = localListenerTree[listeners]
+    /* Renderable already added to listener tree, so no need to do that again */
+    let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._listenerTreeMetaData[renderableName]
+
+    this._newReverseListenerTree[renderableName].push(listenerStructure)
+
+    if (listenersCanChange &amp;&amp; !listenersChanged) {
+      /* We optimize the most common use case, which is that no listeners change.
+       *  In that case, the order of listeners will be the same, otherwise we need to accommodate*/
+
+      if (this._reverseListenerTree[renderableName][matchingListenerIndex] !== listenerStructure) {
+        this._listenerTreeMetaData[renderableName].listenersChanged = true
+      }
+
+      this._listenerTreeMetaData[renderableName].matchingListenerIndex++
+    }
+
+    if (listenerStructure[renderableName]) {
+      return
+    }
+
+    listenerStructure[renderableName] = true
+
+  }
+
+  /**
+   * Executes the preprocess function. The preprocess function is treated similarly to that of a renderable,
+   * but it&apos;s identified with the symbol OptionObserver.preprocess instead of a string
+   *
+   * Different examples of preprocessing situations:
+   * Scenario 1: Construction
+   * A. The preprocessing function is called
+   * B. Getters are detected for the pre-process function
+   * C. this.options isn&apos;t set, so nothing more happens
+   *
+   * Scenario 2. Setter trigger of a preprocess function
+   * A. After flushing, it is concluded to belong to the preprocess function (and other renderables)
+   * B. The preprocess function is triggered immediately and firstly when flushing change events
+   * C. The preprocess function re-executes the function and getters are triggered again
+   * D. this.options is defined, and it setters will be notified.
+   * E. An inner flush is forced within the flush, and it there might be new renderables needing update now
+   * F. The flush completes and resets the _updatesForNextTick
+   * G. The outer flush continues, and has nothing more to do
+   * H. Since we made changes within a flush, the static OptionObserver loop _flushAllUpdates, will call the flush function once again, but doing nothing
+   *
+   * Scenario 3. Recombine options
+   * A. After flushing, it is concluded that the option changes belong to the preprocess function (and other renderables)
+   * B. Continues same as scenario 2.
+   *
+   * @private
+   */
+  _doPreprocessing (incomingOptions) {
+    if (!this._preprocessBindings) {
+      return
+    }
+
+    //TODO make this work. 1 add the bindings to the options from defaultOptions by traversing options. 2. record 3. define the setters as the diff between
+
+    this._deepTraverse(this.defaultOptions, (nestedPropertyPath, defaultOptionParent, defaultOption, propertyName, [incomingOptionParent]) =&gt; {
+      this._setupOptionLink(incomingOptionParent, propertyName, incomingOptionParent[propertyName], nestedPropertyPath)
+      /* Unspecified option, bailing out */
+      if (!incomingOptions[propertyName]) {
+        return true
+      }
+    }, [incomingOptions])
+    this._recordForPreprocessing(() =&gt;
+      this._preprocessBindings(incomingOptions, this.defaultOptions))
+    /* Prevent the preprocess from being triggered within the next flush. This is important
+     * to do in case the preprocess function sets variables that it also gets, (ie if(!options.color) options.color = &apos;red&apos;)
+     */
+    this._forbiddenUpdatesForNextTick[OptionObserver.preprocess] = true
+    /*if (this.options) {
+     this._deepTraverse(incomingOptions, (nestedPropertyPath, incomingOptionParent, incomingOption, propertyName, [defaultOptionParent, originalOptionParent]) =&gt; {
+     /!* Specifying unkown option, bail out *!/
+     if (!defaultOptionParent[propertyName]) {
+     return true
+     }
+     let oldValue = originalOptionParent[propertyName]
+     if (incomingOption !== oldValue) {
+     this._updateOptionsStructure([propertyName], incomingOptionParent, nestedPropertyPath, [oldValue])
+     }
+     }, [this.defaultOptions, this.options || {}])
+     if (Object.keys(this._updatesForNextTick)) {
+     this._flushUpdates()
+     }
+     }*/
+
+  }
+
+  _endListenerTreeUpdates (renderableName) {
+    if (this._listenerTreeMetaData[renderableName].listenersChanged) {
+      let oldListeners = this._reverseListenerTree[renderableName]
+      /* Remove the old listeners and add the new ones again. In this way, we get O(n + m) complexity
+       *  instead of O(m*n) */
+      for (let listenerTree of oldListeners) {
+        delete listenerTree[renderableName]
+      }
+      let newListeners = this._newReverseListenerTree[renderableName]
+
+      for (let listenerTree of newListeners) {
+        listenerTree[renderableName] = true
+      }
+
+    }
+    this._reverseListenerTree[renderableName] = this._newReverseListenerTree[renderableName]
+    delete this._newReverseListenerTree[renderableName]
+  }
+
+  _beginListenerTreeUpdates (renderableName) {
+    /* The listener meta data sets a counter in order to match the new listeners in comparison to the old listeners*/
+    let numberOfExistingListenerPaths = this._accessObjectPath(this._reverseListenerTree, [renderableName, length])
+    if (numberOfExistingListenerPaths === notFound) {
+      numberOfExistingListenerPaths = 0
+    }
+    this._listenerTreeMetaData[renderableName] = {
+      matchingListenerIndex: 0,
+      listenersCanChange: !!numberOfExistingListenerPaths,
+      listenersChanged: false
+    }
+    this._newReverseListenerTree[renderableName] = []
+
+  }
+
+  /**
+   * Called when a renderable shouldn&apos;t be recorded anymore
+   * @param entryName
+   */
+  _stopRecordingForEntry (entryName) {
+    this._endListenerTreeUpdates(entryName)
+    PrioritisedObject.removePropertyGetterSpy()
+    this.removeListener(&apos;optionTrigger&apos;, this._activeRecordings[entryName])
+    delete this._activeRecordings[entryName]
+  }
+
+  /**
+   * Returns the options that are being observed
+   * @returns {*}
+   */
+  getOptions () {
+    return this.options
+  }
+
+  /**
+   * Should be called when the renderable isn&apos;t relevant anymore
+   * @param {String} renderableName
+   */
+  deleteRecordingForRenderable (renderableName) {
+    //todo implement this (is an efficient way)
+  }
+
+  /**
+   * Updates the options from an external reason
+   * @param newOptions
+   */
+  recombineOptions (newOptions) {
+    let newOptionsAreAlsoOptions = !!newOptions[optionMetaData]
+    /*this._doPreprocessing(newOptions, this.options, true)*/
+    this._deepTraverse(this.options, (nestedPropertyPath, optionObject, existingOptionValue, key, [newOptionObject, defaultOption]) =&gt; {
+      //todo confirm whether this check is appropriate (I don&apos;t think it is)
+      let newOptionValue = newOptionObject[key];
+      if (!newOptionValue &amp;&amp; optionObject[key] !== null) {
+        let defaultOptionValue = defaultOption[key];
+        if (defaultOptionValue !== newOptionValue &amp;&amp; (defaultOptionValue !== existingOptionValue &amp;&amp;
+          /* If new value is undefined, and the previous one was already the default, then don&apos;t update (will go false)*/
+          !(this._isPlainObject(existingOptionValue) &amp;&amp; existingOptionValue[optionMetaData].isDefault)
+          || newOptionsAreAlsoOptions)
+        ) {
+          this._markPropertyAsUpdated(nestedPropertyPath, key, newOptionObject[key], existingOptionValue)
+        }
+        return true
+      } else if (!(newOptionValue &amp;&amp; this._isPlainObject(newOptionValue)) &amp;&amp; existingOptionValue !== newOptionValue) {
+        /* Triggers the appriopriate events */
+        this._markPropertyAsUpdated(nestedPropertyPath, key, newOptionObject[key], existingOptionValue)
+      }
+    }, [newOptions, this.defaultOptions])
+    //TODO Comment this if-clause/see if it should be removed
+    if (newOptionsAreAlsoOptions) {
+      this.options = newOptions
+    }
+
+    /* Flush the updates in order to trigger the updates immediately */
+    this._flushUpdates()
+  }
+
+  _setupOptions (options, defaultOptions) {
+    let rootProperties = Object.keys(defaultOptions)
+    this._createListenerTree()
+    this._doPreprocessing(options)
+    this._updateOptionsStructure(rootProperties, options, [], rootProperties.map((rootProperty) =&gt; undefined))
+    //TODO block events so that we don&apos;t have to do a lot on startup
+    this._flushUpdates()
+  }
+
+  _setupOptionLink (object, key, newValue, nestedPropertyPath) {
+
+    if (this._isPlainObject(newValue) &amp;&amp; newValue[optionMetaData] &amp;&amp; newValue[optionMetaData].owners.includes(this)) {
+      /* Shallow clone at this level, which will become a deep clone when we&apos;re finished traversing */
+      newValue = this._shallowCloneOption(newValue)
+    }
+
+    /* Only add the getter/setter hook if there isn&apos;t one yet */
+    this._addGetterSetterHook(object, key, newValue, nestedPropertyPath)
+    //TODO there might be more optimal ways of doing this, the option will be marked 4-5 times on setup
+    this._markAsOption(object)
+    this._markAsOption(newValue)
+    return newValue
+  }
+
+  _shallowCloneOption (optionToShallowClone) {
+    if (!this._isPlainObject(optionToShallowClone)) {
+      return optionToShallowClone
+    }
+    let result = {}
+    Object.defineProperties(result, Object.getOwnPropertyDescriptors(optionToShallowClone))
+    return result
+  }
+
+  /**
+   * Adds a getter/setter hook to a certain object for a key with a value, where object[key]===value.
+   * @param object
+   * @param key
+   * @param value
+   * @param {Array} nestedPropertyPath
+   * @private
+   */
+  _addGetterSetterHook (object, key, value, nestedPropertyPath) {
+    ObjectHelper.addGetSetPropertyWithShadow(object, key, value, true, true,
+      (info) =&gt;
+        this._onEventTriggered({...info, type: &apos;setter&apos;, parentObject: object, nestedPropertyPath})
+      , (info) =&gt;
+        this._onEventTriggered({...info, type: &apos;getter&apos;, parentObject: object, nestedPropertyPath}))
+  }
+
+  /**
+   * Called when a model is changed
+   * @param model
+   * @param {Array} changedProperties
+   * @param {String} modelKeyInParent The key of the parent object
+   * @param {Array} nestedPropertyPath
+   * @private
+   */
+  _onModelChanged (model, changedProperties, modelKeyInParent, nestedPropertyPath) {
+    this._updateOptionsStructure(changedProperties, model, nestedPropertyPath.concat(modelKeyInParent))
+  }
+
+  /**
+   * Happens when an event is triggered (getter/setter)
+   * @param {Object} info ({ nestedPropertyPath, propertyName, parentObject })
+   * @private
+   */
+  _onEventTriggered (info) {
+    this.emit(&apos;optionTrigger&apos;, info)
+    if (info.type === &apos;setter&apos; &amp;&amp; this._listeningToSetters) {
+      let {nestedPropertyPath, propertyName, parentObject, oldValue} = info
+      /* If reassignment to exactly the same thing, then don&apos;t do any update */
+      if (oldValue !== parentObject[propertyName]) {
+        this._updateOptionsStructure([propertyName], parentObject, nestedPropertyPath, [oldValue])
+      }
+    }
+  }
+
+  /**
+   * Deep updates the options based on parameter
+   * @param changedProperties
+   * @param parentObject
+   * @param nestedPropertyPath
+   * @param oldValues
+   * @private
+   */
+  _updateOptionsStructure (changedProperties, parentObject, nestedPropertyPath, oldValues = []) {
+    for (let [index, property] of changedProperties.entries()) {
+      this._markPropertyAsUpdated(nestedPropertyPath, property, parentObject[property], oldValues[index])
+    }
+  }
+
+  _flushUpdates () {
+    /* Do a traverse only for the leafs of the new updates, to avoid doing extra work */
+    if (this._updatesForNextTick[OptionObserver.preprocess]) {
+      this._doPreprocessing(this.options)
+    }
+    this._deepTraverse(this._newOptionUpdates, (nestedPropertyPath, updateObjectParent, updateObject, propertyName, [optionObject, defaultOptionParent, listenerTree]) =&gt; {
+
+      let newValue = updateObject[newChanges],
+        oldValue = updateObject[originalValue]
+      let defaultOption = defaultOptionParent[propertyName]
+      let innerListenerTree = listenerTree[propertyName]
+
+      if (this._isPlainObject(defaultOptionParent)) {
+        this._processImmediateOptionReassignment({
+          newValue, oldValue, defaultOption
+        })
+      }
+
+      this._processNewOptionUpdates({
+        defaultOptionParent: defaultOptionParent,
+        nestedPropertyPath,
+        defaultOption,
+        newValueParent: optionObject,
+        newValue,
+        propertyName,
+        listenerTree: innerListenerTree
+      })
+
+      /* If the parent is a model or function, then no need to continue */
+      if (!this._isPlainObject(defaultOption)) {
+        return
+      }
+
+      let outerNestedPropertyPath = nestedPropertyPath.concat(propertyName)
+
+      this._deepTraverse(defaultOption, (innerNestedPropertyPath, defaultOptionParent, defaultOption, propertyName, [newValueParent, listenerTreeParent]) =&gt; {
+        this._processNewOptionUpdates({
+          nestedPropertyPath: outerNestedPropertyPath.concat(nestedPropertyPath),
+          defaultOption,
+          newValueParent: newValueParent,
+          newValue: newValueParent[propertyName],
+          propertyName,
+          defaultOptionParent,
+          listenerTree: listenerTreeParent[propertyName]
+        })
+      }, [optionObject[propertyName], innerListenerTree])
+    }, [this.options, this.defaultOptions, this._listenerTree], true)
+    this._handleResultingUpdates()
+    this._newOptionUpdates = {}
+
+  }
+
+  /**
+   * Marks a certain property as updated
+   * @param nestedPropertyPath
+   * @param propertyName
+   * @param value
+   * @private
+   */
+  _markPropertyAsUpdated (nestedPropertyPath, propertyName, value, oldValue) {
+    OptionObserver._markInstanceAsDirty(this)
+    /* Mark the object as changes in the most common path */
+    let updateObject = this._accommodateObjectPathUnless(this._newOptionUpdates, nestedPropertyPath, (object) =&gt;
+      object[newChanges]
+    )
+    /* We rest upon the assumption that no function can access a nested path (options.nested.myString)
+     * without also accessing intermediary properties (options.nested getter is triggered). If this isn&apos;t
+     * true for some reason, updates will be missed */
+    if (updateObject !== notFound) {
+      let localListenerTree = this._accessObjectPath(this._listenerTree, nestedPropertyPath.concat([propertyName, listeners]))
+      for (let entryName of this._getUpdatesEntriesForLocalListenerTree(localListenerTree)) {
+        this._updatesForNextTick[entryName] = true
+      }
+      updateObject[propertyName] = {[newChanges]: value, [originalValue]: oldValue}
+    }
+  }
+
+  _getUpdatesEntriesForLocalListenerTree (localListenerTree) {
+
+    return Object.keys(localListenerTree)
+      .concat(localListenerTree[OptionObserver.preprocess] ? OptionObserver.preprocess : []).filter((entryName) =&gt;
+        !this._forbiddenUpdatesForNextTick[entryName]
+      )
+  }
+
+  /**
+   * Mark an object as being part of an option
+   * @param objectInOptionStructure
+   * @private
+   */
+  _markAsOption (objectInOptionStructure) {
+    if (!this._isPlainObject(objectInOptionStructure)) {
+      return
+    }
+    //TODO This might be able to be optimized
+    let originalOwners = (objectInOptionStructure[optionMetaData] &amp;&amp; objectInOptionStructure[optionMetaData].owners) || []
+    if (!originalOwners.includes(this)) {
+      objectInOptionStructure[optionMetaData] = {
+        owners: originalOwners.concat(this)
+      }
+    }
+
+  }
+
+  _throwError (message) {
+    throw new Error(`${this._errorName}: ${message}`)
+  }
+
+  /**
+   * Sets up a model that will be synchronized to update the options object whenever something is updated, after startListener() is called
+   *
+   * @param nestedPropertyPath
+   * @param model
+   * @param localListenerTree
+   * @private
+   */
+  _setupModel (nestedPropertyPath, model, localListenerTree, property) {
+
+    //TODO This won&apos;t work if the id can be set to something else, so verify that this shouldn&apos;t be possible
+    /* We assume that the constructor name is unique */
+    let onModelChanged = (model, changedProperties) =&gt;
+      this._onModelChanged(model, changedProperties, property, nestedPropertyPath)
+    let isListening = false
+    return this._accommodateObjectPath(this._modelListeners, [model.constructor.name])[model.id] = {
+      startListening: () =&gt; {
+        if (!isListening) {
+          model.on(&apos;changed&apos;, onModelChanged)
+          isListening = true
+        }
+      },
+      stopListening: () =&gt; {
+        if (isListening) {
+          model.removeListener(&apos;changed&apos;, onModelChanged)
+          isListening = false
+        }
+      },
+      localListenerTree,
+      nestedPropertyPath: nestedPropertyPath.concat(property),
+      isListening: () =&gt; isListening
+    }
+  }
+
+  _isPlainObject (object) {
+    return typeof object === &apos;object&apos; &amp;&amp; object.constructor.name === &apos;Object&apos;
+  }
+
+  /**
+   * Deep traverses an object
+   * @param object
+   * @param callback with arguments (nestedPropertyPath, object, value, key, {Array} extraObjectsToTraverse)
+   * @param {Array} extraObjectsToTraverse A couple of extra objects that are assumed to have the same structure
+   * @param onlyForLeaves
+   * @param nestedPropertyPath
+   * @private
+   */
+  _deepTraverse (object, callback, extraObjectsToTraverse = [], onlyForLeaves = false, nestedPropertyPath = [], depthCount = 0) {
+    if (!this._isPlainObject(object)) {
+      return
+    }
+    if (depthCount &gt; OptionObserver.maxSupportedDepth) {
+      this._throwError(`Encountered circular structure or an exceeded maximum depth of ${OptionObserver.maxSupportedDepth} exceeded`)
+    }
+    each(object, (value, key) =&gt; {
+
+      let valueIsPlainObject = value &amp;&amp; typeof value === &apos;object&apos; &amp;&amp; value.constructor.name === &apos;Object&apos;
+      let valueIsLeaf = valueIsPlainObject &amp;&amp; Object.keys(value).length === 0
+      if (!onlyForLeaves || valueIsLeaf) {
+        /* If the callback returns true, then cancel traversion */
+        if (callback(nestedPropertyPath, object, value, key, extraObjectsToTraverse)) {
+          return //canceled traverse
+        }
+      }
+      if (valueIsPlainObject) {
+        this._deepTraverse(
+          value,
+          callback,
+          extraObjectsToTraverse.map((extraObjectToTraverse) =&gt; extraObjectToTraverse[key] || {}),
+          onlyForLeaves,
+          nestedPropertyPath.concat(key),
+          depthCount + 1
+        )
+      }
+    })
+  }
+
+  /**
+   * When properties are removed from options, they are reset to the value specified
+   * @private
+   * @param newValue
+   * @param oldValue
+   * @param defaultOptionValue
+   */
+  _resetRemovedPropertiesIfNeeded (newValue, oldValue, defaultOptionValue) {
+    if (!oldValue || !this._isPlainObject(oldValue) || !defaultOptionValue) {
+      return
+    }
+    let properties = Object.keys(newValue)
+    let oldProperties = Object.keys(oldValue)
+
+    let removedProperties = difference(oldProperties, properties)
+
+    for (let property of removedProperties) {
+      newValue[property] = defaultOptionValue[property]
+    }
+  }
+
+  /**
+   * Compares something to see if it&apos;s predictibly equal
+   * @param firstThing
+   * @param secondThing
+   * @returns {boolean}
+   * @private
+   */
+  _isPredictablyEqual (firstThing, secondThing) {
+    /* Object comparison is not reliable */
+    if (this._isPlainObject(firstThing)) {
+      return false
+    }
+    return firstThing === secondThing
+  }
+
+  /**
+   * Stops when any path is found with certain criteria
+   * @param object
+   * @param path
+   * @returns {*}
+   * @private
+   */
+  _accommodateObjectPathUnless (object, path, criteriaCallback) {
+    for (let property of path) {
+      if (object[property] &amp;&amp; criteriaCallback(object[property])) {
+        return notFound
+      }
+      object[property] = {}
+      object = object[property]
+    }
+    return object
+  }
+
+  /**
+   * Accommodates a path in an object
+   * @param object
+   * @param {Array&lt;String&gt;} path
+   * @returns {*}
+   * @private
+   */
+  _accommodateObjectPath (object, path) {
+    for (let property of path) {
+      if (!object[property]) {
+        object[property] = {}
+      }
+      object = object[property]
+    }
+    if (!object) {
+      object = {}
+    }
+    return object
+  }
+
+  /**
+   * Similar to _.get, except that it returns notFound (a symbol) when not found
+   * @param object
+   * @param path
+   * @returns {*}
+   * @private
+   */
+  _accessObjectPath (object, path) {
+    for (let pathString of path) {
+      if (!object || !object.hasOwnProperty(pathString)) {
+        return notFound
+      }
+      object = object[pathString]
+    }
+    return object
+  }
+
+  _iterateInObjectPath (object, path, callback) {
+    for (let pathString of path) {
+      let objectToPassToCallback = notFound
+      if (object.hasOwnProperty(pathString)) {
+        object = object[pathString]
+        objectToPassToCallback = object
+      }
+      callback(objectToPassToCallback)
+    }
+    return object
+  }
+
+  /**
+   * Deep traverses the entire options structure
+   * @param callback
+   * @returns {*}
+   * @private
+   */
+  _deepTraverseOptions (callback) {
+    return this._deepTraverse(this.options, callback)
+  }
+
+  _handleResultingUpdates () {
+    if (this._updatesForNextTick[OptionObserver.preprocess]) {
+      delete this._updatesForNextTick[OptionObserver.preprocess]
+      /* TODO extract the incomingOption by checking this._newOptionUpdates */
+      /*this._doPreprocessing()*/
+    }
+    for (let renderableName in this._updatesForNextTick) {
+      this.emit(&apos;needUpdate&apos;, renderableName)
+    }
+    this._updatesForNextTick = {}
+    this._forbiddenUpdatesForNextTick = {}
+  }
+
+  /**
+   *
+   * @param newValue
+   * @param oldValue
+   * @param defaultOptionValue
+   * @private
+   */
+  _processImmediateOptionReassignment ({newValue, oldValue, defaultOptionValue}) {
+    //This is kept a stub if there&apos;s more stuff needed to be added here. TODO Refactor function if not
+    this._resetRemovedPropertiesIfNeeded(newValue, oldValue, defaultOptionValue)
+  }
+
+  /**
+   * The most important function of the class. It traverses an ontouched level in the hierarchy of options
+   * and acts accordingly
+   *
+   * @param nestedPropertyPath
+   * @param defaultOption
+   * @param newValue
+   * @param propertyName
+   * @param newValueParent
+   * @param listenerTree
+   * @param defaultOptionParent
+   * @returns {*}
+   * @private
+   */
+  _processNewOptionUpdates ({nestedPropertyPath, defaultOption, newValue, propertyName, newValueParent, listenerTree, defaultOptionParent}) {
+
+    let valueIsModelProperty = newValueParent instanceof Model &amp;&amp; typeof defaultOptionParent === &apos;function&apos;
+
+    if (!valueIsModelProperty &amp;&amp; !defaultOptionParent.hasOwnProperty(propertyName)) {
+      this._throwError(`Assignment to undefined option: ${nestedPropertyPath.concat(propertyName).join(&apos;-&gt;&apos;)}`)
+    }
+
+    if (typeof defaultOption === &apos;function&apos; &amp;&amp; (defaultOption.prototype instanceof Model || defaultOption === Model)) {
+      if (!newValue || !(newValue instanceof defaultOption)) {
+        this._throwError(`Failed to specify required model: ${propertyName} (${nestedPropertyPath.join(&apos;-&gt;&apos;)})`)
+      }
+    }
+
+    let onChangeFunction = this._accessObjectPath(newValueParent, [onOptionChange, propertyName])
+
+    if (onChangeFunction !== notFound) {
+      onChangeFunction(newValue)
+    }
+
+    if (valueIsModelProperty) {
+      return
+    }
+
+    let valueToLinkTo
+
+    if (newValue === undefined) {
+      newValue = defaultOption
+      if (this._isPlainObject(newValue)) {
+        valueToLinkTo = {};
+        this._markAsOption(valueToLinkTo);
+        valueToLinkTo[optionMetaData].isDefault = true;
+      }
+    }
+
+    if (valueToLinkTo === undefined) {
+      valueToLinkTo = newValue
+    }
+
+    if (valueToLinkTo !== undefined) {
+      this._setupOptionLink(newValueParent, propertyName, valueToLinkTo, nestedPropertyPath)
+    }
+
+    //TODO clean up code if needed (why is it even needed?)
+    for (let property of Object.keys(defaultOptionParent)
+      .filter((property) =&gt; this._isPlainObject(defaultOptionParent[property]) &amp;&amp; newValueParent[property] === undefined)
+      ) { newValueParent[property] = {} }
+
+    if (newValue instanceof Model) {
+      this._handleNewModelUpdate(nestedPropertyPath, newValue, listenerTree, propertyName)
+    }
+
+    return newValue
+  }
+
+  _handleNewModelUpdate (nestedPropertyPath, newValue, listenerTree, key) {
+    //TODO This implementation is a bit naive, won&apos;t work always (or in second though, won&apos;t it)
+    let oldListenerStructureBase = this._accessObjectPath(this._modelListeners, [oldValue.constructor.name])
+
+    if (oldListenerStructureBase === notFound || !oldListenerStructureBase[oldValue.id]) {
+      return this._setupModel(nestedPropertyPath, newValue, listenerTree, key).startListening()
+    }
+
+    let oldListenerStructure = oldListenerStructureBase[oldValue.id]
+
+    if (oldListenerStructure.isListening()) {
+      oldListenerStructure.stopListening()
+      delete oldListenerStructureBase[oldValue.id]
+      this._setupModel(nestedPropertyPath, newValue, listenerTree, key).startListening()
+    }
+  }
+
+  _createListenerTree () {
+    this._listenerTree = cloneDeepWith(this.defaultOptions, this._listenerTreeCloner) || {[listeners]: {}}
+  }
+
+  /**
+   * Creates the listener tree
+   * We are interested in a tree that is a copy of the defaultOptions and with a symbol [listeners] set to {} everywhere applicable
+   * @param value
+   * @returns {*}
+   * @private
+   */
+  _listenerTreeCloner (value, propertyName) {
+    if (propertyName === listeners) {
+      return value
+    }
+    let isPlainObject = this._isPlainObject(value)
+    /* If the object already has the listeners set*/
+    if (typeof value === &apos;object&apos; &amp;&amp; value[listeners] &amp;&amp; !Object.keys(value).length) {
+      return value
+    }
+    if (isPlainObject) {
+      if (!value[listeners]) {
+        let newValue = cloneDeepWith({...value, [listeners]: {}}, this._listenerTreeCloner)
+        return newValue
+      }
+    } else {
+      return {[listeners]: {}}
+    }
+  }
+
+  static _instances = []
+  static _dirtyInstances = {}
+
+  static _tickCount = 0
+
+  /**
+   * Every tick, the changes are flushed in the options object. The _isFlushingUpdates flag gives an indication whether
+   * the flushings are in progress or not
+   *
+   * @private
+   */
+  static _flushAllUpdates () {
+    this._isFlushingUpdates = true
+    OptionObserver._tickCount++
+    /* Reset dirty instances, because we are going to traverse all instances anyways */
+    OptionObserver._dirtyInstances = {}
+    for (let optionObserver of OptionObserver._instances) {
+      optionObserver._flushUpdates()
+    }
+    /* Flush dirty instances until there are no more dirty instances left */
+    while (Object.keys(OptionObserver._dirtyInstances).length) {
+      let dirtyInstances = {...OptionObserver._dirtyInstances}
+      OptionObserver._dirtyInstances = {}
+      for (let optionObserverID in dirtyInstances) {
+        dirtyInstances[optionObserverID]._flushUpdates()
+      }
+    }
+    this._isFlushingUpdates = false
+  }
+
+  static _registerNewInstance (newInstance) {
+    this._instances.push(newInstance)
+    newInstance[instanceIdentifier] = this._instances.length
+  }
+
+  static _markInstanceAsDirty (dirtyInstance) {
+    OptionObserver._dirtyInstances[dirtyInstance[instanceIdentifier]] = dirtyInstance
+  }
+
+  _preventEntryFromBeingUpdated (entryName) {
+    this._forbiddenUpdatesForNextTick[entryName] = true
+  }
+}
+
+Timer.every(OptionObserver._flushAllUpdates)</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.5.2)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

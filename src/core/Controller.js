@@ -7,7 +7,6 @@
 
  */
 
-import extend                   from 'lodash/extend.js';
 import EventEmitter             from 'eventemitter3';
 import AnimationController      from 'famous-flex/AnimationController.js';
 
@@ -107,25 +106,23 @@ export class Controller extends EventEmitter {
 
     /**
      * Shows a view that was returned from a child controller
-     * @param {View} iew
+     * @param {View} view
      * @param {Object} route
      * @private
      */
-    async _showView(view, route) {
+    _showView(view, route) {
         if(view instanceof Dialog){
             if(this.dialogManager.getOpenDialog() !== view){
-                this.dialogManager.show({dialog: view, canCancel: false});
+                this.dialogManager.show({dialog: view, canCancel: false, shouldGoToRoute: view.goToRoute || this.router.getPreviousRoute()});
                 this.dialogManager.once('dialogShown', () => {
                     this.emit('renderend', route.method);
                 });
-                await this.dialogManager.dialogComplete();
-                this.router.goBackInHistory();
             } else {
                 this.emit('renderend', route.method);
             }
         } else {
             /* Close if there's currently an open dialog */
-            this.dialogManager.close();
+            this.dialogManager.hasOpenDialog() && this.dialogManager._close();
             /* Assemble a callback based on the execution scope and have that called when rendering is completed. */
             this.context.show(view, route.spec, () => { this.emit('renderend', route.method); });
         }

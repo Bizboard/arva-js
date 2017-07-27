@@ -78,7 +78,6 @@
             "leadingComments": null
           }
         ],
-        "importKind": "value",
         "source": {
           "type": "StringLiteral",
           "start": 72,
@@ -166,7 +165,6 @@
             }
           }
         ],
-        "importKind": "value",
         "source": {
           "type": "StringLiteral",
           "start": 121,
@@ -253,7 +251,6 @@
             }
           }
         ],
-        "importKind": "value",
         "source": {
           "type": "StringLiteral",
           "start": 167,
@@ -340,7 +337,6 @@
             }
           }
         ],
-        "importKind": "value",
         "source": {
           "type": "StringLiteral",
           "start": 213,
@@ -427,7 +423,6 @@
             }
           }
         ],
-        "importKind": "value",
         "source": {
           "type": "StringLiteral",
           "start": 284,
@@ -514,7 +509,6 @@
             }
           }
         ],
-        "importKind": "value",
         "source": {
           "type": "StringLiteral",
           "start": 350,
@@ -14769,8 +14763,7 @@
               }
             }
           }
-        ],
-        "exportKind": "value"
+        ]
       }
     ],
     "directives": []

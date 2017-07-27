@@ -66,15 +66,39 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "arva-js/src/components/dialog.js~dialog",
+    "class/src/components/Dialog.js~Dialog.html",
+    "<span>Dialog</span> <span class=\"search-result-import-path\">arva-js/src/components/Dialog.js</span>",
+    "class"
+  ],
+  [
     "arva-js/src/utils/dialogmanager.js~dialogmanager",
     "class/src/utils/DialogManager.js~DialogManager.html",
     "<span>DialogManager</span> <span class=\"search-result-import-path\">arva-js/src/utils/DialogManager.js</span>",
     "class"
   ],
   [
+    "arva-js/src/utils/dialog/dialogwrapper.js~dialogwrapper",
+    "class/src/utils/dialog/DialogWrapper.js~DialogWrapper.html",
+    "<span>DialogWrapper</span> <span class=\"search-result-import-path\">arva-js/src/utils/dialog/DialogWrapper.js</span>",
+    "class"
+  ],
+  [
     "arva-js/src/utils/view/layouthelpers.js~dockedlayouthelper",
     "class/src/utils/view/LayoutHelpers.js~DockedLayoutHelper.html",
     "<span>DockedLayoutHelper</span> <span class=\"search-result-import-path\">arva-js/src/utils/view/LayoutHelpers.js</span>",
+    "class"
+  ],
+  [
+    "arva-js/src/surfaces/dropdown.js~dropdown",
+    "class/src/surfaces/Dropdown.js~Dropdown.html",
+    "<span>Dropdown</span> <span class=\"search-result-import-path\">arva-js/src/surfaces/Dropdown.js</span>",
+    "class"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~event",
+    "class/src/layout/Decorators.js~Event.html",
+    "<span>Event</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
     "class"
   ],
   [
@@ -90,9 +114,27 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "arva-js/src/data/storage/filesource.js~filesource",
+    "class/src/data/storage/FileSource.js~FileSource.html",
+    "<span>FileSource</span> <span class=\"search-result-import-path\">arva-js/src/data/storage/FileSource.js</span>",
+    "class"
+  ],
+  [
     "arva-js/src/data/datasources/firebasedatasource.js~firebasedatasource",
     "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html",
     "<span>FirebaseDataSource</span> <span class=\"search-result-import-path\">arva-js/src/data/datasources/FirebaseDataSource.js</span>",
+    "class"
+  ],
+  [
+    "arva-js/src/data/storage/firebasefilesource.js~firebasefilesource",
+    "class/src/data/storage/FirebaseFileSource.js~FirebaseFileSource.html",
+    "<span>FirebaseFileSource</span> <span class=\"search-result-import-path\">arva-js/src/data/storage/FirebaseFileSource.js</span>",
+    "class"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~flow",
+    "class/src/layout/Decorators.js~Flow.html",
+    "<span>Flow</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
     "class"
   ],
   [
@@ -121,14 +163,26 @@ window.esdocSearchIndex = [
   ],
   [
     "arva-js/src/utils/di/injector.js~injector",
-    "class/src/utils/di/injector.js~Injector.html",
-    "<span>Injector</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/injector.js</span>",
+    "class/src/utils/di/Injector.js~Injector.html",
+    "<span>Injector</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/Injector.js</span>",
+    "class"
+  ],
+  [
+    "arva-js/src/surfaces/inputsurface.js~inputsurface",
+    "class/src/surfaces/InputSurface.js~InputSurface.html",
+    "<span>InputSurface</span> <span class=\"search-result-import-path\">arva-js/src/surfaces/InputSurface.js</span>",
     "class"
   ],
   [
     "arva-js/src/utils/keyboardhelper.js~keyboardhelper",
     "class/src/utils/KeyboardHelper.js~KeyboardHelper.html",
     "<span>KeyboardHelper</span> <span class=\"search-result-import-path\">arva-js/src/utils/KeyboardHelper.js</span>",
+    "class"
+  ],
+  [
+    "arva-js/src/layout/decorators.js~layout",
+    "class/src/layout/Decorators.js~Layout.html",
+    "<span>Layout</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
     "class"
   ],
   [
@@ -153,6 +207,12 @@ window.esdocSearchIndex = [
     "arva-js/src/utils/objecthelper.js~objecthelper",
     "class/src/utils/ObjectHelper.js~ObjectHelper.html",
     "<span>ObjectHelper</span> <span class=\"search-result-import-path\">arva-js/src/utils/ObjectHelper.js</span>",
+    "class"
+  ],
+  [
+    "arva-js/src/utils/view/optionobserver.js~optionobserver",
+    "class/src/utils/view/OptionObserver.js~OptionObserver.html",
+    "<span>OptionObserver</span> <span class=\"search-result-import-path\">arva-js/src/utils/view/OptionObserver.js</span>",
     "class"
   ],
   [
@@ -258,6 +318,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "arva-js/src/surfaces/surface.js~surface",
+    "variable/index.html#static-variable-Surface",
+    "<span>Surface</span> <span class=\"search-result-import-path\">arva-js/src/surfaces/Surface.js</span>",
+    "variable"
+  ],
+  [
     "arva-js/src/utils/throttler.js~throttler",
     "class/src/utils/Throttler.js~Throttler.html",
     "<span>Throttler</span> <span class=\"search-result-import-path\">arva-js/src/utils/Throttler.js</span>",
@@ -306,6 +372,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "arva-js/src/layout/decorators.js~bindings",
+    "variable/index.html#static-variable-bindings",
+    "<span>bindings</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "variable"
+  ],
+  [
     "arva-js/src/utils/callbackhelpers.js~callbacktopromise",
     "function/index.html#static-function-callbackToPromise",
     "<span>callbackToPromise</span> <span class=\"search-result-import-path\">arva-js/src/utils/CallbackHelpers.js</span>",
@@ -320,31 +392,13 @@ window.esdocSearchIndex = [
   [
     "arva-js/src/utils/di/providers.js~createproviderfromfnorclass",
     "function/index.html#static-function-createProviderFromFnOrClass",
-    "<span>createProviderFromFnOrClass</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/providers.js</span>",
+    "<span>createProviderFromFnOrClass</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/Providers.js</span>",
     "function"
   ],
   [
-    "arva-js/src/layout/decorators.js~event._subscribe",
-    "function/index.html#static-function-event._subscribe",
-    "<span>event._subscribe</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~event.on",
-    "function/index.html#static-function-event.on",
-    "<span>event.on</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~event.once",
-    "function/index.html#static-function-event.once",
-    "<span>event.once</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~event.pipe",
-    "function/index.html#static-function-event.pipe",
-    "<span>event.pipe</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "arva-js/src/layout/decorators.js~dynamic",
+    "function/index.html#static-function-dynamic",
+    "<span>dynamic</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
     "function"
   ],
   [
@@ -352,36 +406,6 @@ window.esdocSearchIndex = [
     "variable/index.html#static-variable-event",
     "<span>event</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
     "variable"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~flow.defaultoptions",
-    "function/index.html#static-function-flow.defaultOptions",
-    "<span>flow.defaultOptions</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~flow.defaultstate",
-    "function/index.html#static-function-flow.defaultState",
-    "<span>flow.defaultState</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~flow.multiplestatestep",
-    "function/index.html#static-function-flow.multipleStateStep",
-    "<span>flow.multipleStateStep</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~flow.statestep",
-    "function/index.html#static-function-flow.stateStep",
-    "<span>flow.stateStep</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~flow.viewstates",
-    "function/index.html#static-function-flow.viewStates",
-    "<span>flow.viewStates</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
   ],
   [
     "arva-js/src/layout/decorators.js~flow",
@@ -408,195 +432,27 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "arva-js/src/utils/hotfixes/layoutinvalidator.js~invalidatelayoutforelement",
+    "function/index.html#static-function-invalidateLayoutForElement",
+    "<span>invalidateLayoutForElement</span> <span class=\"search-result-import-path\">arva-js/src/utils/hotfixes/LayoutInvalidator.js</span>",
+    "function"
+  ],
+  [
     "arva-js/src/utils/di/util.js~isfunction",
     "function/index.html#static-function-isFunction",
-    "<span>isFunction</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/util.js</span>",
+    "<span>isFunction</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/Util.js</span>",
     "function"
   ],
   [
     "arva-js/src/utils/di/util.js~isobject",
     "function/index.html#static-function-isObject",
-    "<span>isObject</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/util.js</span>",
+    "<span>isObject</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/Util.js</span>",
     "function"
   ],
   [
     "arva-js/src/utils/di/util.js~isuppercase",
     "function/index.html#static-function-isUpperCase",
-    "<span>isUpperCase</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/util.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout._dockto",
-    "function/index.html#static-function-layout._dockTo",
-    "<span>layout._dockTo</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.align",
-    "function/index.html#static-function-layout.align",
-    "<span>layout.align</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.animate",
-    "function/index.html#static-function-layout.animate",
-    "<span>layout.animate</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.columndockpadding",
-    "function/index.html#static-function-layout.columnDockPadding",
-    "<span>layout.columnDockPadding</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.custom",
-    "function/index.html#static-function-layout.custom",
-    "<span>layout.custom</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.dock.bottom",
-    "function/index.html#static-function-layout.dock.bottom",
-    "<span>layout.dock.bottom</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.dock.fill",
-    "function/index.html#static-function-layout.dock.fill",
-    "<span>layout.dock.fill</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.dock.left",
-    "function/index.html#static-function-layout.dock.left",
-    "<span>layout.dock.left</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.dock.none",
-    "function/index.html#static-function-layout.dock.none",
-    "<span>layout.dock.none</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.dock.right",
-    "function/index.html#static-function-layout.dock.right",
-    "<span>layout.dock.right</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.dock.top",
-    "function/index.html#static-function-layout.dock.top",
-    "<span>layout.dock.top</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.dockpadding",
-    "function/index.html#static-function-layout.dockPadding",
-    "<span>layout.dockPadding</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.dockspace",
-    "function/index.html#static-function-layout.dockSpace",
-    "<span>layout.dockSpace</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.draggable",
-    "function/index.html#static-function-layout.draggable",
-    "<span>layout.draggable</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.flow",
-    "function/index.html#static-function-layout.flow",
-    "<span>layout.flow</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.fullsize",
-    "function/index.html#static-function-layout.fullSize",
-    "<span>layout.fullSize</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.nativescrollable",
-    "function/index.html#static-function-layout.nativeScrollable",
-    "<span>layout.nativeScrollable</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.opacity",
-    "function/index.html#static-function-layout.opacity",
-    "<span>layout.opacity</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.origin",
-    "function/index.html#static-function-layout.origin",
-    "<span>layout.origin</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.renderable",
-    "function/index.html#static-function-layout.renderable",
-    "<span>layout.renderable</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.rotate",
-    "function/index.html#static-function-layout.rotate",
-    "<span>layout.rotate</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.rotatefrom",
-    "function/index.html#static-function-layout.rotateFrom",
-    "<span>layout.rotateFrom</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.scale",
-    "function/index.html#static-function-layout.scale",
-    "<span>layout.scale</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.scrollable",
-    "function/index.html#static-function-layout.scrollable",
-    "<span>layout.scrollable</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.size",
-    "function/index.html#static-function-layout.size",
-    "<span>layout.size</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.skew",
-    "function/index.html#static-function-layout.skew",
-    "<span>layout.skew</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.swipable",
-    "function/index.html#static-function-layout.swipable",
-    "<span>layout.swipable</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.translate",
-    "function/index.html#static-function-layout.translate",
-    "<span>layout.translate</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
-    "function"
-  ],
-  [
-    "arva-js/src/layout/decorators.js~layout.translatefrom",
-    "function/index.html#static-function-layout.translateFrom",
-    "<span>layout.translateFrom</span> <span class=\"search-result-import-path\">arva-js/src/layout/Decorators.js</span>",
+    "<span>isUpperCase</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/Util.js</span>",
     "function"
   ],
   [
@@ -612,9 +468,15 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "arva-js/src/utils/view/optionobserver.js~onoptionchange",
+    "variable/index.html#static-variable-onOptionChange",
+    "<span>onOptionChange</span> <span class=\"search-result-import-path\">arva-js/src/utils/view/OptionObserver.js</span>",
+    "variable"
+  ],
+  [
     "arva-js/src/utils/di/util.js~ownkeys",
     "variable/index.html#static-variable-ownKeys",
-    "<span>ownKeys</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/util.js</span>",
+    "<span>ownKeys</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/Util.js</span>",
     "variable"
   ],
   [
@@ -638,7 +500,7 @@ window.esdocSearchIndex = [
   [
     "arva-js/src/utils/di/util.js~tostring",
     "function/index.html#static-function-toString",
-    "<span>toString</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/util.js</span>",
+    "<span>toString</span> <span class=\"search-result-import-path\">arva-js/src/utils/di/Util.js</span>",
     "function"
   ],
   [
@@ -649,331 +511,331 @@ window.esdocSearchIndex = [
   ],
   [
     "builtinexternal/ecmascriptexternal.js~array",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
     "BuiltinExternal/ECMAScriptExternal.js~Array",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~arraybuffer",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
     "BuiltinExternal/ECMAScriptExternal.js~ArrayBuffer",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~boolean",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
     "BuiltinExternal/ECMAScriptExternal.js~Boolean",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~dataview",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
     "BuiltinExternal/ECMAScriptExternal.js~DataView",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~date",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
     "BuiltinExternal/ECMAScriptExternal.js~Date",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~error",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
     "BuiltinExternal/ECMAScriptExternal.js~Error",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~evalerror",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
     "BuiltinExternal/ECMAScriptExternal.js~EvalError",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~float32array",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
     "BuiltinExternal/ECMAScriptExternal.js~Float32Array",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~float64array",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
     "BuiltinExternal/ECMAScriptExternal.js~Float64Array",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~function",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
     "BuiltinExternal/ECMAScriptExternal.js~Function",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~generator",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
     "BuiltinExternal/ECMAScriptExternal.js~Generator",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~generatorfunction",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
     "BuiltinExternal/ECMAScriptExternal.js~GeneratorFunction",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~infinity",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
     "BuiltinExternal/ECMAScriptExternal.js~Infinity",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~int16array",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
     "BuiltinExternal/ECMAScriptExternal.js~Int16Array",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~int32array",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
     "BuiltinExternal/ECMAScriptExternal.js~Int32Array",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~int8array",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
     "BuiltinExternal/ECMAScriptExternal.js~Int8Array",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~internalerror",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
     "BuiltinExternal/ECMAScriptExternal.js~InternalError",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~json",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
     "BuiltinExternal/ECMAScriptExternal.js~JSON",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~map",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
     "BuiltinExternal/ECMAScriptExternal.js~Map",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~nan",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
     "BuiltinExternal/ECMAScriptExternal.js~NaN",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~number",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
     "BuiltinExternal/ECMAScriptExternal.js~Number",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~object",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
     "BuiltinExternal/ECMAScriptExternal.js~Object",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~promise",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
     "BuiltinExternal/ECMAScriptExternal.js~Promise",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~proxy",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
     "BuiltinExternal/ECMAScriptExternal.js~Proxy",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~rangeerror",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
     "BuiltinExternal/ECMAScriptExternal.js~RangeError",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~referenceerror",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
     "BuiltinExternal/ECMAScriptExternal.js~ReferenceError",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~reflect",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
     "BuiltinExternal/ECMAScriptExternal.js~Reflect",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~regexp",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
     "BuiltinExternal/ECMAScriptExternal.js~RegExp",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~set",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
     "BuiltinExternal/ECMAScriptExternal.js~Set",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~string",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
     "BuiltinExternal/ECMAScriptExternal.js~String",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~symbol",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
     "BuiltinExternal/ECMAScriptExternal.js~Symbol",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~syntaxerror",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
     "BuiltinExternal/ECMAScriptExternal.js~SyntaxError",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~typeerror",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
     "BuiltinExternal/ECMAScriptExternal.js~TypeError",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~urierror",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
     "BuiltinExternal/ECMAScriptExternal.js~URIError",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~uint16array",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
     "BuiltinExternal/ECMAScriptExternal.js~Uint16Array",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~uint32array",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
     "BuiltinExternal/ECMAScriptExternal.js~Uint32Array",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~uint8array",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
     "BuiltinExternal/ECMAScriptExternal.js~Uint8Array",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~uint8clampedarray",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
     "BuiltinExternal/ECMAScriptExternal.js~Uint8ClampedArray",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~weakmap",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
     "BuiltinExternal/ECMAScriptExternal.js~WeakMap",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~weakset",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
     "BuiltinExternal/ECMAScriptExternal.js~WeakSet",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~boolean",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
     "BuiltinExternal/ECMAScriptExternal.js~boolean",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~function",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
     "BuiltinExternal/ECMAScriptExternal.js~function",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~null",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
     "BuiltinExternal/ECMAScriptExternal.js~null",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~number",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
     "BuiltinExternal/ECMAScriptExternal.js~number",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~object",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
     "BuiltinExternal/ECMAScriptExternal.js~object",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~string",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
     "BuiltinExternal/ECMAScriptExternal.js~string",
     "external"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~undefined",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
     "BuiltinExternal/ECMAScriptExternal.js~undefined",
     "external"
   ],
   [
     "builtinexternal/webapiexternal.js~audiocontext",
-    "external/index.html",
+    "https://developer.mozilla.org/en/docs/Web/API/AudioContext",
     "BuiltinExternal/WebAPIExternal.js~AudioContext",
     "external"
   ],
   [
     "builtinexternal/webapiexternal.js~canvasrenderingcontext2d",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
     "BuiltinExternal/WebAPIExternal.js~CanvasRenderingContext2D",
     "external"
   ],
   [
     "builtinexternal/webapiexternal.js~documentfragment",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
     "BuiltinExternal/WebAPIExternal.js~DocumentFragment",
     "external"
   ],
   [
     "builtinexternal/webapiexternal.js~element",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/API/Element",
     "BuiltinExternal/WebAPIExternal.js~Element",
     "external"
   ],
   [
     "builtinexternal/webapiexternal.js~event",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/API/Event",
     "BuiltinExternal/WebAPIExternal.js~Event",
     "external"
   ],
   [
     "builtinexternal/webapiexternal.js~node",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/API/Node",
     "BuiltinExternal/WebAPIExternal.js~Node",
     "external"
   ],
   [
     "builtinexternal/webapiexternal.js~nodelist",
-    "external/index.html",
+    "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
     "BuiltinExternal/WebAPIExternal.js~NodeList",
     "external"
   ],
   [
     "builtinexternal/webapiexternal.js~xmlhttprequest",
-    "external/index.html",
+    "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
     "BuiltinExternal/WebAPIExternal.js~XMLHttpRequest",
     "external"
   ],
@@ -984,9 +846,9 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/components/databoundscrollview.js~databoundscrollview#cleardatasource",
-    "class/src/components/DataBoundScrollView.js~DataBoundScrollView.html#instance-method-clearDataSource",
-    "src/components/DataBoundScrollView.js~DataBoundScrollView#clearDataSource",
+    "src/components/databoundscrollview.js~databoundscrollview#cleardatastore",
+    "class/src/components/DataBoundScrollView.js~DataBoundScrollView.html#instance-method-clearDataStore",
+    "src/components/DataBoundScrollView.js~DataBoundScrollView#clearDataStore",
     "method"
   ],
   [
@@ -1002,9 +864,27 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/components/databoundscrollview.js~databoundscrollview#getdatastores",
+    "class/src/components/DataBoundScrollView.js~DataBoundScrollView.html#instance-method-getDataStores",
+    "src/components/DataBoundScrollView.js~DataBoundScrollView#getDataStores",
+    "method"
+  ],
+  [
     "src/components/databoundscrollview.js~databoundscrollview#getgroups",
     "class/src/components/DataBoundScrollView.js~DataBoundScrollView.html#instance-method-getGroups",
     "src/components/DataBoundScrollView.js~DataBoundScrollView#getGroups",
+    "method"
+  ],
+  [
+    "src/components/databoundscrollview.js~databoundscrollview#getrenderablefromid",
+    "class/src/components/DataBoundScrollView.js~DataBoundScrollView.html#instance-method-getRenderableFromID",
+    "src/components/DataBoundScrollView.js~DataBoundScrollView#getRenderableFromID",
+    "method"
+  ],
+  [
+    "src/components/databoundscrollview.js~databoundscrollview#getsize",
+    "class/src/components/DataBoundScrollView.js~DataBoundScrollView.html#instance-method-getSize",
+    "src/components/DataBoundScrollView.js~DataBoundScrollView#getSize",
     "method"
   ],
   [
@@ -1026,6 +906,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/components/databoundscrollview.js~databoundscrollview#setdatastores",
+    "class/src/components/DataBoundScrollView.js~DataBoundScrollView.html#instance-method-setDataStores",
+    "src/components/DataBoundScrollView.js~DataBoundScrollView#setDataStores",
+    "method"
+  ],
+  [
     "src/components/databoundscrollview.js~databoundscrollview#setgrouptemplate",
     "class/src/components/DataBoundScrollView.js~DataBoundScrollView.html#instance-method-setGroupTemplate",
     "src/components/DataBoundScrollView.js~DataBoundScrollView#setGroupTemplate",
@@ -1035,6 +921,18 @@ window.esdocSearchIndex = [
     "src/components/databoundscrollview.js~databoundscrollview#setitemtemplate",
     "class/src/components/DataBoundScrollView.js~DataBoundScrollView.html#instance-method-setItemTemplate",
     "src/components/DataBoundScrollView.js~DataBoundScrollView#setItemTemplate",
+    "method"
+  ],
+  [
+    "src/components/dialog.js",
+    "file/src/components/Dialog.js.html",
+    "src/components/Dialog.js",
+    "file"
+  ],
+  [
+    "src/components/dialog.js~dialog#close",
+    "class/src/components/Dialog.js~Dialog.html#instance-method-close",
+    "src/components/Dialog.js~Dialog#close",
     "method"
   ],
   [
@@ -1075,13 +973,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
   [
     "src/components/logic/branding/brandingengine.js~brandingengine#options",
-    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-get-options",
+    "class/src/components/logic/branding/BrandingEngine.js~BrandingEngine.html#instance-set-options",
     "src/components/logic/branding/BrandingEngine.js~BrandingEngine#options",
     "member"
   ],
@@ -1140,9 +1038,21 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/core/app.js~app#dialogmanager",
+    "class/src/core/App.js~App.html#instance-member-dialogManager",
+    "src/core/App.js~App#dialogManager",
+    "member"
+  ],
+  [
     "src/core/app.js~app#router",
     "class/src/core/App.js~App.html#instance-member-router",
     "src/core/App.js~App#router",
+    "member"
+  ],
+  [
+    "src/core/app.js~app.app",
+    "class/src/core/App.js~App.html#static-member-app",
+    "src/core/App.js~App.app",
     "member"
   ],
   [
@@ -1170,6 +1080,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/core/controller.js~controller#dialogmanager",
+    "class/src/core/Controller.js~Controller.html#instance-member-dialogManager",
+    "src/core/Controller.js~Controller#dialogManager",
+    "member"
+  ],
+  [
     "src/core/controller.js~controller#isactive",
     "class/src/core/Controller.js~Controller.html#instance-member-isActive",
     "src/core/Controller.js~Controller#isActive",
@@ -1194,21 +1110,33 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/core/controller.js~controller#spec",
-    "class/src/core/Controller.js~Controller.html#instance-member-spec",
-    "src/core/Controller.js~Controller#spec",
-    "member"
-  ],
-  [
     "src/core/model.js",
     "file/src/core/Model.js.html",
     "src/core/Model.js",
     "file"
   ],
   [
+    "src/core/model.js~model#[fieldname]",
+    "class/src/core/Model.js~Model.html#instance-member-[fieldName]",
+    "src/core/Model.js~Model#[fieldName]",
+    "member"
+  ],
+  [
+    "src/core/model.js~model#[name]",
+    "class/src/core/Model.js~Model.html#instance-member-[name]",
+    "src/core/Model.js~Model#[name]",
+    "member"
+  ],
+  [
     "src/core/model.js~model#constructor",
     "class/src/core/Model.js~Model.html#instance-constructor-constructor",
     "src/core/Model.js~Model#constructor",
+    "method"
+  ],
+  [
+    "src/core/model.js~model#replaceproperties",
+    "class/src/core/Model.js~Model.html#instance-method-replaceProperties",
+    "src/core/Model.js~Model#replaceProperties",
     "method"
   ],
   [
@@ -1254,9 +1182,33 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/core/router.js~router#getpreviousroute",
+    "class/src/core/Router.js~Router.html#instance-method-getPreviousRoute",
+    "src/core/Router.js~Router#getPreviousRoute",
+    "method"
+  ],
+  [
+    "src/core/router.js~router#getroute",
+    "class/src/core/Router.js~Router.html#instance-method-getRoute",
+    "src/core/Router.js~Router#getRoute",
+    "method"
+  ],
+  [
     "src/core/router.js~router#go",
     "class/src/core/Router.js~Router.html#instance-method-go",
     "src/core/Router.js~Router#go",
+    "method"
+  ],
+  [
+    "src/core/router.js~router#gobackinhistory",
+    "class/src/core/Router.js~Router.html#instance-method-goBackInHistory",
+    "src/core/Router.js~Router#goBackInHistory",
+    "method"
+  ],
+  [
+    "src/core/router.js~router#isbackbuttonenabled",
+    "class/src/core/Router.js~Router.html#instance-method-isBackButtonEnabled",
+    "src/core/Router.js~Router#isBackButtonEnabled",
     "method"
   ],
   [
@@ -1266,9 +1218,27 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/core/router.js~router#setbackbuttonenabled",
+    "class/src/core/Router.js~Router.html#instance-method-setBackButtonEnabled",
+    "src/core/Router.js~Router#setBackButtonEnabled",
+    "method"
+  ],
+  [
+    "src/core/router.js~router#setcontrollerspecs",
+    "class/src/core/Router.js~Router.html#instance-method-setControllerSpecs",
+    "src/core/Router.js~Router#setControllerSpecs",
+    "method"
+  ],
+  [
     "src/core/router.js~router#setdefault",
     "class/src/core/Router.js~Router.html#instance-method-setDefault",
     "src/core/Router.js~Router#setDefault",
+    "method"
+  ],
+  [
+    "src/core/router.js~router#setinitialspec",
+    "class/src/core/Router.js~Router.html#instance-method-setInitialSpec",
+    "src/core/Router.js~Router#setInitialSpec",
     "method"
   ],
   [
@@ -1276,6 +1246,30 @@ window.esdocSearchIndex = [
     "file/src/core/View.js.html",
     "src/core/View.js",
     "file"
+  ],
+  [
+    "src/core/view.js~view#[._idtolocalrenderablename[renderableid]]",
+    "class/src/core/View.js~View.html#instance-member-[._IDtoLocalRenderableName[renderableID]]",
+    "src/core/View.js~View#[._IDtoLocalRenderableName[renderableID]]",
+    "member"
+  ],
+  [
+    "src/core/view.js~view#[localrenderablename]",
+    "class/src/core/View.js~View.html#instance-member-[localRenderableName]",
+    "src/core/View.js~View#[localRenderableName]",
+    "member"
+  ],
+  [
+    "src/core/view.js~view#[name]",
+    "class/src/core/View.js~View.html#instance-member-[name]",
+    "src/core/View.js~View#[name]",
+    "member"
+  ],
+  [
+    "src/core/view.js~view#[renderablename]",
+    "class/src/core/View.js~View.html#instance-member-[renderableName]",
+    "src/core/View.js~View#[renderableName]",
+    "member"
   ],
   [
     "src/core/view.js~view#addrenderable",
@@ -1320,6 +1314,18 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/core/view.js~view#getactualrenderable",
+    "class/src/core/View.js~View.html#instance-method-getActualRenderable",
+    "src/core/View.js~View#getActualRenderable",
+    "method"
+  ],
+  [
+    "src/core/view.js~view#getid",
+    "class/src/core/View.js~View.html#instance-method-getID",
+    "src/core/View.js~View#getID",
+    "method"
+  ],
+  [
     "src/core/view.js~view#getrenderableflowstate",
     "class/src/core/View.js~View.html#instance-method-getRenderableFlowState",
     "src/core/View.js~View#getRenderableFlowState",
@@ -1350,9 +1356,27 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/core/view.js~view#hasrenderable",
+    "class/src/core/View.js~View.html#instance-method-hasRenderable",
+    "src/core/View.js~View#hasRenderable",
+    "method"
+  ],
+  [
     "src/core/view.js~view#hiderenderable",
     "class/src/core/View.js~View.html#instance-method-hideRenderable",
     "src/core/View.js~View#hideRenderable",
+    "method"
+  ],
+  [
+    "src/core/view.js~view#isrenderableshowing",
+    "class/src/core/View.js~View.html#instance-method-isRenderableShowing",
+    "src/core/View.js~View#isRenderableShowing",
+    "method"
+  ],
+  [
+    "src/core/view.js~view#issizesettled",
+    "class/src/core/View.js~View.html#instance-method-isSizeSettled",
+    "src/core/View.js~View#isSizeSettled",
     "method"
   ],
   [
@@ -1434,6 +1458,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/core/view.js~view#setnewoptions",
+    "class/src/core/View.js~View.html#instance-method-setNewOptions",
+    "src/core/View.js~View#setNewOptions",
+    "method"
+  ],
+  [
     "src/core/view.js~view#setrenderableflowstate",
     "class/src/core/View.js~View.html#instance-method-setRenderableFlowState",
     "src/core/View.js~View#setRenderableFlowState",
@@ -1452,10 +1482,28 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/core/view.js~view#togglerenderable",
+    "class/src/core/View.js~View.html#instance-method-toggleRenderable",
+    "src/core/View.js~View#toggleRenderable",
+    "method"
+  ],
+  [
+    "src/core/view.js~view.with",
+    "class/src/core/View.js~View.html#static-method-with",
+    "src/core/View.js~View.with",
+    "method"
+  ],
+  [
     "src/data/datasource.js",
     "file/src/data/DataSource.js.html",
     "src/data/DataSource.js",
     "file"
+  ],
+  [
+    "src/data/datasource.js~datasource#atomictransaction",
+    "class/src/data/DataSource.js~DataSource.html#instance-method-atomicTransaction",
+    "src/data/DataSource.js~DataSource#atomicTransaction",
+    "method"
   ],
   [
     "src/data/datasource.js~datasource#authanonymously",
@@ -1494,9 +1542,21 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/data/datasource.js~datasource#createproviderfromcredential",
+    "class/src/data/DataSource.js~DataSource.html#instance-method-createProviderFromCredential",
+    "src/data/DataSource.js~DataSource#createProviderFromCredential",
+    "method"
+  ],
+  [
     "src/data/datasource.js~datasource#getauth",
     "class/src/data/DataSource.js~DataSource.html#instance-method-getAuth",
     "src/data/DataSource.js~DataSource#getAuth",
+    "method"
+  ],
+  [
+    "src/data/datasource.js~datasource#gettimestampsymbol",
+    "class/src/data/DataSource.js~DataSource.html#instance-method-getTimestampSymbol",
+    "src/data/DataSource.js~DataSource#getTimestampSymbol",
     "method"
   ],
   [
@@ -1521,6 +1581,12 @@ window.esdocSearchIndex = [
     "src/data/datasource.js~datasource#limittolast",
     "class/src/data/DataSource.js~DataSource.html#instance-method-limitToLast",
     "src/data/DataSource.js~DataSource#limitToLast",
+    "method"
+  ],
+  [
+    "src/data/datasource.js~datasource#linkcurrentuserwithprovider",
+    "class/src/data/DataSource.js~DataSource.html#instance-method-linkCurrentUserWithProvider",
+    "src/data/DataSource.js~DataSource#linkCurrentUserWithProvider",
     "method"
   ],
   [
@@ -1569,6 +1635,12 @@ window.esdocSearchIndex = [
     "src/data/datasource.js~datasource#push",
     "class/src/data/DataSource.js~DataSource.html#instance-method-push",
     "src/data/DataSource.js~DataSource#push",
+    "method"
+  ],
+  [
+    "src/data/datasource.js~datasource#registerwithpassword",
+    "class/src/data/DataSource.js~DataSource.html#instance-method-registerWithPassword",
+    "src/data/DataSource.js~DataSource#registerWithPassword",
     "method"
   ],
   [
@@ -1674,10 +1746,22 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/data/datasource.js~datasource#update",
+    "class/src/data/DataSource.js~DataSource.html#instance-method-update",
+    "src/data/DataSource.js~DataSource#update",
+    "method"
+  ],
+  [
     "src/data/prioritisedarray.js",
     "file/src/data/PrioritisedArray.js.html",
     "src/data/PrioritisedArray.js",
     "file"
+  ],
+  [
+    "src/data/prioritisedarray.js~prioritisedarray#[newposition]",
+    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-member-[newPosition]",
+    "src/data/PrioritisedArray.js~PrioritisedArray#[newPosition]",
+    "member"
   ],
   [
     "src/data/prioritisedarray.js~prioritisedarray#add",
@@ -1695,6 +1779,18 @@ window.esdocSearchIndex = [
     "src/data/prioritisedarray.js~prioritisedarray#findbyid",
     "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-method-findById",
     "src/data/PrioritisedArray.js~PrioritisedArray#findById",
+    "method"
+  ],
+  [
+    "src/data/prioritisedarray.js~prioritisedarray#findindexbyid",
+    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-method-findIndexById",
+    "src/data/PrioritisedArray.js~PrioritisedArray#findIndexById",
+    "method"
+  ],
+  [
+    "src/data/prioritisedarray.js~prioritisedarray#getdatasourcepath",
+    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-method-getDataSourcePath",
+    "src/data/PrioritisedArray.js~PrioritisedArray#getDataSourcePath",
     "method"
   ],
   [
@@ -1746,6 +1842,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/data/prioritisedarray.js~prioritisedarray#replacecontents",
+    "class/src/data/PrioritisedArray.js~PrioritisedArray.html#instance-method-replaceContents",
+    "src/data/PrioritisedArray.js~PrioritisedArray#replaceContents",
+    "method"
+  ],
+  [
     "src/data/prioritisedobject.js",
     "file/src/data/PrioritisedObject.js.html",
     "src/data/PrioritisedObject.js",
@@ -1755,6 +1857,12 @@ window.esdocSearchIndex = [
     "src/data/prioritisedobject.js~prioritisedobject#constructor",
     "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-constructor-constructor",
     "src/data/PrioritisedObject.js~PrioritisedObject#constructor",
+    "method"
+  ],
+  [
+    "src/data/prioritisedobject.js~prioritisedobject#dataexists",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-method-dataExists",
+    "src/data/PrioritisedObject.js~PrioritisedObject#dataExists",
     "method"
   ],
   [
@@ -1773,6 +1881,18 @@ window.esdocSearchIndex = [
     "src/data/prioritisedobject.js~prioritisedobject#enablechangelistener",
     "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-method-enableChangeListener",
     "src/data/PrioritisedObject.js~PrioritisedObject#enableChangeListener",
+    "method"
+  ],
+  [
+    "src/data/prioritisedobject.js~prioritisedobject#getdatasource",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-method-getDataSource",
+    "src/data/PrioritisedObject.js~PrioritisedObject#getDataSource",
+    "method"
+  ],
+  [
+    "src/data/prioritisedobject.js~prioritisedobject#getdatasourcepath",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-method-getDataSourcePath",
+    "src/data/PrioritisedObject.js~PrioritisedObject#getDataSourcePath",
     "method"
   ],
   [
@@ -1807,13 +1927,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#priority",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-priority",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-priority",
     "src/data/PrioritisedObject.js~PrioritisedObject#priority",
     "member"
   ],
   [
     "src/data/prioritisedobject.js~prioritisedobject#priority",
-    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-set-priority",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-get-priority",
     "src/data/PrioritisedObject.js~PrioritisedObject#priority",
     "member"
   ],
@@ -1827,6 +1947,18 @@ window.esdocSearchIndex = [
     "src/data/prioritisedobject.js~prioritisedobject#transaction",
     "class/src/data/PrioritisedObject.js~PrioritisedObject.html#instance-method-transaction",
     "src/data/PrioritisedObject.js~PrioritisedObject#transaction",
+    "method"
+  ],
+  [
+    "src/data/prioritisedobject.js~prioritisedobject.removepropertygetterspy",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#static-method-removePropertyGetterSpy",
+    "src/data/PrioritisedObject.js~PrioritisedObject.removePropertyGetterSpy",
+    "method"
+  ],
+  [
+    "src/data/prioritisedobject.js~prioritisedobject.setpropertygetterspy",
+    "class/src/data/PrioritisedObject.js~PrioritisedObject.html#static-method-setPropertyGetterSpy",
+    "src/data/PrioritisedObject.js~PrioritisedObject.setPropertyGetterSpy",
     "method"
   ],
   [
@@ -1884,6 +2016,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/data/datasources/firebasedatasource.js~firebasedatasource#atomictransaction",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-atomicTransaction",
+    "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#atomicTransaction",
+    "method"
+  ],
+  [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#authanonymously",
     "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-authAnonymously",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#authAnonymously",
@@ -1920,6 +2058,18 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/data/datasources/firebasedatasource.js~firebasedatasource#createproviderfromcredential",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-createProviderFromCredential",
+    "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#createProviderFromCredential",
+    "method"
+  ],
+  [
+    "src/data/datasources/firebasedatasource.js~firebasedatasource#dataexists",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-dataExists",
+    "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#dataExists",
+    "method"
+  ],
+  [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#datareference",
     "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-set-dataReference",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#dataReference",
@@ -1935,6 +2085,12 @@ window.esdocSearchIndex = [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#getauth",
     "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-getAuth",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#getAuth",
+    "method"
+  ],
+  [
+    "src/data/datasources/firebasedatasource.js~firebasedatasource#gettimestampsymbol",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-getTimestampSymbol",
+    "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#getTimestampSymbol",
     "method"
   ],
   [
@@ -1959,6 +2115,12 @@ window.esdocSearchIndex = [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#limittolast",
     "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-limitToLast",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#limitToLast",
+    "method"
+  ],
+  [
+    "src/data/datasources/firebasedatasource.js~firebasedatasource#linkcurrentuserwithprovider",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-linkCurrentUserWithProvider",
+    "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#linkCurrentUserWithProvider",
     "method"
   ],
   [
@@ -2022,6 +2184,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/data/datasources/firebasedatasource.js~firebasedatasource#registerwithpassword",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-registerWithPassword",
+    "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#registerWithPassword",
+    "method"
+  ],
+  [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#remove",
     "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-remove",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#remove",
@@ -2061,6 +2229,12 @@ window.esdocSearchIndex = [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#root",
     "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-root",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#root",
+    "method"
+  ],
+  [
+    "src/data/datasources/firebasedatasource.js~firebasedatasource#sendpasswordresetemail",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-sendPasswordResetEmail",
+    "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#sendPasswordResetEmail",
     "method"
   ],
   [
@@ -2127,6 +2301,12 @@ window.esdocSearchIndex = [
     "src/data/datasources/firebasedatasource.js~firebasedatasource#unauth",
     "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-unauth",
     "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#unauth",
+    "method"
+  ],
+  [
+    "src/data/datasources/firebasedatasource.js~firebasedatasource#update",
+    "class/src/data/datasources/FirebaseDataSource.js~FirebaseDataSource.html#instance-method-update",
+    "src/data/datasources/FirebaseDataSource.js~FirebaseDataSource#update",
     "method"
   ],
   [
@@ -2454,6 +2634,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/data/datasources/sharepointdatasource.js~sharepointdatasource#atomictransaction",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#instance-method-atomicTransaction",
+    "src/data/datasources/SharePointDataSource.js~SharePointDataSource#atomicTransaction",
+    "method"
+  ],
+  [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource#authanonymously",
     "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#instance-method-authAnonymously",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource#authAnonymously",
@@ -2490,9 +2676,21 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/data/datasources/sharepointdatasource.js~sharepointdatasource#createproviderfromcredential",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#instance-method-createProviderFromCredential",
+    "src/data/datasources/SharePointDataSource.js~SharePointDataSource#createProviderFromCredential",
+    "method"
+  ],
+  [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource#getauth",
     "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#instance-method-getAuth",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource#getAuth",
+    "method"
+  ],
+  [
+    "src/data/datasources/sharepointdatasource.js~sharepointdatasource#gettimestampsymbol",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#instance-method-getTimestampSymbol",
+    "src/data/datasources/SharePointDataSource.js~SharePointDataSource#getTimestampSymbol",
     "method"
   ],
   [
@@ -2517,6 +2715,12 @@ window.esdocSearchIndex = [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource#limittolast",
     "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#instance-method-limitToLast",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource#limitToLast",
+    "method"
+  ],
+  [
+    "src/data/datasources/sharepointdatasource.js~sharepointdatasource#linkcurrentuserwithprovider",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#instance-method-linkCurrentUserWithProvider",
+    "src/data/datasources/SharePointDataSource.js~SharePointDataSource#linkCurrentUserWithProvider",
     "method"
   ],
   [
@@ -2553,6 +2757,12 @@ window.esdocSearchIndex = [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource#push",
     "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#instance-method-push",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource#push",
+    "method"
+  ],
+  [
+    "src/data/datasources/sharepointdatasource.js~sharepointdatasource#registerwithpassword",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#instance-method-registerWithPassword",
+    "src/data/datasources/SharePointDataSource.js~SharePointDataSource#registerWithPassword",
     "method"
   ],
   [
@@ -2664,6 +2874,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/data/datasources/sharepointdatasource.js~sharepointdatasource#update",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#instance-method-update",
+    "src/data/datasources/SharePointDataSource.js~SharePointDataSource#update",
+    "method"
+  ],
+  [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource.createfromchild",
     "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-method-createFromChild",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource.createFromChild",
@@ -2671,13 +2887,13 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource.currentuser",
-    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-get-currentUser",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-set-currentUser",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource.currentUser",
     "member"
   ],
   [
     "src/data/datasources/sharepointdatasource.js~sharepointdatasource.currentuser",
-    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-set-currentUser",
+    "class/src/data/datasources/SharePointDataSource.js~SharePointDataSource.html#static-get-currentUser",
     "src/data/datasources/SharePointDataSource.js~SharePointDataSource.currentUser",
     "member"
   ],
@@ -2695,15 +2911,45 @@ window.esdocSearchIndex = [
   ],
   [
     "src/data/local/localmodel.js~localmodel#id",
-    "class/src/data/local/LocalModel.js~LocalModel.html#instance-set-id",
+    "class/src/data/local/LocalModel.js~LocalModel.html#instance-get-id",
     "src/data/local/LocalModel.js~LocalModel#id",
     "member"
   ],
   [
     "src/data/local/localmodel.js~localmodel#id",
-    "class/src/data/local/LocalModel.js~LocalModel.html#instance-get-id",
+    "class/src/data/local/LocalModel.js~LocalModel.html#instance-set-id",
     "src/data/local/LocalModel.js~LocalModel#id",
     "member"
+  ],
+  [
+    "src/data/local/localmodel.js~localmodel.clonemodelproperties",
+    "class/src/data/local/LocalModel.js~LocalModel.html#static-method-cloneModelProperties",
+    "src/data/local/LocalModel.js~LocalModel.cloneModelProperties",
+    "method"
+  ],
+  [
+    "src/data/local/localmodel.js~localmodel.createclassfrommodel",
+    "class/src/data/local/LocalModel.js~LocalModel.html#static-method-createClassFromModel",
+    "src/data/local/LocalModel.js~LocalModel.createClassFromModel",
+    "method"
+  ],
+  [
+    "src/data/local/localmodel.js~localmodel.createmergedmodelclass",
+    "class/src/data/local/LocalModel.js~LocalModel.html#static-method-createMergedModelClass",
+    "src/data/local/LocalModel.js~LocalModel.createMergedModelClass",
+    "method"
+  ],
+  [
+    "src/data/local/localmodel.js~localmodel.frommodel",
+    "class/src/data/local/LocalModel.js~LocalModel.html#static-method-fromModel",
+    "src/data/local/LocalModel.js~LocalModel.fromModel",
+    "method"
+  ],
+  [
+    "src/data/local/localmodel.js~localmodel.frommodelclass",
+    "class/src/data/local/LocalModel.js~LocalModel.html#static-method-fromModelClass",
+    "src/data/local/LocalModel.js~LocalModel.fromModelClass",
+    "method"
   ],
   [
     "src/data/local/localprioritisedarray.js",
@@ -2712,16 +2958,364 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/data/local/localprioritisedarray.js~localprioritisedarray#add",
+    "class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html#instance-method-add",
+    "src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray#add",
+    "method"
+  ],
+  [
     "src/data/local/localprioritisedarray.js~localprioritisedarray#constructor",
     "class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html#instance-constructor-constructor",
     "src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray#constructor",
     "method"
   ],
   [
+    "src/data/local/localprioritisedarray.js~localprioritisedarray.classfromprioritisedarray",
+    "class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html#static-method-classFromPrioritisedArray",
+    "src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.classFromPrioritisedArray",
+    "method"
+  ],
+  [
+    "src/data/local/localprioritisedarray.js~localprioritisedarray.createmergedprioritisedarrayclass",
+    "class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html#static-method-createMergedPrioritisedArrayClass",
+    "src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.createMergedPrioritisedArrayClass",
+    "method"
+  ],
+  [
+    "src/data/local/localprioritisedarray.js~localprioritisedarray.fromprioritisedarray",
+    "class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html#static-method-fromPrioritisedArray",
+    "src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.fromPrioritisedArray",
+    "method"
+  ],
+  [
+    "src/data/local/localprioritisedarray.js~localprioritisedarray.mergeprioritisedarrays",
+    "class/src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.html#static-method-mergePrioritisedArrays",
+    "src/data/local/LocalPrioritisedArray.js~LocalPrioritisedArray.mergePrioritisedArrays",
+    "method"
+  ],
+  [
+    "src/data/storage/filesource.js",
+    "file/src/data/storage/FileSource.js.html",
+    "src/data/storage/FileSource.js",
+    "file"
+  ],
+  [
+    "src/data/storage/filesource.js~filesource#constructor",
+    "class/src/data/storage/FileSource.js~FileSource.html#instance-constructor-constructor",
+    "src/data/storage/FileSource.js~FileSource#constructor",
+    "method"
+  ],
+  [
+    "src/data/storage/filesource.js~filesource#get",
+    "class/src/data/storage/FileSource.js~FileSource.html#instance-method-get",
+    "src/data/storage/FileSource.js~FileSource#get",
+    "method"
+  ],
+  [
+    "src/data/storage/filesource.js~filesource#push",
+    "class/src/data/storage/FileSource.js~FileSource.html#instance-method-push",
+    "src/data/storage/FileSource.js~FileSource#push",
+    "method"
+  ],
+  [
+    "src/data/storage/filesource.js~filesource#remove",
+    "class/src/data/storage/FileSource.js~FileSource.html#instance-method-remove",
+    "src/data/storage/FileSource.js~FileSource#remove",
+    "method"
+  ],
+  [
+    "src/data/storage/filesource.js~filesource#set",
+    "class/src/data/storage/FileSource.js~FileSource.html#instance-method-set",
+    "src/data/storage/FileSource.js~FileSource#set",
+    "method"
+  ],
+  [
+    "src/data/storage/firebasefilesource.js",
+    "file/src/data/storage/FirebaseFileSource.js.html",
+    "src/data/storage/FirebaseFileSource.js",
+    "file"
+  ],
+  [
+    "src/data/storage/firebasefilesource.js~firebasefilesource#constructor",
+    "class/src/data/storage/FirebaseFileSource.js~FirebaseFileSource.html#instance-constructor-constructor",
+    "src/data/storage/FirebaseFileSource.js~FirebaseFileSource#constructor",
+    "method"
+  ],
+  [
+    "src/data/storage/firebasefilesource.js~firebasefilesource#path",
+    "class/src/data/storage/FirebaseFileSource.js~FirebaseFileSource.html#instance-member-path",
+    "src/data/storage/FirebaseFileSource.js~FirebaseFileSource#path",
+    "member"
+  ],
+  [
+    "src/data/storage/firebasefilesource.js~firebasefilesource#push",
+    "class/src/data/storage/FirebaseFileSource.js~FirebaseFileSource.html#instance-method-push",
+    "src/data/storage/FirebaseFileSource.js~FirebaseFileSource#push",
+    "method"
+  ],
+  [
+    "src/data/storage/firebasefilesource.js~firebasefilesource#storage",
+    "class/src/data/storage/FirebaseFileSource.js~FirebaseFileSource.html#instance-member-storage",
+    "src/data/storage/FirebaseFileSource.js~FirebaseFileSource#storage",
+    "member"
+  ],
+  [
+    "src/data/storage/firebasefilesource.js~firebasefilesource#storageref",
+    "class/src/data/storage/FirebaseFileSource.js~FirebaseFileSource.html#instance-member-storageRef",
+    "src/data/storage/FirebaseFileSource.js~FirebaseFileSource#storageRef",
+    "member"
+  ],
+  [
     "src/layout/decorators.js",
     "file/src/layout/Decorators.js.html",
     "src/layout/Decorators.js",
     "file"
+  ],
+  [
+    "src/layout/decorators.js~event#on",
+    "class/src/layout/Decorators.js~Event.html#instance-method-on",
+    "src/layout/Decorators.js~Event#on",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~event#once",
+    "class/src/layout/Decorators.js~Event.html#instance-method-once",
+    "src/layout/Decorators.js~Event#once",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~event#pipe",
+    "class/src/layout/Decorators.js~Event.html#instance-method-pipe",
+    "src/layout/Decorators.js~Event#pipe",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~flow#defaultoptions",
+    "class/src/layout/Decorators.js~Flow.html#instance-method-defaultOptions",
+    "src/layout/Decorators.js~Flow#defaultOptions",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~flow#defaultstate",
+    "class/src/layout/Decorators.js~Flow.html#instance-method-defaultState",
+    "src/layout/Decorators.js~Flow#defaultState",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~flow#multiplestatestep",
+    "class/src/layout/Decorators.js~Flow.html#instance-method-multipleStateStep",
+    "src/layout/Decorators.js~Flow#multipleStateStep",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~flow#statestep",
+    "class/src/layout/Decorators.js~Flow.html#instance-method-stateStep",
+    "src/layout/Decorators.js~Flow#stateStep",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~flow#viewstates",
+    "class/src/layout/Decorators.js~Flow.html#instance-method-viewStates",
+    "src/layout/Decorators.js~Flow#viewStates",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#align",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-align",
+    "src/layout/Decorators.js~Layout#align",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#animate",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-animate",
+    "src/layout/Decorators.js~Layout#animate",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#clip",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-clip",
+    "src/layout/Decorators.js~Layout#clip",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#columndockpadding",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-columnDockPadding",
+    "src/layout/Decorators.js~Layout#columnDockPadding",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#custom",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-custom",
+    "src/layout/Decorators.js~Layout#custom",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#dock",
+    "class/src/layout/Decorators.js~Layout.html#instance-get-dock",
+    "src/layout/Decorators.js~Layout#dock",
+    "member"
+  ],
+  [
+    "src/layout/decorators.js~layout#dockpadding",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-dockPadding",
+    "src/layout/Decorators.js~Layout#dockPadding",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#dockspace",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-dockSpace",
+    "src/layout/Decorators.js~Layout#dockSpace",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#draggable",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-draggable",
+    "src/layout/Decorators.js~Layout#draggable",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#flow",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-flow",
+    "src/layout/Decorators.js~Layout#flow",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#fullsize",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-fullSize",
+    "src/layout/Decorators.js~Layout#fullSize",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#nativescrollable",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-nativeScrollable",
+    "src/layout/Decorators.js~Layout#nativeScrollable",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#opacity",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-opacity",
+    "src/layout/Decorators.js~Layout#opacity",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#origin",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-origin",
+    "src/layout/Decorators.js~Layout#origin",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#renderable",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-renderable",
+    "src/layout/Decorators.js~Layout#renderable",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#rotate",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-rotate",
+    "src/layout/Decorators.js~Layout#rotate",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#rotatefrom",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-rotateFrom",
+    "src/layout/Decorators.js~Layout#rotateFrom",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#scale",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-scale",
+    "src/layout/Decorators.js~Layout#scale",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#scrollable",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-scrollable",
+    "src/layout/Decorators.js~Layout#scrollable",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#size",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-size",
+    "src/layout/Decorators.js~Layout#size",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#skew",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-skew",
+    "src/layout/Decorators.js~Layout#skew",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#stick",
+    "class/src/layout/Decorators.js~Layout.html#instance-get-stick",
+    "src/layout/Decorators.js~Layout#stick",
+    "member"
+  ],
+  [
+    "src/layout/decorators.js~layout#swipable",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-swipable",
+    "src/layout/Decorators.js~Layout#swipable",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#translate",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-translate",
+    "src/layout/Decorators.js~Layout#translate",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout#translatefrom",
+    "class/src/layout/Decorators.js~Layout.html#instance-method-translateFrom",
+    "src/layout/Decorators.js~Layout#translateFrom",
+    "method"
+  ],
+  [
+    "src/layout/decorators.js~layout.docktypes",
+    "typedef/index.html#static-typedef-DockTypes",
+    "src/layout/Decorators.js~Layout.DockTypes",
+    "typedef"
+  ],
+  [
+    "src/layout/decorators.js~layout.sticktypes",
+    "typedef/index.html#static-typedef-StickTypes",
+    "src/layout/Decorators.js~Layout.StickTypes",
+    "typedef"
+  ],
+  [
+    "src/layout/decorators.js~layout.sticktypes",
+    "typedef/index.html#static-typedef-StickTypes",
+    "src/layout/Decorators.js~Layout.StickTypes",
+    "typedef"
+  ],
+  [
+    "src/layout/decorators.js~layout.dockbottom",
+    "typedef/index.html#static-typedef-dockBottom",
+    "src/layout/Decorators.js~Layout.dockBottom",
+    "typedef"
+  ],
+  [
+    "src/layout/decorators.js~layout.dockleft",
+    "typedef/index.html#static-typedef-dockLeft",
+    "src/layout/Decorators.js~Layout.dockLeft",
+    "typedef"
+  ],
+  [
+    "src/layout/decorators.js~layout.dockright",
+    "typedef/index.html#static-typedef-dockRight",
+    "src/layout/Decorators.js~Layout.dockRight",
+    "typedef"
+  ],
+  [
+    "src/layout/decorators.js~layout.docktop",
+    "typedef/index.html#static-typedef-dockTop",
+    "src/layout/Decorators.js~Layout.dockTop",
+    "typedef"
+  ],
+  [
+    "src/layout/decorators.js~layout.fill",
+    "typedef/index.html#static-typedef-fill",
+    "src/layout/Decorators.js~Layout.fill",
+    "typedef"
   ],
   [
     "src/layout/flowstates.js",
@@ -2778,6 +3372,18 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/routers/arvarouter.js~arvarouter#getpreviousroute",
+    "class/src/routers/ArvaRouter.js~ArvaRouter.html#instance-method-getPreviousRoute",
+    "src/routers/ArvaRouter.js~ArvaRouter#getPreviousRoute",
+    "method"
+  ],
+  [
+    "src/routers/arvarouter.js~arvarouter#getroute",
+    "class/src/routers/ArvaRouter.js~ArvaRouter.html#instance-method-getRoute",
+    "src/routers/ArvaRouter.js~ArvaRouter#getRoute",
+    "method"
+  ],
+  [
     "src/routers/arvarouter.js~arvarouter#go",
     "class/src/routers/ArvaRouter.js~ArvaRouter.html#instance-method-go",
     "src/routers/ArvaRouter.js~ArvaRouter#go",
@@ -2790,16 +3396,28 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/routers/arvarouter.js~arvarouter#history",
-    "class/src/routers/ArvaRouter.js~ArvaRouter.html#instance-member-history",
-    "src/routers/ArvaRouter.js~ArvaRouter#history",
-    "member"
-  ],
-  [
     "src/routers/arvarouter.js~arvarouter#isbackbuttonenabled",
     "class/src/routers/ArvaRouter.js~ArvaRouter.html#instance-method-isBackButtonEnabled",
     "src/routers/ArvaRouter.js~ArvaRouter#isBackButtonEnabled",
     "method"
+  ],
+  [
+    "src/routers/arvarouter.js~arvarouter#previousroute",
+    "class/src/routers/ArvaRouter.js~ArvaRouter.html#instance-member-previousRoute",
+    "src/routers/ArvaRouter.js~ArvaRouter#previousRoute",
+    "member"
+  ],
+  [
+    "src/routers/arvarouter.js~arvarouter#route",
+    "class/src/routers/ArvaRouter.js~ArvaRouter.html#instance-member-route",
+    "src/routers/ArvaRouter.js~ArvaRouter#route",
+    "member"
+  ],
+  [
+    "src/routers/arvarouter.js~arvarouter#routestack",
+    "class/src/routers/ArvaRouter.js~ArvaRouter.html#instance-member-routeStack",
+    "src/routers/ArvaRouter.js~ArvaRouter#routeStack",
+    "member"
   ],
   [
     "src/routers/arvarouter.js~arvarouter#routes",
@@ -2844,6 +3462,90 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/surfaces/dropdown.js",
+    "file/src/surfaces/Dropdown.js.html",
+    "src/surfaces/Dropdown.js",
+    "file"
+  ],
+  [
+    "src/surfaces/dropdown.js~dropdown#constructor",
+    "class/src/surfaces/Dropdown.js~Dropdown.html#instance-constructor-constructor",
+    "src/surfaces/Dropdown.js~Dropdown#constructor",
+    "method"
+  ],
+  [
+    "src/surfaces/dropdown.js~dropdown#content",
+    "class/src/surfaces/Dropdown.js~Dropdown.html#instance-member-content",
+    "src/surfaces/Dropdown.js~Dropdown#content",
+    "member"
+  ],
+  [
+    "src/surfaces/dropdown.js~dropdown#deploy",
+    "class/src/surfaces/Dropdown.js~Dropdown.html#instance-method-deploy",
+    "src/surfaces/Dropdown.js~Dropdown#deploy",
+    "method"
+  ],
+  [
+    "src/surfaces/dropdown.js~dropdown#elementtype",
+    "class/src/surfaces/Dropdown.js~Dropdown.html#instance-member-elementType",
+    "src/surfaces/Dropdown.js~Dropdown#elementType",
+    "member"
+  ],
+  [
+    "src/surfaces/dropdown.js~dropdown.with",
+    "class/src/surfaces/Dropdown.js~Dropdown.html#static-method-with",
+    "src/surfaces/Dropdown.js~Dropdown.with",
+    "method"
+  ],
+  [
+    "src/surfaces/inputsurface.js",
+    "file/src/surfaces/InputSurface.js.html",
+    "src/surfaces/InputSurface.js",
+    "file"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface#blur",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#instance-method-blur",
+    "src/surfaces/InputSurface.js~InputSurface#blur",
+    "method"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface#constructor",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#instance-constructor-constructor",
+    "src/surfaces/InputSurface.js~InputSurface#constructor",
+    "method"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface#focus",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#instance-method-focus",
+    "src/surfaces/InputSurface.js~InputSurface#focus",
+    "method"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface#setvalue",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#instance-method-setValue",
+    "src/surfaces/InputSurface.js~InputSurface#setValue",
+    "method"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface.tabindex",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#static-member-tabIndex",
+    "src/surfaces/InputSurface.js~InputSurface.tabIndex",
+    "member"
+  ],
+  [
+    "src/surfaces/inputsurface.js~inputsurface.with",
+    "class/src/surfaces/InputSurface.js~InputSurface.html#static-method-with",
+    "src/surfaces/InputSurface.js~InputSurface.with",
+    "method"
+  ],
+  [
+    "src/surfaces/surface.js",
+    "file/src/surfaces/Surface.js.html",
+    "src/surfaces/Surface.js",
+    "file"
+  ],
+  [
     "src/utils/blobhelper.js",
     "file/src/utils/BlobHelper.js.html",
     "src/utils/BlobHelper.js",
@@ -2868,10 +3570,28 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/utils/debuggertools.js",
+    "file/src/utils/DebuggerTools.js.html",
+    "src/utils/DebuggerTools.js",
+    "file"
+  ],
+  [
     "src/utils/dialogmanager.js",
     "file/src/utils/DialogManager.js.html",
     "src/utils/DialogManager.js",
     "file"
+  ],
+  [
+    "src/utils/dialogmanager.js~dialogmanager#background",
+    "class/src/utils/DialogManager.js~DialogManager.html#instance-member-background",
+    "src/utils/DialogManager.js~DialogManager#background",
+    "member"
+  ],
+  [
+    "src/utils/dialogmanager.js~dialogmanager#cancancel",
+    "class/src/utils/DialogManager.js~DialogManager.html#instance-member-canCancel",
+    "src/utils/DialogManager.js~DialogManager#canCancel",
+    "member"
   ],
   [
     "src/utils/dialogmanager.js~dialogmanager#close",
@@ -2886,9 +3606,21 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/utils/dialogmanager.js~dialogmanager#dialog",
+    "class/src/utils/DialogManager.js~DialogManager.html#instance-member-dialog",
+    "src/utils/DialogManager.js~DialogManager#dialog",
+    "member"
+  ],
+  [
     "src/utils/dialogmanager.js~dialogmanager#dialogcomplete",
     "class/src/utils/DialogManager.js~DialogManager.html#instance-method-dialogComplete",
     "src/utils/DialogManager.js~DialogManager#dialogComplete",
+    "method"
+  ],
+  [
+    "src/utils/dialogmanager.js~dialogmanager#getopendialog",
+    "class/src/utils/DialogManager.js~DialogManager.html#instance-method-getOpenDialog",
+    "src/utils/DialogManager.js~DialogManager#getOpenDialog",
     "method"
   ],
   [
@@ -2950,6 +3682,12 @@ window.esdocSearchIndex = [
     "class/src/utils/Injection.js~Injection.html#static-method-getAll",
     "src/utils/Injection.js~Injection.getAll",
     "method"
+  ],
+  [
+    "src/utils/injection.js~injection.injector",
+    "class/src/utils/Injection.js~Injection.html#static-member-injector",
+    "src/utils/Injection.js~Injection.injector",
+    "member"
   ],
   [
     "src/utils/injection.js~injection.provide",
@@ -3054,6 +3792,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/utils/objecthelper.js~objecthelper.deepaddallgetsetpropertywithshadow",
+    "class/src/utils/ObjectHelper.js~ObjectHelper.html#static-method-deepAddAllGetSetPropertyWithShadow",
+    "src/utils/ObjectHelper.js~ObjectHelper.deepAddAllGetSetPropertyWithShadow",
+    "method"
+  ],
+  [
     "src/utils/objecthelper.js~objecthelper.getenumerableproperties",
     "class/src/utils/ObjectHelper.js~ObjectHelper.html#static-method-getEnumerableProperties",
     "src/utils/ObjectHelper.js~ObjectHelper.getEnumerableProperties",
@@ -3150,6 +3894,12 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/utils/throttler.js~throttler#waitfor",
+    "class/src/utils/Throttler.js~Throttler.html#instance-member-waitFor",
+    "src/utils/Throttler.js~Throttler#waitFor",
+    "member"
+  ],
+  [
     "src/utils/di/decorators.js",
     "file/src/utils/di/Decorators.js.html",
     "src/utils/di/Decorators.js",
@@ -3187,39 +3937,69 @@ window.esdocSearchIndex = [
   ],
   [
     "src/utils/di/injector.js",
-    "file/src/utils/di/injector.js.html",
-    "src/utils/di/injector.js",
+    "file/src/utils/di/Injector.js.html",
+    "src/utils/di/Injector.js",
     "file"
   ],
   [
     "src/utils/di/injector.js~injector#constructor",
-    "class/src/utils/di/injector.js~Injector.html#instance-constructor-constructor",
-    "src/utils/di/injector.js~Injector#constructor",
+    "class/src/utils/di/Injector.js~Injector.html#instance-constructor-constructor",
+    "src/utils/di/Injector.js~Injector#constructor",
     "method"
   ],
   [
     "src/utils/di/injector.js~injector#createchild",
-    "class/src/utils/di/injector.js~Injector.html#instance-method-createChild",
-    "src/utils/di/injector.js~Injector#createChild",
+    "class/src/utils/di/Injector.js~Injector.html#instance-method-createChild",
+    "src/utils/di/Injector.js~Injector#createChild",
     "method"
   ],
   [
     "src/utils/di/injector.js~injector#get",
-    "class/src/utils/di/injector.js~Injector.html#instance-method-get",
-    "src/utils/di/injector.js~Injector#get",
+    "class/src/utils/di/Injector.js~Injector.html#instance-method-get",
+    "src/utils/di/Injector.js~Injector#get",
     "method"
   ],
   [
     "src/utils/di/providers.js",
-    "file/src/utils/di/providers.js.html",
-    "src/utils/di/providers.js",
+    "file/src/utils/di/Providers.js.html",
+    "src/utils/di/Providers.js",
     "file"
   ],
   [
     "src/utils/di/util.js",
-    "file/src/utils/di/util.js.html",
-    "src/utils/di/util.js",
+    "file/src/utils/di/Util.js.html",
+    "src/utils/di/Util.js",
     "file"
+  ],
+  [
+    "src/utils/dialog/dialogwrapper.js",
+    "file/src/utils/dialog/DialogWrapper.js.html",
+    "src/utils/dialog/DialogWrapper.js",
+    "file"
+  ],
+  [
+    "src/utils/dialog/dialogwrapper.js~dialogwrapper#determinesizewithmargins",
+    "class/src/utils/dialog/DialogWrapper.js~DialogWrapper.html#instance-method-determineSizeWithMargins",
+    "src/utils/dialog/DialogWrapper.js~DialogWrapper#determineSizeWithMargins",
+    "method"
+  ],
+  [
+    "src/utils/dialog/dialogwrapper.js~dialogwrapper#dialog",
+    "class/src/utils/dialog/DialogWrapper.js~DialogWrapper.html#instance-member-dialog",
+    "src/utils/dialog/DialogWrapper.js~DialogWrapper#dialog",
+    "member"
+  ],
+  [
+    "src/utils/dialog/dialogwrapper.js~dialogwrapper#getsize",
+    "class/src/utils/dialog/DialogWrapper.js~DialogWrapper.html#instance-method-getSize",
+    "src/utils/dialog/DialogWrapper.js~DialogWrapper#getSize",
+    "method"
+  ],
+  [
+    "src/utils/dialog/dialogwrapper.js~dialogwrapper#onnewparentsize",
+    "class/src/utils/dialog/DialogWrapper.js~DialogWrapper.html#instance-method-onNewParentSize",
+    "src/utils/dialog/DialogWrapper.js~DialogWrapper#onNewParentSize",
+    "method"
   ],
   [
     "src/utils/hotfixes/disabletextselection.js",
@@ -3237,6 +4017,12 @@ window.esdocSearchIndex = [
     "src/utils/hotfixes/iesupport.js",
     "file/src/utils/hotfixes/IESupport.js.html",
     "src/utils/hotfixes/IESupport.js",
+    "file"
+  ],
+  [
+    "src/utils/hotfixes/layoutinvalidator.js",
+    "file/src/utils/hotfixes/LayoutInvalidator.js.html",
+    "src/utils/hotfixes/LayoutInvalidator.js",
     "file"
   ],
   [
@@ -3294,6 +4080,12 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
+    "src/utils/view/arrayobserver.js",
+    "file/src/utils/view/ArrayObserver.js.html",
+    "src/utils/view/ArrayObserver.js",
+    "file"
+  ],
+  [
     "src/utils/view/layouthelpers.js",
     "file/src/utils/view/LayoutHelpers.js.html",
     "src/utils/view/LayoutHelpers.js",
@@ -3348,6 +4140,66 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/utils/view/optionobserver.js",
+    "file/src/utils/view/OptionObserver.js.html",
+    "src/utils/view/OptionObserver.js",
+    "file"
+  ],
+  [
+    "src/utils/view/optionobserver.js~optionobserver#constructor",
+    "class/src/utils/view/OptionObserver.js~OptionObserver.html#instance-constructor-constructor",
+    "src/utils/view/OptionObserver.js~OptionObserver#constructor",
+    "method"
+  ],
+  [
+    "src/utils/view/optionobserver.js~optionobserver#defaultoptions",
+    "class/src/utils/view/OptionObserver.js~OptionObserver.html#instance-member-defaultOptions",
+    "src/utils/view/OptionObserver.js~OptionObserver#defaultOptions",
+    "member"
+  ],
+  [
+    "src/utils/view/optionobserver.js~optionobserver#deleterecordingforrenderable",
+    "class/src/utils/view/OptionObserver.js~OptionObserver.html#instance-method-deleteRecordingForRenderable",
+    "src/utils/view/OptionObserver.js~OptionObserver#deleteRecordingForRenderable",
+    "method"
+  ],
+  [
+    "src/utils/view/optionobserver.js~optionobserver#getoptions",
+    "class/src/utils/view/OptionObserver.js~OptionObserver.html#instance-method-getOptions",
+    "src/utils/view/OptionObserver.js~OptionObserver#getOptions",
+    "method"
+  ],
+  [
+    "src/utils/view/optionobserver.js~optionobserver#options",
+    "class/src/utils/view/OptionObserver.js~OptionObserver.html#instance-member-options",
+    "src/utils/view/OptionObserver.js~OptionObserver#options",
+    "member"
+  ],
+  [
+    "src/utils/view/optionobserver.js~optionobserver#recombineoptions",
+    "class/src/utils/view/OptionObserver.js~OptionObserver.html#instance-method-recombineOptions",
+    "src/utils/view/OptionObserver.js~OptionObserver#recombineOptions",
+    "method"
+  ],
+  [
+    "src/utils/view/optionobserver.js~optionobserver#recordforrenderable",
+    "class/src/utils/view/OptionObserver.js~OptionObserver.html#instance-method-recordForRenderable",
+    "src/utils/view/OptionObserver.js~OptionObserver#recordForRenderable",
+    "method"
+  ],
+  [
+    "src/utils/view/optionobserver.js~optionobserver.maxsupporteddepth",
+    "class/src/utils/view/OptionObserver.js~OptionObserver.html#static-member-maxSupportedDepth",
+    "src/utils/view/OptionObserver.js~OptionObserver.maxSupportedDepth",
+    "member"
+  ],
+  [
+    "src/utils/view/optionobserver.js~optionobserver.preprocess",
+    "class/src/utils/view/OptionObserver.js~OptionObserver.html#static-member-preprocess",
+    "src/utils/view/OptionObserver.js~OptionObserver.preprocess",
+    "member"
+  ],
+  [
     "src/utils/view/renderablehelper.js",
     "file/src/utils/view/RenderableHelper.js.html",
     "src/utils/view/RenderableHelper.js",
@@ -3393,6 +4245,12 @@ window.esdocSearchIndex = [
     "src/utils/view/renderablehelper.js~renderablehelper#getrenderablegroup",
     "class/src/utils/view/RenderableHelper.js~RenderableHelper.html#instance-method-getRenderableGroup",
     "src/utils/view/RenderableHelper.js~RenderableHelper#getRenderableGroup",
+    "method"
+  ],
+  [
+    "src/utils/view/renderablehelper.js~renderablehelper#getrenderablenames",
+    "class/src/utils/view/RenderableHelper.js~RenderableHelper.html#instance-method-getRenderableNames",
+    "src/utils/view/RenderableHelper.js~RenderableHelper#getRenderableNames",
     "method"
   ],
   [
@@ -3489,6 +4347,18 @@ window.esdocSearchIndex = [
     "src/utils/view/sizeresolver.js~sizeresolver#getsurfacetruesizedinfo",
     "class/src/utils/view/SizeResolver.js~SizeResolver.html#instance-method-getSurfaceTrueSizedInfo",
     "src/utils/view/SizeResolver.js~SizeResolver#getSurfaceTrueSizedInfo",
+    "method"
+  ],
+  [
+    "src/utils/view/sizeresolver.js~sizeresolver#invalidatefontforbrowserbugfix",
+    "class/src/utils/view/SizeResolver.js~SizeResolver.html#instance-method-invalidateFontForBrowserBugFix",
+    "src/utils/view/SizeResolver.js~SizeResolver#invalidateFontForBrowserBugFix",
+    "method"
+  ],
+  [
+    "src/utils/view/sizeresolver.js~sizeresolver#issizefinal",
+    "class/src/utils/view/SizeResolver.js~SizeResolver.html#instance-method-isSizeFinal",
+    "src/utils/view/SizeResolver.js~SizeResolver#isSizeFinal",
     "method"
   ],
   [

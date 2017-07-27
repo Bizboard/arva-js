@@ -1,0 +1,25 @@
+{
+  "source": "./src/",
+  "destination": "./docs",
+  "styles": ["./esdoc-res/styles.css"],
+  "plugins": [
+    {"name": "./esdoc-res/arvalizer.js"}
+  ],
+  "manual": {
+    "globalIndex": false,
+    "asset":"./esdoc-res/manual-asset",
+    "overview": ["./esdoc-res/tutorial.md"]
+  },
+  "lint": false,
+  "experimentalProposal": {
+    "classProperties": true,
+    "objectRestSpread": true,
+    "decorators": true,
+    "doExpressions": true,
+    "functionBind": true,
+    "asyncGenerators": true,
+    "exportExtensions": true,
+    "dynamicImport": true
+  },
+  "title": "Arva"
+}

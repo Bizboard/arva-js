@@ -56,10 +56,16 @@ export class Model extends PrioritisedObject {
         let modelName = this.constructor._name || Object.getPrototypeOf(this).constructor.name;
 
         let pathRoot = modelName + 's';
+        if (options.subBranch) { pathRoot += `/${options.subBranch}`; }
 
         let dataWasPushed = false;
-        let dataIsSynced = new Promise((resolve) => this._dataIsSynced = resolve);
-        let dataSourceOptions = {synced: dataIsSynced};
+        let onDataSynced, onDataSyncFailed;
+        let dataIsSynced = new Promise((resolve, reject) => {
+            onDataSynced = resolve;
+            onDataSyncFailed = reject;
+        });
+
+        let dataSourceOptions = { synced: dataIsSynced };
 
         if (options.dataSource && id) {
             this._dataSource = options.dataSource;
@@ -70,7 +76,7 @@ export class Model extends PrioritisedObject {
         } else if (options.path && id) {
             this._dataSource = dataSource.child(options.path + '/' + id || '', dataSourceOptions);
         } else if (options.dataSnapshot) {
-            let {ref} = options.dataSnapshot;
+            let { ref } = options.dataSnapshot;
             /* Getting the path from a snapshot requires some string modifications */
             this._dataSource = dataSource.child(ref.toString().substring(ref.root.toString().length), dataSourceOptions);
         } else if (id) {
@@ -94,14 +100,25 @@ export class Model extends PrioritisedObject {
         } else {
             this._buildFromDataSource(this._dataSource);
         }
-        if(!options.noInitialSync && !dataWasPushed){
+        if (!options.noInitialSync && !dataWasPushed) {
             /* Write local data to model, if any data is present. */
-            this._writeLocalDataToModel(data).then(this._dataIsSynced);
+            this._writeLocalDataToModel(data)
+                .then(onDataSynced)
+                .catch(onDataSyncFailed);
         } else {
-            this._dataIsSynced();
+            onDataSynced();
+        }
+        if(this._dataSource){
+            /* Add the promise to the end of the dataSource synced chain.
+             * This enables to catch errors like this:
+             * new Model(null, {...data}).synced().catch((error) => /!* Handle error *!/)
+             */
+            let dataSourceSyncPromise = this._dataSource.synced();
+            if (dataSourceSyncPromise) {
+                this._dataSource._synced = dataSourceSyncPromise.then(() => dataIsSynced);
+            }
         }
     }
-
 
 
     /**
@@ -110,6 +127,19 @@ export class Model extends PrioritisedObject {
      */
     synced() {
         return this._dataSource.synced();
+    }
+
+    /**
+     * Updates properties of this model to the values of those of another model, or a normal JS Object.
+     * @param {Model|Object} newModelOrData Data to replace old data with
+     */
+    replaceProperties(newModelOrData) {
+        this.transaction(() => {
+            for (let fieldName in newModelOrData) {
+                /* Simple shallow clone */
+                this[fieldName] = newModelOrData[fieldName];
+            }
+        });
     }
 
     /**
@@ -125,16 +155,16 @@ export class Model extends PrioritisedObject {
         }
 
         /* If the code is minified, then this.constructor._name is defined, in that case that also goes for the inheriting classes */
-        while (prototype.constructor._name || (!this.constructor._name && prototype.constructor.name !== 'Model')) {
+        while (prototype && (prototype.constructor._name || (!this.constructor._name && prototype.constructor.name !== 'Model'))) {
             /* Get all properties except the id and constructor of this model */
-            let propNames = difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
+            let propertyNames = difference(Object.getOwnPropertyNames(prototype), ['constructor', 'id']);
 
-            for (let name of propNames) {
-                let descriptor = Object.getOwnPropertyDescriptor(prototype, name);
+            for (let propertyName of propertyNames) {
+                let descriptor = Object.getOwnPropertyDescriptor(prototype, propertyName);
                 if (descriptor && descriptor.get) {
-                    let value = this[name];
-                    delete this[name];
-                    ObjectHelper.addPropertyToObject(this, name, value, true, true, this._onSetterTriggered);
+                    let value = this[propertyName];
+                    delete this[propertyName];
+                    ObjectHelper.addPropertyToObject(this, propertyName, value, true, true, () => this._onSetterTriggered(propertyName), ({newValue}) => this._onGetterTriggered({propertyName, newValue}));
                 }
             }
 
@@ -151,6 +181,7 @@ export class Model extends PrioritisedObject {
      */
     _writeLocalDataToModel(data) {
         if (data) {
+            this.disableChangeListener();
             let isDataDifferent = false;
             for (let name in data) {
                 if (Object.getOwnPropertyDescriptor(this, name) && this[name] !== data[name]) {
@@ -158,6 +189,7 @@ export class Model extends PrioritisedObject {
                     break;
                 }
             }
+            this.enableChangeListener();
 
             if (isDataDifferent) {
                 return this.transaction(function () {

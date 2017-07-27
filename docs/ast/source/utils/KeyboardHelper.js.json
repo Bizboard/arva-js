@@ -5335,8 +5335,7 @@
               }
             }
           }
-        ],
-        "exportKind": "value"
+        ]
       }
     ],
     "directives": []

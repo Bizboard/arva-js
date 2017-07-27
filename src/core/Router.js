@@ -15,7 +15,6 @@ import {ObjectHelper}               from '../utils/ObjectHelper.js';
  */
 export class Router extends EventEmitter {
 
-
     constructor() {
         super();
         // make classes behave like context bound
@@ -35,36 +34,85 @@ export class Router extends EventEmitter {
     }
 
     /**
-     * On a route change, calls the corresponding controller method with the given parameter values.
-     * @returns {Boolean} Whether the current route was successfully ran.
-     */
-    run() { }
-
-
-    /**
      * Sets the initial controller and method to be activated whenever the controllers are activated.
      * @param {Controller|Function|String} controller Default controller instance, controller constructor, or controller name to go to.
      * @param {String} method Default method to call in given controller.
      * @returns {void}
      */
-    setDefault(controller, method) { }
+    setDefault(controller, method = null) {
+    }
 
     /**
-     * Registers a single controller.
-     * @param {String} route Route to trigger handler on.
-     * @param {Function} handler Method to call on given route.
+     * Sets the animation specs object for use by the famous-flex AnimationController.
+     * @param {Object} specs Animation specs, keyed by target controller.
      * @returns {void}
      */
-    add(route, handler) { }
+    setControllerSpecs(specs) {
+    }
 
     /**
      * Triggers navigation to one of the controllers
      * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.
      * @param {String} method The method to call in given controller.
-     * @param {Object} [params] Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: "yes"})
+     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: "yes"})
      * @returns {void}
      */
-    go(controller, method, params) { }
+    go(controller, method, params = null) {
+    }
+
+    /**
+     * Returns an object containing the current route.
+     * @returns {{controller: *, method: (*), params: {}}}
+     */
+    getRoute() {
+
+    }
+
+    /**
+     * Registers a single controller.
+     * @param {String} route Route to trigger handler on.
+     * @param {Object} handlers
+     * @param {Function} handler.enter Method to call on entering a route.
+     * @param {Function} handler.leave Method to call on when leaving a route.
+     * @returns {void}
+     */
+    add(route, {enter, leave}, controller) {
+
+    }
+
+    /**
+     * On a route change, calls the corresponding controller method with the given parameter values.
+     * @returns {Boolean} Whether the current route was successfully ran.
+     */
+    run() {
+
+    }
+
+    setInitialSpec(spec) {
+    }
+
+    setBackButtonEnabled(enabled) {
+    }
+
+    isBackButtonEnabled() {
+    }
+
+    /**
+     * Return the previous known route, or default route if no route stack is present
+     * @returns {*}
+     */
+    getPreviousRoute(){
+
+    }
+
+    goBackInHistory() {
+
+    }
+
+    _setupNativeBackButtonListener() {
+
+    }
+
 
     /**
      * Executes the controller handler associated with a given route, passing the route as a parameter.
@@ -73,5 +121,51 @@ export class Router extends EventEmitter {
      * @returns {void}
      * @private
      */
-    _executeRoute(rule, route) { }
+    _executeRoute(rule, route) {
+
+    }
+
+    /**
+     * Checks if the current route is already present in the history stack, and if so removes all entries after
+     * and including the first occurrence. It will then append the current route to the history stack.
+     * @param {Object} currentRoute Route object containing url, controller, method, keys, and values.
+     * @returns {void}
+     * @private
+     */
+    _setHistory(currentRoute) {
+
+    }
+
+    /**
+     * CheckS whether a route is already present in the history stack.
+     * @param {Object} currentRoute Route object containing url, controller, method, keys, and values.
+     * @returns {Boolean} Whether the route has been visited previously.
+     * @private
+     */
+    _hasVisited(currentRoute) {
+
+    }
+
+    /**
+     * Returns the Famous-Flex animation spec for two given routes. Takes its spec inputs from the specs set in
+     * router.setControllerSpecs(), which is called from the app constructor.
+     * @param {Object} previousRoute Previous route object containing url, controller, method, keys, and values.
+     * @param {Object} currentRoute Current route object containing url, controller, method, keys, and values.
+     * @returns {Object} A spec object if one is found, or an empty object otherwise.
+     * @private
+     */
+    _getAnimationSpec(previousRoute, currentRoute) {
+
+    }
+
+    /**
+     * Extracts a controller name from a given string, constructor, or controller instance. 'Controller' part is not included in the returned name.
+     * E.g. _getControllerName(HomeController) -> 'Home'.
+     * @param {Function|Object|String} controller String, constructor, or controller instance.
+     * @returns {String} Name of the controller
+     * @private
+     */
+    _getControllerName(controller) {
+
+    }
 }

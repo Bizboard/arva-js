@@ -17,6 +17,8 @@ import {DataSource}     from '../data/DataSource.js';
 
 export class PrioritisedObject extends EventEmitter {
 
+    _accessedKeys = [];
+
     get id() {
         return this._id;
     }
@@ -62,7 +64,7 @@ export class PrioritisedObject extends EventEmitter {
         this._events = this._events || [];
         this._dataSource = dataSource;
         this._priority = 0; // Priority of this object on remote dataSource
-        this._isBeingWrittenByDatasource = false; // Flag to determine when dataSource is updating object
+        this._changeListenersDisabled = false; // Flag to determine whether data change listeners are disabled
         this._childChangedListeners = {};
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
@@ -89,6 +91,14 @@ export class PrioritisedObject extends EventEmitter {
         }
     }
 
+    getDataSource(){
+        return this._dataSource;
+    }
+
+    dataExists(){
+       return this.getDataSource().dataExists();
+    }
+
     _getParentDataSource() {
         if (!this._parentDataSource) {
             return this._parentDataSource = Injection.get(DataSource, this._dataSource.parent());
@@ -102,32 +112,32 @@ export class PrioritisedObject extends EventEmitter {
      */
     remove() {
         this.off();
-        this._dataSource.remove(this);
-        delete this;
+        delete this; //TODO <---- This is cryptic, what does it do?
+        return this._dataSource.remove(this);
     }
 
     /**
      * Subscribes to the given event type exactly once; it automatically unsubscribes after the first time it is triggered.
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
-     * @param {Function} handler Function that is called when the given event type is emitted.
-     * @param {Object} context Optional: context of 'this' inside the handler function when it is called.
-     * @returns {void}
+     * @param {Function} [handler] Function that is called when the given event type is emitted.
+     * @param {Object} [context] Optional: context of 'this' inside the handler function when it is called.
+     * @returns {Promise} A promise that resolves once the event has happened
      */
     once(event, handler, context = this) {
-        if (!handler) {
-            return new Promise((resolve) => this.once(event, resolve, context));
-        }
-        return this.on(event, function onceWrapper() {
-            handler.call(context, ...arguments);
-            this.off(event, onceWrapper, context);
-        }, this);
+        return new Promise((resolve) => {
+            this.on(event, function onceWrapper() {
+                this.off(event, onceWrapper, context);
+                handler && handler.call(context, ...arguments);
+                resolve(...arguments);
+            }, this);
+        });
     }
 
     /**
      * Subscribes to events emitted by this PrioritisedArray.
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
      * @param {Function} handler Function that is called when the given event type is emitted.
-     * @param {Object} context Optional: context of 'this' inside the handler function when it is called.
+     * @param {Object} [context] Optional: context of 'this' inside the handler function when it is called.
      * @returns {void}
      */
     on(event, handler, context = this) {
@@ -183,8 +193,8 @@ export class PrioritisedObject extends EventEmitter {
      * Removes subscription to events emitted by this PrioritisedArray. If no handler or context is given, all handlers for
      * the given event are removed. If no parameters are given at all, all event types will have their handlers removed.
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
-     * @param {Function} handler Function to remove from event callbacks.
-     * @param {Object} context Object to bind the given callback function to.
+     * @param {Function} [handler] Function to remove from event callbacks.
+     * @param {Object} [context] Object to bind the given callback function to.
      * @returns {void}
      */
     off(event, handler, context) {
@@ -231,7 +241,7 @@ export class PrioritisedObject extends EventEmitter {
      * Allows multiple modifications to be made to the model without triggering dataSource pushes and event emits for each change.
      * Triggers a push to the dataSource after executing the given method. This push should then emit an event notifying subscribers of any changes.
      * @param {Function} method Function in which the model can be modified.
-     * @returns {void}
+     * @returns {Promise}
      */
     transaction(method) {
         this.disableChangeListener();
@@ -245,7 +255,7 @@ export class PrioritisedObject extends EventEmitter {
      * @returns {void}
      */
     disableChangeListener() {
-        this._isBeingWrittenByDatasource = true;
+        this._changeListenersDisabled = true;
     }
 
 
@@ -255,7 +265,11 @@ export class PrioritisedObject extends EventEmitter {
      * @returns {void}
      */
     enableChangeListener() {
-        this._isBeingWrittenByDatasource = false;
+        this._changeListenersDisabled = false;
+    }
+
+    getDataSourcePath() {
+        return this._dataSource.path();
     }
 
     /**
@@ -288,18 +302,21 @@ export class PrioritisedObject extends EventEmitter {
             return;
         }
 
+        this._buildFromData(data);
+
+        this._dataSource.ready = true;
+        this.emit('ready');
+    }
+
+    _buildFromData(data) {
         for (let key in data) {
             /* Only map properties that exists on our model */
             let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
             if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
-                /* If child is a primitive, listen to changes so we can synch with Firebase */
-                ObjectHelper.addPropertyToObject(this, key, data[key], true, true, this._onSetterTriggered.bind(this, key));
+                /* If child is a primitive, listen to changes so we can sync with Firebase */
+                ObjectHelper.addPropertyToObject(this, key, data[key], true, true, () => this._onSetterTriggered(key), ({value}) => this._onGetterTriggered({propertyName: key, value}));
             }
-
         }
-
-        this._dataSource.ready = true;
-        this.emit('ready');
     }
 
     /**
@@ -317,17 +334,60 @@ export class PrioritisedObject extends EventEmitter {
     }
 
     /**
+     * Registers that whenever a getter has been called, then the callback function will be called
+     * @param callbackFunction
+     * @returns {Function} oldCallbackFunction The function that was replaced (if applicabble)
+     */
+    static setPropertyGetterSpy(callbackFunction) {
+        let oldPropertyGetterSpy = this._propertyGetterSpy;
+        this._propertyGetterSpy = callbackFunction;
+        return oldPropertyGetterSpy;
+    }
+
+    /**
+     *
+     * @returns {Function} oldCallbackFunction The function that was replaced (if applicabble)
+     */
+    static removePropertyGetterSpy() {
+        let oldPropertyGetterSpy = this._propertyGetterSpy;
+        this._propertyGetterSpy = null;
+        return oldPropertyGetterSpy;
+    }
+
+    /**
+     * This is used to keep track of any model getter accesses
+     */
+    static _propertyGetterSpy;
+
+    /**
      * Gets called whenever a property value is set on this object.
      * This can happen when local code modifies it, or when the dataSource updates it.
      * We only propagate changes to the dataSource if the change was local.
-     * @returns {void}
+     * @returns {Promise}
      * @private
      */
-    _onSetterTriggered() {
-        if (!this._isBeingWrittenByDatasource) {
-            this.emit('changed', this);
-            return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this), this._priority);
+    _onSetterTriggered(key) {
+        if (!this._changeListenersDisabled) {
+            let changedProperties = this._accessedKeys.concat(key);
+            let changedValues = changedProperties.map((key) => this.shadow[key]);
+            this.emit('changed', this, changedProperties);
+            return this._dataSource.setWithPriority(ObjectHelper.getEnumerableProperties(this.shadow), this._priority);
+        } else {
+            this._accessedKeys.push(key);
         }
+    }
+
+    _onGetterTriggered({propertyName, value}) {
+        if (!this._changeListenersDisabled && PrioritisedObject._propertyGetterSpy) {
+            PrioritisedObject._propertyGetterSpy(this, propertyName, value);
+        }
+    }
+
+    _getDiffingKeysFromOther(otherObject) {
+        return Object.keys(otherObject).filter((propertyName) => {
+            let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, propertyName);
+            return ownPropertyDescriptor && ownPropertyDescriptor.enumerable && !isEqual(this[propertyName], otherObject[propertyName]);
+        });
     }
 
     /**
@@ -338,22 +398,18 @@ export class PrioritisedObject extends EventEmitter {
      * @private
      */
     _onChildValue(dataSnapshot, previousSiblingID) {
-
+        this.disableChangeListener();
         /* If the new dataSource data is equal to what we have locally,
          * this is an update triggered by a local change having been pushed
          * to the remote dataSource. We can ignore it.
          */
         let incomingData = dataSnapshot.val() || {};
 
-        if (every(incomingData, (val, key) => {
-                let ownPropertyDescriptor = Object.getOwnPropertyDescriptor(this, key);
-                if (ownPropertyDescriptor && ownPropertyDescriptor.enumerable) {
-                    return isEqual(this[key], val);
-                } else {
-                    return true;
-                }
-            })) {
+        let changedPropertyNames = this._getDiffingKeysFromOther(incomingData);
+
+        if (!changedPropertyNames.length) {
             this.emit('value', this, previousSiblingID);
+            this.enableChangeListener();
             return;
         }
 
@@ -362,9 +418,10 @@ export class PrioritisedObject extends EventEmitter {
         this.emit('value', this, previousSiblingID);
 
         if (this._hasListenersOfType('changed')) {
-            this.emit('changed', this, previousSiblingID);
+            this.emit('changed', this, changedPropertyNames);
         }
 
+        this.enableChangeListener();
     }
 
     _hasListenersOfType(type) {

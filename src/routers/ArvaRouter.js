@@ -20,26 +20,22 @@ import AnimationController          from 'famous-flex/AnimationController.js';
 export class ArvaRouter extends Router {
 
     routes = {};
-    history = [];
+    route = {};
+    previousRoute = {};
+    routeStack = [];
     decode = decodeURIComponent;
     defaultController = 'Home';
     defaultMethod = 'Index';
 
     constructor() {
         super();
-        if (window == null) {
+        if (window === null) {
             return;
         }
         window.addEventListener('hashchange', this.run);
 
-        if (window == null) {
-            return;
-        }
-
-        this.routes = {};
-        this.history = [];
+        this.routeStack = [];
         this.decode = decodeURIComponent;
-
 
         window.addEventListener('hashchange', this.run);
         this._setupNativeBackButtonListener();
@@ -52,10 +48,9 @@ export class ArvaRouter extends Router {
      * @returns {void}
      */
     setDefault(controller, method = null) {
-
         this.defaultController = this._getControllerName(controller);
 
-        if (method != null) {
+        if (method !== null) {
             this.defaultMethod = method;
         }
     }
@@ -73,25 +68,23 @@ export class ArvaRouter extends Router {
      * Triggers navigation to one of the controllers
      * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.
      * @param {String} method The method to call in given controller.
-     * @param {Object} params Dictonary of key-value pairs containing named arguments (i.e. {id: 1, test: "yes"})
+     * @param {Object} params Dictionary of key-value pairs containing named arguments (i.e. {id: 1, test: "yes"})
      * @returns {void}
      */
     go(controller, method, params = null) {
 
         let controllerName = this._getControllerName(controller);
-
-        let routeRoot = controllerName
-            .replace('Controller', '');
+        let routeRoot = controllerName.replace('Controller', '');
 
         //TODO Can we skip this code?
-        if(routeRoot === this.defaultController){
+        if (routeRoot === this.defaultController) {
             routeRoot = '';
         }
 
         let hash = '#' + (routeRoot.length > 0 ? '/' + routeRoot : '') + ('/' + method);
         if (params !== null) {
             for (let i = 0; i < Object.keys(params).length; i++) {
-                var key = Object.keys(params)[i];
+                let key = Object.keys(params)[i];
                 hash += i == 0 ? '?' : '&';
                 hash += (key + '=' + params[key]);
             }
@@ -104,6 +97,23 @@ export class ArvaRouter extends Router {
         this.run();
     }
 
+    /**
+     * Returns an object containing the current route.
+     * @returns {{controller: *, method: (*), params: {}}}
+     */
+    getRoute() {
+        let currentRoute = {
+            controller: this.route.controller,
+            method: this.route.method,
+            params: {}
+        };
+
+        for (let index in this.route.keys) {
+            currentRoute.params[this.route.keys[index]] = this.route.values[index];
+        }
+
+        return currentRoute;
+    }
 
     /**
      * Registers a single controller.
@@ -113,7 +123,7 @@ export class ArvaRouter extends Router {
      * @param {Function} handler.leave Method to call on when leaving a route.
      * @returns {void}
      */
-    add(route, {enter, leave}, controller) {
+    add(route, { enter, leave }, controller) {
         let pieces = route.split('/'),
             rules = this.routes;
 
@@ -152,6 +162,7 @@ export class ArvaRouter extends Router {
             pieces = querySplit[0].split('/'),
             values = [],
             keys = [],
+            params = [],
             method = '';
         for (let piece in pieces) {
             if (pieces[piece].indexOf('=') > -1) {
@@ -164,7 +175,7 @@ export class ArvaRouter extends Router {
         let rule = null;
         let controller;
 
-        // if there is no controller reference, assume we have hit the default Controller
+        /* if there is no controller reference, assume we have hit the default Controller */
         if (pieces.length === 1 && pieces[0].length === 0) {
             pieces[0] = this.defaultController;
             pieces.push(this.defaultMethod);
@@ -174,7 +185,7 @@ export class ArvaRouter extends Router {
 
         controller = pieces[0];
 
-        // Parse the non-query portion of the URL...
+        /* Parse the non-query portion of the URL */
         for (let i = 0; i < pieces.length && rules; ++i) {
             let piece = this.decode(pieces[i]);
             rule = rules[piece];
@@ -193,8 +204,11 @@ export class ArvaRouter extends Router {
                 let nameValue = query[i].split('=');
 
                 if (nameValue.length > 1) {
-                    keys.push(nameValue[0]);
-                    values.push(this.decode(nameValue[1]));
+                    let key = nameValue[0];
+                    let value = this.decode(nameValue[1]);
+                    keys.push(key);
+                    values.push(value);
+                    params[key] = value;
                 }
             }
         }).call(this, querySplit.length > 1 ? querySplit[1] : '');
@@ -202,22 +216,28 @@ export class ArvaRouter extends Router {
         if (rule && rule['enter']) {
 
             /* Push current route to the history stack for later use */
-            let previousRoute = this.history.length ? this.history[this.history.length - 1] : undefined;
+            let previousRoute = this.routeStack.length ? this.routeStack[this.routeStack.length - 1] : undefined;
             let currentRoute = {
-                url: url,
-                controller: controller,
-                controllerObject: rule['controller'],
-                method: method,
-                keys: keys,
-                values: values
+                url,
+                keys,
+                method,
+                values,
+                params,
+                controller,
+                controllerObject: rule['controller']
             };
 
-            if(previousRoute){
-                if(currentRoute.controllerObject !== previousRoute.controllerObject){
+            this.route = currentRoute;
+
+            if (previousRoute) {
+                if (currentRoute.controllerObject !== previousRoute.controllerObject) {
                     this.routes[previousRoute.controller][':']['leave'](currentRoute);
                 }
             }
             currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : (this._initialSpec || {});
+
+            /* Set the previousRoute and the history stack */
+            this.previousRoute = this.routeStack[this.routeStack.length -1];
             this._setHistory(currentRoute);
 
             this._executeRoute(rule, currentRoute);
@@ -242,32 +262,33 @@ export class ArvaRouter extends Router {
         return this._backButtonEnabled;
     }
 
+    /**
+     * Return the previous known route, or default route if no route stack is present
+     * @returns {*}
+     */
+    getPreviousRoute() {
+        return this.previousRoute;
+    }
+
     goBackInHistory() {
         /* Default behaviour: go back in history in the arva router */
-        let {history} = this;
-        if (history.length > 1) {
-            let {controller, method, keys, values} = history[history.length - 2];
-            let inputObject = {};
-            for (let i = 0; i < keys.length; i++) {
-                inputObject[keys[i]] = values[i];
-            }
-            this.go(controller, method, inputObject);
-        } else {
-            this.go(this.defaultController, this.defaultMethod);
+        let previousRoute = this.getPreviousRoute();
+        this.routeStack = this.routeStack.slice(0, this.routeStack.length - 2);
+        if (previousRoute) {
+            this.go(previousRoute.controller, previousRoute.method, previousRoute.params || null);
         }
     }
 
     _setupNativeBackButtonListener() {
-        this._backButtonEnabled = true;
+        this.setBackButtonEnabled(true);
         document.addEventListener("backbutton", (e) => {
-            if (!this._backButtonEnabled) {
+            if (!this.isBackButtonEnabled()) {
                 e.preventDefault();
             } else {
                 this.goBackInHistory();
             }
         }, false);
     }
-
 
     /**
      * Executes the controller handler associated with a given route, passing the route as a parameter.
@@ -291,17 +312,17 @@ export class ArvaRouter extends Router {
      * @private
      */
     _setHistory(currentRoute) {
-        for (let i = 0; i < this.history.length; i++) {
-            let previousRoute = this.history[i];
+        for (let i = 0; i < this.routeStack.length; i++) {
+            let previousRoute = this.routeStack[i];
             if (currentRoute.controller === previousRoute.controller &&
                 currentRoute.method === previousRoute.method &&
                 isEqual(currentRoute.values, previousRoute.values)) {
-                this.history.splice(i, this.history.length - i);
+                this.routeStack.splice(i, this.routeStack.length - i);
                 break;
             }
         }
 
-        this.history.push(currentRoute);
+        this.routeStack.push(currentRoute);
     }
 
     /**
@@ -311,16 +332,25 @@ export class ArvaRouter extends Router {
      * @private
      */
     _hasVisited(currentRoute) {
-        for (let i = 0; i < this.history.length; i++) {
-            let previousRoute = this.history[i];
+        for (let i = 0; i < this.routeStack.length; i++) {
+            let previousRoute = this.routeStack[i];
             if (currentRoute.controller === previousRoute.controller &&
                 currentRoute.method === previousRoute.method &&
                 isEqual(currentRoute.values, previousRoute.values)) {
                 return true;
             }
         }
-
         return false;
+    }
+
+    /**
+     * Returns the animation direction for a route change within the same controller
+     * @param currentRoute
+     * @returns {string}
+     * @private
+     */
+    _getRouteDirection(currentRoute){
+        return this._hasVisited(currentRoute) ? 'previous' : 'next';
     }
 
     /**
@@ -352,7 +382,7 @@ export class ArvaRouter extends Router {
         /* Same controller, different method or different parameters */
         if (currentRoute.controller === previousRoute.controller) {
 
-            let direction = this._hasVisited(currentRoute) ? 'previous' : 'next';
+            let direction = this._getRouteDirection(currentRoute);
             if (this.specs && this.specs[fromController] && this.specs[fromController].methods) {
                 return this.specs[fromController].methods[direction];
             }
@@ -360,11 +390,11 @@ export class ArvaRouter extends Router {
             /* Default method-to-method animations, used only if not overridden in app's controllers spec. */
             let defaults = {
                 'previous': {
-                    transition: {duration: 400, curve: Easing.outBack},
+                    transition: { duration: 400, curve: Easing.outBack },
                     animation: AnimationController.Animation.Slide.Right
                 },
                 'next': {
-                    transition: {duration: 400, curve: Easing.outBack},
+                    transition: { duration: 400, curve: Easing.outBack },
                     animation: AnimationController.Animation.Slide.Left
                 }
             };
@@ -381,8 +411,6 @@ export class ArvaRouter extends Router {
                 }
             }
         }
-
-        console.log('No spec defined from ' + fromController + ' to ' + toController + '. Please check router.setControllerSpecs() in your app constructor.');
     }
 
     /**

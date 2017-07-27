@@ -7,6 +7,7 @@
 
  */
 
+import _each                from 'lodash/each.js'
 import merge                from 'lodash/merge.js';
 import extend               from 'lodash/extend.js';
 
@@ -71,13 +72,13 @@ export class ObjectHelper {
 
     /* Adds a property with enumerable: false to object */
     static addHiddenPropertyToObject(object, propName, prop, writable = true, useAccessors = true) {
-        return ObjectHelper.addPropertyToObject(object, propName, prop, false, writable, undefined, useAccessors);
+        return ObjectHelper.addPropertyToObject(object, propName, prop, false, writable, undefined, null, useAccessors);
     }
 
     /* Adds a property with given enumerability and writability to object. If writable, uses a hidden object.shadow
      * property to save the actual data state, and object[propName] with gettter/setter to the shadow. Allows for a
      * callback to be triggered upon every set.   */
-    static addPropertyToObject(object, propName, prop, enumerable = true, writable = true, setCallback = null, useAccessors = true) {
+    static addPropertyToObject(object, propName, prop, enumerable = true, writable = true, setCallback = null, getCallback = null, useAccessors = true) {
         /* If property is non-writable, we won't need a shadowed prop for the getters/setters */
         if (!writable || !useAccessors) {
             let descriptor = {
@@ -87,14 +88,23 @@ export class ObjectHelper {
             };
             Object.defineProperty(object, propName, descriptor);
         } else {
-            ObjectHelper.addGetSetPropertyWithShadow(object, propName, prop, enumerable, writable, setCallback);
+            ObjectHelper.addGetSetPropertyWithShadow(object, propName, prop, enumerable, writable, setCallback, getCallback);
         }
     }
 
+    static deepAddAllGetSetPropertyWithShadow(object, enumerable = true, writable = true, setCallback = null, getCallback = null, nestedPropertyPath = []) {
+        _each(object, function (value, key) {
+            if (typeof value === 'object' && value.constructor.name === 'Object') {
+                ObjectHelper.deepAddAllGetSetPropertyWithShadow(value, enumerable, writable, setCallback, getCallback, nestedPropertyPath.concat(key));
+            }
+            ObjectHelper.addGetSetPropertyWithShadow(object, key, value, enumerable, writable, setCallback, getCallback, nestedPropertyPath);
+        });
+    }
+
     /* Adds given property to the object with get() and set() accessors, and saves actual data in object.shadow */
-    static addGetSetPropertyWithShadow(object, propName, prop, enumerable = true, writable = true, setCallback = null) {
+    static addGetSetPropertyWithShadow(object, propName, prop, enumerable = true, writable = true, setCallback = null, getCallback = null, appendToGetter = false) {
         ObjectHelper.buildPropertyShadow(object, propName, prop);
-        ObjectHelper.buildGetSetProperty(object, propName, enumerable, writable, setCallback);
+        ObjectHelper.buildGetSetProperty(object, propName, enumerable, writable, setCallback, getCallback, appendToGetter);
     }
 
     /* Creates or extends object.shadow to contain a property with name propName */
@@ -119,22 +129,49 @@ export class ObjectHelper {
         });
     }
 
-    /* Creates a property on object that has a getter that fetches from object.shadow,
-     * and a setter that sets object.shadow as well as triggers setCallback() if set.   */
-    static buildGetSetProperty(object, propName, enumerable = true, writable = true, setCallback = null) {
+    /**
+     *
+     * @param {Object} object The object that we are binding to
+     * @param {String} propName The name of the property that should be overriden
+     * @param {Boolean} enumerable
+     * @param {Boolean} writable
+     * @param {Function} setCallback
+     * @param {Function} getCallback A function that takes as a single argument the property that is about to be get. Should
+     * return that thing as well
+     */
+    static buildGetSetProperty(object, propName, enumerable = true, writable = true, setCallback = null, getCallback = null, appendToGetter = false) {
+        if(appendToGetter){
+          let existingPropertyDescriptor = Object.getOwnPropertyDescriptor(object, propName);
+          if(existingPropertyDescriptor.get){
+            let existingGetCallBack = getCallback, previousGetCallback = existingPropertyDescriptor.get;
+            getCallback = () => {
+              previousGetCallback();
+              existingGetCallBack();
+            }
+          }
+        }
+
         let descriptor = {
             enumerable: enumerable,
             configurable: true,
             get: function () {
+                if (getCallback && typeof setCallback === 'function') {
+                    getCallback({
+                        propertyName: propName,
+                        value: object.shadow[propName]
+                    });
+                }
                 return object.shadow[propName];
             },
             set: function (value) {
                 if (writable) {
+                    let oldValue = object.shadow[propName];
                     object.shadow[propName] = value;
                     if (setCallback && typeof setCallback === 'function') {
                         setCallback({
                             propertyName: propName,
-                            newValue: value
+                            newValue: value,
+                            oldValue
                         });
                     }
                 } else {
@@ -148,12 +185,14 @@ export class ObjectHelper {
 
     /* Calls object['functionName'].bind(bindTarget) on all of object's functions. */
     static bindAllMethods(object, bindTarget) {
+        /* TODO: There is a bug here that will bind properties that were defined through this.x = <something>. This is
+         * the desired effect because this.x.prototype will be redefined */
 
         /* Bind all current object's methods to bindTarget. */
         let methodDescriptors = ObjectHelper.getMethodDescriptors(object);
         for (let methodName in methodDescriptors) {
             /* Skip the constructor as it serves as no purpose and it breaks the minification */
-            if(methodName === 'constructor'){
+            if (methodName === 'constructor') {
                 continue;
             }
             let propertyDescriptor = methodDescriptors[methodName];

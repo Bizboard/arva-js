@@ -10,6 +10,7 @@ import mergeWith            from 'lodash/mergeWith.js';
 import cloneDeepWith        from 'lodash/cloneDeepWith.js';
 
 function famousMerge(defaultParam, specifiedParam) {
+    //TODO change array merge not to merge at all
     if (Array.isArray(defaultParam) && Array.isArray(specifiedParam)) {
         let i, results = [];
         for (i = 0; i < specifiedParam.length; i++) {
@@ -60,6 +61,7 @@ function famousMerge(defaultParam, specifiedParam) {
         }
     }
     let hasDashProperty = false;
+    //TODO Stop supporting dash property merging
     /*
      * Style parameters can be specified with dash-case or camelCase, which we correct here
      */
@@ -84,7 +86,7 @@ function famousMerge(defaultParam, specifiedParam) {
     if (hasDashProperty) {
         return mergeWith(shallowParamCopies[1], shallowParamCopies[0], famousMerge);
     } else {
-        return undefined;
+        return defaultParam === undefined ? specifiedParam : undefined;
     }
 }
 

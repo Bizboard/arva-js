@@ -2202,8 +2202,7 @@
             }
           }
         ],
-        "source": null,
-        "exportKind": "value"
+        "source": null
       },
       {
         "type": "ExportNamedDeclaration",
@@ -2221,7 +2220,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "FunctionDeclaration",
           "start": 33,
@@ -2446,7 +2444,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "FunctionDeclaration",
           "start": 105,
@@ -2627,7 +2624,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "FunctionDeclaration",
           "start": 178,
@@ -2808,7 +2804,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "FunctionDeclaration",
           "start": 247,
@@ -3486,7 +3481,6 @@
         },
         "specifiers": null,
         "source": null,
-        "exportKind": "value",
         "declaration": {
           "type": "VariableDeclaration",
           "start": 511,

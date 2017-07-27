@@ -11,8 +11,12 @@
 
 import sortBy                       from 'lodash/sortBy.js';
 import findIndex                    from 'lodash/findIndex.js';
-import {Throttler}                  from '../utils/Throttler.js';
+
+import {debounce}                   from 'lodash-decorators';
+
 import {combineOptions}             from '../utils/CombineOptions.js';
+import {Throttler}                  from '../utils/Throttler.js';
+import {Utils}                      from '../utils/view/Utils.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
 import {ScrollController}           from '../core/ScrollController.js';
 import Timer                        from 'famous/utilities/Timer.js';
@@ -25,12 +29,13 @@ export class DataBoundScrollView extends ScrollController {
 
 
     /**
-     * Be sure to specifiy either a getSize function in the class of the itemTemplate, or to specify the size in the
+     * Be sure to specify either a getSize function in the class of the itemTemplate, or to specify the size in the
      * layoutOptions.
      *
      * @param {Object} options The options passed inherit from previous classes. Avoid using the dataSource option since
      * the DataBoundScrollView creates its own dataSource from options.dataStore.
      * @param {PrioritisedArray} [options.dataStore] The data that should be read to create entries.
+     * @param {PrioritisedArray} [options.dataStores] Instead of passing one dataStore, this option can be used to pass multiple
      * @param {Function} [options.itemTemplate] A function that returns a renderable representing each data item.
      * @param {Function} [options.placeholderTemplate] A function that returns a renderable to display when there are
      * no items present.
@@ -72,7 +77,7 @@ export class DataBoundScrollView extends ScrollController {
                     opacity: 0          // start opacity is 0, causing a fade-in effect,
                 }
             },
-            dataFilter: ()=> true,
+            dataFilter: () => true,
             ensureVisible: null,
             layoutOptions: {
                 isSectionCallback: options.stickyHeaders ? function (renderNode) {
@@ -84,6 +89,8 @@ export class DataBoundScrollView extends ScrollController {
 
         this._internalDataSource = {};
         this._internalGroups = {};
+        /* In order to keep track of what's being removed, we store this which maps an id to a boolean */
+        this._removedEntries = {};
         this._isGrouped = this.options.groupBy != null;
         this._isDescending = this.options.sortingDirection === 'descending';
         this._throttler = new Throttler(this.options.throttleDelay, true, this);
@@ -106,18 +113,32 @@ export class DataBoundScrollView extends ScrollController {
         this._addPlaceholder();
 
 
-        if (!(this.options.dataStores || this.options.dataStore) || !this.options.itemTemplate) {
-            console.log('Datasource and template should both be set.');
+        if (!this.options.itemTemplate) {
+            console.log('DataBoundScrollView.options.itemTemplate must be set!');
             return this;
         }
 
+
         if (this.options.dataStore && this.options.dataStores) {
-            throw new Error("Both the single dataStore and the multiple dataStores is set, please decide for one or the other");
+            throw new Error('Both the single dataStore and the multiple dataStores is set, please decide for one or the other');
         }
         if (this.options.dataStores) {
             this._bindMultipleDataSources(this.options.dataStores);
         } else if (this.options.dataStore) {
             this._bindDataSource(this.options.dataStore);
+        }
+    }
+
+    /**
+     * Gets a renderable from a specific ID
+     *
+     * @param {String} id The id of data
+     * @param {Number} [dataStoreIndex] the index of the dataStore that is used, if several of them are specified
+     */
+    getRenderableFromID(id, dataStoreIndex = 0) {
+        let data = this._findData(id, dataStoreIndex);
+        if (data) {
+            return data.renderable;
         }
     }
 
@@ -129,7 +150,7 @@ export class DataBoundScrollView extends ScrollController {
         this.options.itemTemplate = templateFunction;
 
         if (reRender) {
-            this.clearDataSource();
+            this.clearDataStore();
             this.reloadFilter(this.options.dataFilter);
         }
     }
@@ -143,22 +164,43 @@ export class DataBoundScrollView extends ScrollController {
         this.options.groupTemplate = templateFunction;
 
         if (reRender) {
-            this.clearDataSource();
+            this.clearDataStore();
             this.reloadFilter(this.options.dataFilter);
         }
     }
 
     /**
-     * Sets the datastore to use. This will repopulate the view and remove any (if present) old items.
+     * Sets the dataStore to use. This will repopulate the view and remove any (if present) old items.
+     * We decorate it with debounce in order to (naively) avoid race conditions when setting the dataStore frequently after each other
      * @param dataStore
      */
+    @debounce(500)
     setDataStore(dataStore) {
-        if (this.options.dataStore) {
-            this.clearDataSource();
-        }
+        this.clearDataStore();
         this.options.dataStore = dataStore;
-        this._bindDataSource(this.options.dataStore);
+        this._bindDataSource(dataStore);
     }
+
+    /**
+     * Sets the multiple dataStores to use. The "multiple" version of setDataStore(dataStore).
+     * @param {Array} dataStores
+     */
+    @debounce(500)
+    setDataStores(dataStores) {
+        let { dataStore, dataStores: previousDataStores } = this.options;
+        if (dataStore) {
+            this.clearDataStore();
+        } else if (previousDataStores) {
+            for (let index in previousDataStores) {
+                this.clearDataStore(index);
+            }
+        }
+
+        this.options.dataStores = dataStores;
+        this._bindMultipleDataSources(dataStores);
+
+    }
+
 
     /**
      * Gets the currently set dataStore.
@@ -169,28 +211,37 @@ export class DataBoundScrollView extends ScrollController {
     }
 
     /**
+     * Gets the currently set dataStore.
+     * @returns {*}
+     */
+    getDataStores() {
+        return this.options.dataStores;
+    }
+
+    /**
      * Reloads the dataFilter option of the DataBoundScrollView, and verifies whether the items in the dataStore are allowed by the new filter.
      * It removes any currently visible items that aren't allowed anymore, and adds any non-visible ones that are allowed now.
-     * @param {Function} newFilter New filter function to verify item visibility with.
-     * @param {Boolean} reRender Boolean to rerender all childs that pass the filter function. Useful when setting a new itemTemplate alongside reloading the filter
+     * @param {Function} [newFilter] New filter function to verify item visibility with.
      * @returns {Promise} Resolves when filter has been applied
      */
     reloadFilter(newFilter) {
-        this.options.dataFilter = newFilter;
+
+        if (newFilter) {
+            this.options.dataFilter = newFilter;
+        }
 
         let filterPromises = [];
         if (this.options.dataStores) {
-            for (let [dataStoreIndex,dataStore] of this.options.dataStores.entries() || []) {
+            for (let [dataStoreIndex, dataStore] of this.options.dataStores.entries() || []) {
                 for (let entry of dataStore) {
-                    this._reloadEntryFromFilter(entry, newFilter, dataStoreIndex)
+                    filterPromises.push(this._reloadEntryFromFilter(entry, this.options.dataFilter, dataStoreIndex));
                 }
 
             }
             return Promise.all(filterPromises);
-        }
-        else if (this.options.dataStore) {
+        } else if (this.options.dataStore) {
             for (let entry of this.options.dataStore || []) {
-                this._reloadEntryFromFilter(entry, newFilter, 0);
+                filterPromises.push(this._reloadEntryFromFilter(entry, this.options.dataFilter, 0));
             }
             return Promise.all(filterPromises);
         }
@@ -203,26 +254,24 @@ export class DataBoundScrollView extends ScrollController {
      * @param dataStoreIndex
      * @private
      */
-    _reloadEntryFromFilter(entry, newFilter, dataStoreIndex) {
+    async _reloadEntryFromFilter(entry, newFilter, dataStoreIndex) {
         let alreadyExists = this._internalDataSource[`${entry.id}${dataStoreIndex}`] !== undefined;
-        let result = newFilter(entry);
+        let result = await newFilter(entry);
 
-        if (result instanceof Promise) {
-            filterPromises.push(result);
-            result.then(function (shouldShow) {
-                this._handleNewFilterResult(shouldShow, alreadyExists, entry, dataStoreIndex);
-            }.bind(this))
-        } else {
-            this._handleNewFilterResult(result, alreadyExists, entry, dataStoreIndex);
-        }
+        this._handleNewFilterResult(result, alreadyExists, entry, dataStoreIndex);
     }
 
     /**
      * Clears the dataSource by removing all entries
      */
-    clearDataSource() {
-        for (let entry of this.options.dataStore || []) {
-            this._removeItem(entry, 0);
+    clearDataStore(index = 0) {
+        /* Determine if there are multiple or single dataStore */
+        let { dataStore, dataStores } = this.options;
+        if (dataStores && !dataStore) {
+            dataStore = dataStores[index];
+        }
+        for (let entry of dataStore || []) {
+            this._removeItem(entry, index);
         }
     }
 
@@ -243,7 +292,7 @@ export class DataBoundScrollView extends ScrollController {
         if (this.options.headerTemplate) {
             this._header = this.options.headerTemplate();
             this._header.isHeader = true;
-            this._insertId(0, 0, this._header, null, {isHeader: true});
+            this._insertId(0, 0, this._header, null, { isHeader: true }, 0);
             this.insert(0, this._header);
         }
     }
@@ -317,7 +366,7 @@ export class DataBoundScrollView extends ScrollController {
     _addGroupItem(groupByValue, insertIndex) {
         let newSurface = this.options.groupTemplate(groupByValue);
         newSurface.groupId = groupByValue;
-        this._internalGroups[groupByValue] = {position: insertIndex, itemsCount: 0};
+        this._internalGroups[groupByValue] = { position: insertIndex, itemsCount: 0 };
         this.insert(insertIndex, newSurface);
 
         return newSurface;
@@ -348,12 +397,12 @@ export class DataBoundScrollView extends ScrollController {
                         let sequence = this._viewSequence.findByIndex(insertIndex);
                         if (!sequence) {
                             /* Internal error, this should never happen. Reduce the number of items in the group */
-                            console.log("Internal error in DataBoundScrollView. Inconsistent groupData");
+                            console.log('Internal error in DataBoundScrollView. Inconsistent groupData');
                             groupData.itemsCount = insertIndex - 1;
                             break;
                         }
 
-                        let {dataId, dataStoreIndex} = sequence._value;
+                        let { dataId, dataStoreIndex } = sequence._value;
                         if (dataId && this.options.orderBy(child, this._internalDataSource[`${dataId}${dataStoreIndex}`].model)) {
                             break;
                         }
@@ -375,7 +424,9 @@ export class DataBoundScrollView extends ScrollController {
                     for (let group of sortBy(this._internalGroups, 'position')) {
                         /* Check the first and last item of every group (they're sorted) */
                         for (let position of group.itemsCount > 1 ? [group.position + 1, group.position + group.itemsCount - 1] : [group.position + 1]) {
-                            let {dataId, dataStoreIndex} = this._viewSequence.findByIndex(position)._value;
+
+                            let { dataId, dataStoreIndex } = this._viewSequence.findByIndex(position)._value;
+
                             if (this.options.orderBy(child, this._internalDataSource[`${dataId}${dataStoreIndex}`].model)) {
                                 foundOrderedIndex = group.position;
                                 break;
@@ -424,7 +475,7 @@ export class DataBoundScrollView extends ScrollController {
                 /* No group of this value exists yet, so we'll need to create one. */
                 this._updatePosition(insertIndex, 1);
                 let newSurface = this._addGroupItem(groupByValue, insertIndex);
-                this._insertId(`group_${groupByValue}`, insertIndex, newSurface, null, {groupId: groupByValue}, 0);
+                this._insertId(`group_${groupByValue}`, insertIndex, newSurface, {}, { groupId: groupByValue }, 0);
                 /*insertIndex++;*/
             }
             return !groupExists;
@@ -446,14 +497,29 @@ export class DataBoundScrollView extends ScrollController {
             console.log('Child already exists ', child.id);
             return;
         }
+        /* Temporarily insert a promise to the internal datastore, so that other subsequent functions detect that we are about
+        *  to insert something. Because itemTemplates and dataFilter are (potentially) asynchronous, we must take care. */
+        let onInsertIndexKnown;
+        let insertIndexPromise = new Promise((resolve) => onInsertIndexKnown = resolve);
+        this._insertId(child.id, insertIndexPromise, null, child, {}, dataStoreIndex, null);
 
         this._removePlaceholder();
 
+        let newSurface = await this.options.itemTemplate(child);
+
+        /* If the entry was removed while trying to add it, we should abort here */
+        if(this._removedEntries[`${child.id}${dataStoreIndex}`]){
+            onInsertIndexKnown(-1);
+            delete this._internalDataSource[`${child.id}${dataStoreIndex}`];
+        }
+
         let insertIndex = this._getInsertIndex(child, previousSiblingID, dataStoreIndex);
 
+
         /* If we're using groups, check if we need to insert a group item before this child. */
+        let groupByValue;
         if (this._isGrouped) {
-            let groupByValue = this._getGroupByValue(child);
+            groupByValue = this._getGroupByValue(child);
 
             if (this._insertGroup(insertIndex, groupByValue)) {
                 /* If a new group is inserted, then increase the insert index */
@@ -462,17 +528,13 @@ export class DataBoundScrollView extends ScrollController {
             /* Increase the count of the number of items in the group */
             this._internalGroups[groupByValue].itemsCount++;
         }
-
-        let newSurface = this.options.itemTemplate(child);
-        if (newSurface instanceof Promise) {
-            newSurface = await newSurface;
-        }
-
         newSurface.dataId = child.id;
+        onInsertIndexKnown(insertIndex);
+
         newSurface.dataStoreIndex = dataStoreIndex;
         this._subscribeToClicks(newSurface, child);
-
         /* If we're scrolling as with a chat window, then scroll to last child if we're at the bottom */
+
         if (this.options.chatScrolling && (insertIndex === this._dataSource.getLength() || this._initialLoad) && this.isAtBottom()) {
             this.stickToBottom();
         }
@@ -480,10 +542,12 @@ export class DataBoundScrollView extends ScrollController {
         if (this.options.customInsertSpec) {
             insertSpec = this.options.customInsertSpec(child);
         }
-
         this.insert(insertIndex, newSurface, insertSpec);
+
+
         this._updatePosition(insertIndex);
-        this._insertId(child.id, insertIndex, newSurface, child, {}, dataStoreIndex);
+        this._insertId(child.id, insertIndex, newSurface, child, {}, dataStoreIndex, groupByValue);
+
 
         if (this.options.ensureVisible != null || this.options.chatScrolling) {
             let shouldEnsureVisibleUndefined = this.options.ensureVisible == null;
@@ -504,14 +568,34 @@ export class DataBoundScrollView extends ScrollController {
      * @param dataStoreIndex
      * @private
      */
-    _replaceItem(child, dataStoreIndex) {
-        let index = this._findData(child.id, dataStoreIndex).position;
+    async _replaceItem(child, dataStoreIndex) {
 
-        let newSurface = this.options.itemTemplate(child);
-        newSurface.dataId = child.id;
-        this._subscribeToClicks(newSurface, child);
-        this._insertId(child.id, index, newSurface, child);
-        this._replace(index, newSurface, true);
+        let data = this._findData(child.id, dataStoreIndex);
+
+        if (!data) {
+            Utils.warn(`Child with ID ${child.id} is not present (anymore) in dataStore with index ${dataStoreIndex}`);
+            return false;
+        }
+
+        let { position, groupValue } = data;
+        let newGroupValue = null;
+
+        if (this._isGrouped) {
+            newGroupValue = this._getGroupByValue(child);
+        }
+
+        if (newGroupValue !== groupValue) {
+            this._removeItem(child, dataStoreIndex, groupValue);
+            this._addItem(child, undefined, dataStoreIndex);
+        } else {
+            let newSurface = await this.options.itemTemplate(child);
+            newSurface.dataId = child.id;
+            newSurface.dataStoreIndex = dataStoreIndex;
+            this._subscribeToClicks(newSurface, child);
+            this._insertId(child.id, position, newSurface, child, {}, dataStoreIndex);
+            this._replace(position, newSurface, true);
+        }
+
     }
 
     /**
@@ -523,8 +607,8 @@ export class DataBoundScrollView extends ScrollController {
         /* Check if the group corresponding to the child is now empty */
         let group = this._internalGroups[groupByValue];
         if (group && group.itemsCount === 0) {
-            /* TODO: Maybe remove internalgroups[groupByValue]? (Or not?) */
-            let {position} = group;
+            /* TODO: Maybe remove internalGroups[groupByValue]? (Or not?) */
+            let { position } = group;
             this._updatePosition(position, -1);
             this.remove(position);
             delete this._internalGroups[groupByValue];
@@ -539,7 +623,7 @@ export class DataBoundScrollView extends ScrollController {
      * @param dataStoreIndex
      * @private
      */
-    _removeItem(child, dataStoreIndex) {
+    _removeItem(child, dataStoreIndex, groupValue = null) {
         let internalChild = this._internalDataSource[`${child.id}${dataStoreIndex}`] || {};
         let index = internalChild.position;
         if (index > -1) {
@@ -550,7 +634,7 @@ export class DataBoundScrollView extends ScrollController {
 
         /* If we're using groups, check if we need to remove the group that this child belonged to. */
         if (this._isGrouped) {
-            let groupByValue = this._getGroupByValue(child);
+            let groupByValue = groupValue || this._getGroupByValue(child);
             let group = this._internalGroups[groupByValue];
             if (group) {
                 group.itemsCount--;
@@ -577,11 +661,17 @@ export class DataBoundScrollView extends ScrollController {
      */
     _moveItem(oldId, prevChildId = null, dataStoreIndex) {
 
-        let oldData = this._findData(oldId);
-        let oldIndex = oldData.position;
+        let oldData = this._findData(oldId && oldId.position || oldId);
+        let oldIndex = oldData && oldData.position;
+
+        /* sometimes oldId is data ('oldData')*/
+        if (oldId && oldId.position) {
+            oldData = oldId;
+            oldIndex = oldId.position;
+        }
 
         let previousSiblingIndex = this._getNextVisibleIndex(prevChildId, dataStoreIndex);
-        if (oldIndex !== previousSiblingIndex) {
+        if (oldIndex !== undefined && oldIndex !== previousSiblingIndex) {
             this.move(oldIndex, previousSiblingIndex);
             this._internalDataSource[`${previousSiblingIndex}${dataStoreIndex}`] = oldData;
             this._internalDataSource[`${previousSiblingIndex}${dataStoreIndex}`].position = oldIndex;
@@ -658,15 +748,7 @@ export class DataBoundScrollView extends ScrollController {
             this.once('userScroll', () => this._initialLoad = false);
             this.options.dataStore.on('ready', () => this._initialLoad = false);
         }
-
-
-        dataStore.on('child_added', this._onChildAdded.bind(this, index));
-        dataStore.on('child_changed', this._onChildChanged.bind(this, index));
-        dataStore.on('child_removed', this._onChildRemoved.bind(this, index));
-        /* Only listen for child_moved if there is one single dataStore. TODO: See if we want to change this behaviour */
-        if(!this.options.dataStores){
-            dataStore.on('child_moved', this._onChildMoved.bind(this, 0));
-        }
+        this._setupDataStoreListeners(dataStore, index, true);
     }
 
     /**
@@ -677,32 +759,25 @@ export class DataBoundScrollView extends ScrollController {
      * @private
      */
     _onChildAdded(dataStoreIndex, child, previousSiblingID) {
-        if (this.options.dataFilter &&
-            (typeof this.options.dataFilter === 'function')) {
-
-            let result = this.options.dataFilter(child);
-
-            if (result instanceof Promise) {
-                /* If the result is a Promise, show the item when that promise resolves. */
-                result.then((show) => {
-                    if (show) {
-                        this._throttler.add(() => {
-                            this._addItem(child, previousSiblingID, dataStoreIndex)
-                        });
-                    }
-                });
-            } else if (result) {
-                /* The result is an item, so we can add it directly. */
-                this._throttler.add(() => {
-                    this._addItem(child, previousSiblingID, dataStoreIndex, );
-                });
-            }
-        } else {
-            /* There is no dataFilter method, so we can add this child. */
-            this._throttler.add(() => {
-                this._addItem(child, previousSiblingID, dataStoreIndex);
-            });
+        if(!child){
+            console.log('Warning: Child added recieved with undefined child, in DataBoundScrollView');
         }
+        /* Mark the entry as undeleted */
+        this._removedEntries[`${child.id}${dataStoreIndex}`] = false;
+        this._throttler.add(async () => {
+            if (this.options.dataFilter &&
+                (typeof this.options.dataFilter === 'function')) {
+
+                let result = await this.options.dataFilter(child);
+
+                if (result) {
+                    await this._addItem(child, previousSiblingID, dataStoreIndex,);
+                }
+            } else {
+                /* There is no dataFilter method, so we can add this child. */
+                await this._addItem(child, previousSiblingID, dataStoreIndex);
+            }
+        });
     }
 
     /**
@@ -713,40 +788,33 @@ export class DataBoundScrollView extends ScrollController {
      * @private
      */
     //TODO: This won't reorder children, which is a problem
-    _onChildChanged(dataStoreIndex, child, previousSiblingID) {
-        let internalDataSourceData = this._findData(child.id, dataStoreIndex) || {};
-        let changedItemIndex = internalDataSourceData.position || -1;
+    async _onChildChanged(dataStoreIndex, child, previousSiblingID) {
+        this._throttler.add(async () => {
+            let changedItemIndex = await this._findIndexFromID(dataStoreIndex, child.id);
 
-        if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
+            if (this._dataSource && changedItemIndex < this._dataSource.getLength()) {
 
-            let result = this.options.dataFilter ? this.options.dataFilter(child) : true;
+                let result = this.options.dataFilter ? await this.options.dataFilter(child) : true;
+                changedItemIndex = await this._findIndexFromID(dataStoreIndex, child.id);
 
-            if (result instanceof Promise) {
-                result.then(function (show) {
-                    if (show) {
-                        this._throttler.add(() => {
-                            this._replaceItem(child, dataStoreIndex);
-                        });
-                    } else {
-                        this._removeItem(child, dataStoreIndex);
-                    }
-                }.bind(this));
-            }
-            else if (this.options.dataFilter &&
-                typeof this.options.dataFilter === 'function' && !result) {
-                this._removeItem(child, dataStoreIndex);
-            } else {
-                if (changedItemIndex === -1) {
-                    this._throttler.add(() => {
-                        this._addItem(child, previousSiblingID, dataStoreIndex);
-                    });
+
+                if (this.options.dataFilter &&
+                    typeof this.options.dataFilter === 'function' && !result) {
+                    this._removeItem(child, dataStoreIndex);
                 } else {
-                    this._throttler.add(() => {
+                    /* If the entry was removed in the meantime, return */
+                    if(this._removedEntries[`${child.id}${dataStoreIndex}`]){
+                        return;
+                    }
+
+                    if (changedItemIndex === -1) {
+                        this._addItem(child, previousSiblingID, dataStoreIndex);
+                    } else {
                         this._replaceItem(child, dataStoreIndex);
-                    });
+                    }
                 }
             }
-        }
+        });
     }
     /**
      *
@@ -763,7 +831,6 @@ export class DataBoundScrollView extends ScrollController {
     }
 
 
-
     /**
      *
      * @param dataStoreIndex
@@ -771,10 +838,13 @@ export class DataBoundScrollView extends ScrollController {
      * @private
      */
     _onChildRemoved(dataStoreIndex, child) {
+        /* Mark the entry as removed */
+        this._removedEntries[`${child.id}${dataStoreIndex}`] = true;
         this._throttler.add(() => {
             this._removeItem(child, dataStoreIndex);
         });
-    };
+    }
+
 
 
     /**
@@ -789,7 +859,7 @@ export class DataBoundScrollView extends ScrollController {
         let viewData = this._findData(dataStoreIndex, id);
 
         if (viewData) {
-            viewIndex = viewData.position
+            viewIndex = viewData.position;
         }
 
         if (viewIndex === -1) {
@@ -828,7 +898,7 @@ export class DataBoundScrollView extends ScrollController {
         let index = 0;
 
         while (item) {
-            let {dataId, dataStoreIndex} = item._value;
+            let { dataId, dataStoreIndex } = item._value;
             if (item._value.dataId && this._internalDataSource[`${dataId}${dataStoreIndex}`] && orderByFunction(child, this._internalDataSource[`${dataId}${dataStoreIndex}`].model)) {
                 return index;
             }
@@ -851,7 +921,7 @@ export class DataBoundScrollView extends ScrollController {
         for (let element of Object.keys(this._internalDataSource)) {
             let dataObject = this._internalDataSource[element];
             if (dataObject.position >= position) {
-                dataObject.position += change
+                dataObject.position += change;
             }
         }
         if (this._isGrouped) {
@@ -896,10 +966,10 @@ export class DataBoundScrollView extends ScrollController {
      * @param dataStoreIndex
      * @private
      */
-    _insertId(id = null, position, renderable = {}, model = {}, options = {}, dataStoreIndex) {
+    _insertId(id = null, position, renderable = {}, model = {}, options = {}, dataStoreIndex, groupValue = null) {
         if (id === undefined || id === null) return;
 
-        this._internalDataSource[`${id}${dataStoreIndex}`] = {position: position, renderable: renderable, model: model};
+        this._internalDataSource[`${id}${dataStoreIndex}`] = { position, renderable, model, groupValue };
         for (let element of Object.keys(options)) {
             this._internalDataSource[`${id}${dataStoreIndex}`][element] = options[element];
         }
@@ -913,39 +983,63 @@ export class DataBoundScrollView extends ScrollController {
      */
     _subscribeToClicks(surface, model) {
         surface.on('click', function () {
-            this._eventOutput.emit('child_click', {renderNode: surface, dataObject: model});
+            this._eventOutput.emit('child_click', { renderNode: surface, dataObject: model });
         }.bind(this));
     }
 
     /**
-     * Guesses that layout is listlayout
+     * Based on the guess that layout is ListLayout, calculates the vertical size
      * @returns {number}
      */
     getSize() {
         let item = this._dataSource._.head;
-        let {layoutOptions} = this.options;
-        if(this.options.layout !== ListLayout || (this.options.layoutOptions.direction && this.options.layoutOptions.direction !== 1)){
-            console.log(`'Trying to calculate the size of a DataBoundSrollView, which can't be done in the current configuration`);
+        let { layoutOptions } = this.options;
+        if (this.options.layout !== ListLayout || (this.options.layoutOptions.direction && this.options.layoutOptions.direction !== 1)) {
+            console.log(`'Trying to calculate the size of a DataBoundScrollView, which can't be done in the current configuration`);
             return [undefined, undefined];
         }
         let height = layoutOptions && layoutOptions.margins ? layoutOptions.margins[0] + layoutOptions.margins[2] : 0;
 
-        if(item){
+        if (item) {
             do {
                 let renderable = item._value;
                 let itemSize;
-                if(renderable.getSize && (itemSize = renderable.getSize())){
+                if (renderable.getSize && (itemSize = renderable.getSize())) {
                     height += itemSize[1];
                 } else {
-                    console.log('Trying to calculate the size of a DataBoundSrollView, but all elements cannot be calculated');
+                    console.log('Trying to calculate the size of a DataBoundScrollView, but all elements cannot be calculated');
                 }
-                if(layoutOptions && layoutOptions.spacing){
+                if (layoutOptions && layoutOptions.spacing) {
                     height += layoutOptions.spacing;
                 }
 
-            } while(item = item._next)
+            } while (item = item._next);
         }
 
         return [undefined, height];
+    }
+
+    /**
+     *
+     * @param dataStore
+     * @param index
+     * @param {Boolean} shouldActivate
+     * @private
+     */
+    _setupDataStoreListeners(dataStore, index, shouldActivate) {
+        let methodName = shouldActivate ? 'on' : 'off';
+        let method = dataStore[methodName];
+        method('child_added', this._onChildAdded.bind(this, index));
+        method('child_changed', this._onChildChanged.bind(this, index));
+        method('child_removed', this._onChildRemoved.bind(this, index));
+        /* Only listen for child_moved if there is one single dataStore. TODO: See if we want to change this behaviour to support moved children within the dataStore */
+        if (!this.options.dataStores) {
+            method('child_moved', this._onChildMoved.bind(this, 0));
+        }
+    }
+
+    _findIndexFromID(dataStoreIndex, id) {
+        let internalDataSourceData = this._findData(id, dataStoreIndex) || { position: -1 };
+        return internalDataSourceData.position;
     }
 }

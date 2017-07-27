@@ -20,7 +20,7 @@ function isClass(clsOrFunction) {
     else if (clsOrFunction.name && clsOrFunction.name.length && clsOrFunction.name.length > 3) {
         return isUpperCase(clsOrFunction.name.charAt(0));
     } else {
-        return ownKeys(clsOrFunction.prototype).length > 0;
+        return ownKeys(clsOrFunction.prototype || {}).length > 0;
     }
 }
 
@@ -108,8 +108,8 @@ class ClassProvider {
         }
 
         return function InjectedAndBoundSuperConstructor() {
-            // TODO(vojta): throw if arguments given
-            return constructorInfo[0].apply(context, argsForCurrentConstructor);
+            // https://stackoverflow.com/questions/33193310/constr-applythis-args-in-es6-classes
+            return new (Function.prototype.bind.apply(constructorInfo[0], [context].concat(argsForCurrentConstructor)));
         };
     }
 

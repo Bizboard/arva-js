@@ -5,12 +5,16 @@
 
  */
 
+/* On Windows, paths are file:///C:/[..], whereas on *NIX the third slash after
+ * the protocol means filesystem root. Thus we need to remove this slash on Windows, and keep it elsewhere. */
+var protocolToStrip = process && process.platform === 'win32' ? 'file:///' : 'file://';
+
 if (typeof window !== 'undefined') {
     /* Unbundled build, loaded dynamically through System.import() */
     exports.build = false;
 
     exports.fetch = function (load) {
-        var absolutePath = load.address.replace('.js', '').substr('file:'.length);
+        var absolutePath = load.address.replace('.js', '').substr(protocolToStrip.length);
         return new Promise(function (resolve) {
             resolve('module.exports = "' + absolutePath + '"');
         });
@@ -25,7 +29,7 @@ if (typeof window !== 'undefined') {
 
     exports.fetch = function (load) {
         return new Promise(function (resolve, reject) {
-            var absolutePath = load.address.replace('.js', '').substr('file:'.length);
+            var absolutePath = load.address.replace('.js', '').substr(protocolToStrip.length);
             copyFile(absolutePath, resolve, reject);
         });
     };
