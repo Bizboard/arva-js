@@ -156,8 +156,9 @@ export class SizeResolver extends EventEmitter {
                 /* If size is set to true, and it can't be resolved, then settle with size undefined*/
                 size[dim] = undefined;
             }
+            let fallbackSize = ~size[dim];
 
-            let approximatedSize = size[dim] === undefined ? contextSize[dim] : ~size[dim];
+            let approximatedSize = size[dim] === undefined ? (contextSize[dim] || fallbackSize) : fallbackSize
             /* Return an approximated size, if possible */
             return (trueSizedSurfaceInfo.size[dim] || approximatedSize);
         } else {
