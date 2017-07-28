@@ -92,7 +92,8 @@ export class Model extends PrioritisedObject {
                 this._dataSource = dataSource.child(pathRoot).push(data);
             }
             /* Get the last part of the path and set to the ID */
-            this._id = dataSource.key();
+            // TODO make sure this does not break anything.
+            this._id = this._id || ''; //dataSource.key();
         }
 
         /* Re-construct core PrioritisedObject with new dataSource */
