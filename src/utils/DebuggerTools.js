@@ -49,24 +49,12 @@ OptionObserver.prototype._throwError = function () {
   return originaloptionObserverErrorThrower.call(this, ...arguments)
 }
 
-let currentGroup;
 
-let logFromGroup = (groupName, ...logArgs) => {
-  if(currentGroup && currentGroup !== groupName){
-    console.groupEnd(currentGroup);
-    console.groupCollapsed(groupName)
-  }
-  if(!currentGroup){
-    console.groupCollapsed(groupName);
-  }
-  currentGroup = groupName;
-  console.log(...logArgs);
-}
 
 let originalRegisterNewInstance = OptionObserver._registerNewInstance
 OptionObserver._registerNewInstance = function (instance) {
   instance.on('needUpdate', (renderableName) => {
-    logFromGroup('Updates', `%c ${instance._errorName}:${renderableName} is invalidated`, 'color: rgba(125, 125, 125, 0.7')
+    console.log(`%c ${instance._errorName}:${renderableName} is invalidated`, 'color: rgba(125, 125, 125, 0.7')
   })
   return originalRegisterNewInstance.call(this, ...arguments)
 }
@@ -74,7 +62,7 @@ OptionObserver._registerNewInstance = function (instance) {
 let originalOptionObserverMarkPropertyAsUpdated = OptionObserver.prototype._markPropertyAsUpdated
 OptionObserver.prototype._markPropertyAsUpdated = function (nestedPropertyPath, property, value) {
   let result = originalOptionObserverMarkPropertyAsUpdated.call(this, ...arguments)
-  logFromGroup('Updates', `%c ${this._errorName} updated ${nestedPropertyPath.concat(property).join('->')}=${this._isPlainObject(value) ? JSON.stringify(value) : value}`, 'color: green')
+  console.log(`%c ${this._errorName} updated ${nestedPropertyPath.concat(property).join('->')}=${this._isPlainObject(value) ? JSON.stringify(value) : value}`, 'color: green')
   return result
 }
 
@@ -98,7 +86,7 @@ EventEmitter.prototype.emit = function (type) {
       'postrender',
       'prerender',
       'change'].includes(type) && Number.isNaN(+type)) {
-    logFromGroup('Events', `Event emitted: ${type}`, this._owner)
+    console.log(`Event emitted: ${type}`, this._owner)
   }
   return result
 }
