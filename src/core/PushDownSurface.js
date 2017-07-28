@@ -9,6 +9,6 @@ export class PushDownSurface extends Surface {
     elementClass = '';
     
     allocate(allocator) {
-        return allocator.allocate(this.elementType, true);
+        return allocator.allocate({type: this.elementType, insertFirst: true});
     }
 }
