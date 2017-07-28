@@ -39,7 +39,8 @@ import { ObjectHelper }          from '../utils/ObjectHelper.js'
 import { StackLayout }           from '../layout/functions/StackLayout.js'
 import { PushDownSurface }       from './PushDownSurface.js'
 
-//TODO: There should still be some more forceScrollOffsetInvlaidation being done
+//TODO: There's a bug when having chat scrolling on, and adding a lot of stuff, removing it all, and adding them again back
+
 /**
  * Only supports linkedListViews as dataSource. Meant to be used with the dbsv.
  */
