@@ -103,8 +103,8 @@ export class ScrollController extends FamousView {
     /* TODO: Remove duplicates this._viewSequence, this._dataSource. Kept for DBSV compatibility */
     this._dataSource = this._viewSequence = new LinkedListViewSequence([])
     this.on('recursiveReflow', () => {
-      this.invalidateLayout()
-      this._cachedSpecs = {}
+      this._isDirty = true;
+      this._cachedSpecs = {};
     })
   }
 
@@ -137,17 +137,20 @@ export class ScrollController extends FamousView {
 
   remove (position) {
 
+
     // Remove the renderable
-    let sequence = this._viewSequence.findByIndex(position)
+    let sequence = this._viewSequence.findByIndex(position);
+
     if (!sequence) {
       Utils.warn(`Cannot remove non-existent index: ${position}`)
       return
     }
 
+    delete this._cachedSpecs[Utils.getRenderableID(sequence._value)];
+
     this._viewSequence = this._viewSequence.remove(sequence)
     let renderNode = sequence.get()
     /* TODO: Implement logic for remove spec.
-     * e.g. bla bla...
      */
 
     if (this._isPositionOutsideCurrentView(position)) {
@@ -155,10 +158,12 @@ export class ScrollController extends FamousView {
     }
     this._accountForModificationsHappeningAtStart()
 
-    if (renderNode) {
+
+    if (renderNode || !this._viewSequence.getLength()) {
       this.reflow()
-      return renderNode
     }
+    return renderNode
+
   }
 
   replace (indexOrId, renderable, noAnimation) {
@@ -242,8 +247,6 @@ export class ScrollController extends FamousView {
 
   reflow () {
     this._isDirty = true
-    /* Reset the cached specs */
-    this._cachedSpecs = {}
   }
 
   _initNativeScrollGroup () {
@@ -689,15 +692,16 @@ export class ScrollController extends FamousView {
 
     this._didManualScroll = false
 
-    /* Check if we can scroll anywhere at all, and if the physics engine is sleeping. In that case make an overscroll
-     * animation */
+    //TODO Remove this code if we really don't want overscroll animation
+    /*/!* Check if we can scroll anywhere at all, and if the physics engine is sleeping. In that case make an overscroll
+     * animation *!/
     if (this._physicsEngine.isSleeping() && this._group.getMaxScrollOffset()) {
       if ((scrollOffset === 0 && this._firstNodeIndex === 0) || (this.isAtBottom() && this._lastNodeIndex === Infinity)) {
         this._startOverscrollAnimation()
       }
     } else if (!this.isAtBottom() && scrollOffset !== 0) {
       this._physicsEngine.sleep()
-    }
+    }*/
     let extraTranslate = [0, 0, 0]
     /* Adjust transform and size to extra bounds */
     extraTranslate[this.options.layoutDirection] = -this.options.extraBoundsSpace[0]
