@@ -16,7 +16,7 @@ window.getFromID = (id) => {
 
 window.views = {};
 
-
+window.muteLogs = false;
 
 let originalCopyPrototypeProperties= View.prototype._copyPrototypeProperties
 View.prototype._copyPrototypeProperties = function () {
@@ -50,11 +50,18 @@ OptionObserver.prototype._throwError = function () {
 }
 
 
+let log = (...consoleArgs) => {
+  if(window.muteLogs){
+    return
+  }
+  console.log(...consoleArgs);
+}
+
 
 let originalRegisterNewInstance = OptionObserver._registerNewInstance
 OptionObserver._registerNewInstance = function (instance) {
   instance.on('needUpdate', (renderableName) => {
-    console.log(`%c ${instance._errorName}:${renderableName} is invalidated`, 'color: rgba(125, 125, 125, 0.7')
+    log(`%c ${instance._errorName}:${renderableName} is invalidated`, 'color: rgba(125, 125, 125, 0.7')
   })
   return originalRegisterNewInstance.call(this, ...arguments)
 }
@@ -62,7 +69,7 @@ OptionObserver._registerNewInstance = function (instance) {
 let originalOptionObserverMarkPropertyAsUpdated = OptionObserver.prototype._markPropertyAsUpdated
 OptionObserver.prototype._markPropertyAsUpdated = function (nestedPropertyPath, property, value) {
   let result = originalOptionObserverMarkPropertyAsUpdated.call(this, ...arguments)
-  console.log(`%c ${this._errorName} updated ${nestedPropertyPath.concat(property).join('->')}=${this._isPlainObject(value) ? JSON.stringify(value) : value}`, 'color: green')
+  log(`%c ${this._errorName} updated ${nestedPropertyPath.concat(property).join('->')}=${this._isPlainObject(value) ? JSON.stringify(value) : value}`, 'color: green')
   return result
 }
 
@@ -86,7 +93,7 @@ EventEmitter.prototype.emit = function (type) {
       'postrender',
       'prerender',
       'change'].includes(type) && Number.isNaN(+type)) {
-    console.log(`Event emitted: ${type}`, this._owner)
+    log(`Event emitted: ${type}`, this._owner)
   }
   return result
 }
