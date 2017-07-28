@@ -103,8 +103,8 @@ export class ScrollController extends FamousView {
     /* TODO: Remove duplicates this._viewSequence, this._dataSource. Kept for DBSV compatibility */
     this._dataSource = this._viewSequence = new LinkedListViewSequence([])
     this.on('recursiveReflow', () => {
+      //TODO change to w/e function does this
       this._isDirty = true;
-      this._cachedSpecs = {};
     })
   }
 
@@ -207,8 +207,8 @@ export class ScrollController extends FamousView {
 
   animateToBottom () {
     if (!this._scrollToTransitionable.isActive()) {
-      this._scrollToTransitionable.set(this._group.getScrollOffset())
-      this._scrollToTransitionable.set(this._group.getMaxScrollOffset(), {
+      this._scrollToTransitionable.set(Math.max(0, this._group.getScrollOffset()))
+      this._scrollToTransitionable.set(Math.max(0, this._group.getMaxScrollOffset()), {
         curve: function linear (x) {
           return x
         }, duration: 300
@@ -254,10 +254,10 @@ export class ScrollController extends FamousView {
     this._group.add({render: this._innerRender})
     /* Prevent scrolling in the opposite direction */
     this._group.setProperties({[`overflow${this.options.layoutDirection === 0 ? 'Y' : 'X'}`]: 'hidden'})
-    this._group.on('mousewheel', this._onManualScrollAttempt)
-    this._group.on('wheel', this._onManualScrollAttempt)
-    this._group.on('touchmove', this._onManualScrollAttempt)
-    this._group.on('scroll', (e) => {
+    this.on('mousewheel', this._onManualScrollAttempt)
+    this.on('wheel', this._onManualScrollAttempt)
+    this.on('touchmove', this._onManualScrollAttempt)
+    this.on('scroll', (e) => {
       if (!this._shouldIgnoreScrollEvent) {
         this._shouldIgnoreScrollEvent = false
       } else {
@@ -400,19 +400,20 @@ export class ScrollController extends FamousView {
     /* Determine the position of the first node */
     if (firstNode && !this._stickBottom) {
       /* If this if clause is true, we need to allocate more space to scroll upwards */
-      if (this._firstNodeIndex !== 0 && scrollOffset <= this.options.layoutOptions.margins[0] && this._group.getMaxScrollOffset() && !this._stickBottom) {
+      if (this._firstNodeIndex !== 0 && scrollOffset <= this.options.layoutOptions.margins[0] && this._group.getMaxScrollOffset()) {
         /* If we can't scroll that much, we also can't allocate too much space at the top since
          * allocating space at top also implies scrolling down with the same amount.
          */
         let extraSpaceToAllocate = Math.min(scrollSize, this._group.getMaxScrollOffset())
-        this._allocateExtraHeightAtTop(extraSpaceToAllocate)
+        this._allocateExtraHeightAtTop(extraSpaceToAllocate, scrollOffset)
         /* If we are the first node, then redefine the top position. It can have been (over/under)estimated previously */
-      } else if (this._firstNodeIndex === 0 && firstNode.getTranslate()[this.options.layoutDirection] + this._scrollTopHeight !== this.options.layoutOptions.margins[0]
+        //TODO This if clause triggers too often
+      } else if (this._firstNodeIndex === 0 && (firstNode.getTranslate()[this.options.layoutDirection] + this._scrollTopHeight) !== this.options.layoutOptions.margins[0]
       ) {
         let newScrollTopHeight = this.options.layoutOptions.margins[0] - firstNode.getTranslate()[this.options.layoutDirection]
         if (newScrollTopHeight > this._scrollTopHeight) {
           let scrollTopHeightDiff = newScrollTopHeight - this._scrollTopHeight
-          this._allocateExtraHeightAtTop(scrollTopHeightDiff)
+          this._allocateExtraHeightAtTop(scrollTopHeightDiff, scrollOffset)
         } else {
           this._setScrollTopHeight(newScrollTopHeight)
         }
@@ -461,12 +462,12 @@ export class ScrollController extends FamousView {
     }
   }
 
-  _allocateExtraHeightAtTop (space) {
+  _allocateExtraHeightAtTop (space, scrollOffset) {
     if (!this._allocationLock) {
       this._allocationLock = true
       this._setScrollTopHeight(this._scrollTopHeight + space)
       this._otherNodes.topScroller.once('resize', () => {
-        this._group.setScrollOffset(space)
+        this._group.setScrollOffset(space + this._currentScrollOffset)
         this._allocationLock = false
       })
     }
@@ -474,8 +475,9 @@ export class ScrollController extends FamousView {
   }
 
   _setScrollTopHeight (scrollTopHeight) {
-    /* TODO: Investigate why we have to do this and see if it's really necessary every time this happens */
-    this._cachedSpecs = {}
+    /* TODO: If anything doesn't work well when scrolling upwards through the roof, try adding this line:
+    /* this._cachedSpecs = {} */
+
     this._scrollTopHeight = scrollTopHeight
     /* Negative height exists in CSS if done as negative margin-top */
     this._otherNodes.topScroller.setProperties({'margin-top': `${scrollTopHeight < 0 ? scrollTopHeight : 0}px`})
@@ -487,7 +489,7 @@ export class ScrollController extends FamousView {
    * @returns {boolean} True if the scroll is all the way to the bottom
    */
   isAtBottom () {
-    return this._group.getScrollOffset() === this._group.getMaxScrollOffset()
+    return Math.floor(this._group.getScrollOffset()) >= Math.floor(this._group.getMaxScrollOffset())
   }
 
   /**
@@ -582,16 +584,19 @@ export class ScrollController extends FamousView {
 
   /* Used to return the specs by the native group */
   _innerRender () {
-    for (let spec of this._specs) {
-      if (spec.renderNode) {
-        spec.target = spec.renderNode.render()
+    let specsForThisCommit = {}
+    for (let [index, spec] of this._specs.entries()) {
+      if (spec.renderNode === this._otherNodes.bottomScroller ||
+        ( spec.renderNode && (!this._nodes[index].stoppedFlowing || this._nodes[index].stoppedFlowing()))){
+        this._cachedSpecs[spec.target] = spec;
+      } else {
+        specsForThisCommit[spec.target] = spec;
       }
-      if (spec.renderNode === this._otherNodes.bottomScroller || spec.renderNode)
-        this._cachedSpecs[spec.target] = spec
     }
-
-    let specs = Object.keys(this._cachedSpecs).map((target) => this._cachedSpecs[target])
-    /* Removed cleanup registration code. TODO: Examine whether the cleanup registration is still necessary to add here */
+    Object.assign(specsForThisCommit, this._cachedSpecs);
+    let specs = Object.keys(specsForThisCommit).map((target) => specsForThisCommit[target])
+    /* Removed cleanup registration code.
+    TODO: Examine whether the cleanup registration is still necessary to add here */
     return specs
   }
 
@@ -626,6 +631,7 @@ export class ScrollController extends FamousView {
     } else {
       scrollOffset = this._group.getScrollOffset()
     }
+    this._currentScrollOffset = scrollOffset;
 
     let eventData = {
       target: this,
@@ -666,8 +672,9 @@ export class ScrollController extends FamousView {
     //TODO See if we have to add a translate here
     let result
     if (this._previousValues.resultModified || didLayout) {
-      result = this._layoutNodeManager.buildSpecAndDestroyUnrenderedNodes()
-      this._specs = result.specs
+      result = this._layoutNodeManager.buildSpecAndDestroyUnrenderedNodes();
+      this._nodes = result.nodes;
+      this._specs = result.specs;
     }
 
     if (result && result.modified) {
