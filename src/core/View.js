@@ -143,7 +143,7 @@ export class View extends FamousView {
    * @returns {Surface|FamousView|View} The renderable that was assigned
    */
   addRenderable (renderable, ...decorators) {
-    let id = this._getRenderableID(renderable)
+    let id = Utils.getRenderableID(renderable)
     if (!id) {
       Utils.warn(`Could not add invalid renderable inside ${this._name()} (no ID of renderable found)`)
     }
@@ -158,7 +158,7 @@ export class View extends FamousView {
    * Removes the renderable from the view
    */
   removeRenderable (renderable) {
-    let renderableID = this._getRenderableID(renderable)
+    let renderableID = Utils.getRenderableID(renderable)
     if (!this._realRenderables[renderableID]) {
       Utils.warn(`Failed to remove renderable ${renderableID} from ${this._name()} because the renderable doesn't exist in the parent scope`)
       return
@@ -170,15 +170,11 @@ export class View extends FamousView {
   }
 
   hasRenderable (renderable) {
-    return !!this._realRenderables[this._getRenderableID(renderable)]
-  }
-
-  _getRenderableID (renderable) {
-    return renderable.getID ? renderable.getID() : (renderable.layout ? renderable.layout.id : renderable.id)
+    return !!this._realRenderables[Utils.getRenderableID(renderable)]
   }
 
   _getRenderableName (renderable) {
-    return this._IDtoLocalRenderableName[this._getRenderableID(renderable)]
+    return this._IDtoLocalRenderableName[Utils.getRenderableID(renderable)]
   }
 
   /**
@@ -189,7 +185,7 @@ export class View extends FamousView {
    */
   prioritiseDockBefore (renderable, nextRenderable) {
     this.reflowRecursively()
-    return this._renderableHelper.prioritiseDockBefore(this._getRenderableID(renderable), this._getRenderableID(nextRenderable))
+    return this._renderableHelper.prioritiseDockBefore(Utils.getRenderableID(renderable), Utils.getRenderableID(nextRenderable))
   }
 
   /**
@@ -198,7 +194,7 @@ export class View extends FamousView {
    */
   prioritiseDockAfter (renderable, prevRenderable) {
     this.reflowRecursively()
-    return this._renderableHelper.prioritiseDockAfter(this._getRenderableID(renderable), this._getRenderableID(prevRenderable))
+    return this._renderableHelper.prioritiseDockAfter(Utils.getRenderableID(renderable), Utils.getRenderableID(prevRenderable))
   }
 
   /**
@@ -250,7 +246,7 @@ export class View extends FamousView {
       }
     }
 
-    return new Promise((resolve) => this._renderableHelper.showWithAnimationController(this._realRenderables[this._getRenderableID(renderable)], renderable, resolve, show, options))
+    return new Promise((resolve) => this._renderableHelper.showWithAnimationController(this._realRenderables[Utils.getRenderableID(renderable)], renderable, resolve, show, options))
   }
 
   isRenderableShowing (renderable) {
@@ -277,7 +273,7 @@ export class View extends FamousView {
     if (!decorators.length) {
       Utils.warn('No decorators specified to decorateRenderable(renderable, ...decorators)')
     }
-    this._renderableHelper.decorateRenderable(this._getRenderableID(renderable), ...decorators)
+    this._renderableHelper.decorateRenderable(Utils.getRenderableID(renderable), ...decorators)
     this.reflowRecursively()
   }
 
@@ -288,7 +284,7 @@ export class View extends FamousView {
    * @returns {*}
    */
   setRenderableFlowState (renderable, stateName = '') {
-    return this._renderableHelper.setRenderableFlowState(this._getRenderableID(renderable), stateName)
+    return this._renderableHelper.setRenderableFlowState(Utils.getRenderableID(renderable), stateName)
   }
 
   /**
@@ -312,7 +308,7 @@ export class View extends FamousView {
    * @param renderable
    */
   getRenderableFlowState (renderable) {
-    return this._renderableHelper.getRenderableFlowState(this._getRenderableID(renderable))
+    return this._renderableHelper.getRenderableFlowState(Utils.getRenderableID(renderable))
   }
 
   /**
@@ -330,8 +326,8 @@ export class View extends FamousView {
    * @param {Surface|FamousView|View} newRenderable Renderable to replace the old renderable with
    */
   replaceRenderable (oldRenderable, newRenderable) {
-    let oldRenderableID = this._getRenderableID(oldRenderable), newRenderableID = this._getRenderableID(newRenderable)
-    this._renderableHelper.replaceRenderable(oldRenderableID, newRenderable, this._getRenderableID(newRenderable))
+    let oldRenderableID = Utils.getRenderableID(oldRenderable), newRenderableID = Utils.getRenderableID(newRenderable)
+    this._renderableHelper.replaceRenderable(oldRenderableID, newRenderable, Utils.getRenderableID(newRenderable))
     let localRenderableName = this._IDtoLocalRenderableName[newRenderableID] = this._IDtoLocalRenderableName[oldRenderableID]
     this.reflowRecursively()
     this[localRenderableName] = newRenderable
@@ -375,7 +371,7 @@ export class View extends FamousView {
   }
 
   getActualRenderable (renderable) {
-    return this._realRenderables[this._getRenderableID(renderable)]
+    return this._realRenderables[Utils.getRenderableID(renderable)]
   }
 
   /**
@@ -433,7 +429,7 @@ export class View extends FamousView {
    * @returns {Promise} resolves to false if the flow state can't be repeated due to an existing running repeat
    */
   async repeatFlowState (renderable, stateName = '', persistent = true) {
-    let renderableID = this._getRenderableID(renderable)
+    let renderableID = Utils.getRenderableID(renderable)
     if (!this._runningRepeatingFlowStates[renderableID]) {
       this._runningRepeatingFlowStates[renderableID] = {persistent}
       while (this._runningRepeatingFlowStates[renderableID] && (await this.setRenderableFlowState(renderable, stateName) || persistent)) {
@@ -451,7 +447,7 @@ export class View extends FamousView {
    */
   cancelRepeatFlowState (renderable) {
     if (this._runningRepeatingFlowStates) {
-      delete this._runningRepeatingFlowStates[this._getRenderableID(renderable)]
+      delete this._runningRepeatingFlowStates[Utils.getRenderableID(renderable)]
     }
   }
 
@@ -534,7 +530,7 @@ export class View extends FamousView {
    * @private
    */
   _assignRenderable (renderable) {
-    this._renderableHelper.assignRenderable(renderable, this._getRenderableID(renderable))
+    this._renderableHelper.assignRenderable(renderable, Utils.getRenderableID(renderable))
     if (Utils.renderableIsSurface(renderable)) {
       let sizeSpecification =
         (renderable.decorations.dock && renderable.decorations.dock.size) ||
@@ -961,7 +957,7 @@ export class View extends FamousView {
    */
   _assignNewRenderable (renderable, localRenderableName, decorations, isArray) {
 
-    let renderableID = this._getRenderableID(renderable)
+    let renderableID = Utils.getRenderableID(renderable)
 
     if (localRenderableName) {
       this._IDtoLocalRenderableName[renderableID] = localRenderableName
@@ -984,7 +980,7 @@ export class View extends FamousView {
   }
 
   _getIDFromLocalName (localName) {
-    return this._getRenderableID(this[localName])
+    return Utils.getRenderableID(this[localName])
   }
 
   /**
@@ -1010,7 +1006,7 @@ export class View extends FamousView {
       if (oldRenderable && oldRenderable.constructor === type && oldRenderable.setNewOptions) {
         oldRenderable.setNewOptions(options);
         newRenderable = oldRenderable
-        this._renderableHelper.decorateRenderable(this._getRenderableID(newRenderable), ...dynamicDecorations)
+        this._renderableHelper.decorateRenderable(Utils.getRenderableID(newRenderable), ...dynamicDecorations)
         return newRenderable
       }
       newRenderable = new type(options)

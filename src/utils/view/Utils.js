@@ -94,4 +94,8 @@ export class Utils {
             return 'ignored';
         }
     }
+
+  static getRenderableID (renderable) {
+    return renderable.getID ? renderable.getID() : (renderable.layout ? renderable.layout.id : renderable.id);
+  }
 }
