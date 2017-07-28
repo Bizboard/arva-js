@@ -82,7 +82,6 @@ export class ScrollController extends FamousView {
     this._cachedSpecs = {}
     this._scrollToTransitionable = new Transitionable()
     this._initOverScrollPhysics()
-    this.on('touchmove', this._onTouchMove)
 
     this._maxKnownTranslate = this.options.initialHeight
     this._otherNodes = {bottomScroller: new Surface(), topScroller: new PushDownSurface()}
