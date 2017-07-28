@@ -471,8 +471,12 @@ export class OptionObserver extends EventEmitter {
      * without also accessing intermediary properties (options.nested getter is triggered). If this isn't
      * true for some reason, updates will be missed */
     if (updateObject !== notFound) {
-      let localListenerTree = this._accessListener(nestedPropertyPath.concat([propertyName]))
-      let localListeners = localListenerTree[listeners] || localListenerTree[0][listeners]
+      let fullNestedPropertyPath = nestedPropertyPath.concat([propertyName]);
+      let localListenerTree = this._accessListener(fullNestedPropertyPath)
+      if(!(localListenerTree[listeners] || localListenerTree[0])){
+        this._throwError(`Assignment to undefined option ${fullNestedPropertyPath.join('->')}`);
+      }
+      let localListeners = localListenerTree[listeners] || localListenerTree[0][listeners];
       for (let entryName of this._getUpdatesEntriesForLocalListenerTree(localListeners)) {
         this._updatesForNextTick[entryName] = true
       }
