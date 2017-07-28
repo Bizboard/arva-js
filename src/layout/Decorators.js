@@ -353,6 +353,22 @@ export const layout = {
     },
 
     /**
+     * Makes modifications to a surface using old-style famous modifiers (e.g MapModifier for famous-map)
+     * @example
+     * @layout.mapModifier(new MapModifier{ mapView: map, position: {lat: 0, lng: 0} })
+     * // Makes a surface that is linked to the position (0, 0)
+     *
+     * @param {Object} [modifier]. modifier object.
+     * @returns {Function}
+     */
+    modifier: function (modifier = {}) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.modifier = modifier;
+        }
+    },
+
+    /**
      * Makes the renderable swipable with physics-like velocity after the dragging is released. Emits event
      * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached. this.renderables[name]
      * now refers to a a RenderNode containing a positionModifier along with the renderable itself.
