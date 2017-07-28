@@ -32,7 +32,7 @@ export class RenderableHelper {
    * Creates a utility for maintaining proper state of decorated renderables
    * @param {Function} bindMethod
    * @param {Function} pipeMethod
-   * @param {Function} getRenderableLocalNameMethod
+   * @param {Function} getIDfromLocalNameMethod
    * @param {Object|Renderable} outputRenderables
    * @param sizeResolver
    */
