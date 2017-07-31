@@ -972,8 +972,8 @@ export const layout = {
              * The logic behind this is 16px padding by default, unless the screen is
              * wider than 720px. In that case, the padding is increased to make the content
              * in between be at maximum 720px. */
-            decorations.dynamicDockPadding = function(size) {
-                let sideWidth = size[0] > maxContentWidth + 32 ? (size[0] - maxContentWidth) / 2 : normalisedPadding[1];
+            decorations.dynamicDockPadding = function(size, newWidth = maxContentWidth) {
+                let sideWidth = size[0] > newWidth + 32 ? (size[0] - newWidth) / 2 : normalisedPadding[1];
                 return [normalisedPadding[0], sideWidth, normalisedPadding[2], sideWidth];
             }
         };

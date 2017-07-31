@@ -389,6 +389,25 @@ export class View extends FamousView {
         }
     }
 
+    // TODO: JSDoc
+    setMaxContentWidth(width) {
+        if(this.decorations.dynamicDockPadding) {
+            this.onNewSize((size) => {
+                this.decorations.viewMargins = this.decorations.dynamicDockPadding(size, width);
+                this.reflowRecursively();
+            });
+            const sizeCache = this.layout._contextSizeCache;
+            const alteredSizeCache = [
+                sizeCache[0] + 1,
+                sizeCache[1] + 1
+            ];
+            this.layout._eventOutput.emit('sizeChanged', {
+                oldSize: sizeCache,
+                size: alteredSizeCache
+            });
+        }
+    }
+
     /**
      * Inits the utils that are used as helper classes for the view
      * @private
