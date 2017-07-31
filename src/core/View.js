@@ -405,6 +405,12 @@ export class View extends FamousView {
                 oldSize: sizeCache,
                 size: alteredSizeCache
             });
+        } else {
+            this.decorations.dynamicDockPadding = function(size, newWidth = maxContentWidth) {
+                let sideWidth = size[0] > newWidth + 32 ? (size[0] - newWidth) / 2 : normalisedPadding[1];
+                return [normalisedPadding[0], sideWidth, normalisedPadding[2], sideWidth];
+            }
+            setMaxContentWidth(width);
         }
     }
 
