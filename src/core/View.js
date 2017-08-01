@@ -12,6 +12,7 @@ import cloneDeep                    from 'lodash/cloneDeep.js';
 import FamousView                   from 'famous/core/View.js';
 import Surface                      from 'famous/core/Surface.js';
 import LayoutController             from 'famous-flex/LayoutController.js';
+import LayoutUtility                from 'famous-flex/LayoutUtility.js';
 
 import {limit}                      from 'arva-js/utils/Limiter.js';
 
@@ -389,7 +390,10 @@ export class View extends FamousView {
         }
     }
 
-    // TODO: JSDoc
+    /**
+     * Set a maximum width on a renderable.
+     * @param width
+     */
     setMaxContentWidth(width) {
         if(this.decorations.dynamicDockPadding) {
             this.onNewSize((size) => {
@@ -406,11 +410,14 @@ export class View extends FamousView {
                 size: alteredSizeCache
             });
         } else {
-            this.decorations.dynamicDockPadding = function(size, newWidth = maxContentWidth) {
+            let defaultPadding = [0, 16, 0, 16];
+            let normalisedPadding = LayoutUtility.normalizeMargins(defaultPadding);
+            this.decorations.dynamicDockPadding = function(size, newWidth = width) {
                 let sideWidth = size[0] > newWidth + 32 ? (size[0] - newWidth) / 2 : normalisedPadding[1];
                 return [normalisedPadding[0], sideWidth, normalisedPadding[2], sideWidth];
-            }
-            setMaxContentWidth(width);
+            };
+
+            this.setMaxContentWidth(width);
         }
     }
 
