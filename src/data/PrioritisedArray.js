@@ -396,7 +396,7 @@ export class PrioritisedArray {
    * @returns {*}
    */
   concat() {
-    return this._children.filter.apply(this._children, arguments);
+    return this._children.concat.apply(this._children, arguments);
   }
 
 
