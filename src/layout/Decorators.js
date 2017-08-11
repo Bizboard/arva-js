@@ -353,6 +353,22 @@ export const layout = {
     },
 
     /**
+     * Makes modifications to a surface using old-style famous modifiers (e.g MapModifier for famous-map)
+     * @example
+     * @layout.mapModifier(new MapModifier{ mapView: map, position: {lat: 0, lng: 0} })
+     * // Makes a surface that is linked to the position (0, 0)
+     *
+     * @param {Object} [modifier]. modifier object.
+     * @returns {Function}
+     */
+    modifier: function (modifier = {}) {
+        return function (view, renderableName, descriptor) {
+            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
+            renderable.decorations.modifier = modifier;
+        }
+    },
+
+    /**
      * Makes the renderable swipable with physics-like velocity after the dragging is released. Emits event
      * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached. this.renderables[name]
      * now refers to a a RenderNode containing a positionModifier along with the renderable itself.
@@ -956,8 +972,8 @@ export const layout = {
              * The logic behind this is 16px padding by default, unless the screen is
              * wider than 720px. In that case, the padding is increased to make the content
              * in between be at maximum 720px. */
-            decorations.dynamicDockPadding = function(size) {
-                let sideWidth = size[0] > maxContentWidth + 32 ? (size[0] - maxContentWidth) / 2 : normalisedPadding[1];
+            decorations.dynamicDockPadding = function(size, newWidth = maxContentWidth) {
+                let sideWidth = size[0] > newWidth + 32 ? (size[0] - newWidth) / 2 : normalisedPadding[1];
                 return [normalisedPadding[0], sideWidth, normalisedPadding[2], sideWidth];
             }
         };
