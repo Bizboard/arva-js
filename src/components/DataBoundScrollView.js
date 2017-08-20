@@ -87,6 +87,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
 
         this._internalDataSource = {};
         this._internalGroups = {};
+        this._eventCallbacks = {};
+
         /* In order to keep track of what's being removed, we store this which maps an id to a boolean */
         this._removedEntries = {};
         this._isGrouped = this.options.groupBy != null;
@@ -769,7 +771,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     _onChildAdded(dataStoreIndex, child, previousSiblingID) {
         if(!child){
-            console.log('Warning: Child added recieved with undefined child, in DataBoundScrollView');
+            console.log('Warning: Child added received with undefined child, in DataBoundScrollView');
         }
         /* Mark the entry as undeleted */
         this._removedEntries[`${child.id}${dataStoreIndex}`] = false;
@@ -780,7 +782,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                 let result = await this.options.dataFilter(child);
 
                 if (result) {
-                    await this._addItem(child, previousSiblingID, dataStoreIndex,);
+                    await this._addItem(child, previousSiblingID, dataStoreIndex);
                 }
             } else {
                 /* There is no dataFilter method, so we can add this child. */
@@ -798,6 +800,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     //TODO: This won't reorder children, which is a problem
     async _onChildChanged(dataStoreIndex, child, previousSiblingID) {
+
         this._throttler.add(async () => {
             let changedItemIndex = await this._findIndexFromID(dataStoreIndex, child.id);
 
@@ -816,9 +819,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
                     }
 
                     if (changedItemIndex === -1) {
-                        this._addItem(child, previousSiblingID, dataStoreIndex);
+                        await this._addItem(child, previousSiblingID, dataStoreIndex);
                     } else {
-                        this._replaceItem(child, dataStoreIndex);
+                        await this._replaceItem(child, dataStoreIndex);
                     }
                 }
             }
@@ -847,6 +850,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * @private
      */
     _onChildRemoved(dataStoreIndex, child) {
+
         /* Mark the entry as removed */
         this._removedEntries[`${child.id}${dataStoreIndex}`] = true;
         this._throttler.add(() => {
@@ -1029,7 +1033,8 @@ export class DataBoundScrollView extends ReflowingScrollView {
     }
 
     /**
-     *
+     * Either add or remove the prioritisedArray events to our event handlers.
+     * The event handlers are cached, so they can be removed later on if needed.
      * @param dataStore
      * @param index
      * @param {Boolean} shouldActivate
@@ -1038,12 +1043,27 @@ export class DataBoundScrollView extends ReflowingScrollView {
     _setupDataStoreListeners(dataStore, index, shouldActivate) {
         let methodName = shouldActivate ? 'on' : 'off';
         let method = dataStore[methodName];
-        method('child_added', this._onChildAdded.bind(this, index));
-        method('child_changed', this._onChildChanged.bind(this, index));
-        method('child_removed', this._onChildRemoved.bind(this, index));
-        /* Only listen for child_moved if there is one single dataStore. TODO: See if we want to change this behaviour to support moved children within the dataStore */
+
+        /* We have to cache the event handler functions, otherwise we can't remove them later on if needed */
+        if(shouldActivate){
+            /* To support multiple dataStores with multiple indices */
+            if(!this._eventCallbacks[index]){
+                this._eventCallbacks[index] = {};
+            }
+            this._eventCallbacks[index]['child_added'] = this._onChildAdded.bind(this, index);
+            this._eventCallbacks[index]['child_changed'] = this._onChildChanged.bind(this, index);
+            this._eventCallbacks[index]['child_removed'] = this._onChildRemoved.bind(this, index);
+            this._eventCallbacks[index]['child_moved'] = this._onChildMoved.bind(this, 0);
+        }
+
+        method('child_added',  this._eventCallbacks[index]['child_added']);
+        method('child_changed', this._eventCallbacks[index]['child_changed']);
+        method('child_removed',  this._eventCallbacks[index]['child_removed']);
+
+        /* Only listen for child_moved if there is one single dataStore.
+         * TODO: See if we want to change this behaviour to support moved children within the dataStore */
         if (!this.options.dataStores) {
-            method('child_moved', this._onChildMoved.bind(this, 0));
+            method('child_moved',  this._eventCallbacks[index]['child_moved']);
         }
     }
 
