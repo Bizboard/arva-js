@@ -8,56 +8,79 @@
 
  */
 
-import _                            from 'lodash';
+import extend                       from 'lodash/extend.js';
 import EventEmitter                 from 'eventemitter3';
-import {Injection}                  from '../utils/Injection.js';
-import {ObjectHelper}               from '../utils/ObjectHelper.js';
 import {DataSource}                 from './DataSource.js';
+import {Model}                      from '../core/Model.js';
+import {LocalModel}                 from './local/LocalModel.js';
+import {Injection}                  from '../utils/Injection.js';
 import {Throttler}                  from '../utils/Throttler.js';
+import {ObjectHelper}               from '../utils/ObjectHelper.js';
 
+/**
+ * An array of two-way bound data Models that are automatically synced with the currently used DataSource
+ */
 export class PrioritisedArray extends Array {
 
-    /* Extending Array does not work fluently yet. The length property always returns 0,
-     * regardless of how many entries are in the array. We'll override the length prop to determine
-     * the amount of enumerable properties in our PrioritisedArray instead of using the built-in length property.
+    /**
+     * The number of items in the (synchronized or local) data set.
+     * @returns {Number}
      */
     get length() {
+        /* Extending Array does not work fluently yet. The length property always returns 0,
+         * regardless of how many entries are in the array. We'll override the length prop to determine
+         * the amount of enumerable properties in our PrioritisedArray instead of using the built-in length property.
+         */
         return Object.keys(this).length;
     }
 
+    /**
+     * A setter on the length is necessary because internal methods of Array modify the lngth. It won't change the length thoough
+     * @param {Number} value
+     * @returns {*}
+     */
     set length(value) {
         return value;
     }
 
-
     /**
      *
      * @param {Function} dataType DataType of the models being added to the PrioritisedArray.
-     * @param {DataSource} dataSource Optional: dataSource to load the models from. If none is given, a new DataSource is made with a path guessed from
+     * @param {DataSource} [dataSource] dataSource to load the models from. If none is given, a new DataSource is made with a path guessed from
      * the model's DataType name.
-     * @param {Snapshot} dataSnapshot Optional: snapshot already containing model data. Prevents initial subscription on all values in the DataSource.
-     * @param {Object} options Optional: options to pass to the dataSource if none is provided and a new one is constructed.
+     * @param {Snapshot} [dataSnapshot] snapshot already containing model data. Prevents initial subscription on all values in the DataSource.
+     * @param {Object} [options] options to pass to the dataSource if none is provided and a new one is constructed.
+     * @param {Object} [modelOptions] options to merge into the construction of every new Model.
      * @returns {PrioritisedArray} PrioritisedArray instance.
      */
-    constructor(dataType, dataSource = null, dataSnapshot = null, options = null, modelOptions = {}) {
+    constructor(dataType, dataSource = null, dataSnapshot = null, options = {}, modelOptions = {}) {
         super();
         /**** Callbacks ****/
         this._valueChangedCallback = null;
-        this._ids = {};
+
+        options = options || {};
+
+        /* Bind all local methods to the current object instance, so we can refer to "this"
+         * in the methods as expected, even when they're called from event handlers.        */
+        ObjectHelper.bindAllMethods(this, this);
 
         /**** Private properties ****/
+        this._ids = {};
         this._dataType = dataType;
         this._dataSource = dataSource;
         this._isBeingReordered = false;
         this._modelOptions = modelOptions;
         /* Flag to determine when we're reordering so we don't listen to move updates */
         this._eventEmitter = new EventEmitter();
-        this._childAddedThrottler = new Throttler(1, true, this, true);
+        this._childAddedThrottler = new Throttler(options.noThrottle || typeof window === 'undefined' ? 0 : 1, true, this, true);
         this._overrideChildAddedForId = null;
 
-        /* Bind all local methods to the current object instance, so we can refer to "this"
-         * in the methods as expected, even when they're called from event handlers.        */
-        ObjectHelper.bindAllMethods(this, this);
+        /* We do the bindAllMethods before this happens in order to make sure that dataType.prototype isn't modified so
+         * that this check would break
+         */
+        if (dataType && !(dataType.prototype instanceof Model)) {
+            throw new Error(`${dataType.toString()} passed to PrioritisedArray is not an instance of a model`);
+        }
 
         /* Hide all private properties (starting with '_') and methods from enumeration,
          * so when you do for( in ), only actual data properties show up. */
@@ -74,12 +97,7 @@ export class PrioritisedArray extends Array {
             let path = this.constructor._name || Object.getPrototypeOf(this).constructor.name;
             /* Retrieve dataSource from the DI context */
             dataSource = Injection.get(DataSource);
-
-            if (options) {
-                dataSource = dataSource.child(options.path || path, options);
-            } else {
-                dataSource = dataSource.child(path);
-            }
+            dataSource = dataSource.child(options.path || path, options);
 
             this._dataSource = dataSource;
         }
@@ -126,16 +144,17 @@ export class PrioritisedArray extends Array {
      * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
      * @param {Function} [handler] Function that is called when the given event type is emitted.
      * @param {Object} [context] context of 'this' inside the handler function when it is called.
-     * @returns {Promise} If no callback function provided, a promise that resolves once the event has happened
+     * @returns {Promise} A promise that resolves once the event has happened
      */
     once(event, handler, context = this) {
-        if (!handler) {
-            return new Promise((resolve) => this.once(event, resolve, context));
-        }
-        return this.on(event, function onceWrapper() {
-            this.off(event, onceWrapper, context);
-            handler.call(context, ...arguments);
-        }, this);
+        return new Promise((resolve) => {
+            this.on(event, function onceWrapper() {
+                this.off(event, onceWrapper, context);
+                handler && handler.call(context, ...arguments);
+                resolve(...arguments);
+            }, this);
+        });
+
     }
 
     /**
@@ -157,10 +176,11 @@ export class PrioritisedArray extends Array {
     /**
      * Adds a model instance to the rear of the PrioritisedArray, and emits a 'child_added' and possibly 'new_child' event after successful addition.
      * @param {Model|Object} model Instance of a Model.
-     * @param {String} prevSiblingId ID of the model preceding the one that will be added.
+     * @param {String|undefined} prevSiblingId ID of the model preceding the one that will be added.
+     * @param {Boolean} [emitValueEvent] Set to false to prevent emitting value event in this method.
      * @returns {Object} Same model as the one originally passed as parameter.
      */
-    add(model, prevSiblingId = null) {
+    add(model, prevSiblingId = null, emitValueEvent = true) {
         if (model instanceof this._dataType) {
             if (this.findIndexById(model.id) < 0) {
 
@@ -178,19 +198,23 @@ export class PrioritisedArray extends Array {
                 }
 
                 this._eventEmitter.emit('child_added', model, prevSiblingId);
+                if (emitValueEvent) {
+                    this._eventEmitter.emit('value', this);
+                }
+
                 return model;
             }
         } else if (model instanceof Object) {
             /* Let's try to parse the object using property reflection */
-            var options = {dataSource: this._dataSource};
+            var options = { dataSource: this._dataSource };
             /* Prevent child_added from being fired immediately when the model is created by creating a promise that resolves
              * the ID that shouldn't be synced twice
              */
 
             this._overrideChildAddedForId = this.once('local_child_added');
-            let newModel = new this._dataType(null, model, _.extend({}, this._modelOptions, options));
+            let newModel = new this._dataType(null, model, extend({}, this._modelOptions, options));
 
-            this.add(newModel);
+            this.add(newModel, undefined, emitValueEvent);
             /* Remove lock */
             this._eventEmitter.emit('local_child_added', newModel);
             this._overrideChildAddedForId = null;
@@ -229,7 +253,12 @@ export class PrioritisedArray extends Array {
         return model;
     }
 
-    push(model){
+    /**
+     * Adds a model or object to the end of the list.
+     * @param {Object|Model} model
+     * @returns {Model} The newly inserted model
+     */
+    push(model) {
         return this.insertAt(model, this.length);
     }
 
@@ -244,18 +273,58 @@ export class PrioritisedArray extends Array {
          * TODO: Beware, there might be hard to reproduce prone to errors going on sometimes when deleting many things at once
          * Sometimes, there is an inconsistent state, but I haven't been able to figure out how that happens. /Karl
          */
-        if(this.length === 1){
+        if (this.length === 1) {
             this._ids = {};
         } else {
-            for (let i = position; i < this.length; i++) {
+            for (let i = position + 1; i < this.length; i++) {
                 /* Decrease the index of items further on in the prio array */
-                if(!this._ids[this[i].id] && this._ids[this[i].id] !== 0){
+                if (!this._ids[this[i].id] && this._ids[this[i].id] !== 0) {
                     console.log("Internal error, decreasing index of non-existing id. For ID: " + this[i].id);
                 }
                 this._ids[this[i].id]--;
             }
+            delete this._ids[this[position].id];
+
         }
         this.splice(position, 1);
+    }
+
+
+    /**
+     * Return the position of model's id, saved in an associative array
+     * @param {String} id Id field of the model we're looking for
+     * @returns {Number} Zero-based index if found, -1 otherwise
+     */
+    findIndexById(id) {
+        let position = this._ids[id];
+        return (position == undefined || position == null) ? -1 : position;
+    }
+
+
+    /**
+     * Finds an item based on its Id in the datasource.
+     * @param id
+     * @returns {Model}
+     */
+    findById(id) {
+        return this[this.findIndexById(id)];
+    }
+
+    getDataSourcePath() {
+        return this._dataSource.path();
+    }
+
+    /**
+     * Replaces all items in this PrioritisedArray with items from newContents.
+     * @param {PrioritisedArray} newContents PrioritisedArray to take elements from.
+     */
+    replaceContents(newContents) {
+        while (this.length) {
+            this[0].remove();
+        }
+        for (let item of newContents) {
+            this.add(LocalModel.cloneModelProperties(item));
+        }
     }
 
 
@@ -281,7 +350,7 @@ export class PrioritisedArray extends Array {
         dataSnapshot.forEach(function (child) {
             this._childAddedThrottler.add(function (child) {
                 /* Create a new instance of the given data type and prefill it with the snapshot data. */
-                let options = {dataSnapshot: child};
+                let options = { dataSnapshot: child, noInitialSync: true };
                 let childRef = this._dataSource.child(child.key);
 
                 /* whenever the ref() is a datasource, we can bind that source to the model.
@@ -295,8 +364,8 @@ export class PrioritisedArray extends Array {
                     options.path = dataSnapshot.ref().toString().replace(rootPath, '/');
                 }
 
-                let newModel = new this._dataType(child.key, child.val(), _.extend({}, this._modelOptions, options));
-                this.add(newModel);
+                let newModel = new this._dataType(child.key, child.val(), extend({}, this._modelOptions, options));
+                this.add(newModel, undefined, false);
 
                 /* If this is the last child, fire a ready event */
                 if (currentChild++ === numChildren) {
@@ -308,7 +377,6 @@ export class PrioritisedArray extends Array {
             }.bind(this, child));
         }.bind(this))
     }
-
 
     /**
      * Clones a dataSource (to not disturb any existing callbacks defined on the original) and uses it
@@ -363,9 +431,12 @@ export class PrioritisedArray extends Array {
                 /* If the override is concerning another id, then go ahead and make the _onChildAdded */
                 if (newModel.id !== id) {
                     this._onChildAdded(snapshot, prevSiblingId)
+                } else {
+                    this._eventEmitter.emit('value', this);
                 }
                 /* Otherwise, don't recreate the same model twice */
             });
+
             return;
         }
 
@@ -375,10 +446,11 @@ export class PrioritisedArray extends Array {
             return;
         }
 
-        let model = new this._dataType(id, null, _.extend({}, this._modelOptions, {
+        let model = new this._dataType(id, null, extend({}, this._modelOptions, {
+            noInitialSync: true,
             dataSnapshot: snapshot
         }));
-        this.add(model, prevSiblingId);
+        this.add(model, prevSiblingId, false);
 
         if (!this._dataSource.ready) {
             this._dataSource.ready = true;
@@ -402,6 +474,7 @@ export class PrioritisedArray extends Array {
             /* The model doesn't exist, so we won't emit a changed event. */
             return;
         }
+
 
         let model = this[previousPosition];
         model._onChildValue(snapshot, prevSiblingId);
@@ -474,21 +547,6 @@ export class PrioritisedArray extends Array {
             this._eventEmitter.emit('child_removed', model);
             this._eventEmitter.emit('value', this);
         }
-    }
-
-    /**
-     * Return the position of model's id, saved in an associative array
-     * @param {Number} id Id field of the model we're looking for
-     * @returns {Number} Zero-based index if found, -1 otherwise
-     * @private
-     */
-    findIndexById(id) {
-        let position = this._ids[id];
-        return (position == undefined || position == null) ? -1 : position;
-    }
-
-    findById(id) {
-        return this[this.findIndexById(id)];
     }
 
 }
