@@ -6,7 +6,8 @@
  @copyright Bizboard, 2016
 
  */
-import _                        from 'lodash';
+import merge                    from 'lodash/merge.js';
+import extend                   from 'lodash/extend.js';
 
 import AnimationController      from 'famous-flex/AnimationController.js';
 import LayoutUtility            from 'famous-flex/LayoutUtility.js';
@@ -41,6 +42,7 @@ function prepDecoratedRenderable(viewOrRenderable, renderableName, descriptor) {
          * myRenderable = new Surface(); => descriptor.initializer();
          */
         if (descriptor.get) {
+            Utils.warn(`Adding renderables on views through getters has been deprecated (${renderableName}).`);
             specificRenderableConstructors[renderableName] = descriptor.get;
         } else if (descriptor.initializer) {
             specificRenderableConstructors[renderableName] = descriptor.initializer;
@@ -80,16 +82,19 @@ function prepPrototypeDecorations(prototype) {
     return decorations;
 }
 
+/**
+ * Describes a set of decorators used for layouting of a renderable in a View.
+ */
 export const layout = {
 
 
     /**
+     * Merely marks a view property as a decorated renderable, which allows it to be rendered.
+     * Use this in combination with a @layout.custom decorator on the view in which this renderable resides.
+     *
      * @example
      * @layout.renderable
      * renderable = new Surface();
-     *
-     * Merely marks a view property as a decorated renderable, which allows it to be rendered.
-     * Use this in combination with a @layout.custom decorator on the view in which this renderable resides.
      *
      * @returns {Function} A decorator function
      */
@@ -100,12 +105,12 @@ export const layout = {
     },
 
     /**
-     * @example:
+     * Marks the renderable to cover the entire screen. Translate can also be specified on such a renderable.
+     *
+     * @example
      * @layout.fullSize()
      * // View will have a red background
      * background = new Surface({properties: {backgroundColor: 'red'}});
-     *
-     * Marks the renderable to cover the entire screen. Translate can also be specified on such a renderable.
      *
      * @returns {Function} A decorator function
      */
@@ -117,37 +122,42 @@ export const layout = {
     },
 
     /**
-     * @example:
+     * Specifies the space that should come before the docked renderable. Useful when not specifying the size in the
+     * layout.dock function. Note that the space does not appear if there isn't any renderable with a size greater than
+     * zero before it. Can also be specified for the view
+     *
+     * @example
      * // there's a 20px space before this box
      * @layout.dockSpace(20)
      * @layout.size(100, 100)
      * @layout.dock.left()
      * box = new Surface({properties: {backgroundColor: 'red'}});
      *
-     * Specifies the space that should come before the docked renderable. Useful when not specifying the size in the
-     * layout.dock function. Note that the space does not appear if there isn't any renderable with a size greater than
-     * zero before it.
-     *
      * @param {Number} space The space that is inserted before the renderable.
      * @returns {Function} A decorator function
      */
     dockSpace: function (space) {
-        return function (view, renderableName, descriptor) {
-            let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
-            // Todo refactor also the z index to the dock
-            renderable.decorations.dock = renderable.decorations.dock ? _.extend(renderable.decorations.dock, {space}) : {space};
+        return function (target, renderableName, descriptor) {
+            if (typeof target == 'function') {
+                prepPrototypeDecorations(target.prototype).dockSpacing = space;
+            } else {
+                let renderable = prepDecoratedRenderable(target, renderableName, descriptor);
+                // Todo refactor also the z index to the dock
+                renderable.decorations.dock = renderable.decorations.dock ? extend(renderable.decorations.dock, {space}) : {space};
+            }
         };
     },
 
     /**
      * Internal function to do docking
+     *
      * @param dockMethod
      * @param size
      * @param space
      * @param zIndex
      * @returns {Function}
      */
-    _dockTo: function (dockMethod, size, space = 0, zIndex) {
+    _dockTo: function (dockMethod, size, space, zIndex) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
 
@@ -171,16 +181,8 @@ export const layout = {
         };
     },
 
-
     dock: {
         /**
-         * @example:
-         * @layout.dock.left(30, 0, 10)
-         * @layout.size(15, undefined)
-         * @layout.origin(0.5, 0)
-         * @layout.align(0.5, 0)
-         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
-         *
          * Docks the renderable to the left.
          * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
          * The renderable can then be stickd within the docking area with origin and align. When combined with align, treats
@@ -188,11 +190,19 @@ export const layout = {
          * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
          * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
          *
+         * @example
+         * @layout.dock.left(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
+         *
          * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
          * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
          * different variations, see layout.size.
-         * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
-         * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
+         * @param {Number} [space]. Any space that should be inserted before the docked renderable
+         * @param {Number} [zIndex]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
         left: function () {
@@ -200,13 +210,6 @@ export const layout = {
         },
 
         /**
-         * @example:
-         * @layout.dock.right(30, 0, 10)
-         * @layout.size(15, undefined)
-         * @layout.origin(0.5, 0)
-         * @layout.align(0.5, 0)
-         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
-         *
          * Docks the renderable to the right.
          * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
          * The renderable can then be stickd within the docking area with origin and align. When combined with align, treats
@@ -214,11 +217,18 @@ export const layout = {
          * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
          * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
          *
+         * @example
+         * @layout.dock.right(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
          * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
          * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
          * different variations, see layout.size.
-         * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
-         * @param {Number} [zIndex = 0]. DEPRECATED: Use translate(0, 0, zIndex) instead.
+         * @param {Number} [space]. Any space that should be inserted before the docked renderable
+         * @param {Number} [zIndex]. DEPRECATED: Use translate(0, 0, zIndex) instead.
          * @returns {Function} A decorator function
          */
         right: function () {
@@ -226,12 +236,6 @@ export const layout = {
         },
 
         /**
-         * @example:
-         * @layout.dock.top(30, 0, 10)
-         * @layout.size(15, undefined)
-         * @layout.origin(0.5, 0)
-         * @layout.align(0.5, 0)
-         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
          *
          * Docks the renderable to the top.
          * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
@@ -239,6 +243,14 @@ export const layout = {
          * the context size the docking size.
          * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
          * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
+         *
+         * @example
+         * @layout.dock.top(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
          *
          * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
          * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
@@ -252,12 +264,6 @@ export const layout = {
         },
 
         /**
-         * @example:
-         * @layout.dock.bottom(30, 0, 10)
-         * @layout.size(15, undefined)
-         * @layout.origin(0.5, 0)
-         * @layout.align(0.5, 0)
-         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
          *
          * Docks the renderable to the bottom.
          * When using both a docked size and the layout.size decorator, then that layout.size becomes the actual inner size.
@@ -265,6 +271,14 @@ export const layout = {
          * the context size the docking size.
          * When using layout.size without specifying a docked size, it will use that size as docking size. Useful for
          * automatic sizing when parent defines true size and orthogonal size (e.g. height for dock 'left') has to be defined.
+         *
+         * @example
+         * @layout.dock.bottom(30, 0, 10)
+         * @layout.size(15, undefined)
+         * @layout.origin(0.5, 0)
+         * @layout.align(0.5, 0)
+         * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
+         *
          *
          * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
          * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
@@ -278,14 +292,13 @@ export const layout = {
         },
 
         /**
-         * @example:
+         * Fills the space that is left after the docking with this renderable. When using layout.size, it will use that
+         * size as an inner size. This works similarly to other docking, from where translate, size, origin, align, etc
+         * can be specified.
+         *
+         * @example
          * @layout.dock.fill()
          * filledRenderable = new Surface({properties: {backgroundColor: 'red'}});
-         *
-         * Fills the space that is left after the docking with this renderable.
-         *
-         * When using layout.size, it will use that size as an inner size. This works similarly to other docking, from
-         * where translate, size, origin, align, etc can be specified.
          *
          * @returns {Function} A decorator function
          */
@@ -293,13 +306,13 @@ export const layout = {
             return layout._dockTo('fill', ...arguments)
         },
         /**
-         * @example:
+         * Marks the renderable as not being docked anymore. Useful when dynamically changing decorations through
+         * this.decorateRenderable or this.setRenderableFlowState
+         *
+         * @example
          * @layout.dock.fill()
          * @flow.stateStep('nonFilled', layout.dock.none(), layout.size(100, 100))
          * filledRenderable = new Surface({properties: {backgroundColor: 'red'}});
-         *
-         * Marks the renderable as not being docked anymore. Useful when dynamically changing decorations through
-         * this.decorateRenderable or this.setRenderableFlowState
          *
          * @returns {Function} A decorator function
          */
@@ -313,14 +326,14 @@ export const layout = {
     },
 
     /**
+     * Makes the renderable allowed to be dragged around. this.renderables[name] refers to a RenderNode containing this
+     * draggable along with the renderable itself.
+     *
      * @example
      * @layout.draggable({xRange: [0, 100}, yRange: [0, 200]})
      * @layout.size(100, 100)
      * // Makes a draggable square that is red
      * draggableRenderable = new Surface({properties: {backgroundColor: 'red'});
-     *
-     * Makes the renderable allowed to be dragged around. this.renderables[name] refers to a RenderNode containing this
-     * draggable along with the renderable itself.
      *
      * @param {Object} [draggableOptions]. Same options that can be passed to a Famous Draggable.
      * @param {Number} [options.snapX] grid width for snapping during drag
@@ -340,15 +353,15 @@ export const layout = {
     },
 
     /**
+     * Makes the renderable swipable with physics-like velocity after the dragging is released. Emits event
+     * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached. this.renderables[name]
+     * now refers to a a RenderNode containing a positionModifier along with the renderable itself.
+     *
      * @example
      * @layout.size(100, 100)
      * @layout.swipable({xRange: [0, 100], snapX: true})
      * //Make a red box that can slide to the right
      * swipable = new Surface({properties: {backgroundColor: 'red'});
-     *
-     * Makes the renderable swipable with physics-like velocity after the dragging is released. Emits event
-     * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached. this.renderables[name]
-     * now refers to a a RenderNode containing a positionModifier along with the renderable itself.
      *
      * @param {Object} options
      * @param {Boolean} [options.snapX] Whether to snap to the x axis
@@ -371,12 +384,24 @@ export const layout = {
 
 
     /**
-     * @example
-     * @layout.size(function(contextWidth) {return Math.max(contextWidth, this.options.maxWidth)}, ~300)
-     * // Creates a renderable where the width is equal to the text width and the height is whatever is bigger,
-     * // options.maxWidth, or the context size
-     * text = new Surface({content: 'This is some text', properties: {backgroundColor: 'red'}});
+     * Clips the renderable by creating another DOM-element with overflow: hidden. Internally, creates a Famous
+     * ContainerSurface.
+     * The two size parameters can either be a number or undefined (equals the context size).
      *
+     * @example
+     * @layout.size(40,40)
+     * @layout.clip(20, 20)
+     * // Shows a quarter of a circle
+     * renderable = new Surface({properties: {backgroundColor: 'red', borderRadius: '50%'});
+     *
+     * @param {Number} width The width of the ContainerSurface
+     * @param {Number} heigh The height of the ContainerSurface
+     * @param {Object} [properties]. Properties that will be passed to the newly created parent DOM-element.
+     * If specified, merged with {overflow: 'hidden'}
+     * @returns {Function} A decorator function
+     */
+
+    /**
      * Specifies the size of the renderable. For both of the parameters, sizes can be interpreted as follows:
      *
      * If specified as a function, then the argument passed is the context size of the specified dimension
@@ -396,9 +421,14 @@ export const layout = {
      * If a size between 0 and 1 is specified, then that will be interpreted as a proportion of the context size. For
      * example if 0.5 is specified, then the size will be half of the context size (the parent's size). Instead of
      * specifying 1 to cover the entire context size, use undefined instead.
+     * @example
+     * @layout.size(function(contextWidth) {return Math.max(contextWidth, this.options.maxWidth)}, ~300)
+     * // Creates a renderable where the width is equal to the text width and the height is whatever is bigger,
+     * // options.maxWidth, or the context size
+     * text = new Surface({content: 'This is some text', properties: {backgroundColor: 'red'}});
      *
-     * @param {Number|Function} x
-     * @param {Number|Function} y
+     * @param {Number|Function|Boolean} x
+     * @param {Number|Function|Boolean} y
      * @returns {Function} A decorator function
      */
     size: function (x, y) {
@@ -410,24 +440,6 @@ export const layout = {
             renderable.decorations.size = [x, y];
         };
     },
-
-    /**
-     * @example
-     * @layout.size(40,40)
-     * @layout.clip(20, 20)
-     * // Shows a quarter of a circle
-     * renderable = new Surface({properties: {backgroundColor: 'red', borderRadius: '50%'});
-     *
-     * Clips the renderable by creating another DOM-element with overflow: hidden. Internally, creates a Famous
-     * ContainerSurface.
-     * The two size parameters can either be a number or undefined (equals the context size).
-     *
-     * @param {Number} width The width of the ContainerSurface
-     * @param {Number} heigh The height of the ContainerSurface
-     * @param {Object} [properties]. Properties that will be passed to the newly created parent DOM-element.
-     * If specified, merged with {overflow: 'hidden'}
-     * @returns {Function} A decorator function
-     */
     clip: function (width, height, properties = {}) {
         return function (view, renderableName, descriptor) {
             let renderable = prepDecoratedRenderable(view, renderableName, descriptor);
@@ -436,13 +448,13 @@ export const layout = {
     },
 
     /**
+     * Rotates the renderable around any of the three axes (in radians).
+     *
      * @example
      * @layout.size(100,100)
      * @layout.rotate(0, 0, Math.PI)
      * // Writes text upside down
      * renderable = new Surface({content: 'upside down text'});
-     *
-     * Rotates the renderable around any of the three axes (in radians)
      *
      * @param {Number} x The rotation around the x axis (flips vertically)
      * @param {Number} y The rotation around the y axis (flips horizontally)
@@ -457,13 +469,13 @@ export const layout = {
     },
 
     /**
+     * Rotates the renderable around any of the three axes (in radians) relatively to the current rotation
+     *
      * @example
      * @layout.size(100,100)
      * @layout.rotate(0, 0, Math.PI)
      * // Writes text upside down
      * renderable = new Surface({content: 'upside down text'});
-     *
-     * Rotates the renderable around any of the three axes (in radians) relatively to the current rotation
      *
      * @param {Number} x The rotation around the x axis (flips vertically)
      * @param {Number} y The rotation around the y axis (flips horizontally)
@@ -480,6 +492,8 @@ export const layout = {
     },
 
     /**
+     * Sets the opacity of a renderable.
+     *
      * @example
      * @layout.opacity(0.5)
      * @layout.size(100, 10)
@@ -487,9 +501,7 @@ export const layout = {
      * // Writes text that is half invisible
      * renderable = new Surface({content: 'Half invisible'});
      *
-     * Sets te opacity of a renderable
-     *
-     * @param {Number} The opacity, between 0 and 1
+     * @param {Number} opacity The opacity, between 0 and 1
      * @returns {Function} A decorator function
      */
     opacity: function (opacity) {
@@ -541,12 +553,12 @@ export const layout = {
         };
     },
     /**
+     * Places the renderable by settings origin/align. If nothing is set, it will default to topleft.
+     *
      * @example
      * @layout.size(100,~300)
      * @layout.stick.center()
      * renderable = new Surface({content: 'centered text'});
-     *
-     * Places the renderable by settings origin/align. If nothing is set, it will default to topleft.
      *
      * @param {String} stick. Can be either of 'center', 'left', 'right', 'bottom', 'top', 'bottomleft', 'bottomright',
      * 'topright', 'topleft'
@@ -583,6 +595,10 @@ export const layout = {
     },
 
     /**
+     * Sets the point where the renderable has its anchor from where rotation and translation will be done.
+     * You could consider it as translating the negative of the proportion times its size. The arguments are always
+     * between and including 0 and 1.
+     *
      * @example
      * @layout.origin(0.5, 0)
      * @layout.align(0.5, 0.5)
@@ -590,9 +606,6 @@ export const layout = {
      * //Displays a red box horizontically centered and displays just below the vertical mid point
      * renderable = new Surface({properties: {backgroundColor: 'red'}});
      *
-     * Sets the point where the renderable has its anchor from where rotation and translation will be done.
-     * You could consider it as translating the negative of the proportion times its size. The arguments are always
-     * between and including 0 and 1
      *
      * @param {Number} x. The x of the origin.
      * @param {Number} y. The y of the origin.
@@ -606,13 +619,13 @@ export const layout = {
     },
 
     /**
+     * Translates the renderable by a proportion of the context size.
+     *
      * @example
      * @layout.align(0.5, 0.5)
      * @layout.size(100,100)
      * //Displays a red box just below the vertical mid point and past the horizontal mid point
      * renderable = new Surface({properties: {backgroundColor: 'red'}});
-     *
-     * Translates the renderable by a proportion of the context size.
      *
      * @param {Number} x. The proportion of the context width that is going to be translated.
      * @param {Number} y. The proportion of the context height that is going to be translated.
@@ -626,6 +639,10 @@ export const layout = {
     },
 
     /**
+     * Specifies a translation of a renderable. Can be applied to every kind of renderable (docked, fullSize,
+     * and normal). Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
+     * to [0, 0, 10] in order to always increase the z space of every level of the Famous rendering tree.
+     *
      * @example
      * @layout.translate(0, 0, 20)
      * class myView extends View{
@@ -635,11 +652,6 @@ export const layout = {
      *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
      * }
      *
-     * Specifies a translation of a renderable. Can be applied to every kind of renderable (docked, fullSize,
-     * and normal).
-     *
-     * Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
-     * to [0, 0, 10] in order to always increase the z space of every level of the Famous rendering tree.
      * @param {Number} x Moves the renderable along the x axis.
      * @param {Number} y Moves the renderable along the y axis.
      * @param {Number} z Moves the renderable along the z axis.
@@ -663,6 +675,11 @@ export const layout = {
     },
 
     /**
+     * Specifies a relative translation of a renderable. Can be applied to every kind of renderable (docked, fullSize,
+     * and normal).
+     * Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
+     * to [0, 0, 10] in order to always increase the z space of every level of the Famous rendering tree.
+     *
      * @example
      * @layout.translateFrom(0, 0, 20)
      * class myView extends View{
@@ -672,11 +689,6 @@ export const layout = {
      *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
      * }
      *
-     * Specifies a relative translation of a renderable. Can be applied to every kind of renderable (docked, fullSize,
-     * and normal).
-     *
-     * Can also be applied on view level to translate every renderable of that view. The view wide translation defaults
-     * to [0, 0, 10] in order to always increase the z space of every level of the Famous rendering tree.
      * @param {Number} x Moves the renderable along the x axis.
      * @param {Number} y Moves the renderable along the y axis.
      * @param {Number} z Moves the renderable along the z axis.
@@ -701,6 +713,8 @@ export const layout = {
     },
 
     /**
+     * Specifies the scale of a renderable. Can be applied to every kind of renderable.
+     *
      * @example
      *  class myView extends View{
      *  @layout.scale(2, 2, 2)
@@ -708,8 +722,6 @@ export const layout = {
      *  // Will scale the renderable by 2 in the x,y,z dimension
      *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
      * }
-     *
-     * Specifies the scale of a renderable. Can be applied to every kind of renderable
      *
      * @param {Number} x Scales the renderable along the x axis.
      * @param {Number} y Scales the renderable along the y axis.
@@ -727,6 +739,8 @@ export const layout = {
     },
 
     /**
+     * Specifies the skew of a renderable. Can be applied to every kind of renderable.
+     *
      * @example
      *  class myView extends View{
      *  @layout.skew(2, 2, 2)
@@ -734,8 +748,6 @@ export const layout = {
      *  // Will skew the renderable by 2 in the x,y,z dimension
      *  myBackground = new Surface({properties: {backgroudColor: 'red'}});
      * }
-     *
-     * Specifies the skew of a renderable. Can be applied to every kind of renderable
      *
      * @param {Number} x Skews the renderable along the x axis.
      * @param {Number} y Skews the renderable along the y axis.
@@ -751,6 +763,11 @@ export const layout = {
     },
 
     /**
+     *
+     * Creates an animation controller to show/hide the renderable. Renderables can be shown by calling
+     * this.showRenderable(renderableName) and hidden using this.hideRenderable(renderableName) or
+     * this.showRenderable(renderableName, false). When a renderable has been shown, it will emit the event 'shown'.
+     *
      * @example
      * @layout.stick.center()
      * @layout.size(100,100)
@@ -758,9 +775,6 @@ export const layout = {
      * renderable = new Surface({properties: {backgroundColor: 'red'}});
      *
      *
-     * Creates an animation controller to show/hide the renderable. Renderables can be shown by calling
-     * this.showRenderable(renderableName) and hidden using this.hideRenderable(renderableName) or
-     * this.showRenderable(renderableName, false). When a renderable has been shown, it will emit the event 'shown'.
      *
      * @param {Object} [options] The same as famous-flex Animation Controller, plus 2 more:
      * @param {Boolean} [options.showInitially] Whether to show the renderable when the view is created. (Default: true).
@@ -786,7 +800,7 @@ export const layout = {
     animate: function (options = {}) {
         return function (view, renderableName, descriptor) {
             let renderableConstructor = prepDecoratedRenderable(view, renderableName, descriptor);
-            options = _.merge({
+            options = merge({
                 showInitially: true,
                 animation: AnimationController.Animation.FadedZoom,
                 show: {transition: options.transition || {curve: Easing.outCubic, duration: 250}},
@@ -801,13 +815,14 @@ export const layout = {
     },
 
     /**
+     * Makes the view flow by tweening all intermediate stages of a changed attribute of any renderable.
+     *
      * @example
      * @layout.flow({spring: {dampingRatio: 0.8, period: 1000}})
      * class myView extends View{
      * ...
      * }
      *
-     * Makes the view flow.
      * @param {Object} Options to pass as flowOptions to the LayoutController
      * @param {Bool} [flowOptions.transition] If specified, sets the default transition to use
      * @param {Bool} [flowOptions.reflowOnResize] Smoothly reflows renderables on resize (only used when flow = true) (default: `true`).
@@ -827,18 +842,20 @@ export const layout = {
     },
 
     /**
+     * Makes the view as scrollable. This will put the entire content in a ReflowingScrollView that uses getSize on the
+     * view to determine scrolling size. If the size cannot be determined, you might consider declaring your own
+     * getSize() on the View.
+     *
      * @example
      * @layout.scrollable()
      * class myView extends View{
      * ...
      * }
      *
-     * Makes the view as scrollable. This will put the entire content in a ReflowingScrollView that uses getSize on the
-     * view to determine scrolling size. If the size cannot be determined, you might consider declaring your own
-     * getSize() on the View.
      *
      * @returns {Function} A decorator function
      */
+
     scrollable: function (options = {}) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
@@ -847,6 +864,27 @@ export const layout = {
     },
 
     /**
+     * Experimental feature of scrolling natively.
+     *
+     * @param {Object} [options] Options on how to scroll
+     * @param {Boolean} [options.scrollY] Defaults to true
+     * @param {Boolean} [options.scrollX] Defaults to false
+     * @returns {Function} A decorator function
+     */
+    nativeScrollable: function (options = {}) {
+        let {scrollY = true, scrollX= false} = options;
+        return function (target) {
+            let decorations = prepPrototypeDecorations(target.prototype);
+            decorations.nativeScrollable = {scrollY, scrollX};
+        }
+    },
+
+    /**
+     * Sets the margins for the docked content. This can be applied both to a child and a class. When in conflict,
+     * the parent will override the child's setting. If the margin is set on a Surface, then CSS padding will be set.
+     * margins can be 1, 2, or 4, parameters, which can be specified as shorthand in the same way
+     * as CSS does it.
+     *
      * @example
      * @layout.dockPadding(15)
      * //Creates a class with 15px margin on all sides for docked renderables
@@ -861,10 +899,7 @@ export const layout = {
      *  onButtom = new Surface({content: "hey hey"});
      * }
      *
-     * Sets the margins for the docked content. This can be applied both to a child and a class. When in conflict,
-     * the parent will override the child's setting. If the margin is set on a Surface, then CSS padding will be set.
-     * margins can be 1, 2, or 4, parameters, which can be specified as shorthand in the same way
-     * as CSS does it.
+
      *
      * @param {Number} firstMargin
      * @param {Number} [secondMargin]
@@ -884,6 +919,29 @@ export const layout = {
         };
     },
 
+    /**
+     * Like @layout.dockPadding, sets the padding between this view and its docked content.
+     * When the screen width plus this padding exceeds maxContentWidth, the padding
+     * is increased, so that the content is never wider than maxContentWidth.
+     *
+     * @example
+     * @layout.columnDockPadding(720, [16])
+     * //Creates a class with 16px margin on all sides for docked renderables
+     * class myView extends View{
+     *
+     *  //Will be displayed with margin to the top and sides, and will at max be 720px wide.
+     *  @layout.dock.top(20)
+     *  onTop = new Surface({content: "hello world"});
+     *
+     *  //Will be displayed without margin since we're using @layout.stick instead of @layout.dock
+     *  @layout.stick.bottom()
+     *  onButtom = new Surface({content: "hey hey"});
+     * }
+     *
+     * @param {Number} maxContentWidth Maximum width the content should be allowed to be.
+     * @param {[Number]} defaultPadding A 1-D, 2-D, or 4-D array of padding numbers, just like the padding spec in CSS.
+     * @returns {Function}
+     */
     columnDockPadding: function (maxContentWidth = 720, defaultPadding = [0, 16, 0, 16]) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
@@ -906,6 +964,10 @@ export const layout = {
     },
 
     /**
+     *
+     * Adds a custom layout function to the view.
+     * This decorator works directly on the object so you shouldn't pass any arguments nor use parentheses.
+     *
      * @example
      * @layout.custom((context) => {
      *  context.set('myRenderable', {
@@ -918,8 +980,6 @@ export const layout = {
      *  }
      * }
      *
-     * Adds a custom layout function to the view.
-     * This decorator works directly on the object so you shouldn't pass any arguments nor use parentheses.
      *
      * @param customLayoutFunction
      * @returns {Function} A decorator function
@@ -934,7 +994,8 @@ export const layout = {
 
 export const event = {
     /**
-     * Internal function used by the event decorators to generalize the idea of on, once, and off
+     * Internal function used by the event decorators to generalize the idea of on, once, and off.
+     *
      * @param {String} subscriptionType A type of subscription function, e.g. on
      * @param {String} eventName The event name
      * @param {Function} callback that is called when event has happened
@@ -955,13 +1016,15 @@ export const event = {
     },
 
     /**
+     *
+     * Adds an event listener to the renderable when specific event happened.
+     *
      * @example
      * @layout.on('click', function() {this._handleClick})
      * thing = new Surface({properties: {backgroundColor: 'red'}});
      *
      * _handleClick() { ... }
      *
-     * Adds an event listener to the renderable when specific event happened
      *
      * @param eventName
      * @param callback
@@ -973,6 +1036,9 @@ export const event = {
 
 
     /**
+     *
+     * Adds an event listener to the renderable when specific event happened once.
+     *
      * @example
      * @layout.size(100,100)
      * @layout.stick.center()
@@ -981,7 +1047,6 @@ export const event = {
      *
      * _handleClick() { ... }
      *
-     * Adds an event listener to the renderable when specific event happened once
      *
      * @param eventName
      * @param callback
@@ -992,14 +1057,14 @@ export const event = {
     },
 
     /**
+     * Pipes events from one renderable to another. The other renderable has to be declared above the one that is doing
+     * the piping, otherwise an exception will be thrown.
+     *
      * @example
      * @layout.fullSize()
      * @layout.pipe('dbsv')
      * //Pipe events to another renderable declared above, called 'dbsv'
      * scrollableSurface = new Surface();
-     *
-     * Pipes events from one renderable to another. The other renderable has to be declared above the one that is doing
-     * the piping, otherwise an exception will be thrown.
      *
      * @param pipeToName
      * @returns {Function}
@@ -1017,6 +1082,22 @@ export const event = {
 };
 
 export const flow = {
+    /**
+     * Sets the default flow options for a View. These options will be overridden by
+     * each of its renderables, if they have flow options defined through e.g. flow.stateStep()
+     *
+     * @example
+     * @flow.defaultOptions({ transition: { curve: Easing.outCubic, duration: 200 } })
+     * class MyView extends View {
+     * }
+     *
+     * @param {Object} flowOptions Options to set as default.
+     * @param {Object} [flowOptions.delay] The amount of milliseconds to wait in between state transitions.
+     * @param {Object} [flowOptions.transition] A Famo.us-compatible transition object defining the animation specifics.
+     * @param {Object} [flowOptions.transition.curve] The animation curve to use when flowing from one state to another, e.g. Easing.outCubic.
+     * @param {Object} [flowOptions.transition.duration] The amount of milliseconds a flow animation should take.
+     * @returns {Function}
+     */
     defaultOptions: function (flowOptions = {}) {
         return function (target, renderableName, descriptor) {
             let decorations = prepDecoratedRenderable(...arguments).decorations;
@@ -1027,6 +1108,25 @@ export const flow = {
         }
     },
 
+    /**
+     * Functions the same as @flow.stateStep(), and additionally also immediately applies the decorators passed into the 'transformations' argument.
+     * Used to define a state step, without having to also manually apply the same decorators to the renderable to ensure it is rendered this way
+     * on initial show.
+     *
+     * @example
+     * // Initial size is [100, 100], and rendered at center of parent.
+     * @flow.defaultState('active', {}, layout.size(100, 100), layout.stick.center())
+     * myRenderable = new Surface();
+     *
+     * @param {String} stateName The state name to assign to this state step.
+     * @param {Object} [stateOptions] Flow options to use in the state step.
+     * @param {Object} [stateOptions.delay] The amount of milliseconds to wait in between state transitions.
+     * @param {Object} [stateOptions.transition] A Famo.us-compatible transition object defining the animation specifics.
+     * @param {Object} [stateOptions.transition.curve] The animation curve to use when flowing from one state to another, e.g. Easing.outCubic.
+     * @param {Object} [stateOptions.transition.duration] The amount of milliseconds a flow animation should take.
+     * @param {Array.Function} transformations Decorators to assign to this state, and to apply initially, passed in as regular comma-separated arguments.
+     * @returns {Function}
+     */
     defaultState: function (stateName = '', stateOptions = {}, ...transformations) {
         return function (target, renderableName, descriptor) {
             flow.stateStep(stateName, stateOptions, ...transformations)(target, renderableName, descriptor);
@@ -1036,6 +1136,25 @@ export const flow = {
         }
     },
 
+    /**
+     * Used to define a state that the renderable is able to flow to. When multiple state steps with the same state name
+     * are defined, flowing into that state will sequentially execute all defined steps with that state name.
+     *
+     * @example
+     * // Initial size is [0, 0], and rendered at top left of parent, because no @flow.defaultStep() was done,
+     * // and no other decorators are applied to the renderable.
+     * @flow.stateStep('active', {}, layout.size(100, 100), layout.stick.center())
+     * myRenderable = new Surface();
+     *
+     * @param {String} stateName The state name to assign to this state step.
+     * @param {Object} [stateOptions] Flow options to use in the state step.
+     * @param {Object} [stateOptions.delay] The amount of milliseconds to wait in between state transitions.
+     * @param {Object} [stateOptions.transition] A Famo.us-compatible transition object defining the animation specifics.
+     * @param {Object} [stateOptions.transition.curve] The animation curve to use when flowing from one state to another, e.g. Easing.outCubic.
+     * @param {Object} [stateOptions.transition.duration] The amount of milliseconds a flow animation should take.
+     * @param {Array.Function} transformations Decorators to assign to this state, and to apply initially, passed in as regular comma-separated arguments.
+     * @returns {Function}
+     */
     stateStep: function (stateName = '', stateOptions = {}, ...transformations) {
         return function (target, renderableName, descriptor) {
             let decorations = prepDecoratedRenderable(...arguments).decorations;
@@ -1049,16 +1168,50 @@ export const flow = {
         }
     },
 
+    /**
+     * Defines the View-level states, that exist of concurrently and sequentially executed renderable-level states.
+     * When e.g. View.setViewFlowState('active') is called, the renderable states defined in the view-level state 'active' are executed.
+     *
+     * @example
+     * // Calling setViewFlowState('active') will first hide the loader, and when that is completed, show both buttons at the same time.
+     * @flow.viewStates({ 'active': [{loader: 'hidden'}, { button1: 'active', button2: 'active' }] })
+     * class MyView extends View {
+     *
+     *   @flow.defaultState('shown', {}, layout.opacity(1), layout.fullSize())
+     *   @flow.stateStep('hidden', {}, layout.opacity(0))
+     *   loader = new Surface();
+     *
+     *   @flow.defaultState('inactive', {}, layout.opacity(0), layout.size(100, 100), layout.stick.top())
+     *   @flow.stateStep('active', {}, layout.opacity(1))
+     *   button1 = new Surface();
+     *
+     *   @flow.defaultState('inactive', {}, layout.opacity(0), layout.size(100, 100), layout.stick.bottom())
+     *   @flow.stateStep('active', {}, layout.opacity(1))
+     *   button1 = new Surface();
+     * }
+     *
+     * @param {Object} states An object keyed by View-level state names, with values of arrays of objects.
+     * @returns {Function}
+     */
     viewStates: function (states = {}) {
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
-            if (!decorations.flow) {
-                decorations.flow = {};
+            if (!decorations.viewFlow) {
+                decorations.viewFlow = {};
             }
-            decorations.flow.viewStates = states;
+
+            decorations.viewFlow.viewStates = states;
         }
     },
 
+    /**
+     * A wrapper around @flow.stateStep, to allow defining multiple steps with the same state name.
+     *
+     * @param {String} stateName State name to assign states to.
+     * @param {Array.Object} states An array of {stateOptions: [..], transformations: [..]} objects, with stateOptions and transformations
+     * being the same usage as @flow.stateStep().
+     * @returns {Function}
+     */
     multipleStateStep: function(stateName = '', states = []){
         return function (target, renderableName, descriptor) {
             for(let {stateOptions, transformations} of states){

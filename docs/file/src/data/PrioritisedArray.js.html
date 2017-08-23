@@ -164,7 +164,7 @@ import {DataSource}                 from &apos;./DataSource.js&apos;;
 import {Throttler}                  from &apos;../utils/Throttler.js&apos;;
 
 /**
- * An array of two-way bound data Models that are automatically synced with the currentl used datasource
+ * An array of two-way bound data Models that are automatically synced with the currently used DataSource
  */
 export class PrioritisedArray extends Array {
 
@@ -180,7 +180,14 @@ export class PrioritisedArray extends Array {
         return Object.keys(this).length;
     }
 
-
+    /**
+     * A setter on the length is necessary because internal methods of Array modify the lngth. It won&apos;t change the length thoough
+     * @param {Number} value
+     * @returns {*}
+     */
+    set length(value) {
+        return value;
+    }
 
     /**
      *

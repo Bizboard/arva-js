@@ -5,7 +5,6 @@
  */
 
 import FlexScrollView   from 'famous-flex/FlexScrollView.js';
-import {combineOptions} from '../utils/CombineOptions.js';
 import {ObjectHelper}   from '../utils/ObjectHelper.js';
 
 /**
@@ -14,6 +13,11 @@ import {ObjectHelper}   from '../utils/ObjectHelper.js';
  */
 export class ReflowingScrollView extends FlexScrollView {
 
+    /**
+     * Constructor does not add any new options.
+     *
+     * @param options
+     */
     constructor(options = {}) {
         super(options);
         ObjectHelper.bindAllMethods(this, this);
@@ -28,6 +32,13 @@ export class ReflowingScrollView extends FlexScrollView {
     }
 
     _addItem() {
+        /* Views that use this ReflowingScrollView should manually subscribe to this event,
+         * since it does not automatically bubble to Arva's View.js.
+         */
+        this._eventOutput.emit('resize');
+    }
+
+    _removeItem() {
         /* Views that use this ReflowingScrollView should manually subscribe to this event,
          * since it does not automatically bubble to Arva's View.js.
          */

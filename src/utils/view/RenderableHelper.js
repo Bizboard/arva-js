@@ -3,24 +3,24 @@
  */
 
 import OrderedHashMap               from 'ordered-hashmap';
-
-import Transitionable               from 'famous/transitions/Transitionable.js';
-import Easing                       from 'famous/transitions/Easing.js';
-import Draggable                    from 'famous/modifiers/Draggable.js';
-import ContainerSurface             from 'famous/Surfaces/ContainerSurface.js';
+import merge                        from 'lodash/merge.js';
+import Modifier                     from 'famous/core/Modifier.js';
 import Transform                    from 'famous/core/Transform.js';
+import RenderNode                   from 'famous/core/RenderNode.js';
 import Timer                        from 'famous/utilities/Timer.js';
-import GenericSync                  from 'famous/inputs/GenericSync.js';
 import MouseSync                    from 'famous/inputs/MouseSync.js';
 import TouchSync                    from 'famous/inputs/TouchSync.js';
-import RenderNode                   from 'famous/core/RenderNode';
-import Modifier                     from 'famous/core/Modifier.js';
+import GenericSync                  from 'famous/inputs/GenericSync.js';
+import Easing                       from 'famous/transitions/Easing.js';
+import Draggable                    from 'famous/modifiers/Draggable.js';
 import AnimationController          from 'famous-flex/AnimationController.js';
+import ContainerSurface             from 'famous/surfaces/ContainerSurface.js';
+import Transitionable               from 'famous/transitions/Transitionable.js';
 
 import {Throttler}                  from 'arva-js/utils/Throttler.js';
 
-import {limit}                      from '../Limiter.js';
 import {Utils}                      from './Utils.js';
+import {limit}                      from '../Limiter.js';
 import {
     callbackToPromise,
     waitMilliseconds
@@ -51,7 +51,10 @@ export class RenderableHelper {
 
     assignRenderable(renderable, renderableName) {
         this._renderables[renderableName] = renderable;
-        let renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName);
+        let renderableEquivalent = renderable;
+        if(renderable.decorations){
+            renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName);
+        }
         this._renderableCounterparts[renderableName] = renderableEquivalent;
         this._setupAllRenderableListeners(renderableName);
     }
@@ -128,7 +131,7 @@ export class RenderableHelper {
      * @private
      */
     _unpipeRenderable(renderableName) {
-        if(this._pipeToView(this._pipedRenderables[renderableName]), false){
+        if(this._pipeToView(this._pipedRenderables[renderableName], false)){
             delete this._pipedRenderables[renderableName];
         }
     }
@@ -226,8 +229,8 @@ export class RenderableHelper {
                 properties: {overflow: 'hidden', ...clip.properties}
             });
             containerSurface.add(renderable);
-            if (containerSurface.pipe) {
-                containerSurface.pipe(renderable._eventOutput);
+            if (renderable.pipe) {
+                renderable.pipe(containerSurface._eventOutput);
             }
             renderable.containerSurface = containerSurface;
         }
@@ -299,7 +302,6 @@ export class RenderableHelper {
         }
     }
     
-    //Done
     /**
      * Processes an animated renderable
      * @param renderable
@@ -335,7 +337,7 @@ export class RenderableHelper {
 
         }
     }
-    //Done
+
     /**
      * Shows a renderable using the animationController specified. When operation is complete, the renderable emits
      * the one events 'show' or 'hide', depending on what operation that was done.
@@ -364,7 +366,7 @@ export class RenderableHelper {
             animationController.hide(null, emitOnFinished);
         }
     }
-    //Done
+
     _addRenderableToDecoratorGroup(renderable, renderableCounterpart, renderableName) {
         /* Group the renderable */
         let groupName = this._getGroupName(renderable);
@@ -378,7 +380,7 @@ export class RenderableHelper {
         }
     }
 
-    //Done
+
     _getGroupName(renderable) {
         let {decorations} = renderable;
 
@@ -403,7 +405,7 @@ export class RenderableHelper {
     getRenderableGroup(groupName) {
         return this._groupedRenderables[groupName];
     }
-    //Done
+
     /**
      * Removes the renderable from the view
      * @param {String} renderableName The name of the renderable
@@ -422,7 +424,7 @@ export class RenderableHelper {
         let groupName = this._getGroupName(renderable);
         this._removeRenderableFromGroupWithName(renderableName, groupName);
     }
-    //Done
+
     _removeRenderableFromGroupWithName(renderableName, groupName) {
         let group = this._groupedRenderables[groupName];
         group.remove(renderableName);
@@ -430,7 +432,7 @@ export class RenderableHelper {
             delete this._groupedRenderables[groupName];
         }
     }
-    //done
+
     /**
      * @example
      * decorateRenderable('myRenderable',layout.size(100, 100));
@@ -476,19 +478,10 @@ export class RenderableHelper {
                 for (let dimension of [0, 1]) {
                     if (this._sizeResolver.isValueTrueSized(sizeToCheck[dimension])) {
                         if (!trueSizedInfo) {
-                            trueSizedInfo = this._sizeResolver.configureTrueSizedSurface(renderable);
-                        }
-                        trueSizedInfo.trueSizedDimensions[dimension] = true;
-                        renderableSize[dimension] = true;
-                    } else {
-                        if (trueSizedInfo) {
-                            trueSizedInfo.trueSizedDimensions[dimension] = false;
+                            this._sizeResolver.configureTrueSizedSurface(renderable, sizeToCheck);
                         }
                     }
                 }
-            }
-            if (sizesToCheck.length) {
-                renderable.setSize(renderableSize);
             }
         }
         let oldRenderableGroupName = this._getGroupName(renderable);
@@ -500,6 +493,12 @@ export class RenderableHelper {
         if (shouldDisableFullSize) {
             delete renderable.decorations.fullSize;
         }
+
+        /* Merge existing flow decorations so they won't be discarded */
+        if(renderable.decorations.flow && fakeRenderable.decorations.flow){
+            merge(fakeRenderable.decorations.flow, renderable.decorations.flow)
+        }
+
         /* Extend the object */
         Object.assign(renderable.decorations, fakeRenderable.decorations);
         /* See if we have to redo the grouping */
@@ -512,7 +511,7 @@ export class RenderableHelper {
         }
 
     }
-    //done
+
     applyDecoratorFunctionsToRenderable(renderable, decorators){
         for (let decorator of decorators) {
             /* There can be existing decorators already, which are preserved. We are extending the decorators object,
@@ -520,7 +519,7 @@ export class RenderableHelper {
             decorator(renderable);
         }
     }
-    //Done
+
     replaceRenderable(renderableName, newRenderable) {
         let renderable = this._renderables[renderableName];
         let renderableHasAnimationController = (this._renderableCounterparts[renderableName] instanceof AnimationController);
@@ -539,7 +538,6 @@ export class RenderableHelper {
     }
 
 
-    //Done
     async setRenderableFlowState(renderableName = '', stateName = '') {
 
         let renderable = this._renderables[renderableName];
@@ -582,9 +580,14 @@ export class RenderableHelper {
 
         return !flowWasInterrupted;
     }
-    //Done
+
     async setViewFlowState(stateName = '', flowOptions) {
         let steps = flowOptions.viewStates[stateName];
+
+        if(!steps) {
+            (console.warn || console.log)(`Flow state name '${stateName}' does not exist`);
+            return false;
+        }
 
         /* This is intended to be overwritten by other asynchronous calls to this method, see the stateName check below. */
         flowOptions.currentState = stateName;

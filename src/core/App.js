@@ -13,6 +13,7 @@ import Context                  from 'famous/core/Context.js';
 import AnimationController      from 'famous-flex/AnimationController.js';
 
 import {provide}                from '../utils/di/Decorators.js';
+import {DialogManager}          from '../utils/DialogManager.js';
 import {ArvaRouter}             from '../routers/ArvaRouter.js';
 import {Injection}              from '../utils/Injection.js';
 import {Router}                 from './Router.js';
@@ -23,7 +24,7 @@ import '../utils/hotfixes/DisableTextSelection.js';
 
 /**
  * The App class exposes the Router which can be used to configure the Application's routing settings.
- * You can specify which Route should be default by calling router.setDefault(controller, method);
+ * You can specify which Route should be default by calling `router.setDefault(controller, method);`
  */
 export class App {
 
@@ -45,11 +46,29 @@ export class App {
         FastClick(document.body);
         
         /* Add default class providers to DI engine */
-        Injection.addProviders(defaultDataSource, defaultRouter, FamousContextSingleton, NewAnimationController);
+        Injection.addProviders(defaultRouter, FamousContextSingleton, NewAnimationController);
+
+        if(defaultDataSource){
+            Injection.addProviders(defaultDataSource);
+        }
         
         /* Request instances of a Router and a Famous Context. */
         let [router, context] = Injection.getAll(Router, Context);
-        
+
+        /**
+         * The dialog manager used to show and hide dialogs
+         */
+        this.dialogManager = Injection.get(DialogManager);
+
+        /**
+         * The router of the application
+         */
+        this.router = router;
+        /**
+         * The animationController that controls the animations between screens
+         */
+        this.context = context;
+
         if(this.constructor.loaded && typeof this.constructor.loaded === 'function') {
             try { this.constructor.loaded(); } catch(error) { console.log('Caught exception in App.loaded():', error); }
         }
@@ -57,8 +76,6 @@ export class App {
         /* Load controllers */
         this.controllers = Injection.getAll(...controllers);
 
-        this.router = router;
-        this.context = context;
         this.router.run();
 
         /* Hide splash screen */
@@ -69,10 +86,13 @@ export class App {
             try { done.call(this.constructor); } catch(error) { console.log('Caught exception in App.done():', error); }
         }
     }
-    
+
+    /**
+     * Triggers a creation of the app, by using an Injection.get
+     */
     static start(){
         /* Instantiate this App, which also instantiates the other components. */
-        this.references.app = Injection.get(this);
+        this.app = Injection.get(this);
     }
 }
 

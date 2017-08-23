@@ -40,12 +40,21 @@ export class Throttler {
      * @returns {void}
      */
     add(action) {
-        /* If we're not queueing, clear the previous action if present. The new action will replace the old one. */
-        if (!this.shouldQueue) {
-            this.queue.pop();
+        if(this.delay === 0){
+            action.call(this.actionContext);
+        } else {
+            /* If we're not queueing, clear the previous action if present. The new action will replace the old one. */
+            if (!this.shouldQueue) {
+                this.queue.pop();
+            }
+
+            this.queue.push(action);
+            this._setTimer();
         }
 
-        this.queue.push(action);
+    }
+
+    async _setTimer() {
         if (!this.timer) {
             this.timer = this._timerFunction(this._executeTopAction, this.delay);
         }
@@ -61,18 +70,35 @@ export class Throttler {
         this.timer = null;
     }
 
+    async _awaitPromise() {
+        if(this.waitFor && this.waitFor instanceof Promise) {
+            await this.waitFor;
+            this.waitFor = null;
+        }
+    }
+
     /**
      * Removes the top action from the Throttler's queue if any is present, and executes it with the correct binding context.
      * @returns {void}
      * @private
      */
-    _executeTopAction() {
+    async _executeTopAction() {
+        if(this.waitFor && this.waitFor instanceof Promise) {
+            return;
+        }
+
         let action = this.queue.shift();
         if (action && typeof action === 'function') {
-            action.call(this.actionContext);
+            let result = action.call(this.actionContext);
+            this.waitFor = result instanceof Promise ? result : null;
         }
+
         if (!this.queue.length) {
             this._clearTimer();
+        } else {
+            this._clearTimer();
+            await this._awaitPromise();
+            this._setTimer();
         }
     }
 }
