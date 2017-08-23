@@ -23,21 +23,22 @@ System.config({
     "camelcase": "npm:camelcase@2.1.1",
     "core-js": "npm:core-js@1.2.6",
     "eventemitter3": "npm:eventemitter3@1.2.0",
-    "famous": "github:bizboard/famous@0.4.1",
+    "famous": "github:bizboard/famous@0.4.2",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
-    "famous-flex": "github:bizboard/famous-flex@1.4.1",
+    "famous-flex": "github:bizboard/famous-flex@1.4.2",
     "fastclick": "npm:fastclick@1.0.6",
     "firebase": "github:firebase/firebase-bower@3.7.3",
     "fs": "github:jspm/nodelibs-fs@0.1.2",
     "lodash": "npm:lodash@4.13.1",
     "lodash-decorators": "npm:lodash-decorators@3.0.1",
     "ordered-hashmap": "npm:ordered-hashmap@1.0.0",
-    "path": "github:jspm/nodelibs-path@0.1.0",
+    "path": "npm:jspm-nodelibs-path@0.2.3",
+    "process": "npm:jspm-nodelibs-process@0.2.1",
     "request-animation-frame-mock": "github:erykpiast/request-animation-frame-mock@0.1.8",
     "traceur": "github:jmcriffey/bower-traceur@0.0.92",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90",
     "xml2js": "npm:xml2js@0.4.16",
-    "github:bizboard/famous-flex@1.4.1": {
+    "github:bizboard/famous-flex@1.4.2": {
       "es6-map": "npm:es6-map@0.1.4"
     },
     "github:jspm/nodelibs-assert@0.1.0": {
@@ -190,8 +191,7 @@ System.config({
     },
     "npm:util@0.10.3": {
       "inherits": "npm:inherits@2.0.1",
-      "process": "github:jspm/nodelibs-process@0.1.2",
-      "systemjs-json": "github:systemjs/plugin-json@0.1.2"
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:vm-browserify@0.0.4": {
       "indexof": "npm:indexof@0.0.1"

@@ -28,6 +28,7 @@ export class SizeResolver extends EventEmitter {
         super();
         this._resolvedSizesCache = new Map();
         this._sizeIsFinalFor = new Map();
+        this._sizeIsResolvedFor = new Map();
         this._trueSizedSurfaceInfo = new Map();
     }
 
@@ -118,7 +119,7 @@ export class SizeResolver extends EventEmitter {
                     ((renderableIsView && (renderable._initialised && !renderable.containsUncalculatedSurfaces())) || !renderableIsView);
                 if (size[dim] === true && twoDimensionalSize[dim] === undefined && sizeConsideredFinal) {
                     Utils.warn(`True sized renderable '${renderable.constructor.name}' is taking up the entire context size.`);
-                    return twoDimensionalSize[dim];
+                    return contextSize[dim];
                 } else {
                     let approximatedSize = size[dim] === true ? twoDimensionalSize[dim] : ~size[dim];
                     let resultingSize = twoDimensionalSize[dim] !== undefined ? twoDimensionalSize[dim] : approximatedSize;
@@ -136,22 +137,27 @@ export class SizeResolver extends EventEmitter {
                 /* Seems like the surface isn't properly configured, let's get that going */
                 trueSizedSurfaceInfo = this.configureTrueSizedSurface(renderable, specifiedSize);
             }
-            let { isUncalculated } = trueSizedSurfaceInfo;
+            let { isUncalculated, trueSizedDimensions } = trueSizedSurfaceInfo;
 
             this._sizeIsFinalFor.set(renderable, !isUncalculated);
 
-            if (isUncalculated === false) {
+            if (isUncalculated === false && trueSizedDimensions[dim]) {
                 return trueSizedSurfaceInfo.size[dim];
-            } else {
-                if (size[dim] === true) {
-                    /* If size is set to true, and it can't be resolved, then settle with size undefined*/
-                    size[dim] = undefined;
-                }
-
-                let approximatedSize = size[dim] === undefined ? contextSize[dim] : ~size[dim];
-                /* Return an approximated size, if possible */
-                return (trueSizedSurfaceInfo.size[dim] || approximatedSize);
             }
+
+            if (!trueSizedDimensions[dim]) {
+                trueSizedDimensions[dim] = true;
+                this._evaluateTrueSizedSurface(renderable);
+            }
+
+            if (size[dim] === true) {
+                /* If size is set to true, and it can't be resolved, then settle with size undefined*/
+                size[dim] = undefined;
+            }
+
+            let approximatedSize = size[dim] === undefined ? contextSize[dim] : ~size[dim];
+            /* Return an approximated size, if possible */
+            return (trueSizedSurfaceInfo.size[dim] || approximatedSize);
         } else {
             this._sizeIsFinalFor.set(renderable, true);
             return this._specifyUndeterminedSingleHeight(renderable, size, dim);
@@ -166,9 +172,9 @@ export class SizeResolver extends EventEmitter {
 
     }
 
-    async _measureRenderableWidth(surface, text = surface.getContent()) {
-        /* The canvas API of Safari iOS is too unreliable */
-        if (true) { //TODO Change this back to browser.ios when the canvas width resolving has proved to be more stable
+    _measureRenderableWidth(surface, text = surface.getContent()) {
+        /* The canvas API is too unreliable for now */
+        if (true) {
             return;
         }
         let surfaceProperties = surface.getProperties();
@@ -187,9 +193,6 @@ export class SizeResolver extends EventEmitter {
         }
         if (!font) return;
 
-        if (browser.check('webkit')) {
-            await this._patchCanvasBug(surface, font);
-        }
 
         let context = Engine.getCachedCanvas().getContext("2d");
 
@@ -267,12 +270,15 @@ export class SizeResolver extends EventEmitter {
      * @returns {Boolean} sizeIsFinal
      */
     isSizeFinal(renderable) {
-        return true; // TODO Remove this line when the final size concept has proved itself to be 100% stable
-        let consideredFinal = this._sizeIsFinalFor.get(renderable);
+        let consideredFinal = this._sizeIsFinalFor.get(renderable) || this._sizeIsResolvedFor.get(renderable);
 
         /* Return true if nothing is known, to be sure not to make false negatives */
         if (consideredFinal === undefined) {
-            return true;
+            consideredFinal = true;
+        }
+        /* If the size has been considered final once, we should mark the renderable as being final forever */
+        if(consideredFinal === true){
+            this._sizeIsResolvedFor.set(renderable, true);
         }
         return consideredFinal;
     }
@@ -400,57 +406,32 @@ export class SizeResolver extends EventEmitter {
      * @private
      */
     async _evaluateTrueSizedSurface(renderable) {
+
+
         let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
-        let { trueSizedDimensions, specifiedSize } = trueSizedSurfaceInfo;
+
 
         if (renderable instanceof ImageSurface) {
             return this._setupSurfaceGetsSizeFromDOM(renderable);
         }
 
-        let widthExplicitlySet = renderable.size && typeof renderable.size[0] === 'number',
-            heightExplicitlySet = renderable.size && typeof renderable.size[1] === 'number';
+        let [widthExplicitlySet, heightExplicitlySet] = this._determineDimensionsExplicitlySet(renderable);
 
         if (widthExplicitlySet && heightExplicitlySet) {
             trueSizedSurfaceInfo.size = [...renderable.size];
             return;
         }
 
-        let estimatedWidth = widthExplicitlySet ?
-            renderable.size[0] :
-            await this._measureRenderableWidth(renderable);
-
-        let height = null, width = null;
-
-        if (trueSizedDimensions[0]) {
-            width = trueSizedSurfaceInfo.size[0] = estimatedWidth;
+        if (!widthExplicitlySet && this._doesBrowserNeedBugFixForSurface(renderable)) {
+            this._patchCanvasBug(renderable);
+            Timer.after(() => {
+                this._calculateTrueSizedSurfaceFromCanvas(renderable);
+                this.requestRecursiveReflow();
+            }, 1);
+            return;
         }
 
-        if (trueSizedDimensions[1]) {
-            if (!trueSizedDimensions[0]) {
-                let resolvedSpecifiedWidth = this.resolveSingleSize(specifiedSize[0], { size: [NaN, NaN] }, 0);
-                if (!resolvedSpecifiedWidth || resolvedSpecifiedWidth < estimatedWidth) {
-                    return this._setupSurfaceGetsSizeFromDOM(renderable);
-                }
-            }
-            if(heightExplicitlySet && !renderable.size){
-                return this._setupSurfaceGetsSizeFromDOM(renderable);
-            }
-            height = trueSizedSurfaceInfo.size[1] =
-                heightExplicitlySet ?
-                    renderable.size[1]
-                    : this._estimateRenderableHeight(renderable);
-        }
-
-        for (let singleSize of [width, height]) {
-            if (singleSize === undefined || Number.isNaN(singleSize)) {
-                return this._setupSurfaceGetsSizeFromDOM(renderable);
-            }
-        }
-
-        /* If we reached this far, then everything could succesfully be calculated */
-        trueSizedSurfaceInfo.isUncalculated = false;
-        /* Keep listening for further changes, if necessary */
-        this._setupSurfaceGetsSizeFromCanvas(renderable);
+        this._calculateTrueSizedSurfaceFromCanvas(renderable);
     }
 
     /**
@@ -551,26 +532,96 @@ export class SizeResolver extends EventEmitter {
     /**
      * For Chrome and Safari, the canvas API doesn't return the correct value when font is loaded
      * @param renderable
-     * @param font
      * @returns {Promise.<void>}
      * @private
      */
-    async _patchCanvasBug(renderable, font) {
-        this._sizeIsFinalFor.set(renderable, false);
-        let fontMatch = /"(.*)"$/g.exec(font);
-        let fontFamily;
-        if (fontMatch[1]) {
-            fontFamily = fontMatch[1];
-        } else {
-            fontFamily = font.split(' ').slice(-1)[0];
+    async _patchCanvasBug(renderable) {
+        let fontFamily = this._getFontFamilyFromSurface(renderable);
+        await this.invalidateFontForBrowserBugFix(fontFamily);
+        SizeResolver._invalidatedFonts[fontFamily] = true;
+
+    }
+
+    _doesBrowserNeedBugFixForSurface(surface) {
+        if (!browser.check('webkit')) {
+            return false;
         }
         if (!SizeResolver._invalidatedFonts) {
             SizeResolver._invalidatedFonts = {};
         }
-        if (!SizeResolver._invalidatedFonts[fontFamily]) {
-            await this.invalidateFontForBrowserBugFix(fontFamily);
-            this.requestReflow();
-            SizeResolver._invalidatedFonts[fontFamily] = true;
+
+        let fontFamily = this._getFontFamilyFromSurface(surface);
+
+        if (!fontFamily) {
+            return true;
         }
+
+        return !SizeResolver._invalidatedFonts[fontFamily];
+    }
+
+    _getFontFamilyFromSurface(surface) {
+        let properties = surface.getProperties();
+        let { fontFamily, font } = properties;
+        if (!fontFamily) {
+            if (!font) {
+                return;
+            }
+            let fontMatch = /"(.*)"$/g.exec(font);
+            if (fontMatch[1]) {
+                fontFamily = fontMatch[1];
+            } else {
+                fontFamily = font.split(' ').slice(-1)[0];
+            }
+        }
+        return fontFamily;
+    }
+
+    _calculateTrueSizedSurfaceFromCanvas(renderable) {
+        let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
+        let { trueSizedDimensions, specifiedSize } = trueSizedSurfaceInfo;
+        let [widthExplicitlySet, heightExplicitlySet] = this._determineDimensionsExplicitlySet(renderable);
+
+        let estimatedWidth = widthExplicitlySet ?
+            renderable.size[0] :
+            this._measureRenderableWidth(renderable);
+
+
+        let height = null, width = null;
+
+        if (trueSizedDimensions[0]) {
+            width = trueSizedSurfaceInfo.size[0] = estimatedWidth;
+        }
+
+        if (trueSizedDimensions[1]) {
+            if (!trueSizedDimensions[0]) {
+                let resolvedSpecifiedWidth = this.resolveSingleSize(specifiedSize[0], { size: [NaN, NaN] }, 0);
+                if (!resolvedSpecifiedWidth || resolvedSpecifiedWidth < estimatedWidth) {
+                    return this._setupSurfaceGetsSizeFromDOM(renderable);
+                }
+            }
+            if (heightExplicitlySet && !renderable.size) {
+                return this._setupSurfaceGetsSizeFromDOM(renderable);
+            }
+            height = trueSizedSurfaceInfo.size[1] =
+                heightExplicitlySet ?
+                    renderable.size[1]
+                    : this._estimateRenderableHeight(renderable);
+        }
+
+        for (let singleSize of [width, height]) {
+            if (singleSize === undefined || Number.isNaN(singleSize)) {
+                return this._setupSurfaceGetsSizeFromDOM(renderable);
+            }
+        }
+
+        /* If we reached this far, then everything could succesfully be calculated */
+        trueSizedSurfaceInfo.isUncalculated = false;
+        /* Keep listening for further changes, if necessary */
+        this._setupSurfaceGetsSizeFromCanvas(renderable);
+    }
+
+    _determineDimensionsExplicitlySet(surface) {
+        return [surface.size && typeof surface.size[0] === 'number',
+            surface.size && typeof surface.size[1] === 'number'];
     }
 }

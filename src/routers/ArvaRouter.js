@@ -76,11 +76,6 @@ export class ArvaRouter extends Router {
         let controllerName = this._getControllerName(controller);
         let routeRoot = controllerName.replace('Controller', '');
 
-        //TODO Can we skip this code?
-        if (routeRoot === this.defaultController) {
-            routeRoot = '';
-        }
-
         let hash = '#' + (routeRoot.length > 0 ? '/' + routeRoot : '') + ('/' + method);
         if (params !== null) {
             for (let i = 0; i < Object.keys(params).length; i++) {

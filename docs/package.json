@@ -36,8 +36,8 @@
       "babel-runtime": "npm:babel-runtime@^5.8.24",
       "core-js": "npm:core-js@^1.1.4",
       "fs": "github:jspm/nodelibs-fs@^0.1.2",
-      "path": "github:jspm/nodelibs-path@^0.1.0",
-      "process": "github:jspm/nodelibs-process@^0.2.0-alpha",
+      "path": "npm:jspm-nodelibs-path@0.2.3",
+      "process": "npm:jspm-nodelibs-process@0.2.1",
       "traceur": "github:jmcriffey/bower-traceur@^0.0.92",
       "esdoc": "git+https://git@github.com/typhonjs-node-esdoc/esdoc.git",
       "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90"
