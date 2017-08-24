@@ -1,36 +1,28 @@
-import {LocalModel}     from 'arva-js/data/local/LocalModel.js';
-import {Injection}      from 'arva-js/utils/Injection.js';
-import {DataSource}     from 'arva-js/data/DataSource.js';
+import {LocalModel}                     from 'arva-js/data/local/LocalModel.js';
+import {Injection}                      from 'arva-js/utils/Injection.js';
+import {DataSource}                     from 'arva-js/data/DataSource.js';
 
-import {signalr}        from './SignalRDecorators.js';
+import {signalr, SignalRConnection}     from './SignalRDecorators.js';
 
-import * as fooBar      from 'jquery';
-import                  'ms-signalr-client';
+import * as fooBar                      from 'jquery';
+import                                  'ms-signalr-client';
 
 export class SignalRModel extends LocalModel {
     constructor(id, data = null, options = {}) {
         let dataSource = options.dataSource || Injection.get(DataSource);
         super(id, data, options);
         this.argumentId = id;
-        this.originalMethods = {};
-        let modelName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
-        modelName = this._toCamelCase(...modelName.split(''));
-        this.hubConnection = options.hubConnection || `${modelName}sHub`;
-        // TODO: Remove
-        this.hubOptions = {
-            hubUrl: 'http://localhost:30766/signalr',
-            useDefaultUrl: false
-        };
-        if(options.hubUrl) {
-            this.hubOptions.hubUrl = options.hubUrl;
-            this.hubOptions.useDefaultUrl = false;
-        }
-        if(this.hubConnection) {
-            this._initalizeHubConnection().done(() => {
+        let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
+        hubName = `${hubName}sHub`;
+        this.connection = Injection.get(SignalRConnection);
+        this.proxy = this.connection.getProxy(hubName) || null;
+        signalr.mapClientMethods.apply(this);
+        signalr.mapServerCallbacks.apply(this);
+        console.log('first');
+        if(this.connection && this.proxy) {
+            this.connection.start().done(() => {
                 this._init();
-            }).fail((e) => {
-                this.connectionError(e);
-            });
+            })
         }
         
     }
@@ -54,7 +46,6 @@ export class SignalRModel extends LocalModel {
 
     @signalr.registerServerCallback('update')
     update(id, data) {
-        debugger;
     }
 
     _onSetterTriggered({propertyName, newValue}) {
@@ -66,17 +57,11 @@ export class SignalRModel extends LocalModel {
     }
 
     _initalizeHubConnection() {
-        this.connection = window.jQuery.hubConnection(this.hubOptions.hubUrl || null, this.hubOptions);
-        this.connection.logging = true;
-        this.proxy = this.connection.createHubProxy(this.hubConnection);
         this._setupLifecycleEvents();
-        this._mapClientMethods();
-        this._mapServerCallbacks();
-        return this.connection.start()
     }
 
     _mapClientMethods() {
-        for(const method of this.clientFns) {
+        for(const method of this.clientMethods) {
             this.proxy.on(method.fnName, () => {
                 method.fn.apply(this, ...arguments);
             })
@@ -97,10 +82,10 @@ export class SignalRModel extends LocalModel {
     }
 
     addClientMethod(fnName, fn) {
-        if(!this.clientFns) {
-            this.clientFns = [];
+        if(!this.clientMethods) {
+            this.clientMethods = [];
         }
-        this.clientFns.push({fnName, fn});
+        this.clientMethods.push({fnName, fn});
     }
 
     addServerCallback(fnName, fn) {
@@ -136,15 +121,15 @@ export class SignalRModel extends LocalModel {
     }
 
     onConnect() {
-        console.log(`Connection ${this.connection.id} has connected`);
+        console.log(`Connection ${this.connection.connection.id} has connected`);
     }
 
     onDisconnect() {
-        console.log(`Connection ${this.connection.id} has disconnected`);
+        console.log(`Connection ${this.connection.connection.id} has disconnected`);
     }
 
     onReconnecting() {
-        console.log(`Connection ${this.connection.id} is reconnecting`);
+        console.log(`Connection ${this.connection.connection.id} is reconnecting`);
     }
 
     connectionError(e) {
