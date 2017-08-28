@@ -18,11 +18,14 @@ export class SignalRModel extends LocalModel {
         this.proxy = this.connection.getProxy(hubName) || null;
         signalr.mapClientMethods.apply(this);
         signalr.mapServerCallbacks.apply(this);
-        console.log('first');
         if(this.connection && this.proxy) {
-            this.connection.start().done(() => {
+            if(this.connection.connection.state === 1) {
                 this._init();
-            })
+            } else {
+                this.connection.on('ready', () => {
+                    this._init();
+                })
+            }
         }
         
     }
@@ -41,7 +44,7 @@ export class SignalRModel extends LocalModel {
         for(let [key, value] of Object.entries(obj)) {
             this[key] = value;
         }
-        this.emit('value');
+        this.emit('get');
     }
 
     @signalr.registerServerCallback('update')
