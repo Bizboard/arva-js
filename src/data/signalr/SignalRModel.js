@@ -13,7 +13,7 @@ export class SignalRModel extends LocalModel {
         super(id, data, options);
         this.argumentId = id;
         let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
-        hubName = `${hubName}sHub`;
+        this.hubName = `${hubName}sHub`;
         this.connection = Injection.get(SignalRConnection);
         this.proxy = this.connection.getProxy(hubName) || null;
         signalr.mapClientMethods.apply(this);

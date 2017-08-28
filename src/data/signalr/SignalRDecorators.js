@@ -58,7 +58,7 @@ export class signalr {
                 this.proxy.on(method.fnName, () => {
                     method.fn.apply(this, [...arguments]);
                 })
-                this.connection.log(`Mapping Client Method ${method.fnName} to ${method.fn.name}`);
+                this.connection.log(`[${this.hubName}] Mapping Client Method ${method.fnName} to ${method.fn.name}`);
             }
         }
     }
@@ -74,7 +74,7 @@ export class signalr {
                             console.debug(e);
                         });
                 }
-                this.connection.log(`Mapping Server Callback ${method.fnName} to ${method.fn.name}`);
+                this.connection.log(`[${this.hubName}] Mapping Server Callback ${method.fnName} to ${method.fn.name}`);
             }
         }
     }

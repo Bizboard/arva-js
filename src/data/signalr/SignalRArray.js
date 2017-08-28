@@ -10,7 +10,7 @@ export class SignalRArray extends LocalPrioritisedArray {
         let dataSource = Injection.get(DataSource);
         super(dataType, dataSource);
         let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
-        hubName = `${hubName}Hub`;
+        this.hubName = `${hubName}Hub`;
         this.connection = Injection.get(SignalRConnection);
         this.proxy = this.connection.getProxy(hubName) || null;
         signalr.mapClientMethods.apply(this);
