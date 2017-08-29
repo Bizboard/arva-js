@@ -54,7 +54,6 @@ export class signalr {
     }
     static mapClientMethods() {
         if(this.clientMethods) {
-            debugger;
             for(const method of this.clientMethods) {
                 if(method.model === this.constructor.name || method.model === this.constructor.__proto__.name) {
                     this.proxy.on(method.fnName, () => {

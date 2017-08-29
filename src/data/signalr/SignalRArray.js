@@ -38,7 +38,6 @@ export class SignalRArray extends LocalPrioritisedArray {
         }
         window.promises = promises;
         Promise.all(promises).then(() => {
-            console.log('All data retrieved?');
             this._eventEmitter.emit('getAll');
         })
     }
