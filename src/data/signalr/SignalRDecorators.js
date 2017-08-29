@@ -9,7 +9,7 @@ export class signalr {
             if(!fnName) {
                 fnName = descriptor.value.name;
             }
-            signalr.addClientMethod.apply(target.constructor, [fnName, descriptor.value]);
+            signalr.addClientMethod.apply(target, [fnName, descriptor.value]);
             return descriptor;
         }
     }
@@ -18,7 +18,7 @@ export class signalr {
             if(!fnName) {
                 fnName = descriptor.value.name;
             }
-            signalr.addServerCallback.apply(target.constructor, [fnName, descriptor.value]);
+            signalr.addServerCallback.apply(target, [fnName, descriptor.value]);
             return descriptor;
         }
     }
@@ -44,17 +44,19 @@ export class signalr {
         if(!this.serverCallbacks) {
             this.serverCallbacks = [];
         }
-        this.serverCallbacks.push({fnName, fn});
+        this.serverCallbacks.push({fnName, fn, model: this.constructor.name});
     }
     static addClientMethod(fnName, fn) {
         if(!this.clientMethods) {
             this.clientMethods = [];
         }
-        this.clientMethods.push({fnName, fn});
+        this.clientMethods.push({fnName, fn, model: this.constructor.name});
     }
     static mapClientMethods() {
         if(this.clientMethods) {
+            debugger;
             for(const method of this.clientMethods) {
+                
                 this.proxy.on(method.fnName, () => {
                     method.fn.apply(this, [...arguments]);
                 })

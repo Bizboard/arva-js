@@ -27,6 +27,9 @@ export class SignalRModel extends LocalModel {
                 })
             }
         }
+
+        //  let prototype = Object.getPrototypeOf(this);
+        //  this.serverCallbacks = prototype.serverCallbacks;
         
     }
 
