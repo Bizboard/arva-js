@@ -12,7 +12,7 @@ export class SignalRArray extends LocalPrioritisedArray {
         let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
         this.hubName = `${hubName}Hub`;
         this.connection = Injection.get(SignalRConnection);
-        this.proxy = this.connection.getProxy(hubName) || null;
+        this.proxy = this.connection.getProxy(this.hubName) || null;
         signalr.mapClientMethods.apply(this);
         signalr.mapServerCallbacks.apply(this);
         if(this.connection && this.proxy) {
