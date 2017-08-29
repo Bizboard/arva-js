@@ -56,27 +56,30 @@ export class signalr {
         if(this.clientMethods) {
             debugger;
             for(const method of this.clientMethods) {
-                
-                this.proxy.on(method.fnName, () => {
-                    method.fn.apply(this, [...arguments]);
-                })
-                this.connection.log(`[${this.hubName}] Mapping Client Method ${method.fnName} to ${method.fn.name}`);
+                if(method.model === this.constructor.name || method.model === this.constructor.__proto__.name) {
+                    this.proxy.on(method.fnName, () => {
+                        method.fn.apply(this, [...arguments]);
+                    })
+                    this.connection.log(`[${this.hubName}] Mapping Client Method ${method.fnName} to ${method.fn.name}`);
+                }
             }
         }
     }
     static mapServerCallbacks() {
         if(this.serverCallbacks) {
             for(const method of this.serverCallbacks) {
-                const originalMethod = this[method.fn.name];
-                this[method.fn.name] = (...params) => {
-                    return this.proxy.invoke.apply(this.proxy, [method.fnName, ...params])
-                        .done((...params) => {
-                            method.fn.apply(this, [...params]);
-                        }).fail((e) => {
-                            console.debug(e);
-                        });
+                if(method.model === this.constructor.name || method.model === this.constructor.__proto__.name) {
+                    const originalMethod = this[method.fn.name];
+                    this[method.fn.name] = (...params) => {
+                        return this.proxy.invoke.apply(this.proxy, [method.fnName, ...params])
+                            .done((...params) => {
+                                method.fn.apply(this, [...params]);
+                            }).fail((e) => {
+                                console.debug(e);
+                            });
+                    }
+                    this.connection.log(`[${this.hubName}] Mapping Server Callback ${method.fnName} to ${method.fn.name}`);
                 }
-                this.connection.log(`[${this.hubName}] Mapping Server Callback ${method.fnName} to ${method.fn.name}`);
             }
         }
     }
