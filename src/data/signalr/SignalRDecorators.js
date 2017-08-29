@@ -9,7 +9,7 @@ export class signalr {
             if(!fnName) {
                 fnName = descriptor.value.name;
             }
-            signalr.addClientMethod.apply(target, [fnName, descriptor.value]);
+            signalr.addClientMethod.apply(target.constructor, [fnName, descriptor.value]);
             return descriptor;
         }
     }
@@ -18,7 +18,7 @@ export class signalr {
             if(!fnName) {
                 fnName = descriptor.value.name;
             }
-            signalr.addServerCallback.apply(target, [fnName, descriptor.value]);
+            signalr.addServerCallback.apply(target.constructor, [fnName, descriptor.value]);
             return descriptor;
         }
     }
