@@ -9,6 +9,7 @@ export class SignalRArray extends LocalPrioritisedArray {
     constructor(dataType) {
         let dataSource = Injection.get(DataSource);
         super(dataType, dataSource);
+        this._ready = false;
         let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
         this.hubName = `${hubName}Hub`;
         this.connection = Injection.get(SignalRConnection);
@@ -38,6 +39,7 @@ export class SignalRArray extends LocalPrioritisedArray {
         }
         window.promises = promises;
         Promise.all(promises).then(() => {
+            this._ready = true;
             this._eventEmitter.emit('getAll');
         })
     }
@@ -53,6 +55,10 @@ export class SignalRArray extends LocalPrioritisedArray {
     /* If we're already ready, fire immediately */
     if ((event === 'ready') && this._dataSource && this._dataSource.ready) {
       handler.call(context, this);
+    }
+
+    if((event === 'getAll') && this._ready) {
+        handler.call(context, this);
     }
 
     /* If we already have children stored locally when the subscriber calls this method,

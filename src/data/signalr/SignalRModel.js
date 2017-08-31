@@ -11,6 +11,7 @@ export class SignalRModel extends LocalModel {
     constructor(id, data = null, options = {}) {
         let dataSource = options.dataSource || Injection.get(DataSource);
         super(id, data, options);
+        this._ready = false;
         this.argumentId = id;
         let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
         this.hubName = `${hubName}sHub`;
@@ -48,6 +49,7 @@ export class SignalRModel extends LocalModel {
             this[key] = value;
         }
         this.emit('get');
+        this._ready = true;
     }
 
     @signalr.registerServerCallback('update')
@@ -140,5 +142,58 @@ export class SignalRModel extends LocalModel {
 
     connectionError(e) {
         console.log(`Connection error!\nMessage: ${e}`);
+    }
+
+    on(event, handler, context = this) {
+        let haveListeners = this._hasListenersOfType(event);
+        super.on(event, handler, context);
+
+        switch (event) {
+            case 'ready':
+                /* If we're already ready, fire immediately */
+                if (this._dataSource && this._dataSource.ready) {
+                    handler.call(context, this);
+                }
+                break;
+            case 'value':
+                if (!haveListeners) {
+                    /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
+                    this._dataSource.setValueChangedCallback(this._onChildValue);
+                } else {
+                    if (this._dataSource.ready) {
+                        /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
+                        handler.call(context, this);
+                    }
+                }
+                break;
+            case 'added':
+
+                if (haveListeners) {
+                    this._dataSource.setChildAddedCallback(this._onChildAdded);
+                }
+                break;
+            case 'changed':
+                /* We include the changed event in the value callback */
+                if (!this._hasListenersOfType('value')) {
+                    this._dataSource.setValueChangedCallback(this._onChildValue);
+                }
+                break;
+            case 'moved':
+                if (!haveListeners) {
+                    this._dataSource.setChildMovedCallback(this._onChildMoved);
+                }
+                break;
+            case 'removed':
+                if (!haveListeners) {
+                    this._dataSource.setChildRemovedCallback(this._onChildRemoved);
+                }
+                break;
+            case 'get':
+                if(this._ready) {
+                    handler.call(context, this);
+                }
+            default:
+                break;
+        }
     }
 }
