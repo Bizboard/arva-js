@@ -65,6 +65,9 @@ export class DataBoundScrollView extends ScrollController {
             scrollFriction: {
                 strength: 0.0015
             },
+            scrollSync: {
+                preventDefault: false
+            },
             autoPipeEvents: true,
             throttleDelay: 0, /* If set to 0, no delay is added in between adding items to the DataBoundScrollView. */
             sortingDirection: 'ascending',
@@ -72,7 +75,7 @@ export class DataBoundScrollView extends ScrollController {
             flowOptions: {
                 spring: {               // spring-options used when transitioning between states
                     dampingRatio: 0.8,  // spring damping ratio
-                    period: 1000        // duration of the animation
+                    period: 200         // duration of the animation
                 },
                 insertSpec: {           // render-spec used when inserting renderables
                     opacity: 0          // start opacity is 0, causing a fade-in effect,
@@ -542,7 +545,6 @@ export class DataBoundScrollView extends ScrollController {
     newRenderable.dataSourceIndex = dataSourceIndex
     this._subscribeToClicks(newRenderable, child)
     /* If we're scrolling as with a chat window, then scroll to last child if we're at the bottom */
-
     if (this.options.chatScrolling && insertIndex === this._dataSource.getLength()) {
       if (this.isAtBottom() || !this._allChildrenAdded) {
         this._lastChild = child
@@ -565,7 +567,7 @@ export class DataBoundScrollView extends ScrollController {
                   this.stickToBottom()
               }
           } else if (shouldEnsureVisible) {
-              this.ensureVisible(newSurface)
+              this.ensureVisible(newRenderable)
           }
       }
 

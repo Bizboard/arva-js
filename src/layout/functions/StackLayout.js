@@ -47,6 +47,7 @@ export function StackLayout(context, options) {
     var lastCellOffsetInFirstVisibleSection;
     var isSectionCallback = options.isSectionCallback;
     var bound;
+    var coveredScrollHeight = 0, maxOffset, minOffset;
 
     //
     // Sanity checks
@@ -89,7 +90,8 @@ export function StackLayout(context, options) {
     //
     // Process all next nodes
     //
-    offset = context.scrollOffset + margin[alignment];
+    maxOffset = offset = context.scrollOffset + margin[alignment];
+
     bound = context.scrollEnd;
     if(context.scrollTopHeight){
         context.set('topScroller', {
@@ -124,6 +126,7 @@ export function StackLayout(context, options) {
         set.scrollLength = nodeSize + spacing;
 
         offset += set.scrollLength;
+        maxOffset = offset;
 
         if (offset < context.scrollStart) {
             /* We scrolled down so that the start sequence changed */
@@ -171,7 +174,7 @@ export function StackLayout(context, options) {
     //
     lastNode = undefined;
     node = undefined;
-    offset = context.scrollOffset + margin[alignment];
+    minOffset = offset = context.scrollOffset + margin[alignment];
     bound = context.scrollStart;
 
     while (offset > (bound - spacing)) {
@@ -193,6 +196,7 @@ export function StackLayout(context, options) {
         //
         set.scrollLength = nodeSize + spacing;
         offset -= set.scrollLength;
+        minOffset = offset;
         set.size[direction] = nodeSize;
         set.translate[direction] = offset + (alignment ? spacing : 0);
         if(offset > context.scrollEnd) {
@@ -270,6 +274,8 @@ export function StackLayout(context, options) {
         set.scrollLength = lastSectionBeforeVisibleCellScrollLength;
         context.set(lastSectionBeforeVisibleCell, set);
     }
+
+    context.setCoveredScrollHeight(maxOffset - minOffset);
 }
 
 StackLayout.Capabilities = capabilities;

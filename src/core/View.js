@@ -97,12 +97,20 @@ export class View extends FamousView {
    * Reflows the layout while also informing any subscribing parents that a reflow has to take place
    */
   reflowRecursively () {
+    if(!this._initialised){
+      return;
+    }
+    this._doReflow();
+    let reflowData = {[this.getID()]: true};
+    this._eventOutput.emit('recursiveReflow', reflowData);
+  }
+
+  _doReflow() {
     if (!this.layout) {
       /* Reflowing before construction, no need to bother */
       return
     }
     this.layout.reflowLayout()
-    this._eventOutput.emit('recursiveReflow')
   }
 
   /**
@@ -615,8 +623,10 @@ export class View extends FamousView {
       }.bind(this)
     })
 
-    this._eventInput.on('recursiveReflow', () => {
-      this.reflowRecursively()
+    this._eventInput.on('recursiveReflow', (reflowData) => {
+      /* Modify the reflow data so that it's clear what things have been reflown */
+      reflowData[this.getID()] = true;
+      this._doReflow();
     })
 
     /* Add the layoutController to this View's rendering context. */

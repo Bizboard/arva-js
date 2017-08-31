@@ -16,7 +16,7 @@ window.getFromID = (id) => {
 
 window.views = {};
 
-window.muteLogs = false;
+window.muteLogs = true;
 
 let originalCopyPrototypeProperties= View.prototype._copyPrototypeProperties
 View.prototype._copyPrototypeProperties = function () {
@@ -96,4 +96,9 @@ EventEmitter.prototype.emit = function (type) {
     log(`Event emitted: ${type}`, this._owner)
   }
   return result
+}
+
+window.observeArrayIndex = (array, index) => {
+  let value = array[index];
+  Object.defineProperty(array, index, {get: () => value, set: (newValue) => {value = newValue; debugger; }})
 }
