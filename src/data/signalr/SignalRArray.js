@@ -6,9 +6,10 @@ import {signalr, SignalRConnection} from './SignalRDecorators.js';
 import                              'ms-signalr-client';
 
 export class SignalRArray extends LocalPrioritisedArray {
-    constructor(dataType) {
+    constructor(dataType, options = {}) {
         let dataSource = Injection.get(DataSource);
         super(dataType, dataSource);
+        this.options = options;
         this._ready = false;
         let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
         this.hubName = `${hubName}Hub`;
