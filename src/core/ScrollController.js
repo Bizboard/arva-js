@@ -129,6 +129,8 @@ export class ScrollController extends FamousView {
 
     if (this._currentScrollOffset === 0 && !this.options.chatScrolling) {
       this._enqueueCommitAction(() => this.stickToTopOrBottom(false))
+    } else if(this._currentScrollOffset >= this._group.getMaxScrollOffset()){
+      this.stickToBottom()
     }
 
     /* Insert data */

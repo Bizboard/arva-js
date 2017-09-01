@@ -564,7 +564,7 @@ export class DataBoundScrollView extends ScrollController {
           let shouldEnsureVisible = !shouldEnsureVisibleUndefined ? this.options.ensureVisible(child, newSurface, insertIndex) : false
           if (this.options.chatScrolling) {
               if (child === this._lastChild && (shouldEnsureVisible || shouldEnsureVisibleUndefined)) {
-                  this.stickToBottom()
+                  // this.stickToBottom()
               }
           } else if (shouldEnsureVisible) {
               this.ensureVisible(newRenderable)
