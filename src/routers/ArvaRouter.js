@@ -239,7 +239,7 @@ export class ArvaRouter extends Router {
 
             return true;
         } else {
-            console.log('Controller doesn\'t exist!');
+            console.log(`Controller ${controller} doesn\'t exist!`);
         }
 
         return false;
@@ -265,11 +265,19 @@ export class ArvaRouter extends Router {
         return this.previousRoute;
     }
 
-    goBackInHistory() {
+    /**
+     * @param {String} fallbackController Determines which controller to go to when no previous route exists
+     * @param {String} fallbackMethod Determines which method to go to when no previous route exists
+     * @param {Object} fallbackParams Sets the parameters to use with the above fallback route
+     */
+    goBackInHistory(fallbackController = '', fallbackMethod = '', fallbackParams = null) {
         /* Default behaviour: go back in history in the arva router */
         let previousRoute = this.getPreviousRoute();
-        if(previousRoute){
+        this.routeStack = this.routeStack.slice(0, this.routeStack.length - 2);
+        if (previousRoute) {
             this.go(previousRoute.controller, previousRoute.method, previousRoute.params || null);
+        } else {
+            this.go(fallbackController, fallbackMethod, fallbackParams);
         }
     }
 
