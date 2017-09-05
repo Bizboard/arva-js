@@ -91,7 +91,9 @@ export class SignalRConnection extends EventEmitter {
         this.connection = null;
         this.proxies = {};
         this.proxyCount = 0;
-        this.options = {};
+        this.options = {
+            lang: 'NL'
+        };
     }
 
     setOptions(options) {
@@ -108,7 +110,10 @@ export class SignalRConnection extends EventEmitter {
             if(this.options.logging) {
                 this.connection.logging = true;
             }
-            this.connection.qs = { "access_token": "kz-poUKVeU7Ba2lSZNnuJD4mjT_Kyjf3BSLM2CP8lC8TN5e-l_SDI_fsu9DgBoBWkYCHrTIIBZ_TUMM_1dkTmWzagRwJGTVRgqCXkNHvgNFRDZyj6FzyRNd1i7C8lKiCah7MQUIcELc4jclJWFvHEdbCR8R867cKNLuMgjOo_Tq619s8nDNkGecZvvfru-g8acYb1ha5Iu5jdoACQ1sWA2CGPzJQhvVQmiyizByenunbqhgJYsI-WbFFefIfd3m5CDXpWrIX42-cMsJFJTwd4uEZudHEJxei4hxtUtFCKYlj3G3VmCYefyvcc_XvW47tkLfesz9iqEdTLMtroMiu5w6HamK6vSqqYoyYnOAF7SofvhYzGGTd9kFtATC-A1yImuoTGOzE-mA5iObzc8P7zw" };
+            this.connection.qs = { 
+                "access_token": "kz-poUKVeU7Ba2lSZNnuJD4mjT_Kyjf3BSLM2CP8lC8TN5e-l_SDI_fsu9DgBoBWkYCHrTIIBZ_TUMM_1dkTmWzagRwJGTVRgqCXkNHvgNFRDZyj6FzyRNd1i7C8lKiCah7MQUIcELc4jclJWFvHEdbCR8R867cKNLuMgjOo_Tq619s8nDNkGecZvvfru-g8acYb1ha5Iu5jdoACQ1sWA2CGPzJQhvVQmiyizByenunbqhgJYsI-WbFFefIfd3m5CDXpWrIX42-cMsJFJTwd4uEZudHEJxei4hxtUtFCKYlj3G3VmCYefyvcc_XvW47tkLfesz9iqEdTLMtroMiu5w6HamK6vSqqYoyYnOAF7SofvhYzGGTd9kFtATC-A1yImuoTGOzE-mA5iObzc8P7zw",
+                "lang": this.options.lang
+            };
             if(this.decoratorProxies) {
                 for(const hubName of this.decoratorProxies) {
                     this.createHubProxy(hubName);
@@ -139,6 +144,9 @@ export class SignalRConnection extends EventEmitter {
         if(this.connection) {
             if(!this.proxies[hubName]) {
                 this.proxies[hubName] = this.connection.createHubProxy(hubName);
+                this.proxies[hubName].qs = {
+                    "lang": this.options.lang
+                };
                 this.proxyCount++;
                 this.log(`Creating Hub Proxy: ${hubName}`);
                 this.registerMockMethod(hubName);
