@@ -12,7 +12,7 @@ import EventEmitter       from 'famous/core/EventEmitter.js'
 
 window.getFromID = (id) => {
   return Entity.get(id)
-}
+};
 
 window.views = {};
 
@@ -37,15 +37,15 @@ View.prototype.makeRED = function () {
   this.reflowRecursively();
 }
 
-let originalWarn = Utils.prototype._warn
+let originalWarn = Utils.prototype._warn;
 Utils._warn = function () {
-  originalWarn.call(this, ...arguments)
+  originalWarn.call(this, ...arguments);
   debugger
 }
 
-let originaloptionObserverErrorThrower = OptionObserver.prototype._throwError
+let originaloptionObserverErrorThrower = OptionObserver.prototype._throwError;
 OptionObserver.prototype._throwError = function () {
-  debugger
+  debugger;
   return originaloptionObserverErrorThrower.call(this, ...arguments)
 }
 
@@ -55,7 +55,7 @@ let log = (...consoleArgs) => {
     return
   }
   console.log(...consoleArgs);
-}
+};
 
 
 let originalRegisterNewInstance = OptionObserver._registerNewInstance
@@ -64,18 +64,18 @@ OptionObserver._registerNewInstance = function (instance) {
     log(`%c ${instance._errorName}:${renderableName} is invalidated`, 'color: rgba(125, 125, 125, 0.7')
   })
   return originalRegisterNewInstance.call(this, ...arguments)
-}
+};
 
 let originalOptionObserverMarkPropertyAsUpdated = OptionObserver.prototype._markPropertyAsUpdated
 OptionObserver.prototype._markPropertyAsUpdated = function (nestedPropertyPath, property, value) {
   let result = originalOptionObserverMarkPropertyAsUpdated.call(this, ...arguments)
   log(`%c ${this._errorName} updated ${nestedPropertyPath.concat(property).join('->')}=${this._isPlainObject(value) ? JSON.stringify(value) : value}`, 'color: green')
   return result
-}
+};
 
-window.ObjectHelper = ObjectHelper
+window.ObjectHelper = ObjectHelper;
 
-let originalEmit = EventEmitter.prototype.emit
+let originalEmit = EventEmitter.prototype.emit;
 EventEmitter.prototype.emit = function (type) {
   let result = originalEmit.call(this, ...arguments)
   if (typeof document.body['on' + type] === 'undefined' && ![
@@ -96,9 +96,9 @@ EventEmitter.prototype.emit = function (type) {
     log(`Event emitted: ${type}`, this._owner)
   }
   return result
-}
+};
 
-window.observeArrayIndex = (array, index) => {
-  let value = array[index];
-  Object.defineProperty(array, index, {get: () => value, set: (newValue) => {value = newValue; debugger; }})
-}
+window.observePropertySet = (object, propertyName) => {
+  let value = object[propertyName];
+  Object.defineProperty(object, propertyName, {get: () => value, set: (newValue) => {value = newValue; debugger; }})
+};
