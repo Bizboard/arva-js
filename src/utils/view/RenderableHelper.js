@@ -222,7 +222,7 @@ export class RenderableHelper {
    * @private
    */
   _processsDecoratedRenderableCounterpart (renderable, renderableName) {
-    let {draggableOptions, swipableOptions, clip, animation, flow} = renderable.decorations
+    let {draggableOptions, swipableOptions, clip, animation, flow, modifier} = renderable.decorations
 
     /* If we clip, then we need to create a containerSurface */
     if (clip) {
@@ -243,17 +243,20 @@ export class RenderableHelper {
       this._processAnimatedRenderable(renderable, renderableName, animation)
     }
 
-    if (swipableOptions) {
-      renderable = this._initSwipable(swipableOptions, renderable)
-    } else if (draggableOptions && !renderable.node) {
-      renderable.node = new RenderNode()
-      let draggable = new Draggable(draggableOptions)
-      renderable.draggable = draggable
-      renderable.node.add(draggable).add(renderable)
-      renderable.pipe(draggable)
-      //TODO: We don't do an unpiping of the draggable, which might be dangerous
-      this._pipeToView(draggable)
-    }
+        if (swipableOptions) {
+            renderable = this._initSwipable(swipableOptions, renderable);
+        } else if (draggableOptions && !renderable.node) {
+            renderable.node = new RenderNode();
+            let draggable = new Draggable(draggableOptions);
+            renderable.draggable = draggable;
+            renderable.node.add(draggable).add(renderable);
+            renderable.pipe(draggable);
+            //TODO: We don't do an unpiping of the draggable, which might be dangerous
+            this._pipeToView(draggable);
+        } else if (modifier) {
+            renderable.node = new RenderNode();
+            renderable.node.add(modifier).add(renderable);
+        }
 
     if (renderable.node) {
       /* Assign output handler */

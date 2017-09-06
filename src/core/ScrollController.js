@@ -48,14 +48,20 @@ import { PushDownSurface }       from './PushDownSurface.js'
  */
 export class ScrollController extends FamousView {
 
-  _scrollVoidHeight = 0
-  _scrollTopHeight = 0
+  _scrollVoidHeight = 0;
+  _scrollTopHeight = 0;
   _previousValues = {
     contextSize: [0, 0],
     scrollOffset: 0
-  }
-  _cachedSpecs = {}
-  _stickingToEnds = {bottom: false, top: false}
+  };
+  _cachedSpecs = {};
+  _stickingToEnds = {bottom: false, top: false};
+  /* Actions for doing before the layout function */
+  _commitActions = [];
+  _isDirty = true;
+  _scrollToTransitionable = new Transitionable();
+  /* TODO: Implement functionality for ensurevisible */
+  _ensureVisibleNode = null
 
   constructor (options = {}) {
     super()
@@ -83,19 +89,14 @@ export class ScrollController extends FamousView {
       /* Set to have some extra estimated scrolling opportunity */
       initialHeight: 0
     }, options)
-    this._id = Entity.register(this)
-    this._isDirty = true
+    this._id = Entity.register(this);
+
     /* The distance before the first node, e.g. the translate before this._viewSequence.get() */
-    this._scrollToTransitionable = new Transitionable()
-    this._initOverScrollPhysics()
+    this._initOverScrollPhysics();
 
-    this._maxKnownTranslate = this.options.initialHeight
-    this._otherNodes = {bottomScroller: new Surface(), topScroller: new PushDownSurface()}
+    this._maxKnownTranslate = this.options.initialHeight;
+    this._otherNodes = {bottomScroller: new Surface(), topScroller: new PushDownSurface()};
 
-    /* TODO: Implement functionality for ensurevisible */
-    this._ensureVisibleNode = null
-    /* Actions for doing before the layout function */
-    this._commitActions = []
 
     /* The thing that provides us the context for the layout function */
     this._layoutNodeManager = new LayoutNodeManager(FlowLayoutNode, (node, spec) => {

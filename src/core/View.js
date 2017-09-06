@@ -10,10 +10,11 @@
 import extend                       from 'lodash/extend.js'
 import cloneDeep                    from 'lodash/cloneDeep.js'
 import FamousView                   from 'famous/core/View.js'
-import { RenderablePrototype }        from 'famous/utilities/RenderablePrototype.js'
+import { RenderablePrototype }      from 'famous/utilities/RenderablePrototype.js'
 import LayoutController             from 'famous-flex/LayoutController.js'
 import Surface                      from 'famous/core/Surface.js'
 import Engine                       from 'famous/core/Engine.js'
+import LayoutUtility                from 'famous-flex/LayoutUtility.js';
 
 import { limit }                      from 'arva-js/utils/Limiter.js'
 
@@ -472,6 +473,37 @@ export class View extends FamousView {
 
     isDisplaying() {
         return this.layout.isDisplaying();
+    }
+
+    /**
+     * Set a maximum width on a renderable.
+     * @param width
+     */
+    setMaxContentWidth(width) {
+        if(this.decorations.dynamicDockPadding) {
+            this.onNewSize((size) => {
+                this.decorations.viewMargins = this.decorations.dynamicDockPadding(size, width);
+                this.reflowRecursively();
+            });
+            const sizeCache = this.layout._contextSizeCache;
+            const alteredSizeCache = [
+                sizeCache[0] + 1,
+                sizeCache[1] + 1
+            ];
+            this.layout._eventOutput.emit('sizeChanged', {
+                oldSize: sizeCache,
+                size: alteredSizeCache
+            });
+        } else {
+            let defaultPadding = [0, 16, 0, 16];
+            let normalisedPadding = LayoutUtility.normalizeMargins(defaultPadding);
+            this.decorations.dynamicDockPadding = function(size, newWidth = width) {
+                let sideWidth = size[0] > newWidth + 32 ? (size[0] - newWidth) / 2 : normalisedPadding[1];
+                return [normalisedPadding[0], sideWidth, normalisedPadding[2], sideWidth];
+            };
+
+            this.setMaxContentWidth(width);
+        }
     }
 
     /**

@@ -475,6 +475,21 @@ class Layout {
     }, decoratorTypes.childDecorator)
   }
 
+    /**
+     * Makes modifications to a surface using old-style famous modifiers (e.g MapModifier for famous-map)
+     * @example
+     * @layout.mapModifier(new MapModifier{ mapView: map, position: {lat: 0, lng: 0} })
+     * // Makes a surface that is linked to the position (0, 0)
+     *
+     * @param {Object} [modifier]. modifier object.
+     * @returns {Function}
+     */
+    modifier(modifier = {}) {
+        return this.createChainableDecorator((decorations) => {
+            decorations.modifier = modifier;
+        }, decoratorTypes.childDecorator);
+    }
+
   /**
    * Makes the renderable swipable with physics-like velocity after the dragging is released. Emits event
    * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached. this.renderables[name]
@@ -485,7 +500,6 @@ class Layout {
    *  .swipable({xRange: [0, 100], snapX: true})
    * //Make a red box that can slide to the right
    * swipable = Surface.with({properties: {backgroundColor: 'red'});
-     *
    * @param {Object} options
    * @param {Boolean} [options.snapX] Whether to snap to the x axis
    * @param {Boolean} [options.snapY] Whether to snap to the Y axis
@@ -1075,18 +1089,18 @@ class Layout {
       /* Default to 16px dockPadding */
       this.dockPadding(normalisedPadding)
 
-      /* Calculate the dockPadding dynamically every time the View's size changes.
-       * The results from calling this method are further handled in View.js.
-       *
-       * The logic behind this is 16px padding by default, unless the screen is
-       * wider than 720px. In that case, the padding is increased to make the content
-       * in between be at maximum 720px. */
-      decorations.dynamicDockPadding = function (size) {
-        let sideWidth = size[0] > maxContentWidth + 32 ? (size[0] - maxContentWidth) / 2 : normalisedPadding[1]
-        return [normalisedPadding[0], sideWidth, normalisedPadding[2], sideWidth]
-      }
-    }, decoratorTypes.viewDecorator)
-  }
+            /* Calculate the dockPadding dynamically every time the View's size changes.
+             * The results from calling this method are further handled in View.js.
+             *
+             * The logic behind this is 16px padding by default, unless the screen is
+             * wider than 720px. In that case, the padding is increased to make the content
+             * in between be at maximum 720px. */
+            decorations.dynamicDockPadding = function(size, newWidth = maxContentWidth) {
+                let sideWidth = size[0] > newWidth + 32 ? (size[0] - newWidth) / 2 : normalisedPadding[1];
+                return [normalisedPadding[0], sideWidth, normalisedPadding[2], sideWidth];
+            }
+        }, decoratorTypes.viewDecorator);
+    }
 
   /**
    *
