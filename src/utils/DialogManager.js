@@ -97,7 +97,7 @@ export class DialogManager extends View {
         this._hasOpenDialog = true;
 
         /* Replace whatever non-showing dialog we have right now with the new dialog */
-        this.replaceRenderable('dialog', new DialogWrapper({dialog}));
+        this.replaceRenderable(this.dialog, new DialogWrapper({dialog}));
         if (this._savedParentSize) {
             this.dialog.onNewParentSize(this._savedParentSize);
         }
@@ -109,7 +109,7 @@ export class DialogManager extends View {
         }
 
         /* Show the dialog */
-        this.showRenderable('dialog').then(() => {
+        this.showRenderable(this.dialog).then(() => {
             this._eventOutput.emit('dialogShown');
         });
 
@@ -119,7 +119,7 @@ export class DialogManager extends View {
          * closing the dialog again. Delaying showing the background circumvents this issue. */
         Timer.setTimeout(() => {
             if (this.hasOpenDialog()) {
-                this.showRenderable('background');
+                this.showRenderable(this.background);
             }
         }, 10);
         return this.dialogComplete();
