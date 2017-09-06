@@ -213,7 +213,7 @@ export class View extends FamousView {
    * @returns {Promise} when the renderable has finished its animation
    */
   showRenderable (renderable, options = {}) {
-    this.toggleRenderable(renderable, true)
+    return this.toggleRenderable(renderable, true)
   }
 
   /**
@@ -223,7 +223,7 @@ export class View extends FamousView {
    * @param option
    * @returns {Promise}
    */
-  toggleRenderable (renderable, show, options = {}) {
+  async toggleRenderable (renderable, show, options = {}) {
     if (!renderable) {
       Utils.warn(`Trying to show renderable which does not exist! (${this._name()})`)
       return
@@ -255,7 +255,7 @@ export class View extends FamousView {
       }
     }
 
-    return new Promise((resolve) => this._renderableHelper.showWithAnimationController(this._realRenderables[Utils.getRenderableID(renderable)], renderable, resolve, show, options))
+    return await new Promise((resolve) => this._renderableHelper.showWithAnimationController(renderable.animationController, renderable, resolve, show, options))
   }
 
   isRenderableShowing (renderable) {
