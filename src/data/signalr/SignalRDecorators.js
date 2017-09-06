@@ -25,9 +25,9 @@ export class signalr {
     static createProxy(hubName = null) {
         return function(target, name, descriptor) {
             if(!hubName) {
-                if(Object.getPrototypeOf(target).name === 'SignalRArray') { 
+                if(Object.getPrototypeOf(target).name === 'SignalRArray') {
                     hubName = target.name + 'Hub';
-                } else { 
+                } else {
                     hubName = target.name + 'sHub';
                 }
             }
@@ -85,15 +85,25 @@ export class signalr {
 }
 
 export class SignalRConnection extends EventEmitter {
-    
+
     constructor() {
         super();
         this.connection = null;
         this.proxies = {};
         this.proxyCount = 0;
         this.options = {
-            lang: 'NL'
+            lang: 'NL',
+            shouldAttemptReconnect: false
         };
+
+        this.connectionStates = {
+            connecting: 0,
+            connected: 1,
+            reconnecting: 2,
+            disconnected: 4
+        };
+
+        this.stateChangedCallback = this.stateChangedCallback.bind(this);
     }
 
     setOptions(options) {
@@ -110,7 +120,7 @@ export class SignalRConnection extends EventEmitter {
             if(this.options.logging) {
                 this.connection.logging = true;
             }
-            this.connection.qs = { 
+            this.connection.qs = {
                 "access_token": "kz-poUKVeU7Ba2lSZNnuJD4mjT_Kyjf3BSLM2CP8lC8TN5e-l_SDI_fsu9DgBoBWkYCHrTIIBZ_TUMM_1dkTmWzagRwJGTVRgqCXkNHvgNFRDZyj6FzyRNd1i7C8lKiCah7MQUIcELc4jclJWFvHEdbCR8R867cKNLuMgjOo_Tq619s8nDNkGecZvvfru-g8acYb1ha5Iu5jdoACQ1sWA2CGPzJQhvVQmiyizByenunbqhgJYsI-WbFFefIfd3m5CDXpWrIX42-cMsJFJTwd4uEZudHEJxei4hxtUtFCKYlj3G3VmCYefyvcc_XvW47tkLfesz9iqEdTLMtroMiu5w6HamK6vSqqYoyYnOAF7SofvhYzGGTd9kFtATC-A1yImuoTGOzE-mA5iObzc8P7zw",
                 "lang": this.options.lang
             };
@@ -126,6 +136,8 @@ export class SignalRConnection extends EventEmitter {
     }
 
     start() {
+        this.connection.stateChanged(this.stateChangedCallback);
+
         if(this.connection && this.proxyCount > 0) {
             this.log('Starting connection');
             const start = this.connection.start();
@@ -136,8 +148,22 @@ export class SignalRConnection extends EventEmitter {
         }
     }
 
-    restart() {
+    stateChangedCallback(state){
+        if (state.newState === this.connectionStates.disconnected){
+            this.emit('disconnect');
+            if (this.options.shouldAttemptReconnect){
+                this.restart();
+            }
+        }
+    }
 
+    restart() {
+        this._reconnectTimeout = setTimeout(()=>{
+            let start = this.connection.start();
+            start.done(()=>{
+                this.emit('connected')
+            })
+        }, 5000);
     }
 
     createHubProxy(hubName) {
