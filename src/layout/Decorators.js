@@ -1196,15 +1196,16 @@ class Event {
    * @param {Function} callback that is called when event has happened
    * @returns {Function}
    */
-  _subscribe (subscriptionType, eventName, callback) {
+  _subscribe (subscriptionType, eventName, callback, options = {}) {
     return this.createChainableDecorator((decorations) => {
       if (!decorations.eventSubscriptions) {
         decorations.eventSubscriptions = []
       }
       decorations.eventSubscriptions.push({
-        subscriptionType: subscriptionType,
-        eventName: eventName,
-        callback: callback
+        subscriptionType,
+        eventName,
+        callback,
+          options
       })
     }, decoratorTypes.childDecorator)
   }
@@ -1222,10 +1223,11 @@ class Event {
    *
    * @param eventName
    * @param callback
+   * @param {Object} options Options that are forwarded to the EventHandler options
    * @returns {Layout} A chainable function
    */
-  on (eventName, callback) {
-    return this._subscribe('on', eventName, callback)
+  on (eventName, callback, options) {
+    return this._subscribe('on', eventName, callback, options);
   }
 
   /**

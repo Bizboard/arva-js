@@ -93,16 +93,17 @@ export class RenderableHelper {
   _setDecorationEvents (renderable, subscriptions, enable = true) {
     for (let subscription of subscriptions || []) {
       let subscriptionType = subscription.type || 'on'
+        let {options} = subscription;
       if (!enable) {
-        /* In famous, you remove a listener by calling removeListener, but some classes might have another event
-         * listener that is called off
+        /* In famous, you remove a listener by calling 'removeListener', but some classes might have another event
+         * listener that is called 'off'
          */
         subscriptionType = renderable.removeListener ? 'removeListener' : 'off'
       }
       let eventName = subscription.eventName
       let callback = subscription.callback
       if (subscriptionType in renderable) {
-        renderable[subscriptionType](eventName, this._bindMethod(callback))
+        renderable[subscriptionType](eventName, this._bindMethod(callback), options)
       }
     }
   }
