@@ -100,5 +100,7 @@ EventEmitter.prototype.emit = function (type) {
 
 window.observePropertySet = (object, propertyName) => {
   let value = object[propertyName];
-  Object.defineProperty(object, propertyName, {get: () => value, set: (newValue) => {value = newValue; debugger; }})
+  Object.defineProperty(object, propertyName, {get: () => value, set: (newValue) => {
+    value = newValue;
+    debugger; }, enumerable: false})
 };
