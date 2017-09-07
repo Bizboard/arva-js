@@ -37,10 +37,10 @@ View.prototype.makeRED = function () {
   this.reflowRecursively();
 }
 
-let originalWarn = Utils.prototype._warn;
-Utils._warn = function () {
+let originalWarn = Utils.warn;
+Utils.warn = function () {
   originalWarn.call(this, ...arguments);
-  debugger
+  debugger;
 }
 
 let originaloptionObserverErrorThrower = OptionObserver.prototype._throwError;
@@ -104,4 +104,46 @@ window.observePropertySet = (object, propertyName) => {
   Object.defineProperty(object, propertyName, {get: () => value, set: (newValue) => {
     value = newValue;
     debugger; }, enumerable: false})
+};
+
+let viewDebugSettings = new Map();
+window.unDebugLayoutFunction = (view) => {
+    let settings = viewDebugSettings.get(view.constructor);
+    settings.debug = false;
+};
+window.debugLayoutFunction = (view) => {
+    let settings = {debug: true};
+    view._doReflow();
+    if(viewDebugSettings.get(view)){
+        return;
+    }
+    viewDebugSettings.set(view, settings);
+    let originalLayoutFunction = view._layoutDecoratedRenderables;
+    view._layoutDecoratedRenderables = function() {
+        if(settings.debug){
+            debugger;
+        }
+        originalLayoutFunction.call(view, ...arguments);
+    };
+};
+
+let surfaceDebugSettings = new Map();
+window.unDebugCommitFunction = (view) => {
+    let settings = surfaceDebugSettings.get(view.constructor);
+    settings.debug = false;
+};
+
+window.debugCommitFunction = (surface) => {
+    let settings = {debug: true};
+    if(surfaceDebugSettings.get(surface)){
+        return;
+    }
+    surfaceDebugSettings.set(surface, settings);
+    let originalCommitFunction = surface.commit;
+    surface.commit = function() {
+        if(settings.debug){
+            debugger;
+        }
+        originalCommitFunction.call(surface, ...arguments);
+    };
 };
