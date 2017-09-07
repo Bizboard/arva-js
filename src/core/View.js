@@ -885,10 +885,10 @@ export class View extends FamousView {
    * @private
    */
   _setupRenderable (renderableInitializer, decorations) {
+    //todo clean up this function, it's too long!!
     if (!decorations) {
       decorations = currentRenderable && currentRenderable.decorations
     }
-
 
 
     let decoratorFunctions = decorations &&
@@ -913,9 +913,7 @@ export class View extends FamousView {
         renderable = factoryFunction(this.options)
       }
 
-      if (Array.isArray(renderable)) {
-        throw new Error('Passing plain arrays as renderables is not yet supported. Please use the map function.')
-      }
+
 
       if (renderable instanceof MappedArray) {
         renderableIsArray = true
@@ -959,6 +957,8 @@ export class View extends FamousView {
 
         this._readjustRenderableInitializer(localRenderableName, actualRenderables)
         this[localRenderableName] = actualRenderables
+      } else if (Array.isArray(renderable)) {
+        throw new Error('Passing plain arrays as renderables is not yet supported. Please use the map function.')
       }
     })
     if (!renderableIsArray) {

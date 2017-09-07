@@ -21,11 +21,12 @@ let listeners = Symbol('listeners'),
   originalValue = Symbol('originalValue'),
   optionMetaData = Symbol('optionMetaData'),
   oldValue = Symbol('oldValue'),
-  instanceIdentifier = Symbol('instanceIdentifier')
+  instanceIdentifier = Symbol('instanceIdentifier'),
+  isArrayListener = Symbol('isArrayListener');
 
 export let onOptionChange = Symbol('onOptionChange')
 
-
+//TODO Not sure if the (nested) array listener tree is setup with maximum efficiency. Furthermore, partial array updates isn't supported
 export class OptionObserver extends EventEmitter {
   _reverseListenerTree = {}
   _newReverseListenerTree = {}
@@ -118,7 +119,8 @@ export class OptionObserver extends EventEmitter {
 
   _addToListenerTree (renderableName, localListenerTree) {
 
-    let listenerStructure = Array.isArray(localListenerTree) ? localListenerTree[0][listeners] : localListenerTree[listeners]
+    // let listenerStructure = Array.isArray(localListenerTree) ? localListenerTree[0][listeners] : localListenerTree[listeners]
+    let listenerStructure = localListenerTree[listeners];
 
     /* Renderable already added to listener tree, so no need to do that again */
     let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._listenerTreeMetaData[renderableName]
@@ -407,9 +409,9 @@ export class OptionObserver extends EventEmitter {
     this._deepTraverseWithShallowArrays(this._newOptionUpdates, (nestedPropertyPath, updateObjectParent, updateObject, propertyName, [defaultOptionParent, listenerTree, optionObject]) => {
 
         let newValue = updateObject[newChanges],
-          oldValue = updateObject[originalValue]
-        let defaultOption = defaultOptionParent[propertyName]
-        let innerListenerTree = listenerTree[propertyName]
+          oldValue = updateObject[originalValue];
+        let defaultOption = defaultOptionParent[propertyName];
+        let innerListenerTree = listenerTree[propertyName];
 
         if (this._isPlainObject(defaultOptionParent)) {
           this._processImmediateOptionReassignment({
@@ -425,14 +427,14 @@ export class OptionObserver extends EventEmitter {
           newValue,
           propertyName,
           listenerTree: innerListenerTree
-        })
+        });
 
         /* If the parent is a model or function, then no need to continue */
         if (!this._isPlainObject(defaultOption)) {
           return
         }
 
-        let outerNestedPropertyPath = nestedPropertyPath.concat(propertyName)
+        let outerNestedPropertyPath = nestedPropertyPath.concat(propertyName);
 
         this._deepTraverseWithShallowArrays(defaultOption, (innerNestedPropertyPath, defaultOptionParent, defaultOption, propertyName, [listenerTreeParent, newValueParent]) => {
           this._processNewOptionUpdates({
@@ -444,9 +446,9 @@ export class OptionObserver extends EventEmitter {
             defaultOptionParent,
             listenerTree: listenerTreeParent[propertyName]
           })
-        }, [innerListenerTree, optionObject[propertyName]], [true, false])
+        }, [innerListenerTree, optionObject[propertyName]], [false, false])
       }, [this.defaultOptions, this._listenerTree, this.options],
-      [true, true, false],
+      [true, false, false],
       true
     )
     this._flushArrayObserverChanges()
@@ -606,7 +608,7 @@ export class OptionObserver extends EventEmitter {
                  onlyForLeaves = false,
                  nestedPropertyPath = [],
                  depthCount = 0) {
-    if (!this._isPlainObject(object)) {
+    if (!this._isPlainObject(object) && !Array.isArray(object)) {
       return
     }
     if (depthCount > OptionObserver.maxSupportedDepth) {
@@ -723,8 +725,14 @@ export class OptionObserver extends EventEmitter {
   _accessObjectPath (object, path, allowShallowArrays = false) {
     for (let pathString of path) {
       if (!object || !object.hasOwnProperty(pathString)) {
-        if (allowShallowArrays && Array.isArray(object)) {
-          pathString = 0
+        if (allowShallowArrays) {
+          if(Array.isArray(object)){
+            pathString = 0
+            /* If it's a specially registered array listener, the property to read is called value and is being
+            *  used on the listener tree */
+          } else if(object[isArrayListener]){
+            pathString = 'value';
+          }
         } else {
           return notFound
         }
@@ -799,8 +807,9 @@ export class OptionObserver extends EventEmitter {
 
     let valueIsModelProperty = newValueParent instanceof Model && typeof defaultOptionParent === 'function'
 
+    let parentIsArray = Array.isArray(defaultOptionParent);
     if (!valueIsModelProperty && !defaultOptionParent.hasOwnProperty(propertyName)) {
-      if (Array.isArray(defaultOptionParent)) {
+      if (parentIsArray) {
         defaultOption = defaultOptionParent[0]
       } else {
         this._throwError(`Assignment to undefined option: ${nestedPropertyPath.concat(propertyName).join('->')}`)
@@ -830,7 +839,8 @@ export class OptionObserver extends EventEmitter {
 
     let valueToLinkTo
 
-    if (newValue === undefined) {
+    /* If set to something undefined, then set to the default option. Does not apply for default options */
+    if (newValue === undefined && !parentIsArray) {
       newValue = defaultOption
       if (this._isPlainObject(newValue)) {
         valueToLinkTo = {}
@@ -853,11 +863,11 @@ export class OptionObserver extends EventEmitter {
       ) { newValueParent[property] = {} }
 
     if (newValue instanceof Model) {
-      this._handleNewModelUpdate(nestedPropertyPath, newValue, listenerTree, propertyName)
+      this._handleNewModelUpdate(nestedPropertyPath, newValue, listenerTree, propertyName);
     }
 
     if (Array.isArray(newValue)) {
-      this._setupArray(nestedPropertyPath, newValue, listenerTree, propertyName, defaultOption)
+      this._setupArray(nestedPropertyPath, newValue, listenerTree, propertyName, defaultOption, defaultOptionParent);
     }
 
     return newValue
@@ -868,18 +878,35 @@ export class OptionObserver extends EventEmitter {
    * @param nestedPropertyPath
    * @param newValue
    * @param listenerTree
-   * @param key
-   * @param defaultOptionParent
+   * @param outerPropertyName
+   * @param defaultOption
    * @private
    */
-  _setupArray (nestedPropertyPath, newValue, listenerTree, outerPropertyName, defaultOption) {
+  _setupArray (nestedPropertyPath, newValue, listenerTree, outerPropertyName, defaultOption, defaultOptionParent) {
+    if(!listenerTree[isArrayListener]){
+      this._throwError(`The parameter ${nestedPropertyPath.concat(outerPropertyName).join('->')} is not registered as an array in the listener tree.`);
+    }
     if (ArrayObserver.isArrayObserved(newValue)) {
       //TODO Confirm that this is wished for
       return
     }
+    /* Continue traversing down the array and update the rest like normal, using the array observer as a stepping stone*/
     let arrayObserver = new ArrayObserver(newValue, (index, value) => {
-      /* Continue traversing down the array */
+      /* copy the listener tree information */
+      listenerTree[index] = listenerTree.value;
+
+      this._processNewOptionUpdates({
+        defaultOptionParent: defaultOption,
+        nestedPropertyPath: nestedPropertyPath.concat(outerPropertyName),
+        defaultOption: defaultOption[index],
+        newValueParent: newValue,
+        newValue: value,
+        propertyName: index,
+        listenerTree: listenerTree[index]
+      });
+
       this._deepTraverse(defaultOption[0], (innerNestedPropertyPath, defaultOptionParent, defaultOption, propertyName, [newValueParent, listenerTreeParent]) => {
+
         this._processNewOptionUpdates({
           nestedPropertyPath: nestedPropertyPath.concat(outerPropertyName, index, innerNestedPropertyPath),
           newValue: newValueParent[propertyName],
@@ -889,19 +916,20 @@ export class OptionObserver extends EventEmitter {
           listenerTree: listenerTreeParent[propertyName],
           newValueParent
         })
-      }, [value, listenerTree[0]])
-    })
-    //TODO utilize optimizations from partial updates (probably by implementing special events for this, aside from 'needUpdate')
+      }, [value, listenerTree.value])
+    });
+    //TODO utilize optimizations from partial updates (probably by implementing special events towards the view for this, aside from 'needUpdate')
     arrayObserver.on('mapCalled',
       (originalMapFunction, passedMapper) =>
+        //todo this isn't used. DOes it need to be here?
         this.emit('mapCalled', {nestedPropertyPath, listenerTree, originalMapFunction, passedMapper})
-    )
+    );
     let onArrayChanged = ({index, newValue, oldValue}) => {
       this._markPropertyAsUpdated(nestedPropertyPath.concat(outerPropertyName), index, newValue, oldValue)
-    }
-    arrayObserver.on('replaced', onArrayChanged)
-    arrayObserver.on('added', onArrayChanged)
-    arrayObserver.on('removed', onArrayChanged)
+    };
+    arrayObserver.on('replaced', onArrayChanged);
+    arrayObserver.on('added', onArrayChanged);
+    arrayObserver.on('removed', onArrayChanged);
     this._arrayObservers.push(arrayObserver)
 
   }
@@ -935,7 +963,7 @@ export class OptionObserver extends EventEmitter {
    * @private
    */
   _listenerTreeCloner (value, propertyName) {
-    if (propertyName === listeners) {
+    if ([listeners, isArrayListener].includes(propertyName)) {
       return value
     }
     let isPlainObject = this._isPlainObject(value), isArray = Array.isArray(value)
@@ -945,13 +973,14 @@ export class OptionObserver extends EventEmitter {
     }
     if (isPlainObject || isArray) {
 
-      let listenersIfExists = isArray ? (value[0] && value[0][listeners]) : value[listeners]
+      let listenersIfExists = value[listeners]
       if (!listenersIfExists) {
-        let valueToClone = {...value, [listeners]: {}}
+        let valueToClone = {...value, [listeners]: {}};
         if (isArray) {
-          valueToClone = [{...value[0], [listeners]: {}}]
+          valueToClone = {value: value[0] || {}, [listeners]: {}, [isArrayListener]: true};
         }
-        let newValue = cloneDeepWith(valueToClone, this._listenerTreeCloner)
+        let newValue = cloneDeepWith(valueToClone, this._listenerTreeCloner);
+
         return newValue
       }
     } else {
@@ -959,10 +988,10 @@ export class OptionObserver extends EventEmitter {
     }
   }
 
-  static _instances = []
-  static _dirtyInstances = {}
+  static _instances = [];
+  static _dirtyInstances = {};
 
-  static _tickCount = 0
+  static _tickCount = 0;
 
   /**
    * Every tick, the changes are flushed in the options object. The _isFlushingUpdates flag gives an indication whether
@@ -971,16 +1000,16 @@ export class OptionObserver extends EventEmitter {
    * @private
    */
   static _flushAllUpdates () {
-    this._isFlushingUpdates = true
-    OptionObserver._tickCount++
+    this._isFlushingUpdates = true;
+    OptionObserver._tickCount++;
     /* Reset dirty instances, because we are going to traverse all instances anyways */
-    OptionObserver._dirtyInstances = {}
+    OptionObserver._dirtyInstances = {};
     for (let optionObserver of OptionObserver._instances) {
-      optionObserver._flushUpdates()
+      optionObserver._flushUpdates();
     }
     /* Flush dirty instances until there are no more dirty instances left */
     while (Object.keys(OptionObserver._dirtyInstances).length) {
-      let dirtyInstances = {...OptionObserver._dirtyInstances}
+      let dirtyInstances = {...OptionObserver._dirtyInstances};
       OptionObserver._dirtyInstances = {}
       for (let optionObserverID in dirtyInstances) {
         dirtyInstances[optionObserverID]._flushUpdates()
@@ -1016,9 +1045,9 @@ export class OptionObserver extends EventEmitter {
       let localListenerTree = this._accommodateObjectPath(modelListener.localListenerTree,
         [propertyName])
       localListenerTree[listeners] = localListenerTree[listeners] || {}
-      this._addToListenerTree(entryName, localListenerTree)
-      modelListener.startListening()
-    })
+      this._addToListenerTree(entryName, localListenerTree);
+      modelListener.startListening();
+    });
   }
 
   /**
