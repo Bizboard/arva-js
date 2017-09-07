@@ -288,7 +288,7 @@ export class View extends FamousView {
 
   /**
    * Sets a renderable flow state as declared in the @flow.stateStep, or @flow.defaultState
-   * @param {String} renderable. The name of the renderable
+   * @param {Renderable} renderable. The name of the renderable
    * @param {String} stateName. The name of the state as declared in the first argument of the decorator
    * @returns {*}
    */
