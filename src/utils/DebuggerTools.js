@@ -98,6 +98,7 @@ EventEmitter.prototype.emit = function (type) {
   return result
 };
 
+//TODO Support a more abd ass version of this using proxies
 window.observePropertySet = (object, propertyName) => {
   let value = object[propertyName];
   Object.defineProperty(object, propertyName, {get: () => value, set: (newValue) => {
