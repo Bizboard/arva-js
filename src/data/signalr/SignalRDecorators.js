@@ -1,6 +1,9 @@
+
 import {combineOptions} from 'arva-js/utils/CombineOptions.js';
 import {Injection}      from 'arva-js/utils/Injection.js';
+
 import EventEmitter     from 'eventemitter3';
+
 
 export class signalr {
     // Registers a client method. This method will be run when the server invokes the fnName specified. Defaults to the method name
@@ -96,7 +99,6 @@ export class SignalRConnection extends EventEmitter {
             lang: 'NL',
             shouldAttemptReconnect: false
         };
-
         this.connectionStates = {
             connecting: 0,
             connected: 1,
@@ -115,16 +117,82 @@ export class SignalRConnection extends EventEmitter {
         return this;
     }
 
+    getUserToken(){
+        let token = localStorage.getItem('trsq-auth');
+        if (token !== undefined && token !== null){
+            this._userToken = token;
+            return token;
+        }
+    }
+
+    setUserToken(token){
+        localStorage.setItem('trsq-auth', token);
+        this._userToken = token;
+        return token;
+    }
+
+    isAuthenticated(){
+        return !!this._userToken;
+    }
+
+    async authenticateUser({username, password}){
+
+        let formData = `username=${username}&password=${password}&grant_type=password`;
+
+        try {
+            let response = await fetch(`${this.options.url}/api/Token`, {
+                method: "POST",
+                body: formData
+            });
+
+            if (response.ok){
+                const { access_token } = await response.json();
+                this.setUserToken(access_token);
+
+                let refreshedStart = await this.refreshConnectionAuth();
+
+                this.emit('login');
+                return true;
+
+            } else {
+                return false;
+            }
+        } catch( e ){
+            console.log("error", e)
+            // return false
+        }
+    }
+
+    refreshConnectionAuth(){
+        this.connection.stop();
+        this.connection.qs.access_token = this.getUserToken();
+        let start = this.connection.start();
+        return new Promise( (resolve) => {
+            start.done(()=> {
+                resolve()
+            });
+        });
+    }
+
+    async deauthenticateUser(){
+        localStorage.removeItem('trsq-auth');
+        this._userToken = null;
+        let refreshedStart = await this.refreshConnectionAuth();
+        this.emit('logout');
+    }
+
     init() {
         if(window.jQuery) {
             this.connection = window.jQuery.hubConnection(this.options.url || null, this.options);
             if(this.options.logging) {
                 this.connection.logging = true;
             }
+
             this.connection.qs = {
-                "access_token": "kz-poUKVeU7Ba2lSZNnuJD4mjT_Kyjf3BSLM2CP8lC8TN5e-l_SDI_fsu9DgBoBWkYCHrTIIBZ_TUMM_1dkTmWzagRwJGTVRgqCXkNHvgNFRDZyj6FzyRNd1i7C8lKiCah7MQUIcELc4jclJWFvHEdbCR8R867cKNLuMgjOo_Tq619s8nDNkGecZvvfru-g8acYb1ha5Iu5jdoACQ1sWA2CGPzJQhvVQmiyizByenunbqhgJYsI-WbFFefIfd3m5CDXpWrIX42-cMsJFJTwd4uEZudHEJxei4hxtUtFCKYlj3G3VmCYefyvcc_XvW47tkLfesz9iqEdTLMtroMiu5w6HamK6vSqqYoyYnOAF7SofvhYzGGTd9kFtATC-A1yImuoTGOzE-mA5iObzc8P7zw",
+                access_token: this.getUserToken(),
                 "lang": this.options.lang
             };
+
             if(this.decoratorProxies) {
                 for(const hubName of this.decoratorProxies) {
                     this.createHubProxy(hubName);
