@@ -383,38 +383,7 @@ export class View extends FamousView {
     return this._realRenderables[Utils.getRenderableID(renderable)]
   }
 
-  /**
-   * Passes a callback that gets called every time the context size changes.
-   *
-   * @param {Function} callback a callback with arguments (width, height)
-   */
-  onNewSize (callback) {
-    this._onNewSizeCallbacks.push(callback)
-  }
 
-  /**
-   * Gets a (new) context size of the view. This will always happen at least once immediately after the view is constructed.
-   * Hence, it can safely be used in the constructor to get the (initial) size of the view.
-   *
-   * @example
-   * constructor(options){
-     *  super(options);
-     *  onceNewSize.then((width, height) => {
-     *      console.log(width, height);
-     *  });
-     * }
-   *
-   * @returns {Promise} Resolves when there's a new size
-   */
-  onceNewSize () {
-    return new Promise((resolve) => {
-      let onNewSize = (size) => {
-        this._onNewSizeCallbacks.splice(this._onNewSizeCallbacks.indexOf(onNewSize), 1)
-        resolve(size)
-      }
-      this._onNewSizeCallbacks.push(onNewSize)
-    })
-  }
 
   isSizeSettled () {
     if (this._sizeResolver.containsUncalculatedSurfaces()) {
@@ -797,6 +766,14 @@ export class View extends FamousView {
     }
   }
 
+  onNewSize(callback) {
+    this.on('newSize', callback, {propagate: false});
+  }
+
+  onceNewSize(callback) {
+    this.once('newSize')
+  }
+
   setNewOptions (options) {
     this._optionObserver.recombineOptions(options);
     /* Re-assign the options to make sure they're up to date */
@@ -813,9 +790,7 @@ export class View extends FamousView {
       if (size[0] !== oldSize[0] ||
         size[1] !== oldSize[1]) {
         this._sizeResolver.doTrueSizedBookkeeping()
-        for (let callback of this._onNewSizeCallbacks) {
-          callback(size)
-        }
+          this._eventOutput.emit('newSize', size);
       }
     })
     /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
@@ -867,7 +842,6 @@ export class View extends FamousView {
     }
 
     this._runningRepeatingFlowStates = {}
-    this._onNewSizeCallbacks = []
     this._renderableConstructors = {}
   }
 
