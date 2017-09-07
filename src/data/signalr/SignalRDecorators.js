@@ -89,6 +89,7 @@ export class SignalRConnection extends EventEmitter {
     constructor() {
         super();
         this.connection = null;
+        this._connected = false;
         this.proxies = {};
         this.proxyCount = 0;
         this.options = {
@@ -142,15 +143,25 @@ export class SignalRConnection extends EventEmitter {
             this.log('Starting connection');
             const start = this.connection.start();
             start.done(() => {
+                this._connected = true;
                 this.emit('ready');
+                this.emit('connected');
+            }).catch( ()=>{
+                this._connected = false;
+                this.emit('disconnected');
+                this.restart()
             });
+
             return start;
         }
     }
 
     stateChangedCallback(state){
-        if (state.newState === this.connectionStates.disconnected){
-            this.emit('disconnect');
+        if (state.newState === this.connectionStates.connectected){
+            this._connected = true;
+        } else if (state.newState === this.connectionStates.disconnected){
+            this._connected = false;
+            this.emit('disconnected');
             if (this.options.shouldAttemptReconnect){
                 this.restart();
             }
@@ -161,7 +172,9 @@ export class SignalRConnection extends EventEmitter {
         this._reconnectTimeout = setTimeout(()=>{
             let start = this.connection.start();
             start.done(()=>{
-                this.emit('connected')
+                this._connected = true;
+                this.emit('ready');
+                this.emit('connected');
             })
         }, 5000);
     }
@@ -206,5 +219,9 @@ export class SignalRConnection extends EventEmitter {
         if(this.options.logging) {
             console.log(message);
         }
+    }
+
+    isConnected(){
+        return this._connected;
     }
 }
