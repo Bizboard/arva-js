@@ -816,7 +816,7 @@ export class DataBoundScrollView extends ScrollController {
                     }
 
                     if (changedItemIndex === -1) {
-                        await this._addItem(child, previousSiblingID, dataStoreIndex);
+                        await this._addItem(child, previousSiblingID, dataSourceIndex);
                     } else {
                         await this._replaceItem(child, dataStoreIndex);
                     }
