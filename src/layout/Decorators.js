@@ -139,40 +139,59 @@ export const bindings = {
     }
   }
 
-}
+};
 
-let decoratorTypes = {childDecorator: 1, viewDecorator: 2, viewOrChild: 3}
-let lastResult
+let decoratorTypes = {childDecorator: 1, viewDecorator: 2, viewOrChild: 3};
+let lastResult;
 
 let createChainableDecorator = function (method, type) {
 
   let methodToReturn = function (viewOrRenderable, renderableName, descriptor) {
     if (methodToReturn.lastResult) {
-      methodToReturn.lastResult(viewOrRenderable, renderableName, descriptor)
+      methodToReturn.lastResult(viewOrRenderable, renderableName, descriptor);
     }
     if (type === decoratorTypes.viewOrChild) {
-      type = typeof viewOrRenderable === 'function' ? decoratorTypes.viewDecorator : decoratorTypes.childDecorator
+      type = typeof viewOrRenderable === 'function' ? decoratorTypes.viewDecorator : decoratorTypes.childDecorator;
     }
-    let decorations = type === decoratorTypes.childDecorator ? prepDecoratedRenderable(...arguments).decorations : prepPrototypeDecorations(viewOrRenderable.prototype)
+    let decorations = type === decoratorTypes.childDecorator ? prepDecoratedRenderable(...arguments).decorations : prepPrototypeDecorations(viewOrRenderable.prototype);
 
-    return method(decorations, type, viewOrRenderable, renderableName, descriptor)
-  }
+     method(decorations, type, viewOrRenderable, renderableName, descriptor);
 
-  let root = this
+
+     if(!descriptor){
+       /*  If the descriptor isn't present, we are not executing the decorator at decoration time.
+        *  This means that we can utilize the return to provide the renderable. This allows you to do things like this:
+        *
+        *  this.myRenderable = this.addRenderable(layout.size(new Surface()))
+        *
+        *  Or this (in the class field):
+        *
+        *  items = this.options.items.map(itemInfo =>
+        *    layout.size(...itemInfo.size)(
+        *      new Surface({content: itemInfo.content})
+        *    )
+        *  );
+        *
+        *  */
+         return viewOrRenderable;
+     }
+  };
+
+  let root = this;
   if (root && root.originalObject) {
-    methodToReturn.lastResult = root
-    root = methodToReturn.originalObject = root.originalObject
+    methodToReturn.lastResult = root;
+    root = methodToReturn.originalObject = root.originalObject;
   } else {
-    methodToReturn.originalObject = this
+    methodToReturn.originalObject = this;
   }
   if (root) {
-    lastResult = methodToReturn
-    methodToReturn.createChainableDecorator = createChainableDecorator.bind(methodToReturn)
+    lastResult = methodToReturn;
+    methodToReturn.createChainableDecorator = createChainableDecorator.bind(methodToReturn);
 
-    Object.defineProperties(methodToReturn, Object.getOwnPropertyDescriptors(root.__proto__))
+    Object.defineProperties(methodToReturn, Object.getOwnPropertyDescriptors(root.__proto__));
   }
 
-  return methodToReturn
+  return methodToReturn;
 }
 
 
@@ -1167,7 +1186,7 @@ class Event {
    * @ignore
    * Add to self in order to make the scope working
    */
-  createChainableDecorator = createChainableDecorator
+  createChainableDecorator = createChainableDecorator;
 
   /**
    * Internal function used by the event decorators to generalize the idea of on, once, and off.
