@@ -59,8 +59,8 @@ export class signalr {
         if(this.clientMethods) {
             for(const method of this.clientMethods) {
                 if(method.model === this.constructor.name || method.model === this.constructor.__proto__.name) {
-                    this.proxy.on(method.fnName, () => {
-                        method.fn.apply(this, [...arguments]);
+                    this.proxy.on(method.fnName, (...params) => {
+                        method.fn.apply(this, [...params]);
                     })
                     this.connection.log(`[${this.hubName}] Mapping Client Method ${method.fnName} to ${method.fn.name}`);
                 }
