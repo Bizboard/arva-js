@@ -480,19 +480,19 @@ export class View extends FamousView {
      * @private
      */
     _initUtils() {
-        this._sizeResolver = new SizeResolver()
-        this._sizeResolver.on('layoutControllerReflow', this._requestLayoutControllerReflow)
-        this._sizeResolver.on('reflow', () => this.layout.reflowLayout())
-        this._sizeResolver.on('reflowRecursively', this.reflowRecursively)
-        this._dockedRenderablesHelper = new DockedLayoutHelper(this._sizeResolver)
-        this._fullSizeLayoutHelper = new FullSizeLayoutHelper(this._sizeResolver)
-        this._traditionalLayoutHelper = new TraditionalLayoutHelper(this._sizeResolver)
+        this._sizeResolver = new SizeResolver();
+        this._sizeResolver.on('layoutControllerReflow', this._requestLayoutControllerReflow);
+        this._sizeResolver.on('reflow', () => this.layout.reflowLayout());
+        this._sizeResolver.on('reflowRecursively', this.reflowRecursively);
+        this._dockedRenderablesHelper = new DockedLayoutHelper(this._sizeResolver);
+        this._fullSizeLayoutHelper = new FullSizeLayoutHelper(this._sizeResolver);
+        this._traditionalLayoutHelper = new TraditionalLayoutHelper(this._sizeResolver);
         this._renderableHelper = new RenderableHelper(
             this._bindToSelf,
             this._setPipeToSelf,
             this._getIDFromLocalName,
             this._realRenderables,
-            this._sizeResolver)
+            this._sizeResolver);
     }
 
 
@@ -809,7 +809,7 @@ export class View extends FamousView {
          *
          * @type {Object}
          */
-        this._optionObserver = new OptionObserver(defaultOptions, options, preprocessBindings, this._name())
+        this._optionObserver = new OptionObserver(defaultOptions, options, preprocessBindings, this._name());
         this._optionObserver.on('needUpdate', (renderableName) =>
             this._setupRenderable(this._renderableConstructors[renderableName], this._renderableConstructors[renderableName].decorations)
         )
@@ -843,6 +843,7 @@ export class View extends FamousView {
 
         this._runningRepeatingFlowStates = {}
         this._renderableConstructors = {}
+
     }
 
     /**
@@ -893,35 +894,37 @@ export class View extends FamousView {
 
         let decoratorFunctions = decorations &&
             decorations.dynamicFunctions
-            || []
+            || [];
 
         let localRenderableName = renderableInitializer.localName
-        let currentRenderable = this[localRenderableName]
+        let currentRenderable = this[localRenderableName];
         let renderable;
-        let dynamicDecorations;
+        let dynamicDecorations = [];
         let renderableIsArray = false
         this._optionObserver.recordForRenderable(localRenderableName, () => {
             /* Make sure we have proper this scoping inside the initializer */
-            renderable = renderableInitializer.call(this, this.options)
+            renderable = renderableInitializer.call(this, this.options);
 
             /* Call the dynamic decorations, while we're recording */
-            dynamicDecorations = decoratorFunctions.map((dynamicDecorator) => dynamicDecorator(this.options))
+            dynamicDecorations = decoratorFunctions.map((dynamicDecorator) => dynamicDecorator(this.options));
 
             /* Allow class property to be a function that returns a renderable */
             if (typeof renderable === 'function') {
-                let factoryFunction = renderable
-                renderable = factoryFunction(this.options)
+                let factoryFunction = renderable;
+                renderable = factoryFunction(this.options);
             }
         });
-
+        if(dynamicDecorations.length){
+            this._doReflow();
+        }
 
         if (renderable instanceof MappedArray) {
-            renderableIsArray = true
-            let renderables = renderable.getArray()
+            renderableIsArray = true;
+            let renderables = renderable.getArray();
             if (currentRenderable && !Array.isArray(currentRenderable)) {
                 throw new Error('Cannot dynamically reassign renderable to array')
             }
-            let currentRenderables = currentRenderable || []
+            let currentRenderables = currentRenderable || [];
 
             let index, totalLength = renderables.length
 
@@ -977,7 +980,7 @@ export class View extends FamousView {
      */
     _assignNewRenderable(renderable, localRenderableName, decorations, isArray) {
 
-        let renderableID = Utils.getRenderableID(renderable)
+        let renderableID = Utils.getRenderableID(renderable);
 
         if (localRenderableName) {
             this._IDtoLocalRenderableName[renderableID] = localRenderableName
@@ -988,10 +991,8 @@ export class View extends FamousView {
             return
         }
 
-        /* Clone the decorator properties, because otherwise every view of the same type willl share them between
-         * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
-         */
-        renderable.decorations = cloneDeep(extend({}, decorations, renderable.decorations || {}));
+        renderable.decorations = decorations;
+
         if (!isArray) {
             this._readjustRenderableInitializer(localRenderableName, renderable);
             this[localRenderableName] = renderable
@@ -1005,37 +1006,50 @@ export class View extends FamousView {
 
     /**
      *
+     * @param oldRenderable
      * @param newRenderable
      * @param dynamicDecorations
      * @param {String} [localRenderableName]
+     * @param {Object} decorations
+     * @param {Boolean} isArray
      * @returns {Renderable}
      * @private
      */
     _arrangeRenderableAssignment(oldRenderable, newRenderable, dynamicDecorations, localRenderableName, decorations, isArray = false) {
         if (!newRenderable) {
             if (oldRenderable) {
-                this.removeRenderable(oldRenderable)
+                this.removeRenderable(oldRenderable);
                 /* Removing a renderable is likely to cause a size change, so emit to notify parents */
                 this.reflowRecursively()
             }
             return newRenderable
         }
-        this._doReflow();
-        if (newRenderable instanceof RenderablePrototype) {
-            let renderablePrototype = newRenderable
-            let { options, type } = renderablePrototype
+        let renderablePrototype = newRenderable instanceof RenderablePrototype && newRenderable;
+        if (renderablePrototype) {
+            let { options, type } = renderablePrototype;
             if (oldRenderable && oldRenderable.constructor === type && oldRenderable.setNewOptions) {
                 oldRenderable.setNewOptions(options);
-                newRenderable = oldRenderable
-                this._renderableHelper.decorateRenderable(Utils.getRenderableID(newRenderable), ...dynamicDecorations)
+                newRenderable = oldRenderable;
+                this._renderableHelper.decorateRenderable(
+                    Utils.getRenderableID(newRenderable),
+                    ...dynamicDecorations,
+                    ...renderablePrototype.getDirectlyAppliedDecoratorFunctions()
+                );
                 return newRenderable
             }
             /* If there wasn't any function to adjust the options, we have to start over from scratch! */
             newRenderable = new type(options);
         }
-        this._renderableHelper.applyDecoratorFunctionsToRenderable({ decorations }, dynamicDecorations)
+
+        decorations = this._cloneDecorationsForRenderable(decorations, newRenderable);
+
+        if(renderablePrototype){
+            this._renderableHelper.applyDirectDecoratorsFromRenderablePrototype(decorations, renderablePrototype);
+        }
+
+
+        this._renderableHelper.applyDecoratorFunctionsToRenderable({ decorations }, dynamicDecorations);
         if (oldRenderable) {
-            oldRenderable.decorations = decorations;
             this.replaceRenderable(oldRenderable, newRenderable);
             if (!this._initialised) {
                 /* Edge case: If we are replacing a renderable when constructing, that means that a property with the same
@@ -1045,6 +1059,8 @@ export class View extends FamousView {
                  */
                 this._readjustRenderableInitializer(localRenderableName, newRenderable);
             }
+            /* This is a very inefficient of keeping the current decorators. That's why .with should be used at all times possible */
+            this._renderableHelper.applyDecoratorObjectToRenderable(Utils.getRenderableID(newRenderable), decorations);
         } else {
             this._assignNewRenderable(newRenderable, localRenderableName, decorations, isArray)
         }
@@ -1075,9 +1091,9 @@ export class View extends FamousView {
         let { descriptor } = this._renderableConstructors[localRenderableName].decorations;
         if (descriptor) {
             if (descriptor.initializer) {
-                descriptor.initializer = () => {
-                    return renderable
-                }
+                descriptor.initializer = function() {
+                    return this[localRenderableName]
+                }.bind(this)
             }
         }
     }
@@ -1094,5 +1110,12 @@ export class View extends FamousView {
                 renderableInitializer.decorations && renderableInitializer.decorations.dynamicFunctions || [],
                 localRenderableName, renderableInitializer.decorations)
         }
+    }
+
+    _cloneDecorationsForRenderable(decorations, renderable) {
+        /* Clone the decorator properties, because otherwise every view of the same type willl share them between
+         * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
+         */
+        return cloneDeep(extend({}, decorations, renderable.decorations || {}));
     }
 }

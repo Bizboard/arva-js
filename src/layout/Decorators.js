@@ -3,7 +3,7 @@
 
  @author: Hans van den Akker (mysim1)
  @license NPOSL-3.0
- @copyright Bizboard, 2016
+ @copyright Bizboard, 2017
 
  */
 import merge                    from 'lodash/merge.js'
@@ -14,7 +14,9 @@ import LayoutUtility            from 'famous-flex/LayoutUtility.js'
 import Easing                   from 'famous/transitions/Easing.js'
 
 import { Utils }                    from '../utils/view/Utils.js'
-import { onOptionChange } from '../utils/view/OptionObserver'
+import { onOptionChange }           from '../utils/view/OptionObserver'
+import { RenderablePrototype }      from 'famous/utilities/RenderablePrototype.js'
+
 
 /**
  *
@@ -135,7 +137,12 @@ export const bindings = {
    */
   preprocess: (preprocessFunction) => {
     return (target) => {
-      prepPrototypeDecorations(target.prototype).preprocessBindings = preprocessFunction
+      let decorations = prepPrototypeDecorations(target.prototype)
+        let {preprocessBindings} = decorations;
+          if(!preprocessBindings){
+            preprocessBindings = decorations.preprocessBindings = []
+          }
+          preprocessBindings.push(preprocessFunction)
     }
   }
 
@@ -155,7 +162,15 @@ let createChainableDecorator = function (method, type) {
     }
     let decorations = type === decoratorTypes.childDecorator ? prepDecoratedRenderable(...arguments).decorations : prepPrototypeDecorations(viewOrRenderable.prototype);
 
-     method(decorations, type, viewOrRenderable, renderableName, descriptor);
+    /* If we are directly applying the decorator on a RenderablePrototype, we need to save the methods to be executed later,
+     * rather than just executing the methods. This is needed so that decorators can be applied both directly as methods in
+     * in combination with them being used actually as decorators, on the same renderable */
+    if(!descriptor && viewOrRenderable instanceof RenderablePrototype){
+      viewOrRenderable.addDirectlyAppliedDecoratorFunction(method)
+    } else {
+
+        method(decorations, type, viewOrRenderable, renderableName, descriptor);
+    }
 
 
      if(!descriptor){
@@ -175,6 +190,7 @@ let createChainableDecorator = function (method, type) {
         *  */
          return viewOrRenderable;
      }
+     return descriptor;
   };
 
   let root = this;
@@ -187,7 +203,8 @@ let createChainableDecorator = function (method, type) {
   if (root) {
     lastResult = methodToReturn;
     methodToReturn.createChainableDecorator = createChainableDecorator.bind(methodToReturn);
-
+    /* We are allowing for chaining here by defining the properties on the returning object having the same properties
+    *  as the original object. For example, layout.fullSize() would return an object that has all the methods of layout */
     Object.defineProperties(methodToReturn, Object.getOwnPropertyDescriptors(root.__proto__));
   }
 

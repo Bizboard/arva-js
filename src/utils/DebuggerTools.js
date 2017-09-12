@@ -16,19 +16,19 @@ window.getFromID = (id) => {
 
 window.views = {};
 
-window.muteLogs = true;
+window.muteLogs = false;
 
-let originalCopyPrototypeProperties= View.prototype._copyPrototypeProperties
+let originalCopyPrototypeProperties= View.prototype._copyPrototypeProperties;
 View.prototype._copyPrototypeProperties = function () {
   window.views[this._name()] = this;
   return originalCopyPrototypeProperties.call(this, ...arguments)
-}
+};
 
-let originalConstructLayoutController = View.prototype._createLayoutController
+let originalConstructLayoutController = View.prototype._createLayoutController;
 View.prototype._createLayoutController = function () {
   originalConstructLayoutController.call(this, ...arguments)
   this.layout._view = this
-}
+};
 
 let secretRedBackground = Symbol('secretRedBackground');
 View.prototype.makeRED = function () {

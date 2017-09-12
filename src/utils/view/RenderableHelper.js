@@ -79,8 +79,8 @@ export class RenderableHelper {
         }
         let { decorations } = this._renderables[renderableName]
         if (decorations) {
-            this._setDecorationPipes(renderableOrEquivalent, decorations.pipes, enabled)
-            this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions, enabled)
+            this._setDecorationPipes(renderableOrEquivalent, decorations.pipes, enabled);
+            this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions, enabled);
         }
     }
 
@@ -92,16 +92,16 @@ export class RenderableHelper {
      */
     _setDecorationEvents(renderable, subscriptions, enable = true) {
         for (let subscription of subscriptions || []) {
-            let subscriptionType = subscription.type || 'on'
+            let subscriptionType = subscription.type || 'on';
             let { options } = subscription;
             if (!enable) {
                 /* In famous, you remove a listener by calling 'removeListener', but some classes might have another event
                  * listener that is called 'off'
                  */
-                subscriptionType = renderable.removeListener ? 'removeListener' : 'off'
+                subscriptionType = renderable.removeListener ? 'removeListener' : 'off';
             }
-            let eventName = subscription.eventName
-            let callback = subscription.callback
+            let eventName = subscription.eventName;
+            let callback = subscription.callback;
             if (subscriptionType in renderable) {
                 renderable[subscriptionType](eventName, this._bindMethod(callback), options)
             }
@@ -449,49 +449,54 @@ export class RenderableHelper {
      * @param ...decorators The decorators that should be applied
      */
     decorateRenderable(renderableName, ...decorators) {
-        let renderable = this._renderables[renderableName]
+        let renderable = this._renderables[renderableName];
         /* Add translate and rotate to be sure that there decorators translateFrom and rotateFrom work */
         let fakeRenderable = {
             decorations: {
                 translate: renderable.decorations.translate || [0, 0, 0],
                 rotate: renderable.decorations.rotate || [0, 0, 0]
             }
-        }
+        };
 
         /* There can be existing decorators already, which are preserved. We are extending the decorators object,
          * by first creating a fake renderable that gets decorators */
-        this.applyDecoratorFunctionsToRenderable(fakeRenderable, decorators)
-        let { decorations } = fakeRenderable
-        let renderableOrEquivalent = this._getPipeableRenderableFromName(renderableName)
+        this.applyDecoratorFunctionsToRenderable(fakeRenderable, decorators);
+        let { decorations } = fakeRenderable;
+        this.applyDecoratorObjectToRenderable(renderableName, decorations);
+
+    }
+
+    applyDecoratorObjectToRenderable(renderableName, decorations) {
+        let renderable = this._renderables[renderableName];
+        let renderableOrEquivalent = this._getPipeableRenderableFromName(renderableName);
         /* We might need to do extra piping */
-        this._setDecorationPipes(renderableOrEquivalent, decorations.pipes)
-        this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions)
+        this._setDecorationPipes(renderableOrEquivalent, decorations.pipes);
+        this._setDecorationEvents(renderableOrEquivalent, decorations.eventSubscriptions);
 
         /* If the renderable is surface, we need to do some special things if there is a true size being used */
         if (Utils.renderableIsSurface(renderable)) {
-            let sizesToCheck = []
-            let { size, dock } = decorations
+            let sizesToCheck = [];
+            let { size, dock } = decorations;
             if (size) {
-                sizesToCheck.push(size)
+                sizesToCheck.push(size);
             }
             if (dock) {
-                sizesToCheck.push(dock.size)
+                sizesToCheck.push(dock.size);
             }
-            let renderableSize = [undefined, undefined]
-            let trueSizedInfo = this._sizeResolver.getSurfaceTrueSizedInfo(renderable)
+            let trueSizedInfo = this._sizeResolver.getSurfaceTrueSizedInfo(renderable);
             for (let sizeToCheck of sizesToCheck) {
                 for (let dimension of [0, 1]) {
                     if (this._sizeResolver.isValueTrueSized(sizeToCheck[dimension])) {
                         if (!trueSizedInfo) {
-                            this._sizeResolver.configureTrueSizedSurface(renderable, sizeToCheck)
+                            this._sizeResolver.configureTrueSizedSurface(renderable, sizeToCheck);
                         }
                     }
                 }
             }
         }
         let oldRenderableGroupName = this._getGroupName(renderable)
-        let shouldDisableDock = (fakeRenderable.decorations.disableDock && renderable.decorations.dock)
-        let shouldDisableFullSize = (fakeRenderable.decorations.size && renderable.decorations.fullSize)
+        let shouldDisableDock = (decorations.disableDock && renderable.decorations.dock)
+        let shouldDisableFullSize = (decorations.size && renderable.decorations.fullSize)
         if (shouldDisableDock) {
             delete renderable.decorations.dock
         }
@@ -500,12 +505,12 @@ export class RenderableHelper {
         }
 
         /* Merge existing flow decorations so they won't be discarded */
-        if (renderable.decorations.flow && fakeRenderable.decorations.flow) {
-            merge(fakeRenderable.decorations.flow, renderable.decorations.flow)
+        if (renderable.decorations.flow && decorations.flow) {
+            merge(decorations.flow, renderable.decorations.flow)
         }
 
         /* Extend the object */
-        Object.assign(renderable.decorations, fakeRenderable.decorations)
+        Object.assign(renderable.decorations, decorations);
         /* See if we have to redo the grouping */
         let needToChangeDecoratorGroup = (oldRenderableGroupName !== this._getGroupName(renderable)) || shouldDisableDock || shouldDisableFullSize
         /* Process new renderable equivalent, if that applies */
@@ -514,7 +519,6 @@ export class RenderableHelper {
             this._removeRenderableFromGroupWithName(renderableName, oldRenderableGroupName)
             this._addRenderableToDecoratorGroup(renderable, renderableCounterpart, renderableName)
         }
-
     }
 
     applyDecoratorFunctionsToRenderable(renderable, decorators) {
@@ -789,17 +793,23 @@ export class RenderableHelper {
      */
     _prioritiseDockAtIndex(renderableName, index) {
         let dockedRenderables = this._groupedRenderables.docked
-        let renderableToRearrange = dockedRenderables.get(renderableName)
+        let renderableToRearrange = dockedRenderables.get(renderableName);
 
         if (index < 0 || !renderableToRearrange) {
             return false
         }
 
-        dockedRenderables.remove(renderableName)
-        dockedRenderables.insert(index, renderableName, renderableToRearrange)
+        dockedRenderables.remove(renderableName);
+        dockedRenderables.insert(index, renderableName, renderableToRearrange);
 
         return true
 
     }
 
+    applyDirectDecoratorsFromRenderablePrototype(decorations, renderablePrototype) {
+        /* Instead of passing the renderable here, we pass the decorations-object directly, since this is what the
+         * directly applied decorator functions expect. This makes it a very simple function but it's kept as a separate
+         * for explanatory purposes */
+        this.applyDecoratorFunctionsToRenderable(decorations, renderablePrototype.getDirectlyAppliedDecoratorFunctions());
+    }
 }

@@ -28,19 +28,21 @@ export let onOptionChange = Symbol('onOptionChange')
 
 //TODO Not sure if the (nested) array listener tree is setup with maximum efficiency. Furthermore, partial array updates isn't supported
 export class OptionObserver extends EventEmitter {
-  _reverseListenerTree = {}
-  _newReverseListenerTree = {}
-  _listenerTreeMetaData = {}
-  _listenerTree = {}
+  /* The structure of what thing in the objects is mapped to the corresponding renderable update */
+  _listenerTree = {};
+  /* An array of nested objects representing a reverse lookup to the listener tree */
+  _reverseListenerTree = {};
+  _newReverseListenerTree = {};
+  _listenerTreeMetaData = {};
   /* We have to keep track of the models, because they use their own getter/setter hooks and we can't use the builtin ones */
-  _modelListeners = {}
-  _activeRecordings = {}
+  _modelListeners = {};
+  _activeRecordings = {};
   /* This contains the option difference to indicate a value change */
-  _newOptionUpdates = {}
-  _updatesForNextTick = {}
-  _forbiddenUpdatesForNextTick = {}
-  _listeningToSetters = true
-  _arrayObservers = []
+  _newOptionUpdates = {};
+  _updatesForNextTick = {};
+  _forbiddenUpdatesForNextTick = {};
+  _listeningToSetters = true;
+  _arrayObservers = [];
 
   /* The max supported depth in deep-checking iterations */
   static maxSupportedDepth = 10
@@ -51,14 +53,14 @@ export class OptionObserver extends EventEmitter {
    *
    * @param defaultOptions
    * @param options
-   * @param preprocessBindings
+   * @param preprocessMethods
    * @param debugName Used for displaying error messages and being able to trace them back more easily
    */
-  constructor (defaultOptions, options, preprocessBindings, debugName) {
+  constructor (defaultOptions, options, preprocessMethods, debugName) {
     super();
     this._errorName = debugName;
     ObjectHelper.bindAllMethods(this, this);
-    this._preprocessBindings = preprocessBindings;
+    this._preprocessMethods = preprocessMethods;
     OptionObserver._registerNewInstance(this);
     this.defaultOptions = defaultOptions;
     this.options = options;
@@ -75,7 +77,7 @@ export class OptionObserver extends EventEmitter {
    * @param renderableName
    */
   recordForRenderable (renderableName, callback) {
-    this._recordForEntry(renderableName, false)
+    this._recordForEntry([renderableName], false);
     callback()
     this._stopRecordingForEntry(renderableName)
   }
@@ -88,26 +90,26 @@ export class OptionObserver extends EventEmitter {
 
   /**
    * Records for a specific entry
-   * @param {String} entryName
+   * @param {Array} entryNames
    * @param {Boolean} allowSetters
    * @private
    */
-  _recordForEntry (entryName, allowSetters) {
-    this._activeRecordings[entryName] = {}
-    this._beginListenerTreeUpdates(entryName)
-    this._listenForModelUpdates(entryName)
-    let optionRecorder = this._activeRecordings[entryName].optionRecorder = ({type, propertyName, nestedPropertyPath}) => {
+  _recordForEntry (entryNames, allowSetters) {
+    this._accommodateInsideObject(this._activeRecordings, entryNames, {});
+    this._beginListenerTreeUpdates(entryNames);
+    this._listenForModelUpdates(entryNames);
+    let optionRecorder = this._accessObjectPath(this._activeRecordings, entryNames).optionRecorder = ({type, propertyName, nestedPropertyPath}) => {
       if (type === 'setter') {
         if (allowSetters) {
           /* Be sure to avoid infinite loops if there are setters that trigger getters that are matched to this
            *  recording */
-          this._preventEntryFromBeingUpdated(entryName)
+          this._preventEntryFromBeingUpdated(entryNames);
         } else {
-          this._throwError('Setting an option during instanciation of renderable')
+          this._throwError('Setting an option during instanciation of renderable');
         }
       } else {
-        let localListenerTree = this._accessListener(nestedPropertyPath.concat(propertyName))
-        this._addToListenerTree(entryName, localListenerTree)
+        let localListenerTree = this._accessListener(nestedPropertyPath.concat(propertyName));
+        this._addToListenerTree(entryNames, localListenerTree)
       }
     }
     this.on('optionTrigger', optionRecorder)
@@ -117,15 +119,20 @@ export class OptionObserver extends EventEmitter {
     return this._accessObjectPath(this._listenerTree, nestedPropertyPath, true)
   }
 
-  _addToListenerTree (renderableName, localListenerTree) {
+    /**
+     *
+     * @param {Array} entryNames
+     * @param {Object} localListenerTree
+     * @private
+     */
+  _addToListenerTree (entryNames, localListenerTree) {
 
-    // let listenerStructure = Array.isArray(localListenerTree) ? localListenerTree[0][listeners] : localListenerTree[listeners]
     let listenerStructure = localListenerTree[listeners];
 
     /* Renderable already added to listener tree, so no need to do that again */
-    let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._listenerTreeMetaData[renderableName]
+    let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._accessObjectPath(this._listenerTreeMetaData, entryNames)
 
-    this._newReverseListenerTree[renderableName].push(listenerStructure)
+    this._newReverseListenerTree[renderableName].push(listenerStructure);
 
     if (listenersCanChange && !listenersChanged) {
       /* We optimize the most common use case, which is that no listeners change.
@@ -172,8 +179,8 @@ export class OptionObserver extends EventEmitter {
    *
    * @private
    */
-  _doPreprocessing (incomingOptions) {
-    if (!this._preprocessBindings) {
+  _preprocessForIndex (incomingOptions, index) {
+    if (!this._preprocessMethods) {
       return
     }
 
@@ -193,11 +200,15 @@ export class OptionObserver extends EventEmitter {
       }
     }, [incomingOptions])
     this._recordForPreprocessing(() =>
-      this._preprocessBindings(incomingOptions, this.defaultOptions))
+      this._preprocessMethods[index](incomingOptions, this.defaultOptions))
     /* Prevent the preprocess from being triggered within the next flush. This is important
      * to do in case the preprocess function sets variables that it also gets, (ie if(!options.color) options.color = 'red')
      */
     this._forbiddenUpdatesForNextTick[OptionObserver.preprocess] = true
+  }
+
+  _doPreprocessing(incomingOptions){
+
   }
 
   _endListenerTreeUpdates (renderableName) {
@@ -219,18 +230,18 @@ export class OptionObserver extends EventEmitter {
     delete this._newReverseListenerTree[renderableName]
   }
 
-  _beginListenerTreeUpdates (renderableName) {
+  _beginListenerTreeUpdates (entryNames) {
     /* The listener meta data sets a counter in order to match the new listeners in comparison to the old listeners*/
-    let numberOfExistingListenerPaths = this._accessObjectPath(this._reverseListenerTree, [renderableName, length])
+    let numberOfExistingListenerPaths = this._accessObjectPath(this._reverseListenerTree, entryNames.concat('length'));
     if (numberOfExistingListenerPaths === notFound) {
       numberOfExistingListenerPaths = 0
     }
-    this._listenerTreeMetaData[renderableName] = {
-      matchingListenerIndex: 0,
-      listenersCanChange: !!numberOfExistingListenerPaths,
-      listenersChanged: false
-    }
-    this._newReverseListenerTree[renderableName] = []
+    this._accommodateInsideObject(this._listenerTreeMetaData, entryNames, {
+        matchingListenerIndex: 0,
+        listenersCanChange: !!numberOfExistingListenerPaths,
+        listenersChanged: false
+    });
+    this._accommodateInsideObject(this._newReverseListenerTree, entryNames, []);
 
   }
 
@@ -714,6 +725,17 @@ export class OptionObserver extends EventEmitter {
     return object
   }
 
+    /**
+     * Accommodates a path and puts the third argument at the end of that path
+     * @param {Object} object
+     * @param {Array<String>} path
+     * @param stuffToInsert
+     * @private
+     */
+  _accommodateInsideObject (object, path, stuffToInsert){
+    this._accommodateObjectPath(object, path.slice(0, -1))[path[path.length - 1]] = stuffToInsert;
+  }
+
   /**
    * Similar to _.get, except that it returns notFound (a symbol) when not found
    * @param object
@@ -1027,8 +1049,8 @@ export class OptionObserver extends EventEmitter {
     OptionObserver._dirtyInstances[dirtyInstance[instanceIdentifier]] = dirtyInstance
   }
 
-  _preventEntryFromBeingUpdated (entryName) {
-    this._forbiddenUpdatesForNextTick[entryName] = true
+  _preventEntryFromBeingUpdated (entryNames) {
+    this._accommodateInsideObject(this._forbiddenUpdatesForNextTick, entryNames, true);
   }
 
   _flushArrayObserverChanges () {
@@ -1037,7 +1059,7 @@ export class OptionObserver extends EventEmitter {
     }
   }
 
-  _listenForModelUpdates (entryName) {
+  _listenForModelUpdates (entryNames) {
     PrioritisedObject.setPropertyGetterSpy((model, propertyName) => {
       /* TODO handle the case where this can be undefined */
       let modelListener = this._modelListeners[model.constructor.name][model.id]
@@ -1045,7 +1067,7 @@ export class OptionObserver extends EventEmitter {
       let localListenerTree = this._accommodateObjectPath(modelListener.localListenerTree,
         [propertyName])
       localListenerTree[listeners] = localListenerTree[listeners] || {}
-      this._addToListenerTree(entryName, localListenerTree);
+      this._addToListenerTree(entryNames, localListenerTree);
       modelListener.startListening();
     });
   }
