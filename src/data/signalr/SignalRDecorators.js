@@ -95,6 +95,7 @@ export class SignalRConnection extends EventEmitter {
         this._connected = false;
         this._authorised = false;
         this.onAuthChange = null;
+        this.hasAuthChanged = false;
         this.proxies = {};
         this.proxyCount = 0;
         this.options = {
@@ -128,8 +129,9 @@ export class SignalRConnection extends EventEmitter {
                 }
                 this.onAuthChange = super.on('stateChange', (state) => {
                     if(state.newState === 1) {
-                        if(this._userToken) {
+                        if(this.hasAuthChanged) {
                             handler.call(context, this);
+                            this.hasAuthChanged = false;
                         }
                     }
                 });
@@ -172,7 +174,7 @@ export class SignalRConnection extends EventEmitter {
                 this.setUserToken(access_token);
 
                 let refreshedStart = await this.refreshConnectionAuth();
-
+                this.hasAuthChanged = true;
                 this.emit('login');
                 return true;
 
@@ -200,6 +202,7 @@ export class SignalRConnection extends EventEmitter {
     async deauthenticateUser(){
         localStorage.removeItem('trsq-auth');
         this._userToken = null;
+        this.hasAuthChanged = true;
         let refreshedStart = await this.refreshConnectionAuth();
         this.emit('logout');
     }
