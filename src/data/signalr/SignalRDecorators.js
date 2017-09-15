@@ -123,7 +123,7 @@ export class SignalRConnection extends EventEmitter {
         super.on(event, handler, context);
         switch(event) {
             case "authChange": 
-                if(this._authorised) {
+                if(this._userToken) {
                     handler.call(context, this);
                 }
                 this.onAuthChange = super.on('stateChange', (state) => {
