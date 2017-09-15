@@ -93,6 +93,8 @@ export class SignalRConnection extends EventEmitter {
         super();
         this.connection = null;
         this._connected = false;
+        this._authorised = false;
+        this.onAuthChange = null;
         this.proxies = {};
         this.proxyCount = 0;
         this.options = {
@@ -115,6 +117,26 @@ export class SignalRConnection extends EventEmitter {
         }
         this.options = combineOptions(this.options, options);
         return this;
+    }
+
+    on(event, handler, context) {
+        super.on(event, handler, context);
+        switch(event) {
+            case "authChange": 
+                if(this._authorised) {
+                    handler.call(context, this);
+                }
+                this.onAuthChange = super.on('stateChange', (state) => {
+                    if(state.newState === 1) {
+                        if(this._userToken) {
+                            handler.call(context, this);
+                        }
+                    }
+                });
+                break;
+            default:
+                break;
+        }
     }
 
     getUserToken(){
@@ -169,6 +191,7 @@ export class SignalRConnection extends EventEmitter {
         let start = this.connection.start();
         return new Promise( (resolve) => {
             start.done(()=> {
+                this._authorised = true;
                 resolve()
             });
         });
@@ -225,6 +248,7 @@ export class SignalRConnection extends EventEmitter {
     }
 
     stateChangedCallback(state){
+        this.emit('stateChange', state);
         if (state.newState === this.connectionStates.connectected){
             this._connected = true;
         } else if (state.newState === this.connectionStates.disconnected){
