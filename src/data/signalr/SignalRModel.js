@@ -45,7 +45,7 @@ export class SignalRModel extends LocalModel {
     get(id) {
         let obj = arguments[0];
         if(typeof obj === "undefined") {
-            this.emit('getError');
+            this.emit('getError', 'getError');
             return;
         }
         if(Array.isArray(obj)) { obj = obj[0]; }
