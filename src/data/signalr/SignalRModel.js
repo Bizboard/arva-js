@@ -44,6 +44,10 @@ export class SignalRModel extends LocalModel {
     @signalr.registerServerCallback('get')
     get(id) {
         let obj = arguments[0];
+        if(typeof obj === "undefined") {
+            this.emit('getError');
+            return;
+        }
         if(Array.isArray(obj)) { obj = obj[0]; }
         for(let [key, value] of Object.entries(obj)) {
             this[key] = value;
