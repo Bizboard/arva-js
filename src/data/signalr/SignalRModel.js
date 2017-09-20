@@ -52,7 +52,7 @@ export class SignalRModel extends LocalModel {
         for(let [key, value] of Object.entries(obj)) {
             this[key] = value;
         }
-        this.emit('get');
+        this.emit('get', this);
         this._ready = true;
     }
 
