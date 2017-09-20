@@ -231,23 +231,25 @@ export class SignalRConnection extends EventEmitter {
     }
 
     start() {
-        this.connection.stateChanged(this.stateChangedCallback);
+        return new Promise((resolve) => {
+            this.connection.stateChanged(this.stateChangedCallback);
+            if(this.connection && this.proxyCount > 0) {
+                this.log('Starting connection');
+                const start = this.connection.start();
+                start.done(() => {
+                    this._connected = true;
+                    this.emit('ready');
+                    this.emit('connected');
+                    resolve(start)
+                }).catch( ()=>{
+                    this._connected = false;
+                    this.emit('disconnected');
+                    resolve(this.restart());
+                });
 
-        if(this.connection && this.proxyCount > 0) {
-            this.log('Starting connection');
-            const start = this.connection.start();
-            start.done(() => {
-                this._connected = true;
-                this.emit('ready');
-                this.emit('connected');
-            }).catch( ()=>{
-                this._connected = false;
-                this.emit('disconnected');
-                this.restart()
-            });
+            }
+        })
 
-            return start;
-        }
     }
 
     stateChangedCallback(state){
@@ -264,14 +266,17 @@ export class SignalRConnection extends EventEmitter {
     }
 
     restart() {
-        this._reconnectTimeout = setTimeout(()=>{
-            let start = this.connection.start();
-            start.done(()=>{
-                this._connected = true;
-                this.emit('ready');
-                this.emit('connected');
-            })
-        }, 5000);
+        return new Promise((resolve) => {
+            this._reconnectTimeout = setTimeout(()=>{
+                let start = this.connection.start();
+                start.done(()=>{
+                    this._connected = true;
+                    this.emit('ready');
+                    this.emit('connected');
+                    resolve(start);
+                })
+            }, 5000);
+        })
     }
 
     createHubProxy(hubName) {
