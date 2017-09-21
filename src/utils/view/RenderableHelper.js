@@ -247,7 +247,7 @@ export class RenderableHelper {
             renderable.draggable = draggable;
             renderable.node.add(draggable).add(renderable);
             renderable.pipe(draggable);
-            //TODO: We don't do an unpiping of the draggable, which might be dangerous
+            //TODO: We don't do an unpiping of the draggable, which might be dangerous for memory leaks
             this._pipeToView(draggable);
         } else if (modifier) {
             renderable.node = new RenderNode();
