@@ -60,8 +60,8 @@ export class signalr {
         if(this.clientMethods) {
             for(const method of this.clientMethods) {
                 if(method.model === this.constructor.name || method.model === this.constructor.__proto__.name) {
-                    this.proxy.on(method.fnName, () => {
-                        method.fn.apply(this, [...arguments]);
+                    this.proxy.on(method.fnName, (...params) => {
+                        method.fn.apply(this, [...params]);
                     })
                     this.connection.log(`[${this.hubName}] Mapping Client Method ${method.fnName} to ${method.fn.name}`);
                 }
@@ -94,6 +94,9 @@ export class SignalRConnection extends EventEmitter {
         super();
         this.connection = null;
         this._connected = false;
+        this._authorised = false;
+        this.onAuthChange = null;
+        this.hasAuthChanged = false;
         this.proxies = {};
         this.proxyCount = 0;
         this.options = {
@@ -116,6 +119,27 @@ export class SignalRConnection extends EventEmitter {
         }
         this.options = combineOptions(this.options, options);
         return this;
+    }
+
+    on(event, handler, context) {
+        super.on(event, handler, context);
+        switch(event) {
+            case "authChange": 
+                if(this._userToken) {
+                    handler.call(context, this);
+                }
+                this.onAuthChange = super.on('stateChange', (state) => {
+                    if(state.newState === 1) {
+                        if(this.hasAuthChanged) {
+                            handler.call(context, this);
+                            this.hasAuthChanged = false;
+                        }
+                    }
+                });
+                break;
+            default:
+                break;
+        }
     }
 
     getUserToken(){
@@ -151,7 +175,7 @@ export class SignalRConnection extends EventEmitter {
                 this.setUserToken(access_token);
 
                 let refreshedStart = await this.refreshConnectionAuth();
-
+                this.hasAuthChanged = true;
                 this.emit('login');
                 return true;
 
@@ -170,6 +194,7 @@ export class SignalRConnection extends EventEmitter {
         let start = this.connection.start();
         return new Promise( (resolve) => {
             start.done(()=> {
+                this._authorised = true;
                 resolve()
             });
         });
@@ -178,6 +203,7 @@ export class SignalRConnection extends EventEmitter {
     async deauthenticateUser(){
         localStorage.removeItem('trsq-auth');
         this._userToken = null;
+        this.hasAuthChanged = true;
         let refreshedStart = await this.refreshConnectionAuth();
         this.emit('logout');
     }
@@ -206,26 +232,29 @@ export class SignalRConnection extends EventEmitter {
     }
 
     start() {
-        this.connection.stateChanged(this.stateChangedCallback);
+        return new Promise((resolve) => {
+            this.connection.stateChanged(this.stateChangedCallback);
+            if(this.connection && this.proxyCount > 0) {
+                this.log('Starting connection');
+                const start = this.connection.start();
+                start.done(() => {
+                    this._connected = true;
+                    this.emit('ready');
+                    this.emit('connected');
+                    resolve(start)
+                }).catch( ()=>{
+                    this._connected = false;
+                    this.emit('disconnected');
+                    resolve(this.restart());
+                });
 
-        if(this.connection && this.proxyCount > 0) {
-            this.log('Starting connection');
-            const start = this.connection.start();
-            start.done(() => {
-                this._connected = true;
-                this.emit('ready');
-                this.emit('connected');
-            }).catch( ()=>{
-                this._connected = false;
-                this.emit('disconnected');
-                this.restart()
-            });
+            }
+        })
 
-            return start;
-        }
     }
 
     stateChangedCallback(state){
+        this.emit('stateChange', state);
         if (state.newState === this.connectionStates.connectected){
             this._connected = true;
         } else if (state.newState === this.connectionStates.disconnected){
@@ -238,14 +267,17 @@ export class SignalRConnection extends EventEmitter {
     }
 
     restart() {
-        this._reconnectTimeout = setTimeout(()=>{
-            let start = this.connection.start();
-            start.done(()=>{
-                this._connected = true;
-                this.emit('ready');
-                this.emit('connected');
-            })
-        }, 5000);
+        return new Promise((resolve) => {
+            this._reconnectTimeout = setTimeout(()=>{
+                let start = this.connection.start();
+                start.done(()=>{
+                    this._connected = true;
+                    this.emit('ready');
+                    this.emit('connected');
+                    resolve(start);
+                })
+            }, 5000);
+        })
     }
 
     createHubProxy(hubName) {
