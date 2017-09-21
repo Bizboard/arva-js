@@ -3,6 +3,7 @@ import {combineOptions} from 'arva-js/utils/CombineOptions.js';
 import {Injection}      from 'arva-js/utils/Injection.js';
 
 import EventEmitter     from 'eventemitter3';
+import 'whatwg-fetch';
 
 
 export class signalr {
