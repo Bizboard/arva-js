@@ -34,11 +34,13 @@ export class SignalRArray extends LocalPrioritisedArray {
 
     @signalr.registerServerCallback('getAll')
     getAll(data) {
+        while(this.length) {
+            this.remove(0);
+        }
         let promises = [];
         for (const id of data) {
             promises.push(this.add(Injection.get(this._dataType, id)).once('get'));
         }
-        window.promises = promises;
         Promise.all(promises).then(() => {
             this._ready = true;
             this._eventEmitter.emit('getAll');
