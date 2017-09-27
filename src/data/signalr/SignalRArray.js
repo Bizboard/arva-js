@@ -32,6 +32,18 @@ export class SignalRArray extends LocalPrioritisedArray {
         this.getAll();
     }
 
+    serialize() {
+        return this._children.map(({shadow}) => shadow)
+    }
+
+    deserialize(array) {
+        let prioArray = new this();
+        for(let entry of array){
+            prioArray.add(entry)
+        }
+        return prioArray
+    }
+
     @signalr.registerServerCallback('getAll')
     getAll(data) {
         while(this.length) {
@@ -41,9 +53,10 @@ export class SignalRArray extends LocalPrioritisedArray {
         for (const id of data) {
             promises.push(this.add(Injection.get(this._dataType, id)).once('get'));
         }
-        Promise.all(promises).then(() => {
+        return Promise.all(promises).then(() => {
             this._ready = true;
             this._eventEmitter.emit('getAll');
+            return this;
         })
     }
 

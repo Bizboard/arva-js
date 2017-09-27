@@ -37,6 +37,14 @@ export class SignalRModel extends LocalModel {
         
     }
 
+    serialize(){
+        return this.shadow;
+    }
+
+    deserialize(shadow){
+        return new this(null, shadow);
+    }
+
     _init() {
         this.onConnect();
     }

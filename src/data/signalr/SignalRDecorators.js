@@ -18,6 +18,17 @@ export class signalr {
         }
     }
 
+    static cachedOffline() {
+        return function (target, name, descriptor) {
+            let {cachedOfflineMethods} = target;
+            if (!cachedOfflineMethods) {
+                cachedOfflineMethods = target.cachedOfflineMethods = {};
+            }
+            cachedOfflineMethods[name] = true;
+            return descriptor;
+        }
+    }
+
     static registerServerCallback(fnName = null) {
         return function (target, name, descriptor) {
             if (!fnName) {
@@ -62,9 +73,9 @@ export class signalr {
     }
 
     static mapClientMethods() {
-        if(this.clientMethods) {
-            for(const method of this.clientMethods) {
-                if(method.model === this.constructor.name || method.model === this.constructor.__proto__.name) {
+        if (this.clientMethods) {
+            for (const method of this.clientMethods) {
+                if (method.model === this.constructor.name || method.model === this.constructor.__proto__.name) {
                     this.proxy.on(method.fnName, (...params) => {
                         method.fn.apply(this, [...params]);
                     });
@@ -74,59 +85,83 @@ export class signalr {
         }
     }
 
+    static isFunctionAvailableOffline(object, methodName){
+        return object.cachedOfflineMethods && object.cachedOfflineMethods[methodName];
+    }
+
     static mapServerCallbacks() {
         for (const method of this.serverCallbacks || []) {
-            if (method.model === this.constructor.name || method.model === this.constructor.__proto__.name) {
-                let serverCallbackName = method.fnName;
-                this[method.fn.name] = async (...params) => {
+            if (![this.constructor.name, this.constructor.__proto__.name].includes(method.model)) {
+                continue;
+            }
 
-
-                    if (!this.connection.isConnected()) {
-                        let cachedResult = await signalr.getFromLocalStorage(this, serverCallbackName);
-                        if (cachedResult !== undefined) {
-                            return cachedResult;
-                        }
+            let serverCallbackName = method.fnName;
+            this[method.fn.name] = async (...params) => {
+                let isFunctionAvailableOffline = signalr.isFunctionAvailableOffline(this, method.fn.name)
+                if(isFunctionAvailableOffline){
+                    let cachedResult = await signalr.tryGetCachedResult(serverCallbackName, this);
+                    if(cachedResult !== undefined){
+                        return cachedResult;
                     }
+                }
 
-                    await this.connection.once('ready');
+                await this.connection.once('ready');
 
-                    return this.proxy.invoke.call(this.proxy, serverCallbackName, ...params)
+                return new Promise((resolve, reject) =>
+                    this.proxy.invoke.call(this.proxy, serverCallbackName, ...params)
                         .done(async (...params) => {
                             let result = await method.fn.apply(this, params);
-                            signalr.saveToLocalStorage(this, serverCallbackName, result);
-                            this._eventEmitter.emit(method.fnName, result);
+                            if(isFunctionAvailableOffline){
+                                signalr.saveToLocalStorage(this, keyString, this.serialize(result));
+                            }
+                            let emit = this.emit || this._eventEmitter.emit.bind(this._eventEmitter);
+                            emit(method.fnName, result);
                             /* Catch common default behaviour */
                             if (result === undefined && params.length === 1) {
                                 return params[0];
                             }
-                            return result;
+                            resolve(result)
                         }).fail((e) => {
-                            console.debug(e);
-                        });
-                }
+                        reject(e)
+                        // console.debug(e);
+                    })
+                )
+            };
 
+            this.connection.log(`[${this.hubName}] Mapping Server Callback ${method.fnName} to ${method.fn.name}`);
 
-                this.connection.log(`[${this.hubName}] Mapping Server Callback ${method.fnName} to ${method.fn.name}`);
-            }
         }
 
     }
 
     static cache = {};
 
-    static saveToLocalStorage(signalRArray, methodName, data) {
-        let keyString = this.getKeyString(signalRArray, methodName);
-        cache[keyString] = data;
+    static saveToLocalStorage(model, keyString, data) {
+        this.cache[keyString] = data;
         return idbKeyVal.set(keyString, data);
     }
 
-    static getFromLocalStorage(signalRArray, methodName) {
-        let keyString = this.getKeyString(signalRArray, methodName);
+    static getFromLocalStorage(model, keyString) {
         return this.cache[keyString] || idbKeyVal.get(keyString);
     }
 
-    static getKeyString(signalRArray, methodName) {
-        return `${signalRArray._id}${methodName}`;
+    static getKeyString(serverCallbackName, modelOrArray) {
+        let keyString = `${serverCallbackName}-${modelOrArray.constructor.name}`;
+        modelOrArray._id && (keyString += `-${modelOrArray._id}`);
+        return keyString;
+    }
+
+    static async tryGetCachedResult(serverCallbackName, object) {
+        let keyString = signalr.getKeyString(object, serverCallbackName);
+
+        if (!object.connection.isConnected()) {
+            let cachedResult = await signalr.getFromLocalStorage(object, keyString);
+            if (cachedResult !== undefined) {
+                let emit = object.emit || object._eventEmitter.emit.bind(object._eventEmitter);
+                emit(method.fnName, cachedResult);
+                return cachedResult;
+            }
+        }
     }
 }
 
@@ -155,7 +190,22 @@ export class SignalRConnection extends EventEmitter {
         this.stateChangedCallback = this.stateChangedCallback.bind(this);
     }
 
-
+    /**
+     * Makes the once function return a promise
+     * @param event
+     * @param handler
+     * @param context
+     * @returns {Promise}
+     */
+    once(event, handler, context = this) {
+        return new Promise((resolve)=>{
+            this.on(event, function onceWrapper() {
+                this.off(event, onceWrapper, context);
+                handler && handler.call(context, ...arguments);
+                resolve(...arguments);
+            }, this);
+        });
+    }
 
     setOptions(options) {
         if (options.url) {
@@ -167,14 +217,14 @@ export class SignalRConnection extends EventEmitter {
 
     on(event, handler, context) {
         super.on(event, handler, context);
-        switch(event) {
+        switch (event) {
             case "authChange":
-                if(this._userToken) {
+                if (this._userToken) {
                     handler.call(context, this);
                 }
                 this.onAuthChange = super.on('stateChange', (state) => {
-                    if(state.newState === 1) {
-                        if(this.hasAuthChanged) {
+                    if (state.newState === 1) {
+                        if (this.hasAuthChanged) {
                             handler.call(context, this);
                             this.hasAuthChanged = false;
                         }
@@ -186,7 +236,7 @@ export class SignalRConnection extends EventEmitter {
         }
     }
 
-    getUserToken(){
+    getUserToken() {
         let token = localStorage.getItem('trsq-auth');
         if (token !== undefined && token !== null) {
             this._userToken = token;
@@ -236,8 +286,8 @@ export class SignalRConnection extends EventEmitter {
         this.connection.stop();
         this.connection.qs.access_token = this.getUserToken();
         let start = this.connection.start();
-        return new Promise( (resolve) => {
-            start.done(()=> {
+        return new Promise((resolve) => {
+            start.done(() => {
                 this._authorised = true;
                 resolve()
             });
@@ -278,7 +328,7 @@ export class SignalRConnection extends EventEmitter {
     start() {
         return new Promise((resolve) => {
             this.connection.stateChanged(this.stateChangedCallback);
-            if(this.connection && this.proxyCount > 0) {
+            if (this.connection && this.proxyCount > 0) {
                 this.log('Starting connection');
                 const start = this.connection.start();
                 start.done(() => {
@@ -286,7 +336,7 @@ export class SignalRConnection extends EventEmitter {
                     this.emit('ready');
                     this.emit('connected');
                     resolve(start)
-                }).catch( ()=>{
+                }).catch(() => {
                     this._connected = false;
                     this.emit('disconnected');
                     resolve(this.restart());
@@ -298,8 +348,7 @@ export class SignalRConnection extends EventEmitter {
 
     stateChangedCallback(state) {
         if (state.newState === this.connectionStates.connectected) {
-        this.emit('stateChange', state);
-        if (state.newState === this.connectionStates.connectected){
+            this.emit('stateChange', state);
             this._connected = true;
         } else if (state.newState === this.connectionStates.disconnected) {
             this._connected = false;
@@ -312,9 +361,9 @@ export class SignalRConnection extends EventEmitter {
 
     restart() {
         return new Promise((resolve) => {
-            this._reconnectTimeout = setTimeout(()=>{
+            this._reconnectTimeout = setTimeout(() => {
                 let start = this.connection.start();
-                start.done(()=>{
+                start.done(() => {
                     this._connected = true;
                     this.emit('ready');
                     this.emit('connected');
