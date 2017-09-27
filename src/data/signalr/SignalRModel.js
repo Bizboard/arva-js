@@ -50,7 +50,7 @@ export class SignalRModel extends LocalModel {
     }
 
     @signalr.registerServerCallback('get')
-    get(id) {
+    value(id) {
         let obj = arguments[0];
         if(typeof obj === "undefined") {
             this.emit('getError', 'getError');

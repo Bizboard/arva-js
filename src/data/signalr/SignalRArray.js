@@ -51,7 +51,7 @@ export class SignalRArray extends LocalPrioritisedArray {
         }
         let promises = [];
         for (const id of data) {
-            promises.push(this.add(Injection.get(this._dataType, id)).once('get'));
+            promises.push(this.add(Injection.get(this._dataType, id)).once('value'));
         }
         return Promise.all(promises).then(() => {
             this._ready = true;
