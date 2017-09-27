@@ -20,8 +20,9 @@ export class SignalRModel extends LocalModel {
         signalr.mapClientMethods.apply(this);
         signalr.mapServerCallbacks.apply(this);
         if(this.argumentId) {
-            this.get(this.argumentId);
+            this.value(this.argumentId);
         }
+        this._dataSource.ready = false;
         if(this.connection && this.proxy) {
                 if(this.connection.connection.state === 1) {
                     this._init();
@@ -60,8 +61,8 @@ export class SignalRModel extends LocalModel {
         for(let [key, value] of Object.entries(obj)) {
             this[key] = value;
         }
-        this.emit('get', this);
         this._ready = true;
+        this._dataSource._ready = true;
         return this;
     }
 
