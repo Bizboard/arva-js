@@ -85,6 +85,7 @@ EventEmitter.prototype.emit = function (type) {
       'sizeChanged',
       'reflow',
       'start',
+      'newSize',
       'end',
       'update',
       'layoutControllerReflow',

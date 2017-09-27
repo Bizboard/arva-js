@@ -8,7 +8,7 @@ let isObserved = Symbol('isObserved')
 
 export class ArrayObserver extends EventEmitter {
 
-  dirtyPositions = {}
+  _dirtyPositions = {}
 
   /**
    *
@@ -87,7 +87,8 @@ export class ArrayObserver extends EventEmitter {
   }
 
   _hasHookAtIndex (index) {
-    return !!Object.getOwnPropertyDescriptor(this._array, index).get
+    let propertyDescriptor = Object.getOwnPropertyDescriptor(this._array, index);
+    return propertyDescriptor && !!propertyDescriptor.get;
   }
 
   _overrideMethods () {
@@ -153,7 +154,7 @@ export class ArrayObserver extends EventEmitter {
 
 export class MappedArray extends Array {
   constructor (array) {
-    super(array)
+    super(array);
     this._array = array
   }
 

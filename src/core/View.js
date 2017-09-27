@@ -749,10 +749,13 @@ export class View extends FamousView {
             /* The close the decoration is to this constructor in the prototype chain, the higher the priority */
             let decorations = this.decorationsMap.get(currentClass.__proto__.constructor)
             for (let property in decorations) {
+                let decoration = decorations[property];
                 if (!(property in this.decorations)) {
-                    this.decorations[property] = decorations[property]
+                    this.decorations[property] = decoration;
                 } else if (property === 'defaultOptions' && this.decorations.defaultOptions) {
-                    this.decorations.defaultOptions = combineOptions(decorations[property], this.decorations.defaultOptions)
+                    this.decorations.defaultOptions = combineOptions(decoration, this.decorations.defaultOptions);
+                } else if (property === 'preprocessBindings' && this.decorations.preprocessBindings) {
+                    this.decorations.preprocessBindings.push(decoration[0]);
                 }
             }
         }
@@ -776,8 +779,6 @@ export class View extends FamousView {
 
     setNewOptions(options) {
         this._optionObserver.recombineOptions(options);
-        /* Re-assign the options to make sure they're up to date */
-        this.options = this._optionObserver.options;
         this._setupExtraRenderables();
     }
 
@@ -886,6 +887,8 @@ export class View extends FamousView {
      * @private
      */
     _setupRenderable(renderableInitializer, decorations) {
+      /* Re-assign the options to make sure they're up to date */
+      this.options = this._optionObserver.options;
         //todo clean up this function, it's too long!!
         if (!decorations) {
             decorations = currentRenderable && currentRenderable.decorations
