@@ -199,13 +199,19 @@ export class SignalRConnection extends EventEmitter {
      */
     once(event, handler, context = this) {
         return new Promise((resolve)=>{
-            this.on(event, function onceWrapper() {
-                this.off(event, onceWrapper, context);
-                handler && handler.call(context, ...arguments);
+            if((event === 'ready') && this._connected) {
+                handler && handler.call(context, this);
                 resolve(...arguments);
-            }, this);
+            } else {
+                this.on(event, function onceWrapper() {
+                    this.off(event, onceWrapper, context);
+                    handler && handler.call(context, ...arguments);
+                    resolve(...arguments);
+                }, this);
+            }
         });
     }
+
 
     setOptions(options) {
         if (options.url) {
