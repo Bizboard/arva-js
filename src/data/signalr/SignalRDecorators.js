@@ -95,12 +95,18 @@ export class signalr {
                 continue;
             }
 
+            let emit = this.emit || this._eventEmitter.emit.bind(this._eventEmitter);
             let serverCallbackName = method.fnName;
+            let clientCallbackName = method.fn.name;
+
             this[method.fn.name] = async (...params) => {
-                let isFunctionAvailableOffline = signalr.isFunctionAvailableOffline(this, method.fn.name)
+                let isFunctionAvailableOffline = signalr.isFunctionAvailableOffline(this, method.fn.name);
+
                 if(isFunctionAvailableOffline){
                     let cachedResult = await signalr.tryGetCachedResult(serverCallbackName, this);
                     if(cachedResult !== undefined){
+                        cachedResult = this.deserialize(cachedResult);
+                        emit(clientCallbackName, cachedResult);
                         return cachedResult;
                     }
                 }
@@ -112,10 +118,12 @@ export class signalr {
                         .done(async (...params) => {
                             let result = await method.fn.apply(this, params);
                             if(isFunctionAvailableOffline){
-                                signalr.saveToLocalStorage(this, keyString, this.serialize(result));
+                                signalr.saveToLocalStorage(this, signalr.getKeyString(serverCallbackName, this), this.serialize(result));
                             }
-                            let emit = this.emit || this._eventEmitter.emit.bind(this._eventEmitter);
-                            emit(method.fnName, result);
+
+                            if (this.processResult) this.processResult(result);
+
+                            emit(clientCallbackName, result);
                             /* Catch common default behaviour */
                             if (result === undefined && params.length === 1) {
                                 return params[0];
@@ -136,7 +144,24 @@ export class signalr {
 
     static cache = {};
 
-    static saveToLocalStorage(model, keyString, data) {
+    static fileNames = ["ProfilePicture"];
+
+    static async saveToLocalStorage(model, keyString, data) {
+        for(let [key, value] of Object.entries(data)) {
+            if (signalr.fileNames.includes(key)){
+                try {
+                    console.log("!!!MODEL", model.connection.options.url);
+                    let response = await fetch(`${model.connection.options.url}/${value}`);
+                    if (response.ok){
+                        let file = response.blob();
+                        data[key] = file;
+                    }
+                } catch (e){
+                    console.log("error saving file", value, "error", e)
+                }
+            }
+        };
+
         this.cache[keyString] = data;
         return idbKeyVal.set(keyString, data);
     }
@@ -152,13 +177,17 @@ export class signalr {
     }
 
     static async tryGetCachedResult(serverCallbackName, object) {
-        let keyString = signalr.getKeyString(object, serverCallbackName);
+        let keyString = signalr.getKeyString(serverCallbackName, object);
+
+        // make sure we've already tried to connect once.
+        await object.connection.once('ready');
 
         if (!object.connection.isConnected()) {
             let cachedResult = await signalr.getFromLocalStorage(object, keyString);
+
             if (cachedResult !== undefined) {
-                let emit = object.emit || object._eventEmitter.emit.bind(object._eventEmitter);
-                emit(method.fnName, cachedResult);
+                // let emit = object.emit || object._eventEmitter.emit.bind(object._eventEmitter);
+                // emit(serverCallbackName, cachedResult);
                 return cachedResult;
             }
         }
@@ -171,6 +200,10 @@ export class SignalRConnection extends EventEmitter {
         super();
         this.connection = null;
         this._connected = false;
+        // ready is set & fires an event when the first connection promise resolves or fails
+        // because App.js' loadad() isn't async it won't wait for the promise to resolve there,
+        // so we have to do it here.
+        this._ready = false;
         this._authorised = false;
         this.onAuthChange = null;
         this.hasAuthChanged = false;
@@ -338,12 +371,16 @@ export class SignalRConnection extends EventEmitter {
                 this.log('Starting connection');
                 const start = this.connection.start();
                 start.done(() => {
+                    this._ready = true;
                     this._connected = true;
+                    // ready indicates that we've tried to connect once so we know if we're actually on/offline
                     this.emit('ready');
                     this.emit('connected');
                     resolve(start)
                 }).catch(() => {
                     this._connected = false;
+                    this._ready = true;
+                    this.emit('ready');
                     this.emit('disconnected');
                     resolve(this.restart());
                 });

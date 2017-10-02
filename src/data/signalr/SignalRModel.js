@@ -19,7 +19,8 @@ export class SignalRModel extends LocalModel {
         this.proxy = this.connection.getProxy(this.hubName) || null;
         signalr.mapClientMethods.apply(this);
         signalr.mapServerCallbacks.apply(this);
-        if(this.argumentId) {
+
+        if(this.argumentId && !data) {
             this.value(this.argumentId);
         }
 
@@ -43,13 +44,17 @@ export class SignalRModel extends LocalModel {
     }
 
     deserialize(shadow){
-        return new this(null, shadow);
+        for(let [key, value] of Object.entries(shadow)) {
+            this[key] = value;
+        }
+        return this;
     }
 
     _init() {
         this.onConnect();
     }
 
+    @signalr.cachedOffline()
     @signalr.registerServerCallback('get')
     value(id) {
         let obj = arguments[0];
