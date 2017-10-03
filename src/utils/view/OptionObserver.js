@@ -395,13 +395,20 @@ export class OptionObserver extends EventEmitter {
    * @private
    */
   _onEventTriggered (info) {
-    this.emit('optionTrigger', info)
+    if(this._ignoreListeners){
+      return;
+    }
+    this.emit('optionTrigger', info);
+
     if (info.type === 'setter' && this._listeningToSetters) {
-      let {nestedPropertyPath, propertyName, parentObject, oldValue} = info
+      /* In order to avoid accidentally triggering getters when reading and manipulating data, set boolean flag */
+      this._ignoreListeners = true;
+      let {nestedPropertyPath, propertyName, parentObject, oldValue, newValue} = info;
       /* If reassignment to exactly the same thing, then don't do any update */
-      if (oldValue !== parentObject[propertyName]) {
-        this._updateOptionsStructure([propertyName], parentObject, nestedPropertyPath, [oldValue])
+      if (oldValue !== newValue) {
+        this._updateOptionsStructure([propertyName], parentObject, nestedPropertyPath, [oldValue]);
       }
+      this._ignoreListeners = false;
     }
   }
 
