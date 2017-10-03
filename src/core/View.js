@@ -631,9 +631,9 @@ export class View extends FamousView {
         })
 
         /* Add the layoutController to this View's rendering context. */
-        this._prepareLayoutController()
+        this._prepareLayoutController();
 
-        if ((this.decorations.scrollable || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')) {
+        if ((this.decorations.scrollableOptions || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')) {
             this.addRenderable(new Surface(), layout.fullSize(), layout.translate(0, 0, -10))
         }
     }
