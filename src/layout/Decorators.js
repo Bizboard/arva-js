@@ -127,22 +127,30 @@ export const bindings = {
    * Return value is ignored. It is important that the function doesn't modify defaultOptions
    *
    * @example
-   * @bindings.preprocess((options, defaultOptions) => {
+   * @bindings.preprocess()
+   * propagateBackgroundColor((options, defaultOptions) {
    *  // Shortcut way of specifying the sideMenu.menuItem.backgroundColor
    *  options.sideMenu = combineOptions(defaultOptions.sideMenu, {menuItem: {backgroundColor: options.backgroundColor}})
    * })
    *
-   * @param preprocessFunction
+   * @param
    * @returns {function(*)}
    */
-  preprocess: (preprocessFunction) => {
-    return (target) => {
-      let decorations = prepPrototypeDecorations(target.prototype)
+  preprocess: () => {
+    return (prototype, methodName, descriptor) => {
+      let decorations = prepPrototypeDecorations(prototype);
         let {preprocessBindings} = decorations;
           if(!preprocessBindings){
-            preprocessBindings = decorations.preprocessBindings = []
+            preprocessBindings = decorations.preprocessBindings = [];
           }
-          preprocessBindings.push(preprocessFunction)
+          let preprocessFunction  = descriptor.value;
+          descriptor.value = function () {
+              this.options = this._optionObserver.options;
+              return this._optionObserver.preprocessForIndex(this.options, this.decorations.preprocessBindings.indexOf(preprocessFunction));
+          };
+          preprocessFunction.internalMethodName = methodName;
+          preprocessBindings.push(preprocessFunction);
+          return descriptor;
     }
   }
 
@@ -1292,7 +1300,7 @@ class Event {
   }
 }
 
-export const event = new Event();
+export const event = new Event()
 
 class Flow {
 

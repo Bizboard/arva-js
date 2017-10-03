@@ -102,6 +102,62 @@ export class OptionObserver extends EventEmitter {
     //todo implement this (is an efficient way)
   }
 
+    /**
+     * Executes the preprocess function. The preprocess function is treated similarly to that of a renderable,
+     * but it's identified with the symbol OptionObserver.preprocess accompanied by an index, instead of a string
+     *
+     * Different examples of preprocessing situations:
+     * Scenario 1: Construction
+     * A. The preprocessing function is called
+     * B. Getters are detected for the pre-process function
+     * C. this.options isn't set, so nothing more happens
+     *
+     * Scenario 2. Setter trigger of a preprocess function
+     * A. After flushing, it is concluded to belong to the preprocess function (and other renderables)
+     * B. The preprocess function is triggered immediately and firstly when flushing change events
+     * C. The preprocess function re-executes the function and getters are triggered again
+     * D. this.options is defined, and it setters will be notified.
+     * E. An inner flush is forced within the flush, and it there might be new renderables needing update now
+     * F. The flush completes and resets the _updatesForNextTick
+     * G. The outer flush continues, and has nothing more to do
+     * H. Since we made changes within a flush, the static OptionObserver loop _flushAllUpdates, will call the flush function once again, but doing nothing
+     *
+     * Scenario 3. Recombine options
+     * A. After flushing, it is concluded that the option changes belong to one of the preprocess functions (and other renderables)
+     * B. Continues same as scenario 2.
+     *
+     * @private
+     */
+    preprocessForIndex (incomingOptions, index) {
+        if (!this._preprocessMethods[index]) {
+            return this._throwError(`Internal error in OptionObserver: preprocess function with index ${index} doesn't exist`)
+        }
+
+        //todo: Does this work for arrays completely? defaultOptions will only contain shallow arrays
+        this._deepTraverse(this.defaultOptions, (nestedPropertyPath, defaultOptionParent, defaultOption, propertyName, [incomingOptionParent]) => {
+            let incomingOption = incomingOptionParent[propertyName]
+            let propertyDescriptor = Object.getOwnPropertyDescriptor(incomingOptionParent, propertyName)
+            if (this._isMyOption(incomingOption) &&
+                propertyDescriptor.get &&
+                propertyDescriptor.get() === incomingOption
+            ) {
+                return true
+            }
+            this._setupOptionLink(incomingOptionParent, propertyName, incomingOption, nestedPropertyPath)
+            /* Unspecified option, bailing out */
+            if (!defaultOption) {
+                return true
+            }
+            return false
+        }, [incomingOptions])
+        this._recordForPreprocessing(() =>
+            this._preprocessMethods[index](incomingOptions, this.defaultOptions), index);
+        /* Prevent the preprocess from being triggered within the next flush. This is important
+         * to do in case the preprocess function sets variables that it also gets, (ie if(!options.color) options.color = 'red')
+         */
+        this._preventEntryFromBeingUpdated([OptionObserver.preprocess, index])
+    }
+
   _recordForPreprocessing (callback, preprocessIndex) {
     this._recordForEntry([OptionObserver.preprocess, preprocessIndex], true);
     callback();
@@ -172,65 +228,9 @@ export class OptionObserver extends EventEmitter {
 
   }
 
-  /**
-   * Executes the preprocess function. The preprocess function is treated similarly to that of a renderable,
-   * but it's identified with the symbol OptionObserver.preprocess accompanied by an index, instead of a string
-   *
-   * Different examples of preprocessing situations:
-   * Scenario 1: Construction
-   * A. The preprocessing function is called
-   * B. Getters are detected for the pre-process function
-   * C. this.options isn't set, so nothing more happens
-   *
-   * Scenario 2. Setter trigger of a preprocess function
-   * A. After flushing, it is concluded to belong to the preprocess function (and other renderables)
-   * B. The preprocess function is triggered immediately and firstly when flushing change events
-   * C. The preprocess function re-executes the function and getters are triggered again
-   * D. this.options is defined, and it setters will be notified.
-   * E. An inner flush is forced within the flush, and it there might be new renderables needing update now
-   * F. The flush completes and resets the _updatesForNextTick
-   * G. The outer flush continues, and has nothing more to do
-   * H. Since we made changes within a flush, the static OptionObserver loop _flushAllUpdates, will call the flush function once again, but doing nothing
-   *
-   * Scenario 3. Recombine options
-   * A. After flushing, it is concluded that the option changes belong to one of the preprocess functions (and other renderables)
-   * B. Continues same as scenario 2.
-   *
-   * @private
-   */
-  _preprocessForIndex (incomingOptions, index) {
-    if (!this._preprocessMethods[index]) {
-      return this._throwError(`Internal error in OptionObserver: preprocess function with index ${index} doesn't exist`)
-    }
-
-    //todo: Does this work for arrays completely? defaultOptions will only contain shallow arrays
-    this._deepTraverse(this.defaultOptions, (nestedPropertyPath, defaultOptionParent, defaultOption, propertyName, [incomingOptionParent]) => {
-      let incomingOption = incomingOptionParent[propertyName]
-      let propertyDescriptor = Object.getOwnPropertyDescriptor(incomingOptionParent, propertyName)
-      if (this._isMyOption(incomingOption) &&
-        propertyDescriptor.get &&
-        propertyDescriptor.get() === incomingOption
-      ) {
-        return true
-      }
-      this._setupOptionLink(incomingOptionParent, propertyName, incomingOption, nestedPropertyPath)
-      /* Unspecified option, bailing out */
-      if (!defaultOption) {
-        return true
-      }
-      return false
-    }, [incomingOptions])
-    this._recordForPreprocessing(() =>
-      this._preprocessMethods[index](incomingOptions, this.defaultOptions), index)
-    /* Prevent the preprocess from being triggered within the next flush. This is important
-     * to do in case the preprocess function sets variables that it also gets, (ie if(!options.color) options.color = 'red')
-     */
-    this._preventEntryFromBeingUpdated([OptionObserver.preprocess, index])
-  }
-
   _doPreprocessing (incomingOptions) {
     for (let [index] of this._preprocessMethods.entries()) {
-      this._preprocessForIndex(incomingOptions, index)
+      this.preprocessForIndex(incomingOptions, index)
     }
   }
 
@@ -431,7 +431,7 @@ export class OptionObserver extends EventEmitter {
     if (preprocessInstructions) {
       /* TODO extract the incomingOption by checking this._newOptionUpdates */
       for(let index in preprocessInstructions){
-        this._preprocessForIndex(this.options, index);
+        this.preprocessForIndex(this.options, index);
       }
       delete this._updatesForNextTick[OptionObserver.preprocess]
     }
