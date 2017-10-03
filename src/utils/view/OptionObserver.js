@@ -61,16 +61,16 @@ export class OptionObserver extends EventEmitter {
    * @param debugName Used for displaying error messages and being able to trace them back more easily
    */
   constructor (defaultOptions, options, preprocessMethods, debugName) {
-    super()
-    this._errorName = debugName
-    ObjectHelper.bindAllMethods(this, this)
-    this._preprocessMethods = preprocessMethods || []
-    OptionObserver._registerNewInstance(this)
-    this.defaultOptions = defaultOptions
-    this.options = options
-    this._setupOptions(options, defaultOptions)
+    super();
+    this._errorName = debugName;
+    ObjectHelper.bindAllMethods(this, this);
+    this._preprocessMethods = preprocessMethods || [];
+    OptionObserver._registerNewInstance(this);
+    this.defaultOptions = defaultOptions;
+    this.options = options;
+    this._setupOptions(options, defaultOptions);
     if (!window.optionObservers) {
-      window.optionObservers = []
+      window.optionObservers = [];
     }
     window.optionObservers.push(this)
 
