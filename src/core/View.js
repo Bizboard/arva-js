@@ -813,7 +813,7 @@ export class View extends FamousView {
         this._optionObserver = new OptionObserver(defaultOptions, options, preprocessBindings, this._name());
         this._optionObserver.on('needUpdate', (renderableName) =>
             this._setupRenderable(this._renderableConstructors[renderableName], this._renderableConstructors[renderableName].decorations)
-        )
+        );
         this.options = this._optionObserver.getOptions()
     }
 
@@ -933,7 +933,7 @@ export class View extends FamousView {
 
             if (!renderables.length) {
                 /* Insert an empty surface in order to preserver order of the sequence of (docked) renderables
-                 * TODO: This is dirty but inevitable, think of other solutions */
+                 * TODO: This is dirty but seemingly inevitable, think of other solutions */
                 let placeholderRenderable = Surface.with()
                 renderables = [placeholderRenderable]
                 dynamicDecorations = () =>

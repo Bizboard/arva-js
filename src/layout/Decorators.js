@@ -1292,7 +1292,7 @@ class Event {
   }
 }
 
-export const event = new Event()
+export const event = new Event();
 
 class Flow {
 

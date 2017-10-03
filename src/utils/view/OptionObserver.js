@@ -22,7 +22,7 @@ let listeners = Symbol('listeners'),
   optionMetaData = Symbol('optionMetaData'),
   oldValue = Symbol('oldValue'),
   instanceIdentifier = Symbol('instanceIdentifier'),
-  isArrayListener = Symbol('isArrayListener')
+  isArrayListener = Symbol('isArrayListener');
 
 export let onOptionChange = Symbol('onOptionChange')
 
@@ -103,8 +103,8 @@ export class OptionObserver extends EventEmitter {
   }
 
   _recordForPreprocessing (callback, preprocessIndex) {
-    this._recordForEntry([OptionObserver.preprocess, preprocessIndex], true)
-    callback()
+    this._recordForEntry([OptionObserver.preprocess, preprocessIndex], true);
+    callback();
     this._stopRecordingForEntry(OptionObserver.preprocess)
   }
 
@@ -128,7 +128,7 @@ export class OptionObserver extends EventEmitter {
           this._throwError('Setting an option during instanciation of renderable')
         }
       } else {
-        let localListenerTree = this._accessListener(nestedPropertyPath.concat(propertyName))
+        let localListenerTree = this._accessListener(nestedPropertyPath.concat(propertyName));
         this._addToListenerTree(entryNames, localListenerTree)
       }
     }
@@ -136,7 +136,7 @@ export class OptionObserver extends EventEmitter {
   }
 
   _accessListener (nestedPropertyPath) {
-    return this._accessObjectPath(this._listenerTree, nestedPropertyPath, true)
+    return this._accessObjectPath(this._listenerTree, nestedPropertyPath, true);
   }
 
   /**
@@ -152,7 +152,7 @@ export class OptionObserver extends EventEmitter {
     /* Renderable already added to listener tree, so no need to do that again */
     let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._accessObjectPath(this._listenerTreeMetaData, entryNames)
 
-    this._accessObjectPath(this._newReverseListenerTree, entryNames).push(listenerStructure)
+    this._accessObjectPath(this._newReverseListenerTree, entryNames).push(listenerStructure);
 
     if (listenersCanChange && !listenersChanged) {
       /* We optimize the most common use case, which is that no listeners change.
@@ -767,26 +767,29 @@ export class OptionObserver extends EventEmitter {
    * Similar to _.get, except that it returns notFound (a symbol) when not found
    * @param object
    * @param path
-   * @param allowShallowArrays
+   * @param traverseListeners
    * @returns {*}
    * @private
    */
-  _accessObjectPath (object, path, allowShallowArrays = false) {
+  _accessObjectPath (object, path, traverseListeners = false) {
     for (let pathString of path) {
       if (!object || !object.hasOwnProperty(pathString)) {
-        if (allowShallowArrays) {
+        if (traverseListeners) {
           if (Array.isArray(object)) {
             pathString = 0
-            /* If it's a specially registered array listener, the property to read is called value and is being
-             *  used on the listener tree */
-          } else if (object[isArrayListener]) {
-            pathString = 'value'
+
           }
         } else {
           return notFound
         }
       }
-      object = object[pathString]
+      object = object[pathString];
+        /* If it's a specially registered array listener, the property to read is called value and is being
+         *  used on the listener tree */
+      if (object[isArrayListener] && traverseListeners) {
+          /* Return immediately, ignore remaining properties in path. TODO: Verify that this is what we want*/
+          return object.value;
+      }
     }
     return object
   }
@@ -937,13 +940,13 @@ export class OptionObserver extends EventEmitter {
       this._throwError(`The parameter ${nestedPropertyPath.concat(outerPropertyName).join('->')} is not registered as an array in the listener tree.`)
     }
     if (ArrayObserver.isArrayObserved(newValue)) {
-      //TODO Confirm that this is wished for
+      //TODO Confirm that returning early is wished for
       return
     }
     /* Continue traversing down the array and update the rest like normal, using the array observer as a stepping stone*/
     let arrayObserver = new ArrayObserver(newValue, (index, value) => {
       /* copy the listener tree information */
-      listenerTree[index] = listenerTree.value
+      listenerTree[index] = listenerTree.value;
 
       value = this._processNewOptionUpdates({
         defaultOptionParent: defaultOption,
@@ -953,7 +956,7 @@ export class OptionObserver extends EventEmitter {
         newValue: value,
         propertyName: index,
         listenerTree: listenerTree[index]
-      })
+      });
 
       this._deepTraverse(defaultOption[0], (innerNestedPropertyPath, defaultOptionParent, defaultOption, propertyName, [newValueParent, listenerTreeParent]) => {
 
