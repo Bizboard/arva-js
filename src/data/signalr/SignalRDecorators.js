@@ -105,7 +105,7 @@ export class signalr {
                 if(isFunctionAvailableOffline){
                     let cachedResult = await signalr.tryGetCachedResult(serverCallbackName, this);
                     if(cachedResult !== undefined){
-                        cachedResult = this.deserialize(cachedResult);
+                        cachedResult = await method.fn.apply(this, cachedResult);
                         emit(clientCallbackName, cachedResult);
                         return cachedResult;
                     }
@@ -118,7 +118,11 @@ export class signalr {
                         .done(async (...params) => {
                             let result = await method.fn.apply(this, params);
                             if(isFunctionAvailableOffline){
-                                signalr.saveToLocalStorage(this, signalr.getKeyString(serverCallbackName, this), this.serialize(result));
+                                try {
+                                    signalr.saveToLocalStorage(this, signalr.getKeyString(serverCallbackName, this), params);
+                                } catch (e){
+                                    console.log("error saving to localstorage", e)
+                                }
                             }
 
                             if (this.processResult) this.processResult(result);
@@ -232,7 +236,7 @@ export class SignalRConnection extends EventEmitter {
      */
     once(event, handler, context = this) {
         return new Promise((resolve)=>{
-            if((event === 'ready') && this._connected) {
+            if((event === 'ready') && this._ready) {
                 handler && handler.call(context, this);
                 resolve(...arguments);
             } else {

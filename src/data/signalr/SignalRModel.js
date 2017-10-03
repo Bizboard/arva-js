@@ -4,12 +4,16 @@ import {DataSource}                     from 'arva-js/data/DataSource.js';
 
 import {signalr, SignalRConnection}     from './SignalRDecorators.js';
 
+
+import EventEmitter                     from 'eventemitter3';
 import * as fooBar                      from 'jquery';
 import                                  'ms-signalr-client';
 
 export class SignalRModel extends LocalModel {
     constructor(id, data = null, options = {}) {
+        options.noInitialSync = true;
         let dataSource = options.dataSource || Injection.get(DataSource);
+
         super(id, data, options);
         this._ready = false;
         this.argumentId = id;
@@ -33,10 +37,6 @@ export class SignalRModel extends LocalModel {
                 })
             }
         }
-
-        //  let prototype = Object.getPrototypeOf(this);
-        //  this.serverCallbacks = prototype.serverCallbacks;
-        
     }
 
     serialize(){
@@ -66,8 +66,9 @@ export class SignalRModel extends LocalModel {
         for(let [key, value] of Object.entries(obj)) {
             this[key] = value;
         }
-        this.emit('value', this);
         this._ready = true;
+
+        this.emit('value', this);
         return this;
     }
 
@@ -165,54 +166,20 @@ export class SignalRModel extends LocalModel {
 
     on(event, handler, context = this) {
         let haveListeners = this._hasListenersOfType(event);
-        super.on(event, handler, context);
+        // Directly access EventEmitter method instead of calling super, in order to not have conflicting logic
+        EventEmitter.prototype.on.call(this, event, handler, context);
 
-        switch (event) {
-            case 'ready':
-                /* If we're already ready, fire immediately */
-                if (this._dataSource && this._dataSource.ready) {
+        if (event === 'value'){
+            if (!haveListeners) {
+                /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
+                // this._dataSource.setValueChangedCallback(this._onChildValue);
+                this.value(this.id)
+            } else {
+                if (this._dataSource.ready) {
+                    /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
                     handler.call(context, this);
                 }
-                break;
-            case 'value':
-                if (!haveListeners) {
-                    /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
-                    this._dataSource.setValueChangedCallback(this._onChildValue);
-                } else {
-                    if (this._dataSource.ready) {
-                        /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
-                        handler.call(context, this);
-                    }
-                }
-                break;
-            case 'added':
-
-                if (haveListeners) {
-                    this._dataSource.setChildAddedCallback(this._onChildAdded);
-                }
-                break;
-            case 'changed':
-                /* We include the changed event in the value callback */
-                if (!this._hasListenersOfType('value')) {
-                    this._dataSource.setValueChangedCallback(this._onChildValue);
-                }
-                break;
-            case 'moved':
-                if (!haveListeners) {
-                    this._dataSource.setChildMovedCallback(this._onChildMoved);
-                }
-                break;
-            case 'removed':
-                if (!haveListeners) {
-                    this._dataSource.setChildRemovedCallback(this._onChildRemoved);
-                }
-                break;
-            case 'get':
-                if(this._ready) {
-                    handler.call(context, this);
-                }
-            default:
-                break;
+            }
         }
     }
 }

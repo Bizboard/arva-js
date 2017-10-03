@@ -6,7 +6,7 @@ import {signalr, SignalRConnection} from './SignalRDecorators.js';
 import                              'ms-signalr-client';
 
 export class SignalRArray extends LocalPrioritisedArray {
-    constructor(dataType, options = {}) {
+    constructor(dataType, options = {shouldPopulate: true}) {
         let dataSource = Injection.get(DataSource);
         super(dataType, dataSource);
         this.options = options;
@@ -17,14 +17,13 @@ export class SignalRArray extends LocalPrioritisedArray {
         this.proxy = this.connection.getProxy(this.hubName) || null;
         signalr.mapClientMethods.apply(this);
         signalr.mapServerCallbacks.apply(this);
-        if(this.connection && this.proxy) {
-            if(this.connection.connection.state === 1) {
-                this._init();
-            } else {
-                this.connection.on('ready', () => {
-                    this._init();
-                })
-            }
+
+        if (this.options.shouldPopulate){
+            this.getAll().then(()=> {
+                this._ready = true;
+            })
+        } else {
+            this._ready = true;
         }
     }
 
@@ -37,16 +36,22 @@ export class SignalRArray extends LocalPrioritisedArray {
     }
 
     deserialize(array) {
-        let prioArray = new this();
-        for(let entry of array){
-            prioArray.add(entry)
+        let prioArray = new this.constructor(this._dataType, {shouldPopulate: false});
+        for (let entry of array) {
+            let event = Injection.get(this._dataType, entry.ID);
+            for(let [key, value] of Object.entries(entry)) {
+                event[key] = value;
+            }
+            prioArray.add(event)
         }
+        this._ready = true;
         return prioArray
     }
 
+    @signalr.cachedOffline()
     @signalr.registerServerCallback('getAll')
     getAll(data) {
-        while(this.length) {
+        while (this.length) {
             this.remove(0);
         }
         let promises = [];
@@ -61,35 +66,46 @@ export class SignalRArray extends LocalPrioritisedArray {
     }
 
     /**
-   * Subscribes to events emitted by this PrioritisedArray.
-   * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
-   * @param {Function} handler Function that is called when the given event type is emitted.
-   * @param {Object} context Optional: context of 'this' inside the handler function when it is called.
-   * @returns {void}
-   */
-  on(event, handler, context) {
-    /* If we're already ready, fire immediately */
-    if ((event === 'ready') && this._dataSource && this._dataSource.ready) {
-      handler.call(context, this);
+     * Subscribes to events emitted by this PrioritisedArray.
+     * @param {String} event One of the following Event Types: 'value', 'child_changed', 'child_moved', 'child_removed'.
+     * @param {Function} handler Function that is called when the given event type is emitted.
+     * @param {Object} context Optional: context of 'this' inside the handler function when it is called.
+     * @returns {void}
+     */
+    on(event, handler, context) {
+        /* If we're already ready, fire immediately */
+        if ((event === 'ready') && this._dataSource && this._dataSource.ready) {
+            handler.call(context, this);
+        }
+
+        if ((event === 'getAll') && this._ready) {
+            handler.call(context, this);
+        }
+
+        /* If we already have children stored locally when the subscriber calls this method,
+         * fire their callback for all pre-existing children. */
+        if (event === 'child_added') {
+
+            for (let i = 0; i < this.length; i++) {
+                this._childAddedThrottler.add(() => {
+                    let model = this._children[i];
+                    let previousSiblingID = i > 0 ? this._children[i - 1].id : null;
+                    handler.call(context, model, previousSiblingID);
+                });
+            }
+        }
+
+        this._eventEmitter.on(event, handler, context);
     }
 
-    if((event === 'getAll') && this._ready) {
-        handler.call(context, this);
-    }
 
-    /* If we already have children stored locally when the subscriber calls this method,
-     * fire their callback for all pre-existing children. */
-    if (event === 'child_added') {
-
-      for (let i = 0; i < this.length; i++) {
-        this._childAddedThrottler.add(() => {
-          let model = this._children[i];
-          let previousSiblingID = i > 0 ? this._children[i - 1].id : null;
-          handler.call(context, model, previousSiblingID);
+    once(event, handler, context = this) {
+        return new Promise((resolve) => {
+            this.on(event, function onceWrapper() {
+                this.off(event, onceWrapper, context);
+                handler && handler.call(context, ...arguments);
+                resolve(...arguments);
+            }, this);
         });
-      }
     }
-
-    this._eventEmitter.on(event, handler, context);
-  }
 }
