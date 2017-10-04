@@ -133,7 +133,6 @@ export const bindings = {
    *  options.sideMenu = combineOptions(defaultOptions.sideMenu, {menuItem: {backgroundColor: options.backgroundColor}})
    * })
    *
-   * @param
    * @returns {function(*)}
    */
   preprocess: () => {
@@ -144,13 +143,7 @@ export const bindings = {
             preprocessBindings = decorations.preprocessBindings = [];
           }
           let preprocessFunction  = descriptor.value;
-          descriptor.value = function () {
-              this.options = this._optionObserver.options;
-              return this._optionObserver.preprocessForIndex(this.options, this.decorations.preprocessBindings.indexOf(preprocessFunction));
-          };
-          preprocessFunction.internalMethodName = methodName;
-          preprocessBindings.push(preprocessFunction);
-          return descriptor;
+          preprocessBindings.push({preprocessFunction, name: methodName});
     }
   }
 
@@ -159,7 +152,7 @@ export const bindings = {
 let decoratorTypes = {childDecorator: 1, viewDecorator: 2, viewOrChild: 3};
 let lastResult;
 
-let createChainableDecorator = function (method, type) {
+export let createChainableDecorator = function (method, type) {
 
   let methodToReturn = function (viewOrRenderable, renderableName, descriptor) {
     if (methodToReturn.lastResult) {
@@ -362,7 +355,7 @@ class Layout {
        * dockedRenderable = Surface.with({properties: {backgroundColor: 'red'}});
        *
        * @memberOf dock
-       * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+       * @param {Number|Function|Boolean} [size]. The size of the renderable in the one dimension that is being docked, e.g.
        * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
        * different variations, see layout.size.
        * @param {Number} [space]. Any space that should be inserted before the docked renderable
@@ -390,7 +383,7 @@ class Layout {
        *   .align(0.5, 0)
        * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
        *
-       * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+       * @param {Number|Function|Boolean} [size]. The size of the renderable in the one dimension that is being docked, e.g.
        * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
        * different variations, see layout.size.
        * @param {Number} [space]. Any space that should be inserted before the docked renderable
@@ -419,7 +412,7 @@ class Layout {
        * dockedRenderable = Surface.with({properties: {backgroundColor: 'red'}});
        *
        *
-       * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+       * @param {Number|Function|Boolean} [size]. The size of the renderable in the one dimension that is being docked, e.g.
        * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
        * different variations, see layout.size.
        * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
@@ -448,7 +441,7 @@ class Layout {
        * dockedRenderable = Surface.with({properties: {backgroundColor: 'red'}});
        *
        *
-       * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+       * @param {Number|Function|Boolean} [size]. The size of the renderable in the one dimension that is being docked, e.g.
        * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
        * different variations, see layout.size.
        * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable

@@ -746,17 +746,18 @@ export class View extends FamousView {
      * @private
      */
     _initOwnDecorations() {
+
         for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
             /* The close the decoration is to this constructor in the prototype chain, the higher the priority */
-            let decorations = this.decorationsMap.get(currentClass.__proto__.constructor)
+            let decorations = this.decorationsMap.get(currentClass.__proto__.constructor);
             for (let property in decorations) {
                 let decoration = decorations[property];
                 if (!(property in this.decorations)) {
                     this.decorations[property] = decoration;
                 } else if (property === 'defaultOptions' && this.decorations.defaultOptions) {
                     this.decorations.defaultOptions = combineOptions(decoration, this.decorations.defaultOptions);
-                } else if (property === 'preprocessBindings' && this.decorations.preprocessBindings) {
-                    this.decorations.preprocessBindings.push(decoration[0]);
+                } else if (property === 'preprocessBindings'){
+                    this.decorations.preprocessBindings.push(...decoration);
                 }
             }
         }
@@ -768,6 +769,8 @@ export class View extends FamousView {
         if (!this.decorations.extraTranslate) {
             this.decorations.extraTranslate = [0, 0, 10]
         }
+
+        this._initPreprocessBindings();
     }
 
     onNewSize(callback) {
@@ -804,14 +807,14 @@ export class View extends FamousView {
         if (!Utils.isPlainObject(options)) {
             Utils.warn(`View ${this._name()} initialized with invalid non-object arguments`)
         }
-        let { defaultOptions = {}, preprocessBindings } = this.decorations
+        let { defaultOptions = {} } = this.decorations
 
         /**
          * A copy of the options that were passed in the constructor
          *
          * @type {Object}
          */
-        this._optionObserver = new OptionObserver(defaultOptions, options, preprocessBindings, this._name());
+        this._optionObserver = new OptionObserver(defaultOptions, options, this._preprocessBindings, this._name());
         this._optionObserver.on('needUpdate', (renderableName) =>
             this._setupRenderable(this._renderableConstructors[renderableName], this._renderableConstructors[renderableName].decorations)
         );
@@ -824,9 +827,8 @@ export class View extends FamousView {
          *
          * @type {Object}
          */
-        this._realRenderables = {}
-        this._IDtoLocalRenderableName = {}
-        this.renderables = {}
+        this._realRenderables = {};
+        this._IDtoLocalRenderableName = {};
         if (!this.layouts) {
             /**
              * @deprecated
@@ -843,8 +845,10 @@ export class View extends FamousView {
             this.decorations = {}
         }
 
-        this._runningRepeatingFlowStates = {}
-        this._renderableConstructors = {}
+        this._runningRepeatingFlowStates = {};
+        this._renderableConstructors = {};
+
+        this._preprocessBindings = [];
 
     }
 
@@ -1074,7 +1078,7 @@ export class View extends FamousView {
     /**
      * Resets the initializer for a class property
      * @param {String} localRenderableName
-     * @param {Renderable} renderable
+     * @param {View|Surface} renderable
      * @private
      */
     _readjustRenderableInitializer(localRenderableName, renderable) {
@@ -1121,5 +1125,23 @@ export class View extends FamousView {
          * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
          */
         return cloneDeep(extend({}, decorations, renderable.decorations || {}));
+    }
+
+    _initPreprocessBindings() {
+        let {preprocessBindings = []} = this.decorations;
+
+        for(let [index, {preprocessFunction, name}] of preprocessBindings.entries()){
+            this[name] = () => {
+                return this._optionObserver.preprocessForIndex(this.options, index);
+            };
+
+            /* TODO Think of a more clever solution than receiving the optionObserver as an argument */
+            this._preprocessBindings.push((optionObserver) => {
+                this.options = optionObserver.getOptions();
+                /* TODO: Change this to a getter function or at least figure out a plan how to handle default options */
+                preprocessFunction.call(this, this.options, optionObserver.defaultOptions);
+            });
+        }
+
     }
 }

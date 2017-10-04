@@ -149,9 +149,9 @@ export class OptionObserver extends EventEmitter {
                 return true
             }
             return false
-        }, [incomingOptions])
+        }, [incomingOptions]);
         this._recordForPreprocessing(() =>
-            this._preprocessMethods[index](incomingOptions, this.defaultOptions), index);
+            this._preprocessMethods[index](this), index);
         /* Prevent the preprocess from being triggered within the next flush. This is important
          * to do in case the preprocess function sets variables that it also gets, (ie if(!options.color) options.color = 'red')
          */
@@ -320,14 +320,15 @@ export class OptionObserver extends EventEmitter {
 
   _setupOptions (options, defaultOptions) {
 
-    this._createListenerTree()
-    this._doPreprocessing(options)
-    this._markAllOptionsAsUpdated()
+    this._createListenerTree();
+      //todo this order changed, we used to do the option merging after preprocessing. What is needed? Pass option to adjust behaviour?
+      this._updatesForNextTick[OptionObserver.preprocess] = new Array(this._preprocessMethods.length).fill(true)
+    this._markAllOptionsAsUpdated();
   }
 
   _markAllOptionsAsUpdated () {
     let rootProperties = Object.keys(this.defaultOptions)
-    this._updateOptionsStructure(rootProperties, this.options, [], rootProperties.map((rootProperty) => undefined))
+    this._updateOptionsStructure(rootProperties, this.options, [], rootProperties.map((rootProperty) => undefined));
     this._flushUpdates()
   }
 
@@ -427,14 +428,7 @@ export class OptionObserver extends EventEmitter {
   }
 
   _flushUpdates () {
-    let preprocessInstructions = this._updatesForNextTick[OptionObserver.preprocess]
-    if (preprocessInstructions) {
-      /* TODO extract the incomingOption by checking this._newOptionUpdates */
-      for(let index in preprocessInstructions){
-        this.preprocessForIndex(this.options, index);
-      }
-      delete this._updatesForNextTick[OptionObserver.preprocess]
-    }
+
     /* Do a traverse only for the leafs of the new updates, to avoid doing extra work */
     this._deepTraverseWithShallowArrays(this._newOptionUpdates, (nestedPropertyPath, updateObjectParent, updateObject, propertyName, [defaultOptionParent, listenerTree, optionObject]) => {
 
@@ -824,6 +818,15 @@ export class OptionObserver extends EventEmitter {
   }
 
   _handleResultingUpdates () {
+
+      let preprocessInstructions = this._updatesForNextTick[OptionObserver.preprocess]
+      if (preprocessInstructions) {
+          for(let index in preprocessInstructions){
+              this.preprocessForIndex(this.options, index);
+          }
+          delete this._updatesForNextTick[OptionObserver.preprocess]
+      }
+
     /* Currently, all renderables are "one dimensional", they only have one name. That is why this is just a simple
      * over the first shallow level of this object
     */
