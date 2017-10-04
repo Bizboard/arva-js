@@ -148,7 +148,7 @@ export class View extends FamousView {
     /**
      * Adds a renderable to the layout.
      * @param {Surface|FamousView|View} renderable The renderable to be added
-     * @param {Decorator} Decorator Any decorator(s) to apply to the renderable
+     * @param decorators
      * @returns {Surface|FamousView|View} The renderable that was assigned
      */
     addRenderable(renderable, ...decorators) {
@@ -189,8 +189,8 @@ export class View extends FamousView {
     /**
      * Rearranges the order in which docked renderables are parsed for rendering, ensuring that 'renderableName' is processed
      * before 'nextRenderableName'.
-     * @param {Renderable} renderableName
-     * @param {Renderable} nextRenderableName
+     * @param {View|Surface} renderableName
+     * @param {View|Surface} nextRenderableName
      */
     prioritiseDockBefore(renderable, nextRenderable) {
         this.reflowRecursively()
@@ -198,8 +198,8 @@ export class View extends FamousView {
     }
 
     /**
-     * @param {Renderable} renderableName
-     * @param {Renderable} prevRenderableName
+     * @param {View|Surface} renderableName
+     * @param {View|Surface} prevRenderableName
      */
     prioritiseDockAfter(renderable, prevRenderable) {
         this.reflowRecursively()
@@ -288,7 +288,7 @@ export class View extends FamousView {
 
     /**
      * Sets a renderable flow state as declared in the @flow.stateStep, or @flow.defaultState
-     * @param {Renderable} renderable. The name of the renderable
+     * @param {View|Surface} renderable. The name of the renderable
      * @param {String} stateName. The name of the state as declared in the first argument of the decorator
      * @returns {*}
      */
@@ -331,7 +331,7 @@ export class View extends FamousView {
 
     /**
      * Replaces an existing decorated renderable with a new renderable, preserving all necessary state and decorations
-     * @param {Renderable} oldRenderable. The name of the renderable
+     * @param {View|Surface} oldRenderable. The name of the renderable
      * @param {Surface|FamousView|View} newRenderable Renderable to replace the old renderable with
      */
     replaceRenderable(oldRenderable, newRenderable) {
@@ -375,6 +375,7 @@ export class View extends FamousView {
      * Hides a renderable that has been declared with @layout.animate
      * @returns {Promise} when the renderable has finished its animation
      * @param renderable
+     * @param [options]
      */
     hideRenderable(renderable, options = {}) {
         return this.toggleRenderable(renderable, false, options)
@@ -1015,7 +1016,7 @@ export class View extends FamousView {
      * @param {String} [localRenderableName]
      * @param {Object} decorations
      * @param {Boolean} isArray
-     * @returns {Renderable}
+     * @returns {View|Surface}
      * @private
      */
     _arrangeRenderableAssignment(oldRenderable, newRenderable, dynamicDecorations, localRenderableName, decorations, isArray = false) {
