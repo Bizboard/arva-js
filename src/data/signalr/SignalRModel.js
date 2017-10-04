@@ -173,7 +173,11 @@ export class SignalRModel extends LocalModel {
             if (!haveListeners) {
                 /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
                 // this._dataSource.setValueChangedCallback(this._onChildValue);
-                this.value(this.id)
+                if (this.id){
+                    this.value(this.id)
+                } else {
+                    this.value()
+                }
             } else {
                 if (this._dataSource.ready) {
                     /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */

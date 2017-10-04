@@ -1,15 +1,16 @@
 import {LocalPrioritisedArray}      from 'arva-js/data/local/LocalPrioritisedArray.js';
 import {Injection}                  from 'arva-js/utils/Injection.js';
 import {DataSource}                 from 'arva-js/data/DataSource.js';
+import {combineOptions}             from 'arva-js/utils/CombineOptions.js';
 
 import {signalr, SignalRConnection} from './SignalRDecorators.js';
 import                              'ms-signalr-client';
 
 export class SignalRArray extends LocalPrioritisedArray {
-    constructor(dataType, options = {shouldPopulate: true}) {
+    constructor(dataType, options) {
         let dataSource = Injection.get(DataSource);
         super(dataType, dataSource);
-        this.options = options;
+        this.options = combineOptions(options, {shouldPopulate: true});
         this._ready = false;
         let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
         this.hubName = `${hubName}Hub`;
@@ -19,33 +20,19 @@ export class SignalRArray extends LocalPrioritisedArray {
         signalr.mapServerCallbacks.apply(this);
 
         if (this.options.shouldPopulate){
-            this.getAll().then(()=> {
+            let initPromise;
+            if (this.options.eventID){
+                initPromise = this.getAll(this.options.eventID);
+            } else {
+                initPromise = this.getAll();
+            }
+
+            initPromise.then(()=> {
                 this._ready = true;
             })
         } else {
             this._ready = true;
         }
-    }
-
-    _init() {
-        this.getAll();
-    }
-
-    serialize() {
-        return this._children.map(({shadow}) => shadow)
-    }
-
-    deserialize(array) {
-        let prioArray = new this.constructor(this._dataType, {shouldPopulate: false});
-        for (let entry of array) {
-            let event = Injection.get(this._dataType, entry.ID);
-            for(let [key, value] of Object.entries(entry)) {
-                event[key] = value;
-            }
-            prioArray.add(event)
-        }
-        this._ready = true;
-        return prioArray
     }
 
     @signalr.cachedOffline()

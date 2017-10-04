@@ -106,6 +106,15 @@ export class signalr {
                     let cachedResult = await signalr.tryGetCachedResult(serverCallbackName, this);
                     if(cachedResult !== undefined){
                         cachedResult = await method.fn.apply(this, cachedResult);
+                        /* Catch common default behaviour */
+                        if (cachedResult === undefined && params.length === 1) {
+                            cachedResult = params[0];
+                        }
+
+                        if (this.processResult && cachedResult) {
+                            this.processResult(cachedResult);
+                        }
+
                         emit(clientCallbackName, cachedResult);
                         return cachedResult;
                     }
@@ -125,13 +134,16 @@ export class signalr {
                                 }
                             }
 
-                            if (this.processResult) this.processResult(result);
-
-                            emit(clientCallbackName, result);
                             /* Catch common default behaviour */
                             if (result === undefined && params.length === 1) {
-                                return params[0];
+                                result = params[0];
                             }
+
+                            if (this.processResult && result) {
+                                this.processResult(result);
+                            }
+
+                            emit(clientCallbackName, result);
                             resolve(result)
                         }).fail((e) => {
                         reject(e)
@@ -378,13 +390,13 @@ export class SignalRConnection extends EventEmitter {
                     this._ready = true;
                     this._connected = true;
                     // ready indicates that we've tried to connect once so we know if we're actually on/offline
-                    this.emit('ready');
+                    this.emit('ready', this._connected);
                     this.emit('connected');
                     resolve(start)
                 }).catch(() => {
                     this._connected = false;
                     this._ready = true;
-                    this.emit('ready');
+                    this.emit('ready', this._connected);
                     this.emit('disconnected');
                     resolve(this.restart());
                 });
@@ -412,7 +424,7 @@ export class SignalRConnection extends EventEmitter {
                 let start = this.connection.start();
                 start.done(() => {
                     this._connected = true;
-                    this.emit('ready');
+                    this.emit('ready', this._connected);
                     this.emit('connected');
                     resolve(start);
                 })
