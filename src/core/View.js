@@ -749,6 +749,7 @@ export class View extends FamousView {
         for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
             /* The close the decoration is to this constructor in the prototype chain, the higher the priority */
             let decorations = this.decorationsMap.get(currentClass.__proto__.constructor);
+            this._extendFromDynamicFunctions(decorations);
             for (let property in decorations) {
                 let decoration = decorations[property];
                 if (!(property in this.decorations)) {
@@ -1141,6 +1142,14 @@ export class View extends FamousView {
                 /* TODO: Change this to a getter function or at least figure out a plan how to handle default options */
                 preprocessFunction.call(this, this.options, optionObserver.defaultOptions);
             });
+        }
+
+    }
+
+    _extendFromDynamicFunctions(decorations = {}) {
+        let {dynamicFunctions} = decorations;
+        for(let dynamicFunction of dynamicFunctions || []){
+            dynamicFunction(this.options)({prototype: {decorationsMap: {get: () => decorations}}});
         }
     }
 
