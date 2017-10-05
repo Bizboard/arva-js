@@ -177,8 +177,8 @@ export class DialogManager extends View {
      */
     _close(){
         this._hasOpenDialog = false;
-        this.hideRenderable('dialog');
-        this.hideRenderable('background');
+        this.hideRenderable(this.dialog);
+        this.hideRenderable(this.background);
         this._eventOutput.emit('close', ...arguments);
     }
 
