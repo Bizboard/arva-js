@@ -96,9 +96,9 @@ export class Utils {
     }
 
     static getRenderableID(renderable) {
-        return (renderable.getID ?
-                renderable.getID() :
-                (renderable.layout ? renderable.layout.id : renderable.id))
-            || renderable._id;
+        let extractedRenderableID = (renderable.getID ?
+            renderable.getID() :
+            (renderable.layout ? renderable.layout.id : renderable.id));
+        return extractedRenderableID !== undefined ? extractedRenderableID : renderable._id;
     }
 }
