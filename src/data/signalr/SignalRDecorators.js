@@ -111,11 +111,6 @@ export class signalr {
                             cachedResult = params[0];
                         }
 
-                        if (this.processResult && cachedResult) {
-                            this.processResult(cachedResult);
-                        }
-
-                        emit(clientCallbackName, cachedResult);
                         return cachedResult;
                     }
                 }
@@ -139,11 +134,6 @@ export class signalr {
                                 result = params[0];
                             }
 
-                            if (this.processResult && result) {
-                                this.processResult(result);
-                            }
-
-                            emit(clientCallbackName, result);
                             resolve(result)
                         }).fail((e) => {
                         reject(e)

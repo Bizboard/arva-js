@@ -54,20 +54,25 @@ export class SignalRModel extends LocalModel {
         this.onConnect();
     }
 
+
     @signalr.cachedOffline()
     @signalr.registerServerCallback('get')
     value(id) {
         let obj = arguments[0];
         if(typeof obj === "undefined") {
             this.emit('getError', 'getError');
-            return;
+            return -1;
         }
         if(Array.isArray(obj)) { obj = obj[0]; }
         for(let [key, value] of Object.entries(obj)) {
             this[key] = value;
         }
-        this._ready = true;
 
+        if (this.processResult){
+            this.processResult(this)
+        }
+
+        this._ready = true;
         this.emit('value', this);
         return this;
     }
@@ -172,7 +177,6 @@ export class SignalRModel extends LocalModel {
         if (event === 'value'){
             if (!haveListeners) {
                 /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
-                // this._dataSource.setValueChangedCallback(this._onChildValue);
                 if (this.id){
                     this.value(this.id)
                 } else {
