@@ -16,7 +16,7 @@ window.getFromID = (id) => {
 
 window.views = {};
 
-window.muteLogs = false;
+window.muteLogs = true;
 
 let originalCopyPrototypeProperties= View.prototype._copyPrototypeProperties;
 View.prototype._copyPrototypeProperties = function () {
@@ -35,19 +35,20 @@ View.prototype.makeRED = function () {
   this._arrangeRenderableAssignment(this[secretRedBackground], Surface.with({properties: {backgroundColor: 'red'}}),
     [], secretRedBackground, [layout.fullSize()])
   this.reflowRecursively();
-}
+};
 
 let originalWarn = Utils.warn;
 Utils.warn = function () {
   originalWarn.call(this, ...arguments);
   debugger;
-}
+};
 
 let originaloptionObserverErrorThrower = OptionObserver.prototype._throwError;
-OptionObserver.prototype._throwError = function () {
+OptionObserver.prototype._throwError = function (message) {
+    console.log(message);
   debugger;
   return originaloptionObserverErrorThrower.call(this, ...arguments)
-}
+};
 
 
 let log = (...consoleArgs) => {
@@ -129,22 +130,30 @@ window.debugLayoutFunction = (view) => {
 };
 
 let surfaceDebugSettings = new Map();
-window.unDebugCommitFunction = (view) => {
-    let settings = surfaceDebugSettings.get(view.constructor);
+window.unDebugCommitFunction = (renderable) => {
+    let settings = surfaceDebugSettings.get(renderable);
     settings.debug = false;
 };
 
-window.debugCommitFunction = (surface) => {
+window.debugCommitFunction = (renderable) => {
     let settings = {debug: true};
-    if(surfaceDebugSettings.get(surface)){
+    if(surfaceDebugSettings.get(renderable)){
         return;
     }
-    surfaceDebugSettings.set(surface, settings);
-    let originalCommitFunction = surface.commit;
-    surface.commit = function() {
+    surfaceDebugSettings.set(renderable, settings);
+    let originalCommitFunction = renderable.commit;
+    renderable.commit = function() {
         if(settings.debug){
             debugger;
         }
-        originalCommitFunction.call(surface, ...arguments);
+        originalCommitFunction.call(renderable, ...arguments);
+    };
+};
+
+window.debugFunction = (object, name) => {
+    let originalFunction = object[name];
+    object[name] = function() {
+        debugger;
+        originalFunction.call(object, ...arguments);
     };
 };
