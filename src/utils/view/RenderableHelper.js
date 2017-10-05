@@ -50,13 +50,13 @@ export class RenderableHelper {
     }
 
     assignRenderable(renderable, renderableName) {
-        this._renderables[renderableName] = renderable
-        let renderableEquivalent = renderable
+        this._renderables[renderableName] = renderable;
+        let renderableEquivalent = renderable;
         if (renderable.decorations) {
-            renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName)
+            renderableEquivalent = this._addDecoratedRenderable(renderable, renderableName);
         }
-        this._renderableCounterparts[renderableName] = renderableEquivalent
-        this._setupAllRenderableListeners(renderableName)
+        this._renderableCounterparts[renderableName] = renderableEquivalent;
+        this._setupAllRenderableListeners(renderableName);
     }
 
     getRenderableNames() {

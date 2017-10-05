@@ -119,9 +119,9 @@ export class View extends FamousView {
      * @param {Renderable/Name} renderableOrName The renderable or the name of the renderable of which you need the size
      */
     getResolvedSize(renderableOrName) {
-        let renderable = renderableOrName
+        let renderable = renderableOrName;
         if (typeof renderableOrName === 'string') {
-            renderable = this._realRenderables[renderableOrName]
+            renderable = this.renderables[renderableOrName];
         }
         let size = this._sizeResolver.getResolvedSize(renderable)
 
@@ -231,10 +231,10 @@ export class View extends FamousView {
         if (!renderable.animationController) {
             if (typeof renderable === 'string') {
                 Utils.warn(`Renderable visibility function called with string argument '${renderable}'. This has been deprecated. Please refactor to this.showRenderable(this.myView) instead of this.showRenderable('myView')`)
-                return
+                return;
             }
             Utils.warn(`Trying to show renderable which does not have an animationcontroller. Please use @layout.animate`)
-            return
+            return;
         }
 
         if (show === undefined) {

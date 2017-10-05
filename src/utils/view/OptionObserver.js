@@ -5,6 +5,7 @@ import cloneDeepWith            from 'lodash/cloneDeepWith'
 import difference               from 'lodash/difference'
 import each                     from 'lodash/each'
 import Timer                    from 'famous/utilities/Timer.js'
+import {RenderablePrototype}    from 'famous/utilities/RenderablePrototype.js';
 import EventEmitter             from 'eventemitter3'
 
 import { ArrayObserver }          from './ArrayObserver.js'
@@ -82,9 +83,9 @@ export class OptionObserver extends EventEmitter {
    * @param renderableName
    */
   recordForRenderable (renderableName, callback) {
-    this._recordForEntry([renderableName], false)
-    callback()
-    this._stopRecordingForEntry(renderableName)
+    this._recordForEntry([renderableName], false);
+    let renderable = callback();
+    this._stopRecordingForEntry(renderableName);
   }
 
   /**
@@ -204,7 +205,7 @@ export class OptionObserver extends EventEmitter {
    */
   _addToListenerTree (entryNames, localListenerTree) {
 
-    let listenerStructure = localListenerTree[listeners]
+    let listenerStructure = localListenerTree[listeners];
 
     /* Renderable already added to listener tree, so no need to do that again */
     let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._accessObjectPath(this._listenerTreeMetaData, entryNames)
@@ -292,7 +293,7 @@ export class OptionObserver extends EventEmitter {
         return
       }
       this.options = newOptions
-      this._markAllOptionsAsUpdated()
+      this._markAllOptionsAsUpdated();
       return
     }
     this._deepTraverse(this.options, (nestedPropertyPath, optionObject, existingOptionValue, key, [newOptionObject, defaultOption]) => {
@@ -328,7 +329,7 @@ export class OptionObserver extends EventEmitter {
   }
 
   _markAllOptionsAsUpdated () {
-    let rootProperties = Object.keys(this.defaultOptions)
+    let rootProperties = Object.keys(this.defaultOptions);
     this._updateOptionsStructure(rootProperties, this.options, [], rootProperties.map((rootProperty) => undefined));
     this._flushUpdates()
   }
@@ -445,9 +446,9 @@ export class OptionObserver extends EventEmitter {
     this._deepTraverseWithShallowArrays(this._newOptionUpdates, (nestedPropertyPath, updateObjectParent, updateObject, propertyName, [defaultOptionParent, listenerTree, optionObject]) => {
 
         let newValue = updateObject[newChanges],
-          oldValue = updateObject[originalValue]
-        let defaultOption = defaultOptionParent[propertyName]
-        let innerListenerTree = listenerTree[propertyName]
+          oldValue = updateObject[originalValue];
+        let defaultOption = defaultOptionParent[propertyName];
+        let innerListenerTree = listenerTree[propertyName];
 
         if (this._isPlainObject(defaultOptionParent)) {
           this._processImmediateOptionReassignment({
@@ -504,7 +505,7 @@ export class OptionObserver extends EventEmitter {
     /* Mark the object as changes in the most common path */
     let updateObject = this._accommodateObjectPathUnless(this._newOptionUpdates, nestedPropertyPath, (object) =>
       object[newChanges]
-    )
+    );
     /* We rest upon the assumption that no function can access a nested path (options.nested.myString)
      * without also accessing intermediary properties (options.nested getter is triggered). If this isn't
      * true for some reason, updates will be missed */
@@ -1083,7 +1084,7 @@ export class OptionObserver extends EventEmitter {
       }
       /* Add the renderable as listening to the tree */
       let localListenerTree = this._accommodateObjectPath(modelListener.localListenerTree,
-        [propertyName])
+        [propertyName]);
       localListenerTree[listeners] = localListenerTree[listeners] || {}
       this._addToListenerTree(entryNames, localListenerTree)
       modelListener.startListening()
