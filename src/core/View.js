@@ -903,11 +903,11 @@ export class View extends FamousView {
             decorations.dynamicFunctions
             || [];
 
-        let localRenderableName = renderableInitializer.localName
+        let localRenderableName = renderableInitializer.localName;
         let currentRenderable = this[localRenderableName];
         let renderable;
         let dynamicDecorations = [];
-        let renderableIsArray = false
+        let renderableIsArray = false;
         this._optionObserver.recordForRenderable(localRenderableName, () => {
             /* Make sure we have proper this scoping inside the initializer */
             renderable = renderableInitializer.call(this, this.options);
