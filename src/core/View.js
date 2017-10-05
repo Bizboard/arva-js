@@ -870,15 +870,15 @@ export class View extends FamousView {
      * @private
      */
     _setPipeToSelf(renderable, enable = true) {
-        let methodName = enable ? 'pipe' : 'unpipe'
+        let methodName = enable ? 'pipe' : 'unpipe';
         /* Auto pipe events from the renderable to the view */
         if (renderable && renderable[methodName]) {
             /*
              * We see it as a bit of a mystery why the piping needs to be done both to this and this._eventOutput,
              * but they both seem to be necessary so I'm gonna leave it for now.
              */
-            renderable[methodName](this)
-            renderable[methodName](this._eventOutput)
+            renderable[methodName](this);
+            renderable[methodName](this._eventOutput);
             return true
         }
         return false
