@@ -26,11 +26,12 @@ let listeners = Symbol('listeners'),
 
 export let onOptionChange = Symbol('onOptionChange')
 
-//todo fix falsey value checks, should behave differently for undefined and false
+//TODO fix falsey value checks, should behave differently for undefined and false
 
 //TODO Not sure if the (nested) array listener tree is setup with maximum efficiency. Furthermore, partial array updates isn't supported
 
-//Todo is it worth it to have a separate listener tree for preprocessing?
+//TODO Think how to solve the case when this.options is passed as a whole to a renderable, maybe there should be a way to state explicit dependence if needed
+
 export class OptionObserver extends EventEmitter {
   /* The structure of what thing in the objects is mapped to the corresponding renderable update */
   _listenerTree = {}
@@ -301,7 +302,7 @@ export class OptionObserver extends EventEmitter {
         let defaultOptionValue = defaultOption[key]
         if (defaultOptionValue !== newOptionValue && (defaultOptionValue !== existingOptionValue &&
           /* If new value is undefined, and the previous one was already the default, then don't update (will go false)*/
-          !this._isPlainObject(existingOptionValue) && existingOptionValue[optionMetaData].isDefault)
+          !this._isPlainObject(existingOptionValue) && existingOptionValue[optionMetaData] && existingOptionValue[optionMetaData].isDefault)
         ) {
           this._markPropertyAsUpdated(nestedPropertyPath, key, newOptionObject[key], existingOptionValue)
         }
@@ -387,7 +388,18 @@ export class OptionObserver extends EventEmitter {
    * @private
    */
   _onModelChanged (model, changedProperties, modelKeyInParent, nestedPropertyPath) {
-    this._updateOptionsStructure(changedProperties, model, nestedPropertyPath.concat(modelKeyInParent))
+    let nestedPropretyPathToModel = nestedPropertyPath.concat(modelKeyInParent);
+    /* We need to check for undefined options here, since we can catch unreferenced properties, which we should ignore */
+    //TODO Optimize so that the listener doesn't have to be accessed twice when the check doesn't go through
+    let localListenerTree = this._accessListener(nestedPropretyPathToModel);
+    if(!localListenerTree){
+      return;
+    }
+    changedProperties = changedProperties.filter((changedProperty) => localListenerTree[changedProperty]);
+    if(!changedProperties.length){
+      return;
+    }
+    this._updateOptionsStructure(changedProperties, model, nestedPropretyPathToModel);
   }
 
   /**
@@ -499,8 +511,8 @@ export class OptionObserver extends EventEmitter {
     if (updateObject !== notFound) {
       let fullNestedPropertyPath = nestedPropertyPath.concat([propertyName])
       let localListenerTree = this._accessListener(fullNestedPropertyPath)
-      if (!(localListenerTree[listeners] || localListenerTree[0])) {
-        this._throwError(`Assignment to undefined option ${fullNestedPropertyPath.join('->')}`)
+      if (!localListenerTree || !(localListenerTree[listeners] || localListenerTree[0])) {
+        this._throwError(`Assignment to undefined option ${fullNestedPropertyPath.join('->')}`);
       }
       let localListeners = localListenerTree[listeners] || localListenerTree[0][listeners]
       for (let entryNames of this._getUpdatesEntryNamesForLocalListenerTree(localListeners)) {
@@ -787,7 +799,7 @@ export class OptionObserver extends EventEmitter {
       object = object[pathString];
         /* If it's a specially registered array listener, the property to read is called value and is being
          *  used on the listener tree */
-      if (object[isArrayListener] && traverseListeners) {
+      if (object && object[isArrayListener] && traverseListeners) {
           /* Return immediately, ignore remaining properties in path. TODO: Verify that this is what we want*/
           return object.value;
       }
@@ -1064,7 +1076,11 @@ export class OptionObserver extends EventEmitter {
   _listenForModelUpdates (entryNames) {
     PrioritisedObject.setPropertyGetterSpy((model, propertyName) => {
       /* TODO handle the case where this can be undefined */
-      let modelListener = this._modelListeners[model.constructor.name][model.id]
+      let modelListenerOfType = this._modelListeners[model.constructor.name] || {};
+      let modelListener = modelListenerOfType[model.id];
+      if(!modelListenerOfType || !modelListener){
+        return this._throwError(`Model when creating ${entryNames.join('')} not declared as a valid binding`);
+      }
       /* Add the renderable as listening to the tree */
       let localListenerTree = this._accommodateObjectPath(modelListener.localListenerTree,
         [propertyName])
