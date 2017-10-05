@@ -1283,9 +1283,9 @@ class Event {
    * @returns {Function}
    */
   pipe (pipeToName) {
-    this.createChainableDecorator((decorations) => {
-      if (decorations.pipes) {
-        decorations.pipes = []
+    return this.createChainableDecorator((decorations) => {
+      if (!decorations.pipes) {
+        decorations.pipes = [];
       }
 
       decorations.pipes.push(pipeToName)
