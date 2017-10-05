@@ -1142,6 +1142,10 @@ export class View extends FamousView {
                 preprocessFunction.call(this, this.options, optionObserver.defaultOptions);
             });
         }
+    }
 
+    static empty() {
+        //TODO Think of a more performant solution
+        return Surface.with();
     }
 }

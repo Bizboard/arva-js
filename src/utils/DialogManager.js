@@ -34,7 +34,7 @@ export class DialogManager extends View {
         showInitially: false
     })
     /* Empty content until filled */
-    dialog = {};
+    dialog = View.empty();
 
     canCancel = true;
 
@@ -54,14 +54,14 @@ export class DialogManager extends View {
         let famousContext = Injection.get(FamousContext);
         famousContext.add(this);
 
-        this.layout.on('layoutstart', ({size}) => {
+        this.on('newSize', (size) => {
             if (this.dialog.onNewParentSize) {
                 this.dialog.onNewParentSize(size);
                 this._savedParentSize = null;
             } else {
                 this._savedParentSize = size;
             }
-        });
+        }, {propagate: false});
 
 
         document.addEventListener("backbutton", ()=> this.canCancel && this.close());
