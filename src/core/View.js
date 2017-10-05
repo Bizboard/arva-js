@@ -921,6 +921,7 @@ export class View extends FamousView {
                 let factoryFunction = renderable;
                 renderable = factoryFunction(this.options);
             }
+            return renderable;
         });
         if(dynamicDecorations.length){
             this._doReflow();
