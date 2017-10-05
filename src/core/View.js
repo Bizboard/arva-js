@@ -167,7 +167,7 @@ export class View extends FamousView {
      */
     removeRenderable(renderable) {
         let renderableID = Utils.getRenderableID(renderable)
-        if (!this._realRenderables[renderableID]) {
+        if (!this.renderables[renderableID]) {
             Utils.warn(`Failed to remove renderable ${renderableID} from ${this._name()} because the renderable doesn't exist in the parent scope`)
             return
         }
@@ -178,7 +178,7 @@ export class View extends FamousView {
     }
 
     hasRenderable(renderable) {
-        return !!this._realRenderables[Utils.getRenderableID(renderable)]
+        return !!this.renderables[Utils.getRenderableID(renderable)]
     }
 
     _getRenderableName(renderable) {
@@ -381,7 +381,7 @@ export class View extends FamousView {
     }
 
     getActualRenderable(renderable) {
-        return this._realRenderables[Utils.getRenderableID(renderable)]
+        return this.renderables[Utils.getRenderableID(renderable)]
     }
 
 
@@ -389,8 +389,8 @@ export class View extends FamousView {
         if (this._sizeResolver.containsUncalculatedSurfaces()) {
             return false
         }
-        for (let renderableName in this._realRenderables) {
-            let renderable = this._realRenderables[renderableName]
+        for (let renderableName in this.renderables) {
+            let renderable = this.renderables[renderableName]
             if (!this._sizeResolver.isSizeFinal(renderable)) {
                 return false
             }
@@ -491,7 +491,7 @@ export class View extends FamousView {
             this._bindToSelf,
             this._setPipeToSelf,
             this._getIDFromLocalName,
-            this._realRenderables,
+            this.renderables,
             this._sizeResolver);
     }
 
@@ -594,7 +594,7 @@ export class View extends FamousView {
                  * we wait until the first engine render tick to add our renderables to the layout, when the view will have declared them all.
                  * layout.setDataSource() will automatically pipe events from the renderables to this View. */
                 if (!this._initialised) {
-                    this.layout.setDataSource(this._realRenderables)
+                    this.layout.setDataSource(this.renderables)
                     this._renderableHelper.pipeAllRenderables()
                     this._renderableHelper.initializeAnimations()
                     this._initialised = true
@@ -826,7 +826,7 @@ export class View extends FamousView {
          *
          * @type {Object}
          */
-        this._realRenderables = {};
+        this.renderables = {};
         this._IDtoLocalRenderableName = {};
         if (!this.layouts) {
             /**
