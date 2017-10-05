@@ -37,16 +37,16 @@ export class RenderableHelper {
      * @param sizeResolver
      */
     constructor(bindMethod, pipeMethod, getIDfromLocalNameMethod, outputRenderables, sizeResolver) {
-        this._bindMethod = bindMethod
-        this._renderableCounterparts = outputRenderables
-        this._sizeResolver = sizeResolver
-        this._pipeToView = pipeMethod
-        this._getIDfromLocalName = getIDfromLocalNameMethod
-        this.waitingAnimations = []
-        this._renderables = {}
-        this._groupedRenderables = {}
-        this._pipedRenderables = {}
-        this._groupedRenderables = {}
+        this._bindMethod = bindMethod;
+        this._renderableCounterparts = outputRenderables;
+        this._sizeResolver = sizeResolver;
+        this._pipeToView = pipeMethod;
+        this._getIDfromLocalName = getIDfromLocalNameMethod;
+        this.waitingAnimations = [];
+        this._renderables = {};
+        this._groupedRenderables = {};
+        this._pipedRenderables = {};
+        this._groupedRenderables = {};
     }
 
     assignRenderable(renderable, renderableName) {
