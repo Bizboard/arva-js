@@ -117,8 +117,11 @@ export class RenderableHelper {
      */
     _setDecorationPipes(renderable, pipes, enabled = true) {
         for (let pipeToName of pipes || []) {
-            let target = pipeToName ? this._renderables[pipeToName] : this
-            let pipeFn = (enabled ? '' : 'un') + 'pipe'
+            let target = this._renderables[this._getIDfromLocalName(pipeToName)];
+            if(!target){
+                Utils.warn(`Cannot pipe to unknown renderable: ${pipeToName}`);
+            }
+            let pipeFn = (enabled ? '' : 'un') + 'pipe';
             /* In order to keep things consistent and easier to use, we pipe from the renderable equivalent */
             if (renderable[pipeFn]) {
                 renderable[pipeFn](target)
