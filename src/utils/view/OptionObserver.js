@@ -173,9 +173,9 @@ export class OptionObserver extends EventEmitter {
    * @private
    */
   _recordForEntry (entryNames, allowSetters) {
-    this._accommodateInsideObject(this._activeRecordings, entryNames, {})
-    this._beginListenerTreeUpdates(entryNames)
-    this._listenForModelUpdates(entryNames)
+    this._accommodateInsideObject(this._activeRecordings, entryNames, {});
+    this._beginListenerTreeUpdates(entryNames);
+    this._listenForModelUpdates(entryNames);
     let optionRecorder = this._accessObjectPath(this._activeRecordings, entryNames).optionRecorder = ({type, propertyName, nestedPropertyPath}) => {
       if (type === 'setter') {
         if (allowSetters) {
@@ -189,7 +189,7 @@ export class OptionObserver extends EventEmitter {
         let localListenerTree = this._accessListener(nestedPropertyPath.concat(propertyName));
         this._addToListenerTree(entryNames, localListenerTree)
       }
-    }
+    };
     this.on('optionTrigger', optionRecorder)
   }
 
@@ -669,7 +669,7 @@ export class OptionObserver extends EventEmitter {
     each(object, (value, key) => {
 
       let valueIsPlainObject = value && typeof value === 'object' && value.constructor.name === 'Object'
-      let valueIsLeaf = valueIsPlainObject && Object.keys(value).length === 0
+      let valueIsLeaf = valueIsPlainObject && Object.keys(value).length === 0;
       if (!onlyForLeaves || valueIsLeaf) {
         /* If the callback returns true, then cancel traversion */
         if (callback(nestedPropertyPath, object, value, key, extraObjectsToTraverse)) {
