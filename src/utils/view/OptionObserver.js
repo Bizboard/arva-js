@@ -1142,4 +1142,5 @@ export class OptionObserver extends EventEmitter {
   }
 }
 
-Timer.every(OptionObserver._flushAllUpdates)
+Timer.every(OptionObserver._flushAllUpdates)/* Flush updates, if they exist, every tick */
+Timer.every(OptionObserver._flushAllUpdates);
