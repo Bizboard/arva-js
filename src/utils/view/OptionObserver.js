@@ -465,8 +465,8 @@ export class OptionObserver extends EventEmitter {
             false
         );
         this._flushArrayObserverChanges();
-        this._handleResultingUpdates();
         this._newOptionUpdates = {}
+        this._handleResultingUpdates();
     }
 
     /**
@@ -812,13 +812,14 @@ export class OptionObserver extends EventEmitter {
     }
 
     _handleResultingUpdates() {
-
         let preprocessInstructions = this._updatesForNextTick[OptionObserver.preprocess];
         if (preprocessInstructions) {
             for (let index in preprocessInstructions) {
                 this.preprocessForIndex(this.options, index);
             }
-            delete this._updatesForNextTick[OptionObserver.preprocess]
+            delete this._updatesForNextTick[OptionObserver.preprocess];
+            /* Reflush to take the changes made by the preprocessing into account */
+            this._flushUpdates();
         }
 
         /* Currently, all renderables are "one dimensional", they only have one name. That is why this is just a simple
