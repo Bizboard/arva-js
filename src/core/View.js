@@ -634,7 +634,7 @@ export class View extends FamousView {
         this._prepareLayoutController();
 
         if ((this.decorations.scrollableOptions || this.decorations.nativeScrollable) && !this._renderableHelper.getRenderableGroup('fullSize')) {
-            this.addRenderable(new Surface(), layout.fullSize(), layout.translate(0, 0, -10))
+            this.addRenderable(new Surface(), layout.fullSize().translate(0, 0, -10))
         }
     }
 
