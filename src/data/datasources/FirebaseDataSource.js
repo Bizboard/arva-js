@@ -223,7 +223,7 @@ export class FirebaseDataSource extends DataSource {
     setWithPriority(newData, priority) {
         /* Rethrow the error in order to be able to catch it higher up */
         let completionPromise = this.dataReference.setWithPriority(newData, priority).catch((error) =>
-                this._rethrowFirebaseError(error, newData)
+            this._rethrowFirebaseError(error, newData)
         );
         /* Append another promise to the chain to keep track of whether it's still synchronized. Fail silently
          * since we already have error handling above */
@@ -618,7 +618,7 @@ export class FirebaseDataSource extends DataSource {
         return new Promise((resolve, reject) => {
             this._dataReference.transaction(transactionFunction, (error, wasSuccessfullyCommited, snapshot) => {
                 if (error) {
-                    return reject(error);
+                    return this._rethrowFirebaseError(error, {}).catch(reject);
                 }
                 if (!wasSuccessfullyCommited) {
                     console.log(`Transaction failed, retrying`);
