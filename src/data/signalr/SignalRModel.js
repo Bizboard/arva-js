@@ -4,12 +4,16 @@ import {DataSource}                     from 'arva-js/data/DataSource.js';
 
 import {signalr, SignalRConnection}     from './SignalRDecorators.js';
 
+
+import EventEmitter                     from 'eventemitter3';
 import * as fooBar                      from 'jquery';
 import                                  'ms-signalr-client';
 
 export class SignalRModel extends LocalModel {
     constructor(id, data = null, options = {}) {
+        options.noInitialSync = true;
         let dataSource = options.dataSource || Injection.get(DataSource);
+
         super(id, data, options);
         this._ready = false;
         this.argumentId = id;
@@ -19,41 +23,58 @@ export class SignalRModel extends LocalModel {
         this.proxy = this.connection.getProxy(this.hubName) || null;
         signalr.mapClientMethods.apply(this);
         signalr.mapServerCallbacks.apply(this);
+
+        if(this.argumentId && !data) {
+            this.value(this.argumentId);
+        }
+
         if(this.connection && this.proxy) {
-            if(this.connection.connection.state === 1) {
-                this._init();
-            } else {
+                if(this.connection.connection.state === 1) {
+                    this._init();
+                } else {
                 this.connection.on('ready', () => {
                     this._init();
                 })
             }
         }
+    }
 
-        //  let prototype = Object.getPrototypeOf(this);
-        //  this.serverCallbacks = prototype.serverCallbacks;
-        
+    serialize(){
+        return this.shadow;
+    }
+
+    deserialize(shadow){
+        for(let [key, value] of Object.entries(shadow)) {
+            this[key] = value;
+        }
+        return this;
     }
 
     _init() {
         this.onConnect();
-        if(this.argumentId) {
-            this.get(this.argumentId);
-        }
     }
 
+
+    @signalr.cachedOffline()
     @signalr.registerServerCallback('get')
-    get(id) {
+    value(id) {
         let obj = arguments[0];
         if(typeof obj === "undefined") {
             this.emit('getError', 'getError');
-            return;
+            return -1;
         }
         if(Array.isArray(obj)) { obj = obj[0]; }
         for(let [key, value] of Object.entries(obj)) {
             this[key] = value;
         }
-        this.emit('get', this);
+
+        if (this.processResult){
+            this.processResult(this)
+        }
+
         this._ready = true;
+        this.emit('value', this);
+        return this;
     }
 
     @signalr.registerServerCallback('update')
@@ -150,54 +171,23 @@ export class SignalRModel extends LocalModel {
 
     on(event, handler, context = this) {
         let haveListeners = this._hasListenersOfType(event);
-        super.on(event, handler, context);
+        // Directly access EventEmitter method instead of calling super, in order to not have conflicting logic
+        EventEmitter.prototype.on.call(this, event, handler, context);
 
-        switch (event) {
-            case 'ready':
-                /* If we're already ready, fire immediately */
-                if (this._dataSource && this._dataSource.ready) {
-                    handler.call(context, this);
-                }
-                break;
-            case 'value':
-                if (!haveListeners) {
-                    /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
-                    this._dataSource.setValueChangedCallback(this._onChildValue);
+        if (event === 'value'){
+            if (!haveListeners) {
+                /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
+                if (this.id){
+                    this.value(this.id)
                 } else {
-                    if (this._dataSource.ready) {
-                        /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
-                        handler.call(context, this);
-                    }
+                    this.value()
                 }
-                break;
-            case 'added':
-
-                if (haveListeners) {
-                    this._dataSource.setChildAddedCallback(this._onChildAdded);
-                }
-                break;
-            case 'changed':
-                /* We include the changed event in the value callback */
-                if (!this._hasListenersOfType('value')) {
-                    this._dataSource.setValueChangedCallback(this._onChildValue);
-                }
-                break;
-            case 'moved':
-                if (!haveListeners) {
-                    this._dataSource.setChildMovedCallback(this._onChildMoved);
-                }
-                break;
-            case 'removed':
-                if (!haveListeners) {
-                    this._dataSource.setChildRemovedCallback(this._onChildRemoved);
-                }
-                break;
-            case 'get':
-                if(this._ready) {
+            } else {
+                if (this._dataSource.ready) {
+                    /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
                     handler.call(context, this);
                 }
-            default:
-                break;
+            }
         }
     }
 }
