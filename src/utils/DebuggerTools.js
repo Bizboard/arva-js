@@ -18,6 +18,20 @@ window.views = {};
 
 window.muteLogs = true;
 
+window.debugSizes = false;
+
+let originalGetSize = View.prototype.getSize;
+View.prototype.getSize = function () {
+    if(!window.debugSizes){
+        return originalGetSize.call(this, ...arguments);
+    }
+    console.group(this.constructor.name);
+    let returnValue = originalGetSize.call(this, ...arguments);
+    console.log(returnValue);
+    console.groupEnd(this.constructor.name);
+    return returnValue;
+};
+
 let originalCopyPrototypeProperties= View.prototype._copyPrototypeProperties;
 View.prototype._copyPrototypeProperties = function () {
   window.views[this._name()] = this;
