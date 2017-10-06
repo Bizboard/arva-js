@@ -675,10 +675,10 @@ export class View extends FamousView {
         let { scrollableOptions } = this.decorations
         if (scrollableOptions) {
             this._scrollView = new ReflowingScrollView(scrollableOptions)
-            this.layout.getSize = this.getSize
-            this._scrollView.push(this.layout)
-            this.pipe(this._scrollView)
-            this.add(this._scrollView)
+            this.layout.getSize = this.getSize;
+            this._scrollView.push(this.layout);
+            this.pipe(this._scrollView);
+            this.add(this._scrollView);
         }
         else {
             this.add(this.layout)
