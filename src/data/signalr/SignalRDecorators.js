@@ -101,7 +101,7 @@ export class signalr {
 
             this[method.fn.name] = async (...params) => {
                 let isFunctionAvailableOffline = signalr.isFunctionAvailableOffline(this, method.fn.name);
-
+                if(method.fn.name === "value") { this._fetching = true; }
                 if(isFunctionAvailableOffline){
                     let cachedResult = await signalr.tryGetCachedResult(serverCallbackName, this);
                     if(cachedResult !== undefined){
