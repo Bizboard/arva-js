@@ -307,9 +307,8 @@ export class OptionObserver extends EventEmitter {
             return
         }
         this._deepTraverse(this.options, (nestedPropertyPath, optionObject, existingOptionValue, key, [newOptionObject, defaultOption]) => {
-            //todo confirm whether this check is appropriate (I don't think it is)
             let newOptionValue = newOptionObject[key];
-            if (!newOptionValue && optionObject[key] !== null) {
+            if (!newOptionValue && optionObject[key] !== null) {     //todo confirm whether this check is appropriate (I don't think it is)
                 let defaultOptionValue = defaultOption[key];
                 if (defaultOptionValue !== newOptionValue && (defaultOptionValue !== existingOptionValue &&
                         /* If new value is undefined, and the previous one was already the default, then don't update (will go false)*/
