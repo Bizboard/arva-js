@@ -7,6 +7,7 @@
 
  */
 
+import bowser                       from 'bowser';
 import isEqual                      from 'lodash/isEqual';
 import {Router}                     from '../core/Router.js';
 import {provide}                    from '../utils/di/Decorators.js';
@@ -425,10 +426,10 @@ export class ArvaRouter extends Router {
     _getControllerName(controller) {
         if (typeof controller === 'string') {
             return controller.replace('Controller', '');
-        } else if (typeof controller === 'function' && Object.getPrototypeOf(controller).constructor.name == 'Function') {
+        } else if ((typeof controller === 'function' && Object.getPrototypeOf(controller).constructor.name == 'Function') || bowser.msie) {
             /* The _name property is set by babel-plugin-transform-runtime-constructor-name.
              * This is done so Controller class names remain available in minimised code. */
-            let controllerName = controller._name || controller.name;
+            let controllerName = controller.constructor._name || controller.name;
             return controllerName.replace('Controller', '');
         } else {
             return typeof controller === 'object' ?
