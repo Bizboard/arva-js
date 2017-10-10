@@ -396,9 +396,13 @@ export class PrioritisedArray {
    * @returns {*}
    */
   concat() {
-    return this._children.filter.apply(this._children, arguments);
+      for(let index in arguments){
+          if(arguments[index] instanceof PrioritisedArray){
+              arguments[index] = arguments[index]._children;
+          }
+      }
+      return this._children.concat.apply(this._children, arguments);
   }
-
 
   /**
    * Proxies PrioArray.every() to its underlying Array cache.
