@@ -185,11 +185,12 @@ export class SignalRModel extends LocalModel {
                     this.value()
                 }
             } else {
-                if (this._dataSource.ready) {
+                if (this._dataSource.ready && !this._fetching) {
                     /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
                     handler.call(context, this);
                 }
             }
         }
     }
+    
 }
