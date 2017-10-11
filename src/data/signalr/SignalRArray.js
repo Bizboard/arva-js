@@ -37,20 +37,47 @@ export class SignalRArray extends LocalPrioritisedArray {
 
     @signalr.cachedOffline()
     @signalr.registerServerCallback('getAll')
-    getAll(data) {
-        while (this.length) {
+    async getAll(data) {
+        while(this.length) {
             this.remove(0);
         }
-        let promises = [];
-        for (const id of data) {
-            promises.push(this.add(Injection.get(this._dataType, id)).once('value'));
+        const pages = [];
+        if(this.options.paged) {
+            const perPage = this.options.paged;
+            const numberOfPages = Math.round(data.length / perPage + 0.49999999);
+            let index = 0;
+            for(let x = 0; x < numberOfPages; x++) {
+                pages[x] = [];
+                pages[x] = data.slice(x * perPage, (x + 1) * perPage);
+            } 
+        } else {
+            pages.push(data);
         }
-        return Promise.all(promises).then(() => {
+        let promises = [];
+        for(const page of pages) {
+            await promises.push(this.parseIDList(page));
+            await this.wait(1000);
+        }
+
+        Promise.all(promises).then(() => {
             this._ready = true;
             this._eventEmitter.emit('getAll');
             return this;
         })
     }
+
+    wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    parseIDList(data) {
+        let promises = [];
+        for(const id of data) {
+            promises.push(this.add(Injection.get(this._dataType, id)).once('value'));
+        }
+        return Promise.all(promises);
+    }
+
 
     /**
      * Subscribes to events emitted by this PrioritisedArray.
