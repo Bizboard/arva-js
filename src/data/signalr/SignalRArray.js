@@ -10,7 +10,7 @@ export class SignalRArray extends LocalPrioritisedArray {
     constructor(dataType, options) {
         let dataSource = Injection.get(DataSource);
         super(dataType, dataSource);
-        this.options = combineOptions(options, {shouldPopulate: true});
+        this.options = combineOptions({shouldPopulate: true}, options);
         this._ready = false;
         let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
         this.hubName = `${hubName}Hub`;
