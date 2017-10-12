@@ -166,7 +166,10 @@ export class View extends FamousView {
      * Removes the renderable from the view
      */
     removeRenderable(renderable) {
-        let renderableID = Utils.getRenderableID(renderable)
+        if(!renderable){
+            Utils.warn(`${this._name()}: Removing renderable that doesn't exist`);
+        }
+        let renderableID = Utils.getRenderableID(renderable);
         if (!this.renderables[renderableID]) {
             Utils.warn(`Failed to remove renderable ${renderableID} from ${this._name()} because the renderable doesn't exist in the parent scope`)
             return
