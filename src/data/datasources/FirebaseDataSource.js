@@ -638,6 +638,7 @@ export class FirebaseDataSource extends DataSource {
     _rethrowFirebaseError(error, newData) {
         error.data = newData;
         error.path = this.path();
+        console.log(`Failed trying to write ${JSON.stringify(error.data)} to ${error.path}`);
         return Promise.reject(error);
     }
 

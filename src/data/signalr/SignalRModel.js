@@ -17,6 +17,7 @@ export class SignalRModel extends LocalModel {
         super(id, data, options);
         this._ready = false;
         this.argumentId = id;
+        this._fetching = false;
         let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
         this.hubName = `${hubName}sHub`;
         this.connection = Injection.get(SignalRConnection);
@@ -24,14 +25,14 @@ export class SignalRModel extends LocalModel {
         signalr.mapClientMethods.apply(this);
         signalr.mapServerCallbacks.apply(this);
 
-        if(this.argumentId && !data) {
+        if(this.argumentId && !data && !this._fetching) {
             this.value(this.argumentId);
         }
 
         if(this.connection && this.proxy) {
-                if(this.connection.connection.state === 1) {
-                    this._init();
-                } else {
+            if(this.connection.connection.state === 1) {
+                this._init();
+            } else {
                 this.connection.on('ready', () => {
                     this._init();
                 })
@@ -58,6 +59,7 @@ export class SignalRModel extends LocalModel {
     @signalr.cachedOffline()
     @signalr.registerServerCallback('get')
     value(id) {
+        this._fetching = false;
         let obj = arguments[0];
         if(typeof obj === "undefined") {
             this.emit('getError', 'getError');
@@ -175,7 +177,7 @@ export class SignalRModel extends LocalModel {
         EventEmitter.prototype.on.call(this, event, handler, context);
 
         if (event === 'value'){
-            if (!haveListeners) {
+            if (!haveListeners && !this._fetching) {
                 /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
                 if (this.id){
                     this.value(this.id)
@@ -183,11 +185,12 @@ export class SignalRModel extends LocalModel {
                     this.value()
                 }
             } else {
-                if (this._dataSource.ready) {
+                if (this._dataSource.ready && !this._fetching) {
                     /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
                     handler.call(context, this);
                 }
             }
         }
     }
+
 }

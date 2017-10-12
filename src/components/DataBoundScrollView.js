@@ -13,8 +13,6 @@ import sortBy                       from 'lodash/sortBy.js';
 import findIndex                    from 'lodash/findIndex.js';
 import ListLayout                   from 'famous-flex/layouts/ListLayout.js';
 
-import {debounce}                   from 'lodash-decorators';
-
 import {Throttler}                  from '../utils/Throttler.js';
 import {Utils}                      from '../utils/view/Utils.js';
 import {ReflowingScrollView}        from './ReflowingScrollView.js';
@@ -174,7 +172,6 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * We decorate it with debounce in order to (naively) avoid race conditions when setting the dataStore frequently after each other
      * @param dataStore
      */
-    @debounce(500)
     setDataStore(dataStore) {
         this.clearDataStore();
         this.options.dataStore = dataStore;
@@ -185,7 +182,6 @@ export class DataBoundScrollView extends ReflowingScrollView {
      * Sets the multiple dataStores to use. The "multiple" version of setDataStore(dataStore).
      * @param {Array} dataStores
      */
-    @debounce(500)
     setDataStores(dataStores) {
         let { dataStore, dataStores: previousDataStores } = this.options;
         if (dataStore) {
