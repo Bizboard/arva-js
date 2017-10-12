@@ -295,10 +295,11 @@ export class DataBoundScrollView extends ScrollController {
      * @private
      */
     _addHeader() {
-        if (this.options.headerTemplate) {
-            this._header = this.options.headerTemplate()
-            this._header.isHeader = true
-            this._insertId(0, 0, this._header, null, { isHeader: true }, 0)
+        let {headerTemplate} = this.options;
+        if (headerTemplate) {
+            this._header = this._constructRenderableFromFunction(headerTemplate);
+            this._header.isHeader = true;
+            this._insertId(0, 0, this._header, null, { isHeader: true }, 0);
             this.insert(0, this._header)
         }
     }
@@ -376,16 +377,21 @@ export class DataBoundScrollView extends ScrollController {
         }
 
 
-        let newSurface = groupTemplate(groupByValue);
-        if (newSurface instanceof RenderablePrototype) {
-            newSurface = new newSurface.type(newSurface.options);
-        }
+        let newSurface = this._constructRenderableFromFunction(groupTemplate.bind(null, groupByValue));
 
         newSurface.groupId = groupByValue
         this._internalGroups[groupByValue] = { position: insertIndex, itemsCount: 0 }
         this.insert(insertIndex, newSurface)
 
         return newSurface
+    }
+
+    _constructRenderableFromFunction(callbackToCreate) {
+        let newItem = callbackToCreate();
+        if (newItem instanceof RenderablePrototype) {
+            newItem = new newItem.type(newItem.options);
+        }
+        return newItem;
     }
 
     /**
