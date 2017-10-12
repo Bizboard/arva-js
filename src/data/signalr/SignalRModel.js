@@ -30,9 +30,9 @@ export class SignalRModel extends LocalModel {
         }
 
         if(this.connection && this.proxy) {
-                if(this.connection.connection.state === 1) {
-                    this._init();
-                } else {
+            if(this.connection.connection.state === 1) {
+                this._init();
+            } else {
                 this.connection.on('ready', () => {
                     this._init();
                 })
@@ -192,5 +192,5 @@ export class SignalRModel extends LocalModel {
             }
         }
     }
-    
+
 }

@@ -10,7 +10,7 @@ export class SignalRArray extends LocalPrioritisedArray {
     constructor(dataType, options) {
         let dataSource = Injection.get(DataSource);
         super(dataType, dataSource);
-        this.options = combineOptions({shouldPopulate: true}, options);
+        this.options = combineOptions({shouldPopulate: true, paged: false, throttleDelay: 0}, options);
         this._ready = false;
         let hubName = this.constructor.name || Object.getPrototypeOf(this).constructor.name;
         this.hubName = `${hubName}Hub`;
@@ -49,14 +49,14 @@ export class SignalRArray extends LocalPrioritisedArray {
             for(let x = 0; x < numberOfPages; x++) {
                 pages[x] = [];
                 pages[x] = data.slice(x * perPage, (x + 1) * perPage);
-            } 
+            }
         } else {
             pages.push(data);
         }
         let promises = [];
         for(const page of pages) {
             await promises.push(this.parseIDList(page));
-            await this.wait(1000);
+            await this.wait(this.options.throttleDelay);
         }
 
         Promise.all(promises).then(() => {
@@ -73,7 +73,7 @@ export class SignalRArray extends LocalPrioritisedArray {
     parseIDList(data) {
         let promises = [];
         for(const id of data) {
-            promises.push(this.add(Injection.get(this._dataType, id)).once('value'));
+            promises.push(Injection.get(this._dataType, id).once('value').then(this.add));
         }
         return Promise.all(promises);
     }
