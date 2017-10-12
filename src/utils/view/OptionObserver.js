@@ -1,21 +1,21 @@
 /**
  * Created by lundfall on 23/02/2017.
  */
-import cloneDeepWith from 'lodash/cloneDeepWith'
-import difference from 'lodash/difference'
-import each from 'lodash/each'
-import Timer from 'famous/utilities/Timer.js'
-import {RenderablePrototype} from 'famous/utilities/RenderablePrototype.js';
-import ElementOutput from 'famous/core/ElementOutput.js';
+import cloneDeepWith            from 'lodash/cloneDeepWith';
+import difference               from 'lodash/difference';
+import each                     from 'lodash/each';
+import Timer                    from 'famous/utilities/Timer.js';
+import {RenderablePrototype}    from 'famous/utilities/RenderablePrototype.js';
+import ElementOutput            from 'famous/core/ElementOutput.js';
 
-import EventEmitter from 'eventemitter3'
+import EventEmitter             from 'eventemitter3';
 
-import {ArrayObserver} from './ArrayObserver.js'
-import {ObjectHelper} from '../ObjectHelper'
-import {PrioritisedObject} from '../../data/PrioritisedObject'
-import {Model} from '../../core/Model'
-import {layout} from '../../layout/Decorators'
-import {PrioritisedArray} from '../../data/PrioritisedArray'
+import {ArrayObserver}          from './ArrayObserver.js';
+import {ObjectHelper}           from '../ObjectHelper';
+import {PrioritisedObject}      from '../../data/PrioritisedObject';
+import {Model}                  from '../../core/Model';
+import {layout}                 from '../../layout/Decorators';
+import {PrioritisedArray}       from '../../data/PrioritisedArray';
 
 
 let listeners = Symbol('listeners'),
