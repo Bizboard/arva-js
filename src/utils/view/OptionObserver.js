@@ -536,25 +536,31 @@ export class OptionObserver extends EventEmitter {
     }
 
     _getUpdatesEntryNamesForLocalListenerTree(localListenerTree) {
-        return Object.keys(localListenerTree)
-            .concat(localListenerTree[OptionObserver.preprocess] ? OptionObserver.preprocess : []).filter((entryName) =>
-                !this._forbiddenUpdatesForNextTick[entryName]
-            ).map((key) =>
-                localListenerTree[key] === true ? [key] : [key].concat(this._getDeeplyNestedListenerPaths(localListenerTree[key]))
-            )
+        let doubleNestedPaths = Object.keys(localListenerTree)
+            .concat(localListenerTree[OptionObserver.preprocess] ? OptionObserver.preprocess : [])
+            .map((key) => localListenerTree[key] === true ? [[key]] :
+                this._getDeeplyNestedListenerPaths(localListenerTree[key]).map((path) => [key].concat(path)));
+
+        /* Flatten double nested paths */
+        return [].concat(...doubleNestedPaths);
+
     }
 
-    _getDeeplyNestedListenerPaths(localListenerTree) {
-        let accumulator = [];
-        for (let key in localListenerTree) {
-            let listenerObject = localListenerTree[key];
-            accumulator.push(key);
-            if (listenerObject === true) {
-                return accumulator
-            }
-            accumulator = accumulator.concat(this._getDeeplyNestedListenerPaths(listenerObject))
+    _getDeeplyNestedListenerPaths(localListenerTree, accumulator = []) {
+        if(localListenerTree === true){
+            return accumulator;
         }
-        return accumulator
+        let nestedPaths = [];
+        for (let key in localListenerTree) {
+            let nestedPath = this._getDeeplyNestedListenerPaths(localListenerTree[key], accumulator.concat(key));
+            /* If the resulting paths are doubled nested, then they need to be flattened one step */
+            if(Array.isArray(nestedPath[0])){
+                nestedPaths.push(...nestedPath);
+            } else {
+                nestedPaths.push(nestedPath);
+            }
+        }
+        return nestedPaths;
     }
 
     /**
