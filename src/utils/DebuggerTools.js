@@ -1,20 +1,23 @@
 /**
  * Created by lundfall on 06/07/2017.
  */
-import {Surface}          from 'arva-js/surfaces/Surface.js';
-import Entity             from 'famous/core/Entity.js'
-import { View }           from 'arva-js/core/View.js'
-import { ObjectHelper }   from 'arva-js/utils/ObjectHelper.js'
-import { OptionObserver } from 'arva-js/utils/view/OptionObserver.js'
-import { Utils }          from 'arva-js/utils/view/Utils.js'
-import { layout }         from 'arva-js/layout/Decorators.js'
-import EventEmitter       from 'famous/core/EventEmitter.js'
+import {Surface}            from 'arva-js/surfaces/Surface.js';
+import Entity               from 'famous/core/Entity.js'
+import { View }             from 'arva-js/core/View.js'
+import { ObjectHelper }     from 'arva-js/utils/ObjectHelper.js'
+import { OptionObserver }   from 'arva-js/utils/view/OptionObserver.js'
+import { Utils }            from 'arva-js/utils/view/Utils.js'
+import { layout }           from 'arva-js/layout/Decorators.js'
+import { PrioritisedArray}  from 'arva-js/data/PrioritisedArray.js'
+import EventEmitter         from 'famous/core/EventEmitter.js'
 
 window.getFromID = (id) => {
   return Entity.get(id)
 };
 
 window.views = {};
+window.prioArrays = {};
+
 
 window.muteLogs = true;
 
@@ -36,6 +39,12 @@ let originalCopyPrototypeProperties= View.prototype._copyPrototypeProperties;
 View.prototype._copyPrototypeProperties = function () {
   window.views[this._name()] = this;
   return originalCopyPrototypeProperties.call(this, ...arguments)
+};
+
+let originalBuildFromSnapshot = PrioritisedArray.prototype._buildFromSnapshot;
+PrioritisedArray.prototype._buildFromSnapshot = function () {
+    window.prioArrays[this.constructor.name] = this;
+    return originalBuildFromSnapshot.call(this, ...arguments)
 };
 
 let originalConstructLayoutController = View.prototype._createLayoutController;
