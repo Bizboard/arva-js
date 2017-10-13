@@ -92,7 +92,7 @@ export class DataBoundScrollView extends ScrollController {
             },
             chatScrolling: false
         }, options)
-        let optionsToPassToSuper = { ...options, dataSource: [] }
+        let optionsToPassToSuper = { ...options, dataSource: [] };
         super(optionsToPassToSuper)
         /* Jump through hoops in order to be able to use the dataSource as a different meaning than what ScrollController.js does */
         this.options.dataSource = options.dataSource;
