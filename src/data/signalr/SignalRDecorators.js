@@ -428,11 +428,11 @@ export class SignalRConnection extends EventEmitter {
                     return new Promise((resolve, reject) => {
                         proxy.invoke.call(proxy, serverCallbackName, ...params)
                             .done(async (...params) => {
+                                this.saveRequestQueue.splice(idx, 1);
                                 resolve();
                             })
                             .fail( ()=>{
                                 reject()
-                                // console.log("try again later")
                             })
                     })
                 }))
@@ -441,8 +441,9 @@ export class SignalRConnection extends EventEmitter {
             }
 
             promises.then(()=>{
-                this.emit('stateChange', state);
                 this._connected = true;
+                this.emit('stateChange', state);
+                this.emit('connected');
             });
         } else if (state.newState === this.connectionStates.reconnecting) {
             this._connected = false;
