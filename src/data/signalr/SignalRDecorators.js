@@ -29,6 +29,17 @@ export class signalr {
         }
     }
 
+    static saveRequestIfOffline(){
+        return function (target, name, descriptor) {
+            let {saveRequestIfOffline} = target;
+            if (!saveRequestIfOffline) {
+                saveRequestIfOffline = target.saveRequestIfOffline = {};
+            }
+            saveRequestIfOffline[name] = true;
+            return descriptor;
+        }
+    }
+
     static registerServerCallback(fnName = null) {
         return function (target, name, descriptor) {
             if (!fnName) {
@@ -101,6 +112,7 @@ export class signalr {
 
             this[method.fn.name] = async (...params) => {
                 let isFunctionAvailableOffline = signalr.isFunctionAvailableOffline(this, method.fn.name);
+                let saveRequestIfOffline = signalr.saveRequestIfOffline(this, method.fn.name);
                 if(method.fn.name === "value") { this._fetching = true; }
                 if(isFunctionAvailableOffline){
                     let cachedResult = await signalr.tryGetCachedResult(serverCallbackName, this);
@@ -112,6 +124,13 @@ export class signalr {
                         }
 
                         return cachedResult;
+                    }
+                } else if (saveRequestIfOffline){
+                    await this.connection.once('ready');
+                    if (!this.connection.isConnected()) {
+                        // if we are offline & should save the request)
+                        this.connection.saveRequestQueue.push([this.proxy, serverCallbackName, ...params]);
+                        return await method.fn.call(this, [...params, {savedRequest: true}]);
                     }
                 }
 
@@ -156,7 +175,6 @@ export class signalr {
         for(let [key, value] of Object.entries(data)) {
             if (signalr.fileNames.includes(key)){
                 try {
-                    console.log("!!!MODEL", model.connection.options.url);
                     let response = await fetch(`${model.connection.options.url}/${value}`);
                     if (response.ok){
                         let file = response.blob();
@@ -225,6 +243,8 @@ export class SignalRConnection extends EventEmitter {
             reconnecting: 2,
             disconnected: 4
         };
+
+        this.saveRequestQueue = [];
 
         this.stateChangedCallback = this.stateChangedCallback.bind(this);
     }
@@ -297,6 +317,11 @@ export class SignalRConnection extends EventEmitter {
 
     isAuthenticated() {
         return !!this._userToken;
+    }
+
+    setOffline(){
+        this._connected = false;
+        this.emit('disconnected');
     }
 
     async authenticateUser({username, password}) {
@@ -396,17 +421,39 @@ export class SignalRConnection extends EventEmitter {
     }
 
     stateChangedCallback(state) {
-        if (state.newState === this.connectionStates.connectected) {
-            this.emit('stateChange', state);
-            this._connected = true;
-        } else if (state.newState === this.connectionStates.disconnected) {
+        if (state.newState === this.connectionStates.connected) {
+            let promises;
+            if (this.saveRequestQueue.length){
+                promises = Promise.all(this.saveRequestQueue.map(([proxy, serverCallbackName, ...params], idx)=> {
+                    return new Promise((resolve, reject) => {
+                        proxy.invoke.call(proxy, serverCallbackName, ...params)
+                            .done(async (...params) => {
+                                this.saveRequestQueue.splice(idx, 1);
+                                resolve();
+                            })
+                            .fail( ()=>{
+                                reject()
+                            })
+                    })
+                }))
+            } else {
+                promises = Promise.resolve();
+            }
+
+            promises.then(()=>{
+                this._connected = true;
+                this.emit('stateChange', state);
+                this.emit('connected');
+            });
+        } else if (state.newState === this.connectionStates.reconnecting) {
             this._connected = false;
             this.emit('disconnected');
-            if (this.options.shouldAttemptReconnect) {
-                this.restart();
-            }
+        } else if (state.newState === this.connectionStates.disconnected && this.options.shouldAttemptReconnect) {
+            this._connected = false;
+            this.emit('disconnected');
+            this.restart();
         }
-    }
+    };
 
     restart() {
         return new Promise((resolve) => {
