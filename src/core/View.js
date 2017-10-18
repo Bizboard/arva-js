@@ -167,7 +167,7 @@ export class View extends FamousView {
      */
     removeRenderable(renderable) {
         if(!renderable){
-            Utils.warn(`${this._name()}: Removing renderable that doesn't exist`);
+            return Utils.warn(`${this._name()}: Removing renderable that doesn't exist`);
         }
         let renderableID = Utils.getRenderableID(renderable);
         if (!this.renderables[renderableID]) {
