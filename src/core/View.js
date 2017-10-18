@@ -48,7 +48,7 @@ export class View extends FamousView {
      * @example
      * class HomeView extends View {
      *      @layout.size(100, 100)
-     *      @layout.place.center()
+     *      @layout.stick.center()
      *      mySurface = new Surface({properties: {backgroundColor: 'red'}})
      * }
      *
@@ -133,7 +133,7 @@ export class View extends FamousView {
      * @param {Surface|FamousView|View} renderable The renderable to be added
      * @param {String} renderableName The name (key) of the renderable
      * @param {Decorator} Decorator Any decorator(s) to apply to the renderable
-     * @returns {Surface|FamousView|View} The renderable that was assigned
+     * @returns {Surface|FamousView|View|ImageSurface} The renderable that was assigned
      */
     addRenderable(renderable, renderableName, ...decorators) {
         /* Due to common mistake, we check if renderableName is a string */
@@ -277,7 +277,7 @@ export class View extends FamousView {
     }
 
     /**
-     * Gets the scroll view that was set if @layout.scrollable was used on the view
+     * Gets the scroll view that was set if @layout.scrollable() was used on the view
      * @returns {ReflowingScrollView}
      */
     getScrollView() {
