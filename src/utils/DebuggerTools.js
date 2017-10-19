@@ -173,12 +173,12 @@ RenderNode._applyCommit = (spec, context, cacheStorage, nestedList = []) => {
         commitParams.allocator = context.allocator;
         var commitResult = childNode.commit(commitParams);
         var className = childNode._viewName;
-        if (commitResult) RenderNode._applyCommit(commitResult, context, cacheStorage, nestedList.concat(className || []));
-        else {
+        if (commitResult) {
+            RenderNode._applyCommit(commitResult, context, cacheStorage, nestedList.concat(className || []));
+        } else {
             cacheStorage[id] = commitParams;
             childNode.setClasses && childNode.setClasses(nestedList);
         }
     }
-    RenderNode._applyCommit(spec, context, cacheStorage)
 };
 
