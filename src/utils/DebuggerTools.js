@@ -2,6 +2,7 @@
  * Created by lundfall on 06/07/2017.
  */
 import Surface              from 'famous/core/Surface.js';
+import SpecParser           from 'famous/core/SpecParser.js';
 
 import Entity               from 'famous/core/Entity.js'
 import RenderNode           from 'famous/core/RenderNode.js'
@@ -36,6 +37,12 @@ View.prototype.getSize = function () {
     return returnValue;
 };
 
+let originalAssignRenderable = View.prototype._assignRenderable;
+View.prototype._assignRenderable = function (renderable, renderableName) {
+    renderable.__hiddenRenderableName__ = renderableName;
+    return originalAssignRenderable.call(this, ...arguments);
+};
+
 let originalCopyPrototypeProperties= View.prototype._copyPrototypeProperties;
 View.prototype._copyPrototypeProperties = function () {
     window.views[this._name()] = this;
@@ -51,8 +58,8 @@ PrioritisedArray.prototype._buildFromSnapshot = function () {
 let originalConstructLayoutController = View.prototype._createLayoutController;
 View.prototype._createLayoutController = function () {
     originalConstructLayoutController.call(this, ...arguments)
-    this.layout._view = this
-    this.layout._viewName = this._name();
+    this.layout._view = this;
+    this.layout.__hiddenViewName__ = this._name();
 };
 
 let secretRedBackground = Symbol('secretRedBackground');
@@ -67,8 +74,6 @@ Utils.warn = function () {
     originalWarn.call(this, ...arguments);
     debugger;
 };
-
-
 
 let log = (...consoleArgs) => {
     if(window.muteLogs){
@@ -163,9 +168,7 @@ window.debugFunction = (object, name) => {
     };
 };
 
-let originalApplyCommit = RenderNode._applyCommit;
-
-RenderNode._applyCommit = (spec, context, cacheStorage, nestedList) => {
+RenderNode._applyCommit = (spec, context, cacheStorage, nestedList = []) => {
     var result = SpecParser.parse(spec, context);
     var keys = Object.keys(result);
     for (var i = 0; i < keys.length; i++) {
@@ -174,12 +177,17 @@ RenderNode._applyCommit = (spec, context, cacheStorage, nestedList) => {
         var commitParams = result[id];
         commitParams.allocator = context.allocator;
         var commitResult = childNode.commit(commitParams);
-        var className = ''
-        if (commitResult) RenderNode._applyCommit(commitResult, context, cacheStorage, neste);
-        else {
+        if (commitResult) {
+            var thingsToAdd = childNode.__hiddenViewName__ ? [childNode.__hiddenViewName__] :  [];
+            thingsToAdd = thingsToAdd.concat(childNode._view && childNode._view.__hiddenRenderableName__ || [])
+            /* Replace white space since adding white space to a class name causes the DOM to revolt */
+                .map((string) => string.replace(' ', ''));
+            RenderNode._applyCommit(commitResult, context, cacheStorage, nestedList.concat(thingsToAdd));
+        } else {
             cacheStorage[id] = commitParams;
-            childNode.setClasses &&  childNode.setClasses()
+            childNode.setAttributes && childNode.setAttributes({'data-name': childNode.__hiddenRenderableName__ || ''});
+            childNode.setClasses && childNode.setClasses(nestedList);
         }
     }
-    RenderNode._applyCommit(spec, context, cacheStorage)
-}
+};
+
