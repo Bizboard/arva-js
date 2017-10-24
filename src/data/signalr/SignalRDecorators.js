@@ -250,6 +250,18 @@ export class SignalRConnection extends EventEmitter {
     }
 
     /**
+     * force offline state based on Cordova Network Information plugin offline event
+     *
+     */
+
+    goOffline(){
+        this._connected = false;
+        this._ready = true;
+        this.emit('ready', this._connected);
+        this.emit('disconnected');
+    }
+
+    /**
      * Makes the once function return a promise
      * @param event
      * @param handler
@@ -317,11 +329,6 @@ export class SignalRConnection extends EventEmitter {
 
     isAuthenticated() {
         return !!this._userToken;
-    }
-
-    setOffline(){
-        this._connected = false;
-        this.emit('disconnected');
     }
 
     async authenticateUser({username, password}) {
