@@ -774,9 +774,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         this._throttler.add(async () => {
             if (this.options.dataFilter &&
                 (typeof this.options.dataFilter === 'function')) {
-
                 let result = await this.options.dataFilter(child);
-
                 if (result) {
                     await this._addItem(child, previousSiblingID, dataStoreIndex);
                 }

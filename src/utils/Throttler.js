@@ -83,9 +83,7 @@ export class Throttler {
      * @private
      */
     async _executeTopAction() {
-        if(this.waitFor && this.waitFor instanceof Promise) {
-            return;
-        }
+        await this._awaitPromise();
 
         let action = this.queue.shift();
         if (action && typeof action === 'function') {
@@ -97,7 +95,6 @@ export class Throttler {
             this._clearTimer();
         } else {
             this._clearTimer();
-            await this._awaitPromise();
             this._setTimer();
         }
     }
