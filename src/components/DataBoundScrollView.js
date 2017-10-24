@@ -526,7 +526,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     async _addItem(child, previousSiblingID = undefined, dataSourceIndex) {
 
-        if (this._findData(child.id)) {
+        if (this._findData(child.id, dataStoreIndex)) {
             console.log('Child already exists ', child.id);
             return
         }
