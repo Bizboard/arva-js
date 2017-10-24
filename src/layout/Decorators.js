@@ -513,7 +513,7 @@ export const layout = {
      * @example
      * @layout.opacity(0.5)
      * @layout.size(100, 10)
-     * @layout.place.center()
+     * @layout.stick.center()
      * // Writes text that is half invisible
      * renderable = new Surface({content: 'Half invisible'});
      *
