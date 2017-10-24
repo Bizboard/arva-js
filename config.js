@@ -23,7 +23,7 @@ System.config({
     "camelcase": "npm:camelcase@2.1.1",
     "core-js": "npm:core-js@1.2.6",
     "eventemitter3": "npm:eventemitter3@1.2.0",
-    "famous": "github:bizboard/famous@0.4.5",
+    "famous": "github:bizboard/famous@0.4.6",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
     "famous-flex": "github:bizboard/famous-flex@1.4.3",
     "fastclick": "npm:fastclick@1.0.6",
