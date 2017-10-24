@@ -180,7 +180,7 @@ RenderNode._applyCommit = (spec, context, cacheStorage, nestedList = []) => {
         if (commitResult) {
             var thingsToAdd = childNode.__hiddenViewName__ ? [childNode.__hiddenViewName__] :  [];
             thingsToAdd = thingsToAdd.concat(childNode._view && childNode._view.__hiddenRenderableName__ || [])
-                /* Replace white space since adding white space to a class name causes the DOM to revolt */
+            /* Replace white space since adding white space to a class name causes the DOM to revolt */
                 .map((string) => string.replace(' ', ''));
             RenderNode._applyCommit(commitResult, context, cacheStorage, nestedList.concat(thingsToAdd));
         } else {
