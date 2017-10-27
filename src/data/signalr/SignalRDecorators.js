@@ -155,11 +155,11 @@ export class signalr {
 
                             resolve(result)
                         }).fail(async (e) => {
-                            if(this.connection.connectionState === SignalRConnection.connectionStates.connecting) {
+                            if(this.connection.connection.connectionState === this.connection.connectionStates.connecting) {
                                 await new Promise((resolve) => setTimeout(() => resolve), 5000);
 
                                 if(this.connection.connection.connectionState === this.connection.connectionStates.connecting) {
-                                    this.restart();
+                                    this.connection.restart();
                                 }
 
                             }
