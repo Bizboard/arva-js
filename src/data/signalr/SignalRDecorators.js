@@ -154,8 +154,16 @@ export class signalr {
                             }
 
                             resolve(result)
-                        }).fail((e) => {
-                        reject(e)
+                        }).fail(async (e) => {
+                            if(this.connection.connectionState === SignalRConnection.connectionStates.connecting) {
+                                await new Promise((resolve) => setTimeout(() => resolve), 5000);
+
+                                if(this.connection.connection.connectionState === this.connection.connectionStates.connecting) {
+                                    this.restart();
+                                }
+
+                            }
+                            reject(e)
                         // console.debug(e);
                     })
                 )
