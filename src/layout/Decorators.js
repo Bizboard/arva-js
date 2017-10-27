@@ -3,7 +3,7 @@
 
  @author: Hans van den Akker (mysim1)
  @license NPOSL-3.0
- @copyright Bizboard, 2016
+ @copyright Bizboard, 2017
 
  */
 import merge                    from 'lodash/merge.js'
@@ -14,7 +14,9 @@ import LayoutUtility            from 'famous-flex/LayoutUtility.js'
 import Easing                   from 'famous/transitions/Easing.js'
 
 import { Utils }                    from '../utils/view/Utils.js'
-import { onOptionChange } from '../utils/view/OptionObserver'
+import { onOptionChange }           from '../utils/view/OptionObserver'
+import { RenderablePrototype }      from 'famous/utilities/RenderablePrototype.js'
+
 
 /**
  *
@@ -125,54 +127,89 @@ export const bindings = {
    * Return value is ignored. It is important that the function doesn't modify defaultOptions
    *
    * @example
-   * @bindings.preprocess((options, defaultOptions) => {
+   * @bindings.preprocess()
+   * propagateBackgroundColor((options, defaultOptions) {
    *  // Shortcut way of specifying the sideMenu.menuItem.backgroundColor
    *  options.sideMenu = combineOptions(defaultOptions.sideMenu, {menuItem: {backgroundColor: options.backgroundColor}})
    * })
    *
-   * @param preprocessFunction
    * @returns {function(*)}
    */
-  preprocess: (preprocessFunction) => {
-    return (target) => {
-      prepPrototypeDecorations(target.prototype).preprocessBindings = preprocessFunction
+  preprocess: () => {
+    return (prototype, methodName, descriptor) => {
+      let decorations = prepPrototypeDecorations(prototype);
+        let {preprocessBindings} = decorations;
+          if(!preprocessBindings){
+            preprocessBindings = decorations.preprocessBindings = [];
+          }
+          let preprocessFunction  = descriptor.value;
+          preprocessBindings.push({preprocessFunction, name: methodName});
     }
   }
 
-}
+};
 
-let decoratorTypes = {childDecorator: 1, viewDecorator: 2, viewOrChild: 3}
-let lastResult
+let decoratorTypes = {childDecorator: 1, viewDecorator: 2, viewOrChild: 3};
+let lastResult;
 
-let createChainableDecorator = function (method, type) {
+export let createChainableDecorator = function (method, type) {
 
   let methodToReturn = function (viewOrRenderable, renderableName, descriptor) {
     if (methodToReturn.lastResult) {
-      methodToReturn.lastResult(viewOrRenderable, renderableName, descriptor)
+      methodToReturn.lastResult(viewOrRenderable, renderableName, descriptor);
     }
     if (type === decoratorTypes.viewOrChild) {
-      type = typeof viewOrRenderable === 'function' ? decoratorTypes.viewDecorator : decoratorTypes.childDecorator
+      type = typeof viewOrRenderable === 'function' ? decoratorTypes.viewDecorator : decoratorTypes.childDecorator;
     }
-    let decorations = type === decoratorTypes.childDecorator ? prepDecoratedRenderable(...arguments).decorations : prepPrototypeDecorations(viewOrRenderable.prototype)
+    let decorations = type === decoratorTypes.childDecorator ? prepDecoratedRenderable(...arguments).decorations : prepPrototypeDecorations(viewOrRenderable.prototype);
 
-    return method(decorations, type, viewOrRenderable, renderableName, descriptor)
-  }
+    /* If we are directly applying the decorator on a RenderablePrototype, we need to save the methods to be executed later,
+     * rather than just executing the methods. This is needed so that decorators can be applied both directly as methods in
+     * in combination with them being used actually as decorators, on the same renderable */
+    if(!descriptor && viewOrRenderable instanceof RenderablePrototype){
+      viewOrRenderable.addDirectlyAppliedDecoratorFunction(method)
+    } else {
 
-  let root = this
+        method(decorations, type, viewOrRenderable, renderableName, descriptor);
+    }
+
+
+     if(!descriptor){
+       /*  If the descriptor isn't present, we are not executing the decorator at decoration time.
+        *  This means that we can utilize the return to provide the renderable. This allows you to do things like this:
+        *
+        *  this.myRenderable = this.addRenderable(layout.size(new Surface()))
+        *
+        *  Or this (in the class field):
+        *
+        *  items = this.options.items.map(itemInfo =>
+        *    layout.size(...itemInfo.size)(
+        *      new Surface({content: itemInfo.content})
+        *    )
+        *  );
+        *
+        *  */
+         return viewOrRenderable;
+     }
+     return descriptor;
+  };
+
+  let root = this;
   if (root && root.originalObject) {
-    methodToReturn.lastResult = root
-    root = methodToReturn.originalObject = root.originalObject
+    methodToReturn.lastResult = root;
+    root = methodToReturn.originalObject = root.originalObject;
   } else {
-    methodToReturn.originalObject = this
+    methodToReturn.originalObject = this;
   }
   if (root) {
-    lastResult = methodToReturn
-    methodToReturn.createChainableDecorator = createChainableDecorator.bind(methodToReturn)
-
-    Object.defineProperties(methodToReturn, Object.getOwnPropertyDescriptors(root.__proto__))
+    lastResult = methodToReturn;
+    methodToReturn.createChainableDecorator = createChainableDecorator.bind(methodToReturn);
+    /* We are allowing for chaining here by defining the properties on the returning object having the same properties
+    *  as the original object. For example, layout.fullSize() would return an object that has all the methods of layout */
+    Object.defineProperties(methodToReturn, Object.getOwnPropertyDescriptors(root.__proto__));
   }
 
-  return methodToReturn
+  return methodToReturn;
 }
 
 
@@ -318,7 +355,7 @@ class Layout {
        * dockedRenderable = Surface.with({properties: {backgroundColor: 'red'}});
        *
        * @memberOf dock
-       * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+       * @param {Number|Function|Boolean} [size]. The size of the renderable in the one dimension that is being docked, e.g.
        * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
        * different variations, see layout.size.
        * @param {Number} [space]. Any space that should be inserted before the docked renderable
@@ -346,7 +383,7 @@ class Layout {
        *   .align(0.5, 0)
        * dockedRenderable = new Surface({properties: {backgroundColor: 'red'}});
        *
-       * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+       * @param {Number|Function|Boolean} [size]. The size of the renderable in the one dimension that is being docked, e.g.
        * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
        * different variations, see layout.size.
        * @param {Number} [space]. Any space that should be inserted before the docked renderable
@@ -375,7 +412,7 @@ class Layout {
        * dockedRenderable = Surface.with({properties: {backgroundColor: 'red'}});
        *
        *
-       * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+       * @param {Number|Function|Boolean} [size]. The size of the renderable in the one dimension that is being docked, e.g.
        * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
        * different variations, see layout.size.
        * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
@@ -404,7 +441,7 @@ class Layout {
        * dockedRenderable = Surface.with({properties: {backgroundColor: 'red'}});
        *
        *
-       * @param {Number|Function} [size]. The size of the renderable in the one dimension that is being docked, e.g.
+       * @param {Number|Function|Boolean} [size]. The size of the renderable in the one dimension that is being docked, e.g.
        * dock left or right will be width, whereas dock top or bottom will result in height. For more information about
        * different variations, see layout.size.
        * @param {Number} [space = 0]. Any space that should be inserted before the docked renderable
@@ -475,6 +512,21 @@ class Layout {
     }, decoratorTypes.childDecorator)
   }
 
+    /**
+     * Makes modifications to a surface using old-style famous modifiers (e.g MapModifier for famous-map)
+     * @example
+     * @layout.mapModifier(new MapModifier{ mapView: map, position: {lat: 0, lng: 0} })
+     * // Makes a surface that is linked to the position (0, 0)
+     *
+     * @param {Object} [modifier]. modifier object.
+     * @returns {Function}
+     */
+    modifier(modifier = {}) {
+        return this.createChainableDecorator((decorations) => {
+            decorations.modifier = modifier;
+        }, decoratorTypes.childDecorator);
+    }
+
   /**
    * Makes the renderable swipable with physics-like velocity after the dragging is released. Emits event
    * 'thresholdReached' with arguments ('x'|'y', 0|1) when any thresholds have been reached. this.renderables[name]
@@ -485,7 +537,6 @@ class Layout {
    *  .swipable({xRange: [0, 100], snapX: true})
    * //Make a red box that can slide to the right
    * swipable = Surface.with({properties: {backgroundColor: 'red'});
-     *
    * @param {Object} options
    * @param {Boolean} [options.snapX] Whether to snap to the x axis
    * @param {Boolean} [options.snapY] Whether to snap to the Y axis
@@ -1075,18 +1126,18 @@ class Layout {
       /* Default to 16px dockPadding */
       this.dockPadding(normalisedPadding)
 
-      /* Calculate the dockPadding dynamically every time the View's size changes.
-       * The results from calling this method are further handled in View.js.
-       *
-       * The logic behind this is 16px padding by default, unless the screen is
-       * wider than 720px. In that case, the padding is increased to make the content
-       * in between be at maximum 720px. */
-      decorations.dynamicDockPadding = function (size) {
-        let sideWidth = size[0] > maxContentWidth + 32 ? (size[0] - maxContentWidth) / 2 : normalisedPadding[1]
-        return [normalisedPadding[0], sideWidth, normalisedPadding[2], sideWidth]
-      }
-    }, decoratorTypes.viewDecorator)
-  }
+            /* Calculate the dockPadding dynamically every time the View's size changes.
+             * The results from calling this method are further handled in View.js.
+             *
+             * The logic behind this is 16px padding by default, unless the screen is
+             * wider than 720px. In that case, the padding is increased to make the content
+             * in between be at maximum 720px. */
+            decorations.dynamicDockPadding = function(size, newWidth = maxContentWidth) {
+                let sideWidth = size[0] > newWidth + 32 ? (size[0] - newWidth) / 2 : normalisedPadding[1];
+                return [normalisedPadding[0], sideWidth, normalisedPadding[2], sideWidth];
+            }
+        }, decoratorTypes.viewDecorator);
+    }
 
   /**
    *
@@ -1153,7 +1204,7 @@ class Event {
    * @ignore
    * Add to self in order to make the scope working
    */
-  createChainableDecorator = createChainableDecorator
+  createChainableDecorator = createChainableDecorator;
 
   /**
    * Internal function used by the event decorators to generalize the idea of on, once, and off.
@@ -1163,15 +1214,16 @@ class Event {
    * @param {Function} callback that is called when event has happened
    * @returns {Function}
    */
-  _subscribe (subscriptionType, eventName, callback) {
+  _subscribe (subscriptionType, eventName, callback, options = {}) {
     return this.createChainableDecorator((decorations) => {
       if (!decorations.eventSubscriptions) {
         decorations.eventSubscriptions = []
       }
       decorations.eventSubscriptions.push({
-        subscriptionType: subscriptionType,
-        eventName: eventName,
-        callback: callback
+        subscriptionType,
+        eventName,
+        callback,
+          options
       })
     }, decoratorTypes.childDecorator)
   }
@@ -1189,10 +1241,11 @@ class Event {
    *
    * @param eventName
    * @param callback
+   * @param {Object} options Options that are forwarded to the EventHandler options
    * @returns {Layout} A chainable function
    */
-  on (eventName, callback) {
-    return this._subscribe('on', eventName, callback)
+  on (eventName, callback, options) {
+    return this._subscribe('on', eventName, callback, options);
   }
 
   /**
@@ -1230,9 +1283,9 @@ class Event {
    * @returns {Function}
    */
   pipe (pipeToName) {
-    this.createChainableDecorator((decorations) => {
-      if (decorations.pipes) {
-        decorations.pipes = []
+    return this.createChainableDecorator((decorations) => {
+      if (!decorations.pipes) {
+        decorations.pipes = [];
       }
 
       decorations.pipes.push(pipeToName)

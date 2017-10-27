@@ -2,7 +2,9 @@
  * Created by lundfall on 02/06/2017.
  */
 import Bowser           from 'bowser';
+import Timer            from 'famous/utilities/Timer.js';
 import Surface          from 'famous/core/Surface.js';
+import ImageSurface     from 'famous/surfaces/ImageSurface.js';
 import ElementOutput    from 'famous/core/ElementOutput.js';
 
 
@@ -37,6 +39,16 @@ if (browser.safari) {
             invalidateLayoutForElement(this._element);
         }
         this._wasHidden = context.hide;
+    };
+
+    //Safari on mobile seems to have troubles displaying images
+    let oldOnLoadedFunction = ImageSurface.prototype._onImageLoadedInDOM;
+    ImageSurface.prototype._onImageLoadedInDOM = function () {
+        Timer.after(() => {
+            this._element && invalidateLayoutForElement(this._element);
+        }, 1);
+        return oldOnLoadedFunction.apply(this, arguments);
     }
+
 
 }

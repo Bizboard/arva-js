@@ -27,7 +27,7 @@ export class Utils {
      * @param translate2
      * @returns {Array}
      */
-    static addTranslations (translate1, translate2){
+    static addTranslations(translate1, translate2) {
         return [translate1[0] + translate2[0], translate1[1] + translate2[1], translate1[2] + translate2[2]];
 
     }
@@ -78,9 +78,9 @@ export class Utils {
         }
         return newTranslation;
     }
-    
+
     static getRenderableGroupName(renderable) {
-        let {decorations} = renderable;
+        let { decorations } = renderable;
 
         if (!!decorations.dock) {
             /* 'filled' is a special subset of 'docked' renderables, that need to be rendered after the normal 'docked' renderables are rendered. */
@@ -95,7 +95,10 @@ export class Utils {
         }
     }
 
-  static getRenderableID (renderable) {
-    return renderable.getID ? renderable.getID() : (renderable.layout ? renderable.layout.id : renderable.id);
-  }
+    static getRenderableID(renderable) {
+        let extractedRenderableID = (renderable.getID ?
+            renderable.getID() :
+            (renderable.layout ? renderable.layout.id : renderable.id));
+        return extractedRenderableID !== undefined ? extractedRenderableID : renderable._id;
+    }
 }

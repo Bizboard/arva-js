@@ -44,5 +44,5 @@ export class ReflowingScrollView extends FlexScrollView {
          */
         this._eventOutput.emit('resize');
     }
-    
+
 }

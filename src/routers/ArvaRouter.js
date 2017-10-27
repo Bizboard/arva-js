@@ -392,11 +392,11 @@ export class ArvaRouter extends Router {
             /* Default method-to-method animations, used only if not overridden in app's controllers spec. */
             let defaults = {
                 'previous': {
-                    transition: { duration: 400, curve: Easing.outBack },
+                    transition: { duration: 400, curve: Easing.outCubic },
                     animation: AnimationController.Animation.Slide.Right
                 },
                 'next': {
-                    transition: { duration: 400, curve: Easing.outBack },
+                    transition: { duration: 400, curve: Easing.outCubic },
                     animation: AnimationController.Animation.Slide.Left
                 }
             };

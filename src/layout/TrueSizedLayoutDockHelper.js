@@ -200,7 +200,7 @@ TrueSizedLayoutDockHelper.prototype.fill = function (renderableName, size = [0, 
 };
 
 TrueSizedLayoutDockHelper.prototype.getFillSize = function() {
-    return [this._data.right - this._data.left, this._data.bottom - this._data.top];
+    return [Math.max(this._data.right - this._data.left, 0), Math.max(this._data.bottom - this._data.top, 0)];
 }
 
 

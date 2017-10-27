@@ -356,8 +356,9 @@ export class SizeResolver extends EventEmitter {
             if (sizeChange) {
                 trueSizedInfo.size = newSize;
                 trueSizedInfo.isUncalculated = false;
+                this.requestRecursiveReflow();
             }
-            this.requestRecursiveReflow();
+
             return true;
         } else {
             this.requestReflow();

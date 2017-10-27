@@ -34,7 +34,7 @@ export class DialogManager extends View {
         showInitially: false
     })
     /* Empty content until filled */
-    dialog = {};
+    dialog = View.empty();
 
     canCancel = true;
 
@@ -54,14 +54,14 @@ export class DialogManager extends View {
         let famousContext = Injection.get(FamousContext);
         famousContext.add(this);
 
-        this.layout.on('layoutstart', ({size}) => {
+        this.on('newSize', (size) => {
             if (this.dialog.onNewParentSize) {
                 this.dialog.onNewParentSize(size);
                 this._savedParentSize = null;
             } else {
                 this._savedParentSize = size;
             }
-        });
+        }, {propagate: false});
 
 
         document.addEventListener("backbutton", ()=> this.canCancel && this.close());
@@ -97,7 +97,7 @@ export class DialogManager extends View {
         this._hasOpenDialog = true;
 
         /* Replace whatever non-showing dialog we have right now with the new dialog */
-        this.replaceRenderable('dialog', new DialogWrapper({dialog}));
+        this.replaceRenderable(this.dialog, new DialogWrapper({dialog}));
         if (this._savedParentSize) {
             this.dialog.onNewParentSize(this._savedParentSize);
         }
@@ -109,7 +109,7 @@ export class DialogManager extends View {
         }
 
         /* Show the dialog */
-        this.showRenderable('dialog').then(() => {
+        this.showRenderable(this.dialog).then(() => {
             this._eventOutput.emit('dialogShown');
         });
 
@@ -119,7 +119,7 @@ export class DialogManager extends View {
          * closing the dialog again. Delaying showing the background circumvents this issue. */
         Timer.setTimeout(() => {
             if (this.hasOpenDialog()) {
-                this.showRenderable('background');
+                this.showRenderable(this.background);
             }
         }, 10);
         return this.dialogComplete();
@@ -177,8 +177,8 @@ export class DialogManager extends View {
      */
     _close(){
         this._hasOpenDialog = false;
-        this.hideRenderable('dialog');
-        this.hideRenderable('background');
+        this.hideRenderable(this.dialog);
+        this.hideRenderable(this.background);
         this._eventOutput.emit('close', ...arguments);
     }
 

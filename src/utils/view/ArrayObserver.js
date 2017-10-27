@@ -8,7 +8,7 @@ let isObserved = Symbol('isObserved')
 
 export class ArrayObserver extends EventEmitter {
 
-  dirtyPositions = {}
+  _dirtyPositions = {}
 
   /**
    *
@@ -87,7 +87,8 @@ export class ArrayObserver extends EventEmitter {
   }
 
   _hasHookAtIndex (index) {
-    return !!Object.getOwnPropertyDescriptor(this._array, index).get
+    let propertyDescriptor = Object.getOwnPropertyDescriptor(this._array, index);
+    return propertyDescriptor && !!propertyDescriptor.get;
   }
 
   _overrideMethods () {
@@ -110,9 +111,7 @@ export class ArrayObserver extends EventEmitter {
   }
 
   _pop (removedElement) {
-    if (this._array.length) {
-      this.emit('removed', {index: this._array.length, oldValue: removedElement})
-    }
+    this.emit('removed', {index: this._array.length, oldValue: removedElement})
   }
 
   _push (element, newLength) {
@@ -120,7 +119,7 @@ export class ArrayObserver extends EventEmitter {
   }
 
   _reverse (reversedArray) {
-    //todo anything to do here?
+    //todo anything todo here? don't think so, because the updates are taken care of elsewhere
   }
 
   _shift (shiftedElement) {
@@ -128,7 +127,7 @@ export class ArrayObserver extends EventEmitter {
   }
 
   _sort () {
-    //todo anything todo here?
+    //todo anything todo here? don't think so, because the updates are taken care of elsewhere
   }
 
   _splice (start, deleteCount, ...itemsToAddAndDeletedElements) {
@@ -153,8 +152,9 @@ export class ArrayObserver extends EventEmitter {
   }
 }
 
-export class MappedArray {
+export class MappedArray extends Array {
   constructor (array) {
+    super(array);
     this._array = array
   }
 
@@ -162,20 +162,3 @@ export class MappedArray {
     return this._array
   }
 }
-//TODO remove this!
-window.o = [1, 2, 3]
-
-window.arr = ArrayObserver
-window.test = new ArrayObserver(o)
-
-let debugListen = (eventName) => {
-  window.test.on(eventName, function () {
-    console.log(eventName, ...arguments)
-  })
-}
-
-debugListen('removed')
-debugListen('replaced')
-debugListen('added')
-debugListen('accessed')
-debugListen('modified')
