@@ -162,6 +162,9 @@ export class DialogManager extends View {
 
     dialogComplete() {
         if (!this._resolveDialogComplete) {
+            if(!this.hasOpenDialog()){
+                return Promise.resolve();
+            }
             return this._resolveDialogPromise = new Promise((resolve) => {
                 this._resolveDialogComplete = resolve
             });
