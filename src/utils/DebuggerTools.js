@@ -125,7 +125,7 @@ window.unDebugLayoutFunction = (view) => {
 };
 window.debugLayoutFunction = (view) => {
     let settings = {debug: true};
-    view._doReflow();
+    this.layout.reflowLayout();
     if(viewDebugSettings.get(view)){
         return;
     }
