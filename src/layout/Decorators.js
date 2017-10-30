@@ -781,7 +781,7 @@ export const layout = {
      * @param {String} [options.waitFor] If specified, it will wait for the renderable with the specified name to show
      * before showing the renderable
      * @param {Object} [options.transition] Transition options.
-     * @param {Function} [options.animation] Animation function (default: `AnimationController.Animation.FadedZoom`).
+     * @param {Function} [options.animation] Animation function (default: `AnimationController.Animation.Fade`).
      * @param {Number} [options.zIndexOffset] Optional z-index difference between the hiding & showing renderable (default: 0).
      * @param {Number} [options.keepHiddenViewsInDOMCount] Keeps views in the DOM after they have been hidden (default: 0).
      * @param {Object} [options.show] Show specific options.
@@ -802,7 +802,9 @@ export const layout = {
             let renderableConstructor = prepDecoratedRenderable(view, renderableName, descriptor);
             options = merge({
                 showInitially: true,
-                animation: AnimationController.Animation.FadedZoom,
+
+                animation: AnimationController.Animation.Fade,
+
                 show: {transition: options.transition || {curve: Easing.outCubic, duration: 250}},
                 hide: {transition: options.transition || {curve: Easing.inCubic, duration: 250}}
             }, options);
