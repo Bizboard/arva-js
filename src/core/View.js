@@ -7,32 +7,32 @@
 
  */
 
-import extend                       from 'lodash/extend.js'
-import cloneDeep                    from 'lodash/cloneDeep.js'
-import FamousView                   from 'famous/core/View.js'
-import {RenderablePrototype}      from 'famous/utilities/RenderablePrototype.js'
-import LayoutController             from 'famous-flex/LayoutController.js'
-import Surface                      from 'famous/core/Surface.js'
-import Engine                       from 'famous/core/Engine.js'
-import LayoutUtility                from 'famous-flex/LayoutUtility.js';
+import extend                   from 'lodash/extend.js'
+import cloneDeep                from 'lodash/cloneDeep.js'
+import FamousView               from 'famous/core/View.js'
+import {RenderablePrototype}    from 'famous/utilities/RenderablePrototype.js'
+import LayoutController         from 'famous-flex/LayoutController.js'
+import Surface                  from 'famous/core/Surface.js'
+import Engine                   from 'famous/core/Engine.js'
+import LayoutUtility            from 'famous-flex/LayoutUtility.js';
 
-import {limit}                      from 'arva-js/utils/Limiter.js'
+import {limit}                  from 'arva-js/utils/Limiter.js'
 
-import {layout}                     from '../layout/Decorators.js'
-import {ObjectHelper}               from '../utils/ObjectHelper.js'
-import {SizeResolver}               from '../utils/view/SizeResolver.js'
-import {Utils}                      from '../utils/view/Utils.js'
+import {layout}                 from '../layout/Decorators.js'
+import {ObjectHelper}           from '../utils/ObjectHelper.js'
+import {SizeResolver}           from '../utils/view/SizeResolver.js'
+import {Utils}                  from '../utils/view/Utils.js'
 import {
     DockedLayoutHelper,
     FullSizeLayoutHelper,
     TraditionalLayoutHelper
 }
-    from '../utils/view/LayoutHelpers.js'
-import {RenderableHelper}           from '../utils/view/RenderableHelper.js'
-import {ReflowingScrollView}        from '../components/ReflowingScrollView.js'
-import {MappedArray}                from '../utils/view/ArrayObserver.js'
-import {combineOptions}             from '../utils/CombineOptions.js'
-import {OptionObserver}             from '../utils/view/OptionObserver.js'
+                                from '../utils/view/LayoutHelpers.js'
+import {RenderableHelper}       from '../utils/view/RenderableHelper.js'
+import {ReflowingScrollView}    from '../components/ReflowingScrollView.js'
+import {MappedArray}            from '../utils/view/ArrayObserver.js'
+import {combineOptions}         from '../utils/CombineOptions.js'
+import {OptionObserver}         from '../utils/view/OptionObserver.js'
 
 /**
  * An Arva View. This is the base class for everything composite within Arva.
@@ -64,7 +64,7 @@ export class View extends FamousView {
      */
     constructor(options = {}) {
 
-        super(options)
+        super(options);
 
         /* Bind all local methods to the current object instance, so we can refer to 'this'
          * in the methods as expected, even when they're called from event handlers.        */
@@ -101,7 +101,7 @@ export class View extends FamousView {
             return;
         }
         this._doReflow();
-        let reflowData = { [this.getID()]: true };
+        let reflowData = {[this.getID()]: true};
         this._eventOutput.emit('recursiveReflow', reflowData);
     }
 
@@ -115,19 +115,19 @@ export class View extends FamousView {
 
     /**
      * Gets the size used when displaying a renderable on the screen the last tick
-     * @param {Renderable/Name} renderableOrName The renderable or the name of the renderable of which you need the size
+     * @param {Surface|View|Name} renderableOrName The renderable or the name of the renderable of which you need the size
      */
     getResolvedSize(renderableOrName) {
         let renderable = renderableOrName;
         if (typeof renderableOrName === 'string') {
             renderable = this.renderables[renderableOrName];
         }
-        let size = this._sizeResolver.getResolvedSize(renderable)
+        let size = this._sizeResolver.getResolvedSize(renderable);
 
         /* Backup: If size can't be resolved, then see if there's a size specified on the decorator */
         if (!size && renderable.decorations) {
-            let decoratedSize = renderable.decorations.size
-            let isValidSize = (inputSize) => typeof inputSize == 'number' && inputSize > 0
+            let decoratedSize = renderable.decorations.size;
+            let isValidSize = (inputSize) => typeof inputSize === 'number' && inputSize > 0;
             if (decoratedSize && decoratedSize.every(isValidSize)) {
                 size = decoratedSize
             }
@@ -151,14 +151,14 @@ export class View extends FamousView {
      * @returns {Surface|FamousView|View} The renderable that was assigned
      */
     addRenderable(renderable, ...decorators) {
-        let id = Utils.getRenderableID(renderable)
+        let id = Utils.getRenderableID(renderable);
         if (!id) {
             Utils.warn(`Could not add invalid renderable inside ${this._name()} (no ID of renderable found)`)
         }
-        this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, decorators)
-        this._assignRenderable(renderable)
-        this[id] = renderable
-        this.layout.reflowLayout()
+        this._renderableHelper.applyDecoratorFunctionsToRenderable(renderable, decorators);
+        this._assignRenderable(renderable);
+        this[id] = renderable;
+        this.layout.reflowLayout();
         return renderable
     }
 
@@ -166,17 +166,17 @@ export class View extends FamousView {
      * Removes the renderable from the view
      */
     removeRenderable(renderable) {
-        if(!renderable){
+        if (!renderable) {
             return Utils.warn(`${this._name()}: Removing renderable that doesn't exist`);
         }
         let renderableID = Utils.getRenderableID(renderable);
         if (!this.renderables[renderableID]) {
-            Utils.warn(`Failed to remove renderable ${renderableID} from ${this._name()} because the renderable doesn't exist in the parent scope`)
+            Utils.warn(`Failed to remove renderable ${renderableID} from ${this._name()} because the renderable doesn't exist in the parent scope`);
             return
         }
-        this._renderableHelper.removeRenderable(renderableID)
+        this._renderableHelper.removeRenderable(renderableID);
         /* Delete operator isn't allowed here (probably) because the initializer is non-configurable */
-        this[this._IDtoLocalRenderableName[renderableID]] = undefined
+        this[this._IDtoLocalRenderableName[renderableID]] = undefined;
         this.layout.reflowLayout()
     }
 
@@ -191,51 +191,51 @@ export class View extends FamousView {
     /**
      * Rearranges the order in which docked renderables are parsed for rendering, ensuring that 'renderableName' is processed
      * before 'nextRenderableName'.
-     * @param {View|Surface} renderableName
-     * @param {View|Surface} nextRenderableName
+     * @param {View|Surface} renderable
+     * @param {View|Surface} nextRenderable
      */
     prioritiseDockBefore(renderable, nextRenderable) {
-        this.reflowRecursively()
+        this.reflowRecursively();
         return this._renderableHelper.prioritiseDockBefore(Utils.getRenderableID(renderable), Utils.getRenderableID(nextRenderable))
     }
 
     /**
-     * @param {View|Surface} renderableName
-     * @param {View|Surface} prevRenderableName
+     * @param {View|Surface} renderable
+     * @param {View|Surface} prevRenderable
      */
     prioritiseDockAfter(renderable, prevRenderable) {
-        this.reflowRecursively()
+        this.reflowRecursively();
         return this._renderableHelper.prioritiseDockAfter(Utils.getRenderableID(renderable), Utils.getRenderableID(prevRenderable))
     }
 
     /**
+     * Shows a renderable decorated with layout.animate()
      *
-     * @param {String} renderableName
-     * @param {Boolean} show. Whether to show or not
+     * @param {View|Surface} renderable
      * @returns {Promise} when the renderable has finished its animation
      */
-    showRenderable(renderable, options = {}) {
+    showRenderable(renderable) {
         return this.toggleRenderable(renderable, true)
     }
 
     /**
      *
-     * @param renderable
-     * @param show
-     * @param option
+     * @param {View|Surface} renderable
+     * @param {String }show
+     * @param {Object} options
      * @returns {Promise}
      */
     async toggleRenderable(renderable, show, options = {}) {
         if (!renderable) {
-            Utils.warn(`Trying to show renderable which does not exist! (${this._name()})`)
+            Utils.warn(`Trying to show renderable which does not exist! (${this._name()})`);
             return
         }
         if (!renderable.animationController) {
             if (typeof renderable === 'string') {
-                Utils.warn(`Renderable visibility function called with string argument '${renderable}'. This has been deprecated. Please refactor to this.showRenderable(this.myView) instead of this.showRenderable('myView')`)
+                Utils.warn(`Renderable visibility function called with string argument '${renderable}'. This has been deprecated. Please refactor to this.showRenderable(this.myView) instead of this.showRenderable('myView')`);
                 return;
             }
-            Utils.warn(`Trying to show renderable which does not have an animationcontroller. Please use @layout.animate`)
+            Utils.warn(`Trying to show renderable which does not have an animationcontroller. Please use @layout.animate`);
             return;
         }
 
@@ -244,13 +244,13 @@ export class View extends FamousView {
             show = !this.isRenderableShowing(renderable)
         }
 
-        let decoratedSize = renderable.decorations.size || (renderable.decorations.dock ? renderable.decorations.dock.size : undefined)
+        let decoratedSize = renderable.decorations.size || (renderable.decorations.dock ? renderable.decorations.dock.size : undefined);
         if (decoratedSize) {
             /* Check if animationController has a true size specified. If so a reflow needs to be performed since there is a
              * new size to take into account. */
             for (let dimension of [0, 1]) {
                 if (this._sizeResolver.isValueTrueSized(this._sizeResolver.resolveSingleSize(decoratedSize[dimension], [NaN, NaN], dimension))) {
-                    this.reflowRecursively()
+                    this.reflowRecursively();
                     break
                 }
 
@@ -260,9 +260,14 @@ export class View extends FamousView {
         return await new Promise((resolve) => this._renderableHelper.showWithAnimationController(renderable.animationController, renderable, resolve, show, options))
     }
 
+    /**
+     * Returns true if animation-controlled renderable is showing
+     * @param {View|Surface} renderable
+     * @returns {*}
+     */
     isRenderableShowing(renderable) {
         if (!renderable.animationController) {
-            Utils.warn(`Trying to get visibility of renderable with no @layout.aniamte specified`)
+            Utils.warn(`Trying to get visibility of renderable with no @layout.aniamte specified`);
             return true
         }
         return renderable.animationController.get()
@@ -277,14 +282,14 @@ export class View extends FamousView {
      * @param decorators
      */
     decorateRenderable(renderable, ...decorators) {
-        if (typeof renderable == 'string') {
-            Utils.warn(`decorateRenderable called with string argument. Please use this.decorateRenderable(this[renderableName],...) instead of this.decorateRenderable(renderableName,...)`)
+        if (typeof renderable === 'string') {
+            Utils.warn(`decorateRenderable called with string argument. Please use this.decorateRenderable(this[renderableName],...) instead of this.decorateRenderable(renderableName,...)`);
             return;
         }
         if (!decorators.length) {
             Utils.warn('No decorators specified to decorateRenderable(renderable, ...decorators)')
         }
-        this._renderableHelper.decorateRenderable(Utils.getRenderableID(renderable), ...decorators)
+        this._renderableHelper.decorateRenderable(Utils.getRenderableID(renderable), ...decorators);
         this.reflowRecursively()
     }
 
@@ -304,9 +309,9 @@ export class View extends FamousView {
      * @returns {Promise}
      */
     setViewFlowState(stateName = '') {
-        this._eventOutput.emit('viewFlowStateChanged', stateName)
+        this._eventOutput.emit('viewFlowStateChanged', stateName);
         if (!this.decorations.viewFlow.viewStates[stateName]) {
-            Utils.warn(`Trying to to set flow state ${this._name()}:${stateName}, which doesn't exist!`)
+            Utils.warn(`Trying to to set flow state ${this._name()}:${stateName}, which doesn't exist!`);
             return Promise.resolve()
         }
         return this._renderableHelper.setViewFlowState(stateName, this.decorations.viewFlow)
@@ -351,7 +356,7 @@ export class View extends FamousView {
      * @returns {ReflowingScrollView}
      */
     getScrollView() {
-        return this._scrollView
+        return this._scrollView;
     }
 
     /**
@@ -360,7 +365,7 @@ export class View extends FamousView {
      * @returns {RenderablePrototype}
      */
     static with(options) {
-        return new RenderablePrototype(this, options)
+        return new RenderablePrototype(this, options);
     }
 
     /**
@@ -383,17 +388,29 @@ export class View extends FamousView {
         return this.toggleRenderable(renderable, false, options)
     }
 
+    /**
+     * Gets the "actual" renderable as being outputted, based on the renderable passed. This can be
+     * same as the assigned renderable in many cases, but different in some cases, such as with the
+     * animation controller or draggable
+     *
+     * @param renderable
+     * @returns {*}
+     */
     getActualRenderable(renderable) {
         return this.renderables[Utils.getRenderableID(renderable)]
     }
 
 
+    /**
+     * Returns true if size is fully settled
+     * @returns {boolean}
+     */
     isSizeSettled() {
         if (this._sizeResolver.containsUncalculatedSurfaces()) {
             return false
         }
         for (let renderableName in this.renderables) {
-            let renderable = this.renderables[renderableName]
+            let renderable = this.renderables[renderableName];
             if (!this._sizeResolver.isSizeFinal(renderable)) {
                 return false
             }
@@ -410,12 +427,12 @@ export class View extends FamousView {
      * @returns {Promise} resolves to false if the flow state can't be repeated due to an existing running repeat
      */
     async repeatFlowState(renderable, stateName = '', persistent = true) {
-        let renderableID = Utils.getRenderableID(renderable)
+        let renderableID = Utils.getRenderableID(renderable);
         if (!this._runningRepeatingFlowStates[renderableID]) {
-            this._runningRepeatingFlowStates[renderableID] = { persistent }
+            this._runningRepeatingFlowStates[renderableID] = {persistent};
             while (this._runningRepeatingFlowStates[renderableID] && (await this.setRenderableFlowState(renderable, stateName) || persistent)) {
             }
-            delete this._runningRepeatingFlowStates[renderableID]
+            delete this._runningRepeatingFlowStates[renderableID];
             return true
         } else {
             return false
@@ -428,7 +445,7 @@ export class View extends FamousView {
      */
     cancelRepeatFlowState(renderable) {
         if (this._runningRepeatingFlowStates) {
-            delete this._runningRepeatingFlowStates[Utils.getRenderableID(renderable)]
+            delete this._runningRepeatingFlowStates[Utils.getRenderableID(renderable)];
         }
     }
 
@@ -439,17 +456,21 @@ export class View extends FamousView {
      */
     setDefaultState(renderable, stateName) {
         for (let step of this[this._getRenderableName(renderable)].decorations.flow.states[stateName].steps) {
-            this.decorateRenderable(renderable, ...step.transformations)
+            this.decorateRenderable(renderable, ...step.transformations);
         }
     }
 
+    /**
+     * Returns true if the view is currently displaying
+     * @returns {boolean}
+     */
     isDisplaying() {
         return this.layout.isDisplaying();
     }
 
     /**
-     * Set a maximum width on a renderable.
-     * @param width
+     * Set a maximum width of the view
+     * @param {Number} width
      */
     setMaxContentWidth(width) {
         if (this.decorations.dynamicDockPadding) {
@@ -503,7 +524,7 @@ export class View extends FamousView {
      * @private
      */
     _requestLayoutControllerReflow() {
-        this._nodes = { _trueSizeRequested: true }
+        this._nodes = {_trueSizeRequested: true};
         //TODO: Do we really need to emit this?
         this._eventOutput.emit('layoutControllerReflow')
     }
@@ -514,7 +535,7 @@ export class View extends FamousView {
      */
     _constructDecoratedRenderables() {
 
-        let classConstructorList = []
+        let classConstructorList = [];
 
         /* Reverse the class list because it makes more sense to make the renderables of the parent before the renderables
          * of this view
@@ -522,21 +543,21 @@ export class View extends FamousView {
         for (let currentClass = this; currentClass.__proto__.constructor !== View; currentClass = Object.getPrototypeOf(currentClass)) {
             classConstructorList.push(currentClass.__proto__.constructor)
         }
-        classConstructorList.reverse()
+        classConstructorList.reverse();
 
+        /*
+         * Loop through the constructors to do the initial setup of the renderables
+         */
         for (let currentClassConstructor of classConstructorList) {
-            let renderableConstructors = this.renderableConstructors.get(currentClassConstructor)
-            let previousName
+            let renderableConstructors = this.renderableConstructors.get(currentClassConstructor);
             for (let localRenderableName in renderableConstructors) {
-                let renderableConstructor = renderableConstructors[localRenderableName]
+                let renderableConstructor = renderableConstructors[localRenderableName];
 
                 /* Assign to the 'flat' structure renderableConstructors */
-                this._renderableConstructors[localRenderableName] = renderableConstructor
-                let { decorations } = renderableConstructor
-                renderableConstructor.previousName = previousName
-                renderableConstructor.localName = localRenderableName
-                this._setupRenderable(renderableConstructor, decorations)
-                previousName = localRenderableName
+                this._renderableConstructors[localRenderableName] = renderableConstructor;
+                let {decorations} = renderableConstructor;
+                renderableConstructor.localName = localRenderableName;
+                this._setupRenderable(renderableConstructor, decorations);
             }
         }
     }
@@ -547,11 +568,11 @@ export class View extends FamousView {
      * @private
      */
     _assignRenderable(renderable) {
-        this._renderableHelper.assignRenderable(renderable, Utils.getRenderableID(renderable))
+        this._renderableHelper.assignRenderable(renderable, Utils.getRenderableID(renderable));
         if (Utils.renderableIsSurface(renderable)) {
             let sizeSpecification =
                 (renderable.decorations.dock && renderable.decorations.dock.size) ||
-                renderable.decorations.size
+                renderable.decorations.size;
             if (sizeSpecification && (sizeSpecification[0] === true || sizeSpecification[1] === true)) {
                 this._sizeResolver.configureTrueSizedSurface(
                     renderable,
@@ -567,15 +588,15 @@ export class View extends FamousView {
      * @private
      */
     _layoutDecoratedRenderables(context) {
-        let dockedRenderables = this._renderableHelper
-        let nativeScrollableOptions = this.decorations.nativeScrollable
+        let dockedRenderables = this._renderableHelper;
+        let nativeScrollableOptions = this.decorations.nativeScrollable;
         if (nativeScrollableOptions) {
-            let thisSize = this.getSize()
+            let thisSize = this.getSize();
             context.size = context.size.map((size, index) =>
-            (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index], size)) || size)
+                (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index], size)) || size)
         }
-        this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations)
-        this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations)
+        this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations);
+        this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations);
         this._traditionalLayoutHelper.layout(dockedRenderables.getRenderableGroup('traditional'), context, this.decorations)
     }
 
@@ -585,23 +606,23 @@ export class View extends FamousView {
      * @private
      */
     _createLayoutController() {
-        let hasFlowyRenderables = this._renderableHelper.hasFlowyRenderables()
+        let hasFlowyRenderables = this._renderableHelper.hasFlowyRenderables();
         this.layout = new LayoutController({
             flow: !!this.decorations.useFlow || hasFlowyRenderables,
             partialFlow: !this.decorations.useFlow,
             nativeScroll: !!this.decorations.nativeScrollable,
-            flowOptions: this.decorations.flowOptions || { spring: { period: 200 } },
+            flowOptions: this.decorations.flowOptions || {spring: {period: 200}},
             layout: function (context, options) {
 
                 /* Because views that extend this View class first call super() and then define their renderables,
                  * we wait until the first engine render tick to add our renderables to the layout, when the view will have declared them all.
                  * layout.setDataSource() will automatically pipe events from the renderables to this View. */
                 if (!this._initialised) {
-                    this.layout.setDataSource(this.renderables)
-                    this._renderableHelper.pipeAllRenderables()
-                    this._renderableHelper.initializeAnimations()
-                    this._initialised = true
-                    this.layout.reflowLayout()
+                    this.layout.setDataSource(this.renderables);
+                    this._renderableHelper.pipeAllRenderables();
+                    this._renderableHelper.initializeAnimations();
+                    this._initialised = true;
+                    this.layout.reflowLayout();
 
                     /*
                      * When the data source is set, it will not be reflected in the context yet because the layout is already
@@ -613,25 +634,25 @@ export class View extends FamousView {
                 }
 
                 /* Layout all renderables that have decorators (e.g. @someDecorator) */
-                this._layoutDecoratedRenderables(context, options)
+                this._layoutDecoratedRenderables(context, options);
                 if (this.decorations.customLayoutFunction) {
                     this.decorations.customLayoutFunction(context)
                 }
 
-                this._doTrueSizedSurfacesBookkeeping()
+                this._doTrueSizedSurfacesBookkeeping();
 
                 /* Legacy context.set() based layout functions */
                 if (this.layouts.length) {
                     this._callLegacyLayoutFunctions(context, options)
                 }
             }.bind(this)
-        })
+        });
 
         this._eventInput.on('recursiveReflow', (reflowData) => {
             /* Modify the reflow data so that it's clear what things have been reflown */
             reflowData[this.getID()] = true;
             this._doReflow();
-        })
+        });
 
         /* Add the layoutController to this View's rendering context. */
         this._prepareLayoutController();
@@ -655,14 +676,14 @@ export class View extends FamousView {
             try {
                 switch (typeof layout) {
                     case 'function':
-                        layout.call(this, context, options)
-                        break
+                        layout.call(this, context, options);
+                        break;
                     default:
-                        Utils.warn(`Unrecognized layout specification in view '${this._name()}'.`)
+                        Utils.warn(`Unrecognized layout specification in view '${this._name()}'.`);
                         break
                 }
             } catch (error) {
-                Utils.warn(`Exception thrown in ${this._name()}:`)
+                Utils.warn(`Exception thrown in ${this._name()}:`);
                 console.log(error)
             }
         }
@@ -675,9 +696,9 @@ export class View extends FamousView {
      * @private
      */
     _prepareLayoutController() {
-        let { scrollableOptions } = this.decorations
+        let {scrollableOptions} = this.decorations;
         if (scrollableOptions) {
-            this._scrollView = new ReflowingScrollView(scrollableOptions)
+            this._scrollView = new ReflowingScrollView(scrollableOptions);
             this.layout.getSize = this.getSize;
             this._scrollView.push(this.layout);
             this.pipe(this._scrollView);
@@ -697,21 +718,21 @@ export class View extends FamousView {
      * @private
      */
     _getLayoutSize() {
-        let dockedRenderables = this._renderableHelper.getRenderableGroup('docked')
-        let traditionalRenderables = this._renderableHelper.getRenderableGroup('traditional')
-        let filledRenderables = this._renderableHelper.getRenderableGroup('filled')
+        let dockedRenderables = this._renderableHelper.getRenderableGroup('docked');
+        let traditionalRenderables = this._renderableHelper.getRenderableGroup('traditional');
+        let filledRenderables = this._renderableHelper.getRenderableGroup('filled');
         if (!traditionalRenderables && !dockedRenderables) {
             return [undefined, undefined]
         }
-        let totalSize = [undefined, undefined]
+        let totalSize = [undefined, undefined];
         if (dockedRenderables || filledRenderables) {
             totalSize = this._dockedRenderablesHelper.boundingBoxSize(dockedRenderables, filledRenderables, this.decorations)
         }
 
         if (traditionalRenderables) {
-            let traditionalRenderablesBoundingBox = this._traditionalLayoutHelper.boundingBoxSize(traditionalRenderables)
+            let traditionalRenderablesBoundingBox = this._traditionalLayoutHelper.boundingBoxSize(traditionalRenderables);
             for (let [dimension, singleSize] of totalSize.entries()) {
-                let traditionalSingleSize = traditionalRenderablesBoundingBox[dimension]
+                let traditionalSingleSize = traditionalRenderablesBoundingBox[dimension];
                 if (traditionalSingleSize !== undefined && (singleSize === undefined || singleSize < traditionalSingleSize)) {
                     totalSize[dimension] = traditionalSingleSize
                 }
@@ -735,7 +756,7 @@ export class View extends FamousView {
      * @private
      */
     _copyPrototypeProperties() {
-        let prototype = Object.getPrototypeOf(this)
+        let prototype = Object.getPrototypeOf(this);
 
         /* Move over all renderable- and decoration information that decorators.js set to the View prototype */
         for (let name of ['decorationsMap', 'renderableConstructors']) {
@@ -759,7 +780,7 @@ export class View extends FamousView {
                     this.decorations[property] = decoration;
                 } else if (property === 'defaultOptions' && this.decorations.defaultOptions) {
                     this.decorations.defaultOptions = combineOptions(decoration, this.decorations.defaultOptions);
-                } else if (property === 'preprocessBindings'){
+                } else if (property === 'preprocessBindings') {
                     this.decorations.preprocessBindings.push(...decoration);
                 }
             }
@@ -777,11 +798,11 @@ export class View extends FamousView {
     }
 
     onNewSize(callback) {
-        this.on('newSize', callback, { propagate: false });
+        this.on('newSize', callback, {propagate: false});
     }
 
     onceNewSize(callback) {
-        this.once('newSize')
+        this.once('newSize', callback);
     }
 
     setNewOptions(options) {
@@ -794,15 +815,15 @@ export class View extends FamousView {
     }
 
     _initTrueSizedBookkeeping() {
-        this.layout.on('sizeChanged', ({ oldSize, size }) => {
+        this.layout.on('sizeChanged', ({oldSize, size}) => {
             if (size[0] !== oldSize[0] ||
                 size[1] !== oldSize[1]) {
-                this._sizeResolver.doTrueSizedBookkeeping()
+                this._sizeResolver.doTrueSizedBookkeeping();
                 this._eventOutput.emit('newSize', size);
             }
-        })
+        });
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
-        this._nodes = { _trueSizedRequested: false }
+        this._nodes = {_trueSizedRequested: false}
         /* This needs to be set in order for the LayoutNodeManager to be happy */
     }
 
@@ -810,7 +831,7 @@ export class View extends FamousView {
         if (!Utils.isPlainObject(options)) {
             Utils.warn(`View ${this._name()} initialized with invalid non-object arguments`)
         }
-        let { defaultOptions = {} } = this.decorations
+        let {defaultOptions = {}} = this.decorations;
 
         /**
          * A copy of the options that were passed in the constructor
@@ -867,7 +888,7 @@ export class View extends FamousView {
 
     /**
      * Pipes a renderable to this view. Used by the util DecoratedRenderables
-     * @param {Function} method The method that is about to be bound
+     * @param {View|Surface} renderable
      * @param {Boolean} enable set to false to unpipe
      * @returns {Boolean} true if piping was successful, otherwise false
      * @private
@@ -889,19 +910,18 @@ export class View extends FamousView {
 
     /**
      * Sets up a renderable when it is invalidated to be re-rendered (happens on creation too)
-     * @param renderableName
+     * @param {Function} renderableInitializer
      * @param decorations
      * @returns {*}
      * @private
      */
     _setupRenderable(renderableInitializer, decorations) {
-      /* Re-assign the options to make sure they're up to date */
-      this.options = this._optionObserver.options;
+        /* Re-assign the options to make sure they're up to date */
+        this.options = this._optionObserver.options;
         //todo clean up this function, it's too long!!
         if (!decorations) {
             decorations = currentRenderable && currentRenderable.decorations
         }
-
 
         let decoratorFunctions = decorations &&
             decorations.dynamicFunctions
@@ -926,7 +946,7 @@ export class View extends FamousView {
             }
             return renderable;
         });
-        if(dynamicDecorations.length){
+        if (dynamicDecorations.length) {
             this._doReflow();
         }
 
@@ -938,19 +958,19 @@ export class View extends FamousView {
             }
             let currentRenderables = currentRenderable || [];
 
-            let index, totalLength = renderables.length
+            let index, totalLength = renderables.length;
 
             if (!renderables.length) {
                 /* Insert an empty surface in order to preserver order of the sequence of (docked) renderables
                  * TODO: This is dirty but seemingly inevitable, think of other solutions */
-                let placeholderRenderable = Surface.with()
-                renderables = [placeholderRenderable]
+                let placeholderRenderable = Surface.with();
+                renderables = [placeholderRenderable];
                 dynamicDecorations = () =>
                     layout.dock.left(0).size(0)
 
             }
 
-            let actualRenderables = new Array(totalLength)
+            let actualRenderables = new Array(totalLength);
 
 
             for (index = 0; index < renderables.length; index++) {
@@ -959,7 +979,7 @@ export class View extends FamousView {
                     dynamicDecorations,
                     localRenderableName,
                     decorations,
-                    true)
+                    true);
                 if (index) {
                     /* Make sure that the order is correct */
                     this.prioritiseDockAfter(actualRenderables[index], actualRenderables[index - 1])
@@ -970,7 +990,7 @@ export class View extends FamousView {
                 this.removeRenderable(currentRenderables[index])
             }
 
-            this._readjustRenderableInitializer(localRenderableName, actualRenderables)
+            this._readjustRenderableInitializer(localRenderableName);
             this[localRenderableName] = actualRenderables
         } else if (Array.isArray(renderable)) {
             throw new Error('Passing plain arrays as renderables is not yet supported. Please use the map function.')
@@ -979,7 +999,7 @@ export class View extends FamousView {
             this._arrangeRenderableAssignment(currentRenderable, renderable, dynamicDecorations, localRenderableName, decorations)
         }
 
-        return renderable
+        return renderable;
     }
 
     /**
@@ -1006,7 +1026,7 @@ export class View extends FamousView {
         renderable.decorations = decorations;
 
         if (!isArray) {
-            this._readjustRenderableInitializer(localRenderableName, renderable);
+            this._readjustRenderableInitializer(localRenderableName);
             this[localRenderableName] = renderable
         }
         this._assignRenderable(renderable)
@@ -1038,7 +1058,7 @@ export class View extends FamousView {
         }
         let renderablePrototype = newRenderable instanceof RenderablePrototype && newRenderable;
         if (renderablePrototype) {
-            let { options, type } = renderablePrototype;
+            let {options, type} = renderablePrototype;
             if (oldRenderable && oldRenderable.constructor === type && oldRenderable.setNewOptions) {
                 oldRenderable.setNewOptions(options);
                 newRenderable = oldRenderable;
@@ -1055,12 +1075,12 @@ export class View extends FamousView {
 
         decorations = this._cloneDecorationsForRenderable(decorations, newRenderable);
 
-        if(renderablePrototype){
+        if (renderablePrototype) {
             this._renderableHelper.applyDirectDecoratorsFromRenderablePrototype(decorations, renderablePrototype);
         }
 
 
-        this._renderableHelper.applyDecoratorFunctionsToRenderable({ decorations }, dynamicDecorations);
+        this._renderableHelper.applyDecoratorFunctionsToRenderable({decorations}, dynamicDecorations);
         if (oldRenderable) {
             this.replaceRenderable(oldRenderable, newRenderable);
             if (!this._initialised) {
@@ -1069,7 +1089,7 @@ export class View extends FamousView {
                  * If this happens, we need to call the function for readjustment, in order not to construct the renderable a third
                  * time. TODO: Consider not supporting this and throw an error instead
                  */
-                this._readjustRenderableInitializer(localRenderableName, newRenderable);
+                this._readjustRenderableInitializer(localRenderableName);
             }
             /* This is a very inefficient of keeping the current decorators. That's why .with should be used at all times possible */
             this._renderableHelper.applyDecoratorObjectToRenderable(Utils.getRenderableID(newRenderable), decorations);
@@ -1082,10 +1102,9 @@ export class View extends FamousView {
     /**
      * Resets the initializer for a class property
      * @param {String} localRenderableName
-     * @param {View|Surface} renderable
      * @private
      */
-    _readjustRenderableInitializer(localRenderableName, renderable) {
+    _readjustRenderableInitializer(localRenderableName) {
         /* If there is no initializer declared for the renderable, that could mean that the renderable has been
          * passed "from above" through layout.extra. No action needed */
         if (!this._renderableConstructors[localRenderableName]) {
@@ -1100,10 +1119,10 @@ export class View extends FamousView {
          * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
          * to the renderables of this instance, which is unwanted.
          */
-        let { descriptor } = this._renderableConstructors[localRenderableName].decorations;
+        let {descriptor} = this._renderableConstructors[localRenderableName].decorations;
         if (descriptor) {
             if (descriptor.initializer) {
-                descriptor.initializer = function() {
+                descriptor.initializer = function () {
                     return this[localRenderableName]
                 }.bind(this)
             }
@@ -1111,19 +1130,27 @@ export class View extends FamousView {
     }
 
     _setupExtraRenderables() {
-        let extraLayout = this.options[layout.extra] || {}
+        let extraLayout = this.options[layout.extra] || {};
         if (!extraLayout.renderableConstructors) {
             return;
         }
-        let { value: [, extraRenderableInitializers] } = extraLayout.renderableConstructors.entries().next();
+        let {value: [, extraRenderableInitializers]} = extraLayout.renderableConstructors.entries().next();
         for (let localRenderableName in extraRenderableInitializers) {
-            let renderableInitializer = extraRenderableInitializers[localRenderableName]
+            let renderableInitializer = extraRenderableInitializers[localRenderableName];
             this._arrangeRenderableAssignment(this[localRenderableName], renderableInitializer(),
                 renderableInitializer.decorations && renderableInitializer.decorations.dynamicFunctions || [],
                 localRenderableName, renderableInitializer.decorations)
         }
     }
 
+    /**
+     * Clones decorations for renderable, to make sure that shared decorations structures don't affect each other
+     *
+     * @param decorations
+     * @param renderable
+     * @returns {*}
+     * @private
+     */
     _cloneDecorationsForRenderable(decorations, renderable) {
         /* Clone the decorator properties, because otherwise every view of the same type willl share them between
          * the same corresponding renderable. TODO: profiling reveals that cloneDeep affects performance
@@ -1131,10 +1158,14 @@ export class View extends FamousView {
         return cloneDeep(extend({}, decorations, renderable.decorations || {}));
     }
 
+    /**
+     * Initializes the part of the decorations object that contains the preprocessing functions
+     * @private
+     */
     _initPreprocessBindings() {
         let {preprocessBindings = []} = this.decorations;
 
-        for(let [index, {preprocessFunction, name}] of preprocessBindings.entries()){
+        for (let [index, {preprocessFunction, name}] of preprocessBindings.entries()) {
             this[name] = () => {
                 return this._optionObserver.preprocessForIndex(this.options, index);
             };
@@ -1149,9 +1180,14 @@ export class View extends FamousView {
 
     }
 
+    /**
+     *
+     * @param decorations
+     * @private
+     */
     _extendFromDynamicFunctions(decorations = {}) {
         let {dynamicFunctions} = decorations;
-        for(let dynamicFunction of dynamicFunctions || []){
+        for (let dynamicFunction of dynamicFunctions || []) {
             dynamicFunction(this.options)({prototype: {decorationsMap: {get: () => decorations}}});
         }
     }
