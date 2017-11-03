@@ -2,9 +2,14 @@
  * Created by lundfall on 12/07/2017.
  */
 
-import FamousInputSurface   from 'famous/surfaces/InputSurface.js';
-import {onOptionChange}     from '../utils/view/OptionObserver.js'
-import {combineOptions}     from 'arva-js/utils/CombineOptions.js';
+import FamousInputSurface from 'famous/surfaces/InputSurface.js';
+import {onOptionChange} from '../utils/view/OptionObserver.js'
+import {
+    InputOption,
+    getValue,
+    changeValue
+} from '../utils/view/InputOption.js'
+import {combineOptions} from 'arva-js/utils/CombineOptions.js';
 
 let neutralAppearanceProperties = {
     outline: 'none',
@@ -46,7 +51,19 @@ export class InputSurface extends FamousInputSurface {
     }
 
     static with(options) {
-        return super.with({ ...options, properties: { ...neutralAppearanceProperties, ...options.properties } })
+        let newValue = options.value;
+        /* If the value is an instance of an InputOption, then we need to prepare for upward data-flow */
+        if (newValue instanceof InputOption) {
+            if ((!options[onOptionChange] || !options[onOptionChange].value)) {
+                let optionChangeListener = options[onOptionChange];
+                if (!optionChangeListener) {
+                    optionChangeListener = options[onOptionChange] = {};
+                }
+                optionChangeListener.value = (changedValue) => newValue[changeValue](changedValue);
+            }
+            options.value = newValue[getValue]();
+        }
+        return super.with({...options, properties: {...neutralAppearanceProperties, ...options.properties}})
     }
 
     setValue(value, emitEvent = false) {
@@ -72,14 +89,14 @@ export class InputSurface extends FamousInputSurface {
     }
 
     _setBorderBottomColor(textInput) {
-        this.setProperties({ borderBottom: `1px solid ${!textInput.length ? 'gray' : 'black'}` })
+        this.setProperties({borderBottom: `1px solid ${!textInput.length ? 'gray' : 'black'}`})
 
     }
 
     // TODO We should emit a change event instead, and prevent the parent change event. valueChange event is only emitted by SOME input components.
     _onFieldChange() {
         let currentValue = this.getValue();
-        if (currentValue != this._value) {
+        if (currentValue !== this._value) {
             this._onNewValue(currentValue);
         }
     }

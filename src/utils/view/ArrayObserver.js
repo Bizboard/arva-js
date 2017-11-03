@@ -13,19 +13,19 @@ export class ArrayObserver extends EventEmitter {
   /**
    *
    * @param array
-   * @param hookFunction
+   * @param {Function} hookFunction
    */
   constructor (array, hookFunction = () => {}) {
-    super()
+    super();
     if (!Array.isArray(array)) {
       throw new Error(`Array observer created without array!`)
     }
-    this._hookFunction = hookFunction
-    this._array = array
-    Object.defineProperty(this._array, isObserved, {value: true, enumerable: false})
-    this.rebuild()
-    this._overrideMethods()
-    this._hijackMapper()
+    this._hookFunction = hookFunction;
+    this._array = array;
+    Object.defineProperty(this._array, isObserved, {value: true, enumerable: false});
+    this.rebuild();
+    this._overrideMethods();
+    this._hijackMapper();
   }
 
   static isArrayObserved (array) {
@@ -44,10 +44,10 @@ export class ArrayObserver extends EventEmitter {
       }
     }
     for (let index in this._dirtyPositions) {
-      this._addHookAtIndex(index)
+      this._addHookAtIndex(index);
     }
 
-    this._arrayLength = this._array.length
+    this._arrayLength = this._array.length;
     this._dirtyPositions = {}
   }
 
@@ -55,9 +55,9 @@ export class ArrayObserver extends EventEmitter {
     let originalMethod = this._array[methodName]
     Object.defineProperty(this._array, methodName, {
       value: function () {
-        let result = originalMethod.apply(this._array, arguments)
-        newMethod.call(this, ...arguments, result)
-        this.emit('modified', {methodName})
+        let result = originalMethod.apply(this._array, arguments);
+        newMethod.call(this, ...arguments, result);
+        this.emit('modified', {methodName});
         return result
       }.bind(this), enumerable: false
     })
@@ -65,24 +65,24 @@ export class ArrayObserver extends EventEmitter {
 
   _addHookAtIndex (index) {
     if (this._hasHookAtIndex(index)) {
-      return
+      return;
     }
 
     ObjectHelper.addGetSetPropertyWithShadow(this._array, index, this._array[index], false, true, ({newValue, oldValue}) => {
-      this.emit('replaced', {newValue, oldValue, index})
-      this._dirtyPositions[index] = true
+      this.emit('replaced', {newValue, oldValue, index});
+      this._dirtyPositions[index] = true;
     }, () => {
-      this.emit('accessed', {index})
-    })
-    this._hookFunction(index, this._array[index])
+      this.emit('accessed', {index});
+    });
+    this._hookFunction(index, this._array[index]);
   }
 
   _hijackMapper (callback) {
     //TODO Finalize and optimize
     this._overrideReadMethod('map', (originalMapFunction, passedMapper) => {
-      this.emit('mapCalled', originalMapFunction, passedMapper)
-      let mappedEntries = originalMapFunction.call(this._array, passedMapper)
-      return new MappedArray(mappedEntries)
+      this.emit('mapCalled', originalMapFunction, passedMapper);
+      let mappedEntries = originalMapFunction.call(this._array, passedMapper);
+      return new MappedArray(mappedEntries);
     })
   }
 
@@ -92,30 +92,30 @@ export class ArrayObserver extends EventEmitter {
   }
 
   _overrideMethods () {
-    this._overrideModificaitionMethod('pop', this._pop)
-    this._overrideModificaitionMethod('push', this._push)
-    this._overrideModificaitionMethod('reverse', this._reverse)
-    this._overrideModificaitionMethod('shift', this._shift)
-    this._overrideModificaitionMethod('unshift', this._unshift)
-    this._overrideModificaitionMethod('sort', this._sort)
-    this._overrideModificaitionMethod('splice', this._splice)
+    this._overrideModificaitionMethod('pop', this._pop);
+    this._overrideModificaitionMethod('push', this._push);
+    this._overrideModificaitionMethod('reverse', this._reverse);
+    this._overrideModificaitionMethod('shift', this._shift);
+    this._overrideModificaitionMethod('unshift', this._unshift);
+    this._overrideModificaitionMethod('sort', this._sort);
+    this._overrideModificaitionMethod('splice', this._splice);
   }
 
   _overrideReadMethod (methodName, replacement) {
-    let originalMethod = this._array[methodName]
+    let originalMethod = this._array[methodName];
     Object.defineProperty(this._array, methodName, {
       value: function () {
-        return replacement(originalMethod, ...arguments)
+        return replacement(originalMethod, ...arguments);
       }.bind(this), enumerable: false
     })
   }
 
   _pop (removedElement) {
-    this.emit('removed', {index: this._array.length, oldValue: removedElement})
+    this.emit('removed', {index: this._array.length, oldValue: removedElement});
   }
 
   _push (element, newLength) {
-    this.emit('added', {index: newLength - 1, newValue: element})
+    this.emit('added', {index: newLength - 1, newValue: element});
   }
 
   _reverse (reversedArray) {

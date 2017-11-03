@@ -39,6 +39,7 @@ export const bindings = {
       prepPrototypeDecorations(target.prototype).defaultOptions = defaultOptions
     }
   },
+
   onChange: (transformFunction) => {
     return (optionsPassed, optionNameToBind) => {
       let optionChangeListeners = optionsPassed[onOptionChange];

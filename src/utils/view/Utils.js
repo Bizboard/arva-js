@@ -101,4 +101,15 @@ export class Utils {
             (renderable.layout ? renderable.layout.id : renderable.id));
         return extractedRenderableID !== undefined ? extractedRenderableID : renderable._id;
     }
+
+    /**
+     * For entities that handle options parameters (OptionObserver, LazyLoadedOptionClone) can be important to know whether
+     * an object is a plain object or not
+     *
+     * @param object
+     * @returns {boolean}
+     */
+    static isPlainObject(object) {
+        return typeof object === 'object' && object.constructor.name === 'Object'
+    }
 }

@@ -1196,4 +1196,8 @@ export class View extends FamousView {
         //TODO Think of a more performant solution
         return Surface.with();
     }
+
+    get inputOptions() {
+        return this._optionObserver.getInputOptions();
+    }
 }

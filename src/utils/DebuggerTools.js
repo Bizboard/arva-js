@@ -93,7 +93,7 @@ OptionObserver._registerNewInstance = function (instance) {
 let originalOptionObserverMarkPropertyAsUpdated = OptionObserver.prototype._markPropertyAsUpdated
 OptionObserver.prototype._markPropertyAsUpdated = function (nestedPropertyPath, property, value) {
   let result = originalOptionObserverMarkPropertyAsUpdated.call(this, ...arguments)
-  log(`%c ${this._errorName} updated ${nestedPropertyPath.concat(property).join('->')}=${this._isPlainObject(value) ? JSON.stringify(value) : value}`, 'color: green')
+  log(`%c ${this._errorName} updated ${nestedPropertyPath.concat(property).join('->')}=${Utils.isPlainObject(value) ? JSON.stringify(value) : value}`, 'color: green')
   return result
 };
 

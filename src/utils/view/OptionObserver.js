@@ -1,23 +1,30 @@
 /**
  * Created by lundfall on 23/02/2017.
  */
+import EventEmitter             from 'eventemitter3';
+
 import cloneDeepWith            from 'lodash/cloneDeepWith';
 import difference               from 'lodash/difference';
 import each                     from 'lodash/each';
+
 import Timer                    from 'famous/utilities/Timer.js';
 import {RenderablePrototype}    from 'famous/utilities/RenderablePrototype.js';
 import ElementOutput            from 'famous/core/ElementOutput.js';
 
-import EventEmitter             from 'eventemitter3';
-
+import {Utils}                  from './Utils.js';
 import {ArrayObserver}          from './ArrayObserver.js';
+import {InputOption, getValue,
+    changeValue}                from './InputOption';
 import {ObjectHelper}           from '../ObjectHelper';
 import {PrioritisedObject}      from '../../data/PrioritisedObject';
 import {Model}                  from '../../core/Model';
 import {layout}                 from '../../layout/Decorators';
 import {PrioritisedArray}       from '../../data/PrioritisedArray';
+import {LazyLoadedOptionClone}  from './LazyLoadedOptionClone';
 
 
+/* Symbols are used for many properties in order to allow any arbitrary names of options. The names are
+ * repeated for the symbols and variable names in order to make debuggability easier */
 let listeners = Symbol('listeners'),
     notFound = Symbol('notFound'),
     newChanges = Symbol('newChanges'),
@@ -27,7 +34,8 @@ let listeners = Symbol('listeners'),
     instanceIdentifier = Symbol('instanceIdentifier'),
     isArrayListener = Symbol('isArrayListener');
 
-export let onOptionChange = Symbol('onOptionChange');
+export let onOptionChange = Symbol('onOptionChange'),
+    storedArrayObserver = Symbol('storedArrayObserver');
 
 //TODO fix falsey value checks, should behave differently for undefined and false
 
@@ -114,6 +122,13 @@ export class OptionObserver extends EventEmitter {
         //todo implement this (is an efficient way)
     }
 
+    getInputOptions() {
+        if (this._inputOptions) {
+            return this._inputOptions;
+        }
+        return this._inputOptions = LazyLoadedOptionClone.get(InputOption, this.options, this._listenerTree, []);
+    }
+
     /**
      * Executes the preprocess function. The preprocess function is treated similarly to that of a renderable,
      * but it's identified with the symbol OptionObserver.preprocess accompanied by an index, instead of a string
@@ -123,6 +138,8 @@ export class OptionObserver extends EventEmitter {
      * A. The preprocessing function is called
      * B. Getters are detected for the pre-process function
      * C. this.options isn't set, so nothing more happens
+     *
+     * TODO This description is outdated
      *
      * Scenario 2. Setter trigger of a preprocess function
      * A. After flushing, it is concluded to belong to the preprocess function (and other renderables)
@@ -203,6 +220,12 @@ export class OptionObserver extends EventEmitter {
         this.on('optionTrigger', optionRecorder)
     }
 
+    /**
+     * Accesses a listener in a certain path
+     * @param nestedPropertyPath
+     * @returns {*}
+     * @private
+     */
     _accessListener(nestedPropertyPath) {
         return this._accessObjectPath(this._listenerTree, nestedPropertyPath, true);
     }
@@ -240,6 +263,11 @@ export class OptionObserver extends EventEmitter {
 
     }
 
+    /**
+     * Performs all available preprocessing functions
+     * @param incomingOptions
+     * @private
+     */
     _doPreprocessing(incomingOptions) {
         for (let [index] of this._preprocessMethods.entries()) {
             this.preprocessForIndex(incomingOptions, index)
@@ -312,13 +340,13 @@ export class OptionObserver extends EventEmitter {
                 let defaultOptionValue = defaultOption[key];
                 if (defaultOptionValue !== newOptionValue && (defaultOptionValue !== existingOptionValue &&
                         /* If new value is undefined, and the previous one was already the default, then don't update (will go false)*/
-                        !this._isPlainObject(existingOptionValue) && existingOptionValue[optionMetaData] && existingOptionValue[optionMetaData].isDefault)
+                        !Utils.isPlainObject(existingOptionValue) && existingOptionValue[optionMetaData] && existingOptionValue[optionMetaData].isDefault)
                 ) {
                     this._markPropertyAsUpdated(nestedPropertyPath, key, newOptionObject[key], existingOptionValue)
                 }
                 /* Cancel traversion in this direction */
                 return true
-            } else if (!(newOptionValue && this._isPlainObject(newOptionValue)) && existingOptionValue !== newOptionValue) {
+            } else if (!(newOptionValue && Utils.isPlainObject(newOptionValue)) && existingOptionValue !== newOptionValue) {
                 /* Triggers the appriopriate events */
                 this._markPropertyAsUpdated(nestedPropertyPath, key, newOptionObject[key], existingOptionValue)
             }
@@ -359,11 +387,11 @@ export class OptionObserver extends EventEmitter {
     }
 
     _isMyOption(value) {
-        return this._isPlainObject(value) && value[optionMetaData] && value[optionMetaData].owners.includes(this)
+        return Utils.isPlainObject(value) && value[optionMetaData] && value[optionMetaData].owners.includes(this)
     }
 
     _shallowCloneOption(optionToShallowClone) {
-        if (!this._isPlainObject(optionToShallowClone)) {
+        if (!Utils.isPlainObject(optionToShallowClone)) {
             return optionToShallowClone
         }
         let result = {};
@@ -547,14 +575,14 @@ export class OptionObserver extends EventEmitter {
     }
 
     _getDeeplyNestedListenerPaths(localListenerTree, accumulator = []) {
-        if(localListenerTree === true){
+        if (localListenerTree === true) {
             return accumulator;
         }
         let nestedPaths = [];
         for (let key in localListenerTree) {
             let nestedPath = this._getDeeplyNestedListenerPaths(localListenerTree[key], accumulator.concat(key));
             /* If the resulting paths are doubled nested, then they need to be flattened one step */
-            if(Array.isArray(nestedPath[0])){
+            if (Array.isArray(nestedPath[0])) {
                 nestedPaths.push(...nestedPath);
             } else {
                 nestedPaths.push(nestedPath);
@@ -569,7 +597,7 @@ export class OptionObserver extends EventEmitter {
      * @private
      */
     _markAsOption(objectInOptionStructure) {
-        if (!this._isPlainObject(objectInOptionStructure)) {
+        if (!Utils.isPlainObject(objectInOptionStructure)) {
             return
         }
         //TODO This might be able to be optimized
@@ -621,10 +649,6 @@ export class OptionObserver extends EventEmitter {
         }
     }
 
-    _isPlainObject(object) {
-        return typeof object === 'object' && object.constructor.name === 'Object'
-    }
-
     /**
      * Deep traverses an object
      * @param object
@@ -645,7 +669,7 @@ export class OptionObserver extends EventEmitter {
                   onlyForLeaves = false,
                   nestedPropertyPath = [],
                   depthCount = 0) {
-        if (!this._isPlainObject(object) && !Array.isArray(object)) {
+        if (!Utils.isPlainObject(object) && !Array.isArray(object)) {
             return
         }
         if (depthCount > OptionObserver.maxSupportedDepth) {
@@ -685,7 +709,7 @@ export class OptionObserver extends EventEmitter {
      * @param defaultOptionValue
      */
     _resetRemovedPropertiesIfNeeded(newValue, oldValue, defaultOptionValue) {
-        if (!oldValue || !this._isPlainObject(oldValue) || !defaultOptionValue) {
+        if (!oldValue || !Utils.isPlainObject(oldValue) || !defaultOptionValue) {
             return
         }
         let properties = Object.keys(newValue);
@@ -707,7 +731,7 @@ export class OptionObserver extends EventEmitter {
      */
     _isPredictablyEqual(firstThing, secondThing) {
         /* Object comparison is not reliable */
-        if (this._isPlainObject(firstThing)) {
+        if (Utils.isPlainObject(firstThing)) {
             return false
         }
         return firstThing === secondThing
@@ -891,6 +915,9 @@ export class OptionObserver extends EventEmitter {
 
         if (onChangeFunction !== notFound) {
             onChangeFunction(newValue)
+        } else if (newValue instanceof InputOption) {
+            this._accommodateInsideObject(newValueParent, [onOptionChange, propertyName], (newValue) => newValue[changeValue]);
+            newValue = newValue[getValue]();
         }
 
         if (valueIsModelProperty) {
@@ -901,11 +928,12 @@ export class OptionObserver extends EventEmitter {
 
         /* If set to something undefined, then set to the default option. Does not apply for default options */
 
-        /* TODO: The code used to look like this: if (newValue === undefined && !parentIsArray) {.
-         * But it isn't really useful, and it is probably better to have the empty array spots to be assigned to the default option */
-        if (newValue === undefined) {
+        /*
+         * If the new value is undefined, and the array has been emptied, then we assign this to the default option.
+         * TODO: Come up with a more robust solution for default options of arrays */
+        if (newValue === undefined && (!parentIsArray || newValueParent.length === 0)) {
             newValue = defaultOption;
-            if (this._isPlainObject(newValue)) {
+            if (Utils.isPlainObject(newValue)) {
                 valueToLinkTo = {};
                 this._markAsOption(valueToLinkTo);
                 valueToLinkTo[optionMetaData].isDefault = true
@@ -922,7 +950,7 @@ export class OptionObserver extends EventEmitter {
 
         //TODO clean up code if needed (why is it even needed?)
         for (let property of Object.keys(defaultOptionParent)
-            .filter((property) => this._isPlainObject(defaultOptionParent[property]) && newValueParent[property] === undefined)
+            .filter((property) => Utils.isPlainObject(defaultOptionParent[property]) && newValueParent[property] === undefined)
             ) {
             newValueParent[property] = {}
         }
@@ -951,6 +979,7 @@ export class OptionObserver extends EventEmitter {
         if (!listenerTree[isArrayListener]) {
             this._throwError(`The parameter ${nestedPropertyPath.concat(outerPropertyName).join('->')} is not registered as an array in the listener tree.`)
         }
+
         if (ArrayObserver.isArrayObserved(newValue)) {
             //TODO Confirm that returning early is wished for
             return
@@ -983,6 +1012,9 @@ export class OptionObserver extends EventEmitter {
                 })
             }, [value, listenerTree.value])
         });
+
+        listenerTree[storedArrayObserver] = arrayObserver;
+
         //TODO utilize optimizations from partial updates (probably by implementing special events towards the view for this, aside from 'needUpdate')
         arrayObserver.on('mapCalled',
             (originalMapFunction, passedMapper) =>
@@ -1032,7 +1064,7 @@ export class OptionObserver extends EventEmitter {
         if ([listeners, isArrayListener].includes(propertyName)) {
             return value
         }
-        let isPlainObject = this._isPlainObject(value), isArray = Array.isArray(value);
+        let isPlainObject = Utils.isPlainObject(value), isArray = Array.isArray(value);
         /* If the object already has the listeners set*/
         if (typeof value === 'object' && value[listeners] && !Object.keys(value).length) {
             return value
@@ -1086,7 +1118,7 @@ export class OptionObserver extends EventEmitter {
         let defaultOption = defaultOptionParent[propertyName];
         let innerListenerTree = listenerTree[propertyName];
 
-        if (this._isPlainObject(defaultOptionParent)) {
+        if (Utils.isPlainObject(defaultOptionParent)) {
             this._processImmediateOptionReassignment({
                 newValue, oldValue, defaultOption
             })
@@ -1103,7 +1135,7 @@ export class OptionObserver extends EventEmitter {
         });
 
         /* If the parent is a model or function, then no need to continue */
-        if (!this._isPlainObject(defaultOption)) {
+        if (!Utils.isPlainObject(defaultOption)) {
             return
         }
 
