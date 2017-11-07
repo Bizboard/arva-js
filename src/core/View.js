@@ -7,26 +7,26 @@
 
  */
 
-import extend                       from 'lodash/extend.js';
-import cloneDeep                    from 'lodash/cloneDeep.js';
-import FamousView                   from 'famous/core/View.js';
-import Surface                      from 'famous/core/Surface.js';
-import LayoutController             from 'famous-flex/LayoutController.js';
+import extend from 'lodash/extend.js';
+import cloneDeep from 'lodash/cloneDeep.js';
+import FamousView from 'famous/core/View.js';
+import Surface from 'famous/core/Surface.js';
+import LayoutController from 'famous-flex/LayoutController.js';
 
-import {limit}                      from 'arva-js/utils/Limiter.js';
+import {limit} from 'arva-js/utils/Limiter.js';
 
-import {layout}                     from '../layout/Decorators.js';
-import {ObjectHelper}               from '../utils/ObjectHelper.js';
-import {SizeResolver}               from '../utils/view/SizeResolver.js';
-import {Utils}                      from '../utils/view/Utils.js';
+import {layout} from '../layout/Decorators.js';
+import {ObjectHelper} from '../utils/ObjectHelper.js';
+import {SizeResolver} from '../utils/view/SizeResolver.js';
+import {Utils} from '../utils/view/Utils.js';
 import {
     DockedLayoutHelper,
     FullSizeLayoutHelper,
     TraditionalLayoutHelper
 }
     from '../utils/view/LayoutHelpers.js';
-import {RenderableHelper}           from '../utils/view/RenderableHelper.js';
-import {ReflowingScrollView}        from '../components/ReflowingScrollView.js';
+import {RenderableHelper} from '../utils/view/RenderableHelper.js';
+import {ReflowingScrollView} from '../components/ReflowingScrollView.js';
 
 /**
  * An Arva View. Can be constructed explicitly by using new View() but is more commonly used as a base class for
@@ -359,7 +359,7 @@ export class View extends FamousView {
      */
     async repeatFlowState(renderableName = '', stateName = '', persistent = true) {
         if (!this._runningRepeatingFlowStates[renderableName]) {
-            this._runningRepeatingFlowStates[renderableName] = { persistent };
+            this._runningRepeatingFlowStates[renderableName] = {persistent};
             while (this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent)) {
             }
             delete this._runningRepeatingFlowStates[renderableName];
@@ -409,7 +409,7 @@ export class View extends FamousView {
      * @private
      */
     _requestLayoutControllerReflow() {
-        this._nodes = { _trueSizeRequested: true };
+        this._nodes = {_trueSizeRequested: true};
         //TODO: Do we really need to emit this?
         this._eventOutput.emit('layoutControllerReflow');
     }
@@ -473,7 +473,7 @@ export class View extends FamousView {
                  * instead of only just once, any instantiation of the same View class somewhere else in the code will refer
                  * to the renderables of this instance, which is unwanted.
                  */
-                let { descriptor } = decorations;
+                let {descriptor} = decorations;
                 if (descriptor) {
                     if (descriptor.get) {
                         let originalGet = decorations.descriptor.get;
@@ -516,7 +516,7 @@ export class View extends FamousView {
         if (nativeScrollableOptions) {
             let thisSize = this.getSize();
             context.size = context.size.map((size, index) =>
-            (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index], size)) || size);
+                (nativeScrollableOptions[`scroll${index === 0 ? 'X' : 'Y'}`] && Math.max(thisSize[index], size)) || size);
         }
         this._dockedRenderablesHelper.layout(dockedRenderables.getRenderableGroup('docked'), dockedRenderables.getRenderableGroup('filled'), context, this.decorations);
         this._fullSizeLayoutHelper.layout(dockedRenderables.getRenderableGroup('fullSize'), context, this.decorations);
@@ -534,7 +534,7 @@ export class View extends FamousView {
             flow: !!this.decorations.useFlow || hasFlowyRenderables,
             partialFlow: !this.decorations.useFlow,
             nativeScroll: !!this.decorations.nativeScrollable,
-            flowOptions: this.decorations.flowOptions || { spring: { period: 200 } },
+            flowOptions: this.decorations.flowOptions || {spring: {period: 200}},
             layout: function (context, options) {
 
                 /* Because views that extend this View class first call super() and then define their renderables,
@@ -591,18 +591,13 @@ export class View extends FamousView {
      */
     _callLegacyLayoutFunctions(context, options) {
         for (let layout of this.layouts) {
-            try {
-                switch (typeof layout) {
-                    case 'function':
-                        layout.call(this, context, options);
-                        break;
-                    default:
-                        Utils.warn(`Unrecognized layout specification in view '${this._name()}'.`);
-                        break;
-                }
-            } catch (error) {
-                Utils.warn(`Exception thrown in ${this._name()}:`);
-                console.log(error);
+            switch (typeof layout) {
+                case 'function':
+                    layout.call(this, context, options);
+                    break;
+                default:
+                    Utils.warn(`Unrecognized layout specification in view '${this._name()}'.`);
+                    break;
             }
         }
     }
@@ -614,7 +609,7 @@ export class View extends FamousView {
      * @private
      */
     _prepareLayoutController() {
-        let { scrollableOptions } = this.decorations;
+        let {scrollableOptions} = this.decorations;
         if (scrollableOptions) {
             this._scrollView = new ReflowingScrollView(scrollableOptions);
             this.layout.getSize = this.getSize;
@@ -713,7 +708,7 @@ export class View extends FamousView {
     }
 
     _initTrueSizedBookkeeping() {
-        this.layout.on('sizeChanged', ({ oldSize, size }) => {
+        this.layout.on('sizeChanged', ({oldSize, size}) => {
             if (size[0] !== oldSize[0] ||
                 size[1] !== oldSize[1]) {
                 this._sizeResolver.doTrueSizedBookkeeping();
@@ -726,7 +721,7 @@ export class View extends FamousView {
             }
         });
         /* Hack to make the layoutcontroller reevaluate sizes on resize of the parent */
-        this._nodes = { _trueSizedRequested: false };
+        this._nodes = {_trueSizedRequested: false};
         /* This needs to be set in order for the LayoutNodeManager to be happy */
         this.options.size = this.options.size || [true, true];
     }
