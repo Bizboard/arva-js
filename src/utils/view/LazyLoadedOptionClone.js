@@ -37,6 +37,7 @@ export class LazyLoadedOptionClone {
                         }
                         return cachedShallowClone[property];
                     }
+                    //TODO Implement a different solution for changing the value without consequences. This relies on 'shadow' that will be deprecated at some point
                     return cachedShallowClone[property] = LazyLoadedOptionClone.get(TargetObjectType, optionToClone.shadow[property], listenerTree[property], nestedPropertyPath.concat(property), optionToClone)
                 }
             });
@@ -49,7 +50,6 @@ export class LazyLoadedOptionClone {
             if(!arrayObserver){
                 Utils.warn('Option passed to LazyLoadedOptionClone without properly initialized listener tree');
             } else {
-
                 arrayObserver.on('removed', ({index}) => cachedShallowClone[index] = deleted);
                 arrayObserver.on('added', ({index}) => addCloneGetter(index));
             }

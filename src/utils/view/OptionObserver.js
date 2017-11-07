@@ -184,7 +184,11 @@ export class OptionObserver extends EventEmitter {
         /* Prevent the preprocess from being triggered within the next flush. This is important
          * to do in case the preprocess function sets variables that it also gets, (ie if(!options.color) options.color = 'red')
          */
-        this._preventEntryFromBeingUpdated([OptionObserver.preprocess, index])
+        this.preventEntryFromBeingUpdated([OptionObserver.preprocess, index])
+    }
+
+    preventEntryFromBeingUpdated(entryNames) {
+        this._accommodateInsideObject(this._forbiddenUpdatesForNextTick, entryNames, true)
     }
 
     _recordForPreprocessing(callback, preprocessIndex) {
@@ -208,7 +212,7 @@ export class OptionObserver extends EventEmitter {
                 if (allowSetters) {
                     /* Be sure to avoid infinite loops if there are setters that trigger getters that are matched to this
                      *  recording */
-                    this._preventEntryFromBeingUpdated(entryNames)
+                    this.preventEntryFromBeingUpdated(entryNames)
                 } else {
                     this._throwError('Setting an option during instanciation of renderable')
                 }
@@ -1085,9 +1089,7 @@ export class OptionObserver extends EventEmitter {
         }
     }
 
-    _preventEntryFromBeingUpdated(entryNames) {
-        this._accommodateInsideObject(this._forbiddenUpdatesForNextTick, entryNames, true)
-    }
+
 
     _flushArrayObserverChanges() {
         for (let arrayObserver of this._arrayObservers) {

@@ -22,7 +22,6 @@ export class InputOption {
         if(!parentObject){
             throw new Error('Cannot change value of root input option');
         }
-        //TODO Implement a different solution for changing the value without consequences. This relies on 'shadow' that will be deprecated at some point
         parentObject[this[propertyName]] = newValue;
     };
 
