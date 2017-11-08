@@ -9,7 +9,6 @@ import each from 'lodash/each';
 
 import Timer from 'famous/utilities/Timer.js';
 import {RenderablePrototype} from 'famous/utilities/RenderablePrototype.js';
-import ElementOutput from 'famous/core/ElementOutput.js';
 
 import {Utils} from './Utils.js';
 import {ArrayObserver} from './ArrayObserver.js';
@@ -65,9 +64,6 @@ export class OptionObserver extends EventEmitter {
     _forbiddenUpdatesForNextTick = {};
     _listeningToSetters = true;
     _arrayObservers = [];
-    /* A list of renderables that cannot listen for nested updates (currently Surfaces). When updates happen within such a structure,
-     * they need to be updated */
-    _renderablesWithoutNestedListenerCapabilities = {};
 
     /* The max supported depth in deep-checking iterations */
     static maxSupportedDepth = 10;
@@ -102,11 +98,7 @@ export class OptionObserver extends EventEmitter {
      */
     recordForRenderable(renderableName, callback) {
         this._recordForEntry([renderableName], false);
-        let renderable = callback();
-        /* TODO: Adjust so this works in the case where the thing being returned is a MappedArray with surfaces */
-        let renderableIsSurface = renderable &&
-            ((renderable instanceof RenderablePrototype && renderable.type.prototype instanceof ElementOutput) || renderable instanceof ElementOutput);
-        this._renderablesWithoutNestedListenerCapabilities[renderableName] = renderableIsSurface;
+        callback();
         this._stopRecordingForEntry(renderableName);
     }
 
@@ -195,6 +187,23 @@ export class OptionObserver extends EventEmitter {
         this._accommodateInsideObject(this._forbiddenUpdatesForNextTick, entryNames, true)
     }
 
+
+    allowEntryToBeUpdated(entryNames){
+        let forbiddenUpdates = this._forbiddenUpdatesForNextTick;
+        for(let [index, entryName] of entryNames.entries()){
+            let forbiddenUpdateKeys = Object.keys(forbiddenUpdates);
+            if(forbiddenUpdateKeys.length === 1 || index === entryNames.length - 1){
+                delete forbiddenUpdates[forbiddenUpdateKeys[0]];
+                break;
+            }
+            forbiddenUpdates = forbiddenUpdates[entryName];
+            if(!forbiddenUpdates){
+                return;
+            }
+        }
+    }
+
+
     setup() {
         this._createListenerTree();
         //todo this order changed, we used to do the option merging after preprocessing. What is needed? Pass option to adjust behaviour?
@@ -250,8 +259,7 @@ export class OptionObserver extends EventEmitter {
      * @returns {Array.<*>}
      */
     _getUpdatesEntryNamesForLocalListenerTree(localListenerTree) {
-        let forbiddenUpdatesForNextTick = this._forbiddenUpdatesForNextTick,
-            ignoreUpdatesOnce = this._ignoreUpdatesOnce;
+        let forbiddenUpdatesForNextTick = this._forbiddenUpdatesForNextTick;
         let doubleNestedPaths = Object.keys(localListenerTree)
             .concat(localListenerTree[OptionObserver.preprocess] ? OptionObserver.preprocess : [])
             .map((key) => localListenerTree[key] === true ? [[key]] :
@@ -558,18 +566,10 @@ export class OptionObserver extends EventEmitter {
 
         /* Do a traverse only for the leafs of the new updates, to avoid doing extra work */
         this._deepTraverseWithShallowArrays(this._newOptionUpdates, (nestedPropertyPath, updateObjectParent, updateObject, propertyName, [defaultOptionParent, listenerTree, optionObject]) => {
-                let valueIsLeaf = updateObject && Object.keys(updateObject).length === 0;
-                if (valueIsLeaf) {
                     this._handleNewOptionUpdateLeaf(nestedPropertyPath, updateObject, propertyName, defaultOptionParent, listenerTree, optionObject);
-                } else {
-                    //TODO Confirm that this function isn't needed!
-                    this._handleIntermediateUpdateIfNecessary(listenerTree[propertyName]);
-                }
-
-
             }, [this.defaultOptions, this._listenerTree, this.options],
             [true, false, false],
-            false
+            true
         );
         this._flushArrayObserverChanges();
         this._newOptionUpdates = {};
@@ -900,7 +900,7 @@ export class OptionObserver extends EventEmitter {
             this.emit('needUpdate', renderableName)
         }
         this._updatesForNextTick = {};
-        this._forbiddenUpdatesForNextTick = {}
+        this._forbiddenUpdatesForNextTick = {};
     }
 
     /**
@@ -1203,21 +1203,6 @@ export class OptionObserver extends EventEmitter {
     _copyImportantSymbols(copyFrom, copyTo) {
         copyTo[layout.extra] = copyFrom[layout.extra]
     }
-
-
-    _handleIntermediateUpdateIfNecessary(listenerTree) {
-        if (!listenerTree || !listenerTree[listeners]) {
-            return;
-        }
-        let listenerStructure = listenerTree[listeners];
-
-        for (let listener in listenerStructure) {
-            if (this._renderablesWithoutNestedListenerCapabilities[listener]) {
-                this._updatesForNextTick[listener] = true;
-            }
-        }
-    }
-
 
     static _instances = [];
     static _dirtyInstances = {};

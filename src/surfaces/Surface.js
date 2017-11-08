@@ -25,7 +25,7 @@ FamousSurface.with  = function (options) {
     /* If the properties passed are options themselves, we make sure to destructure them in order to make sure that all
     *  necessary listeners are registered */
     if(options && options.properties && options.properties[optionMetaData]){
-        options.properties = {...options.properties};
+        let intentionallyUnusedSpreadProperties = {...options.properties};
     }
     return existingWithFunction.call(this, options);
 };

@@ -36,10 +36,15 @@ export class InputOption {
             throw new Error('Cannot change value of root input option');
         }
         optionParentObject[this[propertyName]] = newValue;
+        if (this._shouldMuteUpdatesWhenChanging) {
+            storedOptionsObserver.allowEntryToBeUpdated(this._entryNames);
+        }
     };
 
     [unwrapValue] = () => {
         let storedOptionsObserver = this[optionObserver];
+        //TODO When unwrapValue is called for the second time, this._shouldMuteUpdatesWhenChanging will always go to false
+        //There should be another solution, but not sure how to implement it
         let activeRecordings = storedOptionsObserver.getActiveRecordings();
         let recordedEntryNames = Object.keys(activeRecordings);
         if (recordedEntryNames.length !== 1) {
@@ -59,7 +64,7 @@ export class InputOption {
         do {
             recordedEntryNames = Object.keys(activeRecordings);
             recordedEntryName = recordedEntryNames[0];
-            if(recordedEntryName){
+            if (recordedEntryName) {
                 this._entryNames.push(recordedEntryName);
             }
             listenersInsideListenerTree = listenersInsideListenerTree[recordedEntryName] || {};
@@ -70,7 +75,7 @@ export class InputOption {
         } while (activeRecordings);
 
         this._shouldMuteUpdatesWhenChanging = !listenerForRecordAlreadyDefined;
-        console.log(`This._shouldMuteUpdatesWhenChanging: ${JSON.stringify(this._shouldMuteUpdatesWhenChanging)}`);
+
         return storedOptionsObserver.accessObjectPath(this[optionObserver].getOptions(), this[nestedPropertyPath].concat(this[propertyName]));
     }
 
