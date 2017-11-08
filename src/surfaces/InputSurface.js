@@ -6,7 +6,7 @@ import FamousInputSurface from 'famous/surfaces/InputSurface.js';
 import {onOptionChange} from '../utils/view/OptionObserver.js'
 import {
     InputOption,
-    getValue,
+    unwrapValue,
     changeValue
 } from '../utils/view/InputOption.js'
 import {combineOptions} from 'arva-js/utils/CombineOptions.js';
@@ -61,7 +61,7 @@ export class InputSurface extends FamousInputSurface {
                 }
                 optionChangeListener.value = (changedValue) => newValue[changeValue](changedValue);
             }
-            options.value = newValue[getValue]();
+            options.value = newValue[unwrapValue]();
         }
         return super.with({...options, properties: {...neutralAppearanceProperties, ...options.properties}})
     }

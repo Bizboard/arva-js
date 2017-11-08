@@ -839,6 +839,8 @@ export class View extends FamousView {
          * @type {Object}
          */
         this._optionObserver = new OptionObserver(defaultOptions, options, this._preprocessBindings, this._name());
+        /* Call setup function after initialize to prevent problems when this._optionObserver is undefined inside setup */
+        this._optionObserver.setup();
         this._optionObserver.on('needUpdate', (renderableName) =>
             this._setupRenderable(this._renderableConstructors[renderableName], this._renderableConstructors[renderableName].decorations)
         );

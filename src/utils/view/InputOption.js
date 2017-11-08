@@ -1,30 +1,77 @@
-export let changeValue = Symbol('changeValue'),
-            getValue   = Symbol('getValue');
+import {notFound, OptionObserver, listeners} from './OptionObserver';
 
-let nestedPropertyPath  = Symbol('nestedPropertyPath'),
-    optionParentObject  = Symbol('optionParentObject'),
-    propertyName        = Symbol('propertyName'),
-    optionObject        = Symbol('optionObject');
+export let changeValue = Symbol('changeValue'),
+    unwrapValue = Symbol('unwrapValue');
+
+/* Every property has to be represented by Symbols in order to avoid any collisions with option names */
+let nestedPropertyPath = Symbol('nestedPropertyPath'),
+    optionParentObject = Symbol('optionParentObject'),
+    propertyName = Symbol('propertyName'),
+    optionObject = Symbol('optionObject'),
+    optionObserver = Symbol('optionObserver'),
+    listenerTree = Symbol('listenerTree');
 
 /**
  * Represents an option where data flows upwards
  */
 export class InputOption {
-    constructor(incomingNestedPropertyPath, incomingOptionObject, incomingOptionParentObject){
-        this[nestedPropertyPath] = incomingNestedPropertyPath;
-        this[optionParentObject] = incomingOptionParentObject;
-        this[optionObject] = incomingOptionObject;
+    constructor(incomingNestedPropertyPath, incomingOptionObject, incomingOptionParentObject, incomingOptionObserver, incomingListenerTree) {
+        this[nestedPropertyPath] = incomingNestedPropertyPath.slice(0, -1);
+        this[optionObserver] = incomingOptionObserver;
         this[propertyName] = incomingNestedPropertyPath[incomingNestedPropertyPath.length - 1];
+        this[listenerTree] = incomingListenerTree;
     }
 
     [changeValue] = (newValue) => {
-        let parentObject = this[optionParentObject];
-        if(!parentObject){
+        let storedOptionsObserver = this[optionObserver];
+        if (this._shouldMuteUpdatesWhenChanging) {
+            //todo does this work 100% for arrays? todo: This won't work for subsequent updates, need to clear this._forbiddenUpdates... immediately after
+            if (!this._entryNames) {
+                throw new Error('Trying to change unwrapped value in InputOption');
+            }
+            storedOptionsObserver.preventEntryFromBeingUpdated(this._entryNames);
+        }
+        let optionParentObject = storedOptionsObserver.accessObjectPath(storedOptionsObserver.getOptions(), this[nestedPropertyPath]);
+        if (optionParentObject === notFound) {
             throw new Error('Cannot change value of root input option');
         }
-        parentObject[this[propertyName]] = newValue;
+        optionParentObject[this[propertyName]] = newValue;
     };
 
-    [getValue] = () => this[optionObject];
+    [unwrapValue] = () => {
+        let storedOptionsObserver = this[optionObserver];
+        let activeRecordings = storedOptionsObserver.getActiveRecordings();
+        let recordedEntryNames = Object.keys(activeRecordings);
+        if (recordedEntryNames.length !== 1) {
+            throw new Error(recordedEntryNames[OptionObserver.preprocess] ?
+                'Input option cannot be unwrapped inside preprocess function' :
+                recordedEntryNames.length === 0 ?
+                    'Cannot unwrap input option outside renderable initializer' :
+                    'Trying to unwrap value in InputOption but OptionObserver should have exactly one recording');
+        }
+        /* Determine if there's already listeners for this. If not, we should suppress certain updates from happening */
+        this._entryNames = [];
+        let recordedEntryName;
+        let listenersInsideListenerTree = this[listenerTree][listeners];
+        let listenerForRecordAlreadyDefined = false;
+
+        /* Go into the nested structure to get the full entryNames list (should be quite flat, if not completely) */
+        do {
+            recordedEntryNames = Object.keys(activeRecordings);
+            recordedEntryName = recordedEntryNames[0];
+            if(recordedEntryName){
+                this._entryNames.push(recordedEntryName);
+            }
+            listenersInsideListenerTree = listenersInsideListenerTree[recordedEntryName] || {};
+            activeRecordings = activeRecordings[recordedEntryName];
+            if (listenersInsideListenerTree === true) {
+                listenerForRecordAlreadyDefined = true;
+            }
+        } while (activeRecordings);
+
+        this._shouldMuteUpdatesWhenChanging = !listenerForRecordAlreadyDefined;
+        console.log(`This._shouldMuteUpdatesWhenChanging: ${JSON.stringify(this._shouldMuteUpdatesWhenChanging)}`);
+        return storedOptionsObserver.accessObjectPath(this[optionObserver].getOptions(), this[nestedPropertyPath].concat(this[propertyName]));
+    }
 
 }

@@ -13,7 +13,7 @@ import ElementOutput            from 'famous/core/ElementOutput.js';
 
 import {Utils}                  from './Utils.js';
 import {ArrayObserver}          from './ArrayObserver.js';
-import {InputOption, getValue,
+import {InputOption, unwrapValue,
     changeValue}                from './InputOption';
 import {ObjectHelper}           from '../ObjectHelper';
 import {PrioritisedObject}      from '../../data/PrioritisedObject';
@@ -25,23 +25,27 @@ import {LazyLoadedOptionClone}  from './LazyLoadedOptionClone';
 
 /* Symbols are used for many properties in order to allow any arbitrary names of options. The names are
  * repeated for the symbols and variable names in order to make debuggability easier */
-let listeners = Symbol('listeners'),
-    notFound = Symbol('notFound'),
-    newChanges = Symbol('newChanges'),
-    originalValue = Symbol('originalValue'),
-    optionMetaData = Symbol('optionMetaData'),
-    oldValue = Symbol('oldValue'),
-    instanceIdentifier = Symbol('instanceIdentifier'),
-    isArrayListener = Symbol('isArrayListener');
+let newChanges          = Symbol('newChanges'),
+    originalValue       = Symbol('originalValue'),
+    optionMetaData      = Symbol('optionMetaData'),
+    oldValue            = Symbol('oldValue'),
+    instanceIdentifier  = Symbol('instanceIdentifier'),
+    isArrayListener     = Symbol('isArrayListener'),
+    optionRecorder      = Symbol('optionRecorder'),
+    arrayRecorder       = Symbol('arrayRecorder');
 
+/* Some symbols are exported since they are used elsewhere. Note that the preprocess symbol is defined directly on
+*  the OptionObserver to make it easier to access from outside Arva (not just in internal classes) */
 export let onOptionChange = Symbol('onOptionChange'),
-    storedArrayObserver = Symbol('storedArrayObserver');
+    storedArrayObserver = Symbol('storedArrayObserver'),
+    notFound = Symbol('notFound'),
+    listeners = Symbol('listeners');
 
 //TODO fix falsey value checks, should behave differently for undefined and false
 
 //TODO Not sure if the (nested) array listener tree is setup with maximum efficiency. Furthermore, partial array updates isn't supported
 
-//TODO Think how to solve the case when this.options is passed as a whole to a renderable, maybe there should be a way to state explicit dependence if needed
+//TODO Think how to solve the case when this.options is passed as a whole to a renderable, maybe there should be a way to state explicit dependence if needed. Maybe implementing a getter trigger of the option on the view can be a viable idea
 
 export class OptionObserver extends EventEmitter {
     /* The structure of what thing in the objects is mapped to the corresponding renderable update */
@@ -83,12 +87,10 @@ export class OptionObserver extends EventEmitter {
         OptionObserver._registerNewInstance(this);
         this.defaultOptions = defaultOptions;
         this.options = options;
-        this._setup();
         if (!window.optionObservers) {
             window.optionObservers = [];
         }
-        window.optionObservers.push(this)
-
+        window.optionObservers.push(this);
     }
 
     /**
@@ -126,7 +128,7 @@ export class OptionObserver extends EventEmitter {
         if (this._inputOptions) {
             return this._inputOptions;
         }
-        return this._inputOptions = LazyLoadedOptionClone.get(InputOption, this.options, this._listenerTree, []);
+        return this._inputOptions = LazyLoadedOptionClone.get(InputOption, this.options, this._listenerTree, [], this);
     }
 
     /**
@@ -191,6 +193,82 @@ export class OptionObserver extends EventEmitter {
         this._accommodateInsideObject(this._forbiddenUpdatesForNextTick, entryNames, true)
     }
 
+    setup() {
+        this._createListenerTree();
+        //todo this order changed, we used to do the option merging after preprocessing. What is needed? Pass option to adjust behaviour?
+        this._updatesForNextTick[OptionObserver.preprocess] = new Array(this._preprocessMethods.length).fill(true);
+        this._markAllOptionsAsUpdated();
+    }
+
+    /**
+     * Used by InputOption to determine which recording is currently active
+     * @returns {{}}
+     */
+    getActiveRecordings() {
+        return this._activeRecordings;
+    }
+
+    getListenerTree() {
+        return this._listenerTree;
+    }
+
+    /**
+     * Similar to _.get, except that it returns notFound (a symbol) when not found. It also supports tarversing listeners
+     * @param object
+     * @param path
+     * @param traverseListeners
+     * @returns {*}
+     * @private
+     */
+    accessObjectPath(object, path, traverseListeners = false) {
+        for (let pathString of path) {
+            if (!object || !object.hasOwnProperty(pathString)) {
+                if (traverseListeners) {
+                    if (Array.isArray(object)) {
+                        pathString = 0
+                    }
+                } else {
+                    return notFound
+                }
+            }
+            object = object[pathString];
+            /* If it's a specially registered array listener, the property to read is called value and is being
+             *  used on the listener tree */
+            if (object && object[isArrayListener] && traverseListeners) {
+                /* Return immediately, ignore remaining properties in path. TODO: Verify that this is what we want*/
+                return object.value;
+            }
+        }
+        return object
+    }
+
+    /**
+     * Gets the entry names that are there for a certain listener tree
+     * @param localListenerTree
+     * @returns {Array.<*>}
+     */
+    _getUpdatesEntryNamesForLocalListenerTree(localListenerTree) {
+        let forbiddenUpdatesForNextTick = this._forbiddenUpdatesForNextTick,
+            ignoreUpdatesOnce = this._ignoreUpdatesOnce;
+        let doubleNestedPaths = Object.keys(localListenerTree)
+            .concat(localListenerTree[OptionObserver.preprocess] ? OptionObserver.preprocess : [])
+            .map((key) => localListenerTree[key] === true ? [[key]] :
+                this._getDeeplyNestedListenerPaths(localListenerTree[key]).map((path) => [key].concat(path)));
+
+        /* Flatten double nested paths */
+        let paths = [].concat(...doubleNestedPaths);
+        /* Make sure that we are not updating something that is forbidden during this tick */
+        let forbiddenUpdatePathsForNextTick = Object.keys(forbiddenUpdatesForNextTick).concat(
+            forbiddenUpdatesForNextTick[OptionObserver.preprocess] ? OptionObserver.preprocess : []);
+        if(forbiddenUpdatePathsForNextTick.length){
+            paths = paths.filter((path) => {
+                return this.accessObjectPath(this._forbiddenUpdatesForNextTick, path) === notFound
+            });
+        }
+        return paths;
+
+    }
+
     _recordForPreprocessing(callback, preprocessIndex) {
         this._recordForEntry([OptionObserver.preprocess, preprocessIndex], true);
         callback();
@@ -207,7 +285,8 @@ export class OptionObserver extends EventEmitter {
         this._accommodateInsideObject(this._activeRecordings, entryNames, {});
         this._beginListenerTreeUpdates(entryNames);
         this._listenForModelUpdates(entryNames);
-        let optionRecorder = this._accessObjectPath(this._activeRecordings, entryNames).optionRecorder = ({type, propertyName, nestedPropertyPath}) => {
+        //todo need to set optionRecorder as a symbol
+        let opOptionTrigger = this.accessObjectPath(this._activeRecordings, entryNames)[optionRecorder] = ({type, propertyName, nestedPropertyPath}) => {
             if (type === 'setter') {
                 if (allowSetters) {
                     /* Be sure to avoid infinite loops if there are setters that trigger getters that are matched to this
@@ -221,7 +300,7 @@ export class OptionObserver extends EventEmitter {
                 this._addToListenerTree(entryNames, localListenerTree)
             }
         };
-        this.on('optionTrigger', optionRecorder)
+        this.on('optionTrigger', opOptionTrigger)
     }
 
     /**
@@ -231,7 +310,7 @@ export class OptionObserver extends EventEmitter {
      * @private
      */
     _accessListener(nestedPropertyPath) {
-        return this._accessObjectPath(this._listenerTree, nestedPropertyPath, true);
+        return this.accessObjectPath(this._listenerTree, nestedPropertyPath, true);
     }
 
     /**
@@ -245,16 +324,16 @@ export class OptionObserver extends EventEmitter {
         let listenerStructure = localListenerTree[listeners];
 
         /* Renderable already added to listener tree, so no need to do that again */
-        let {listenersCanChange, listenersChanged, matchingListenerIndex} = this._accessObjectPath(this._listenerTreeMetaData, entryNames);
+        let {listenersCanChange, listenersChanged, matchingListenerIndex} = this.accessObjectPath(this._listenerTreeMetaData, entryNames);
 
-        this._accessObjectPath(this._newReverseListenerTree, entryNames).push(listenerStructure);
+        this.accessObjectPath(this._newReverseListenerTree, entryNames).push(listenerStructure);
 
         if (listenersCanChange && !listenersChanged) {
             /* We optimize the most common use case, which is that no listeners change.
              *  In that case, the order of listeners will be the same, otherwise we need to accommodate*/
 
-            let reverseListenerTree = this._accessObjectPath(this._reverseListenerTree, entryNames);
-            let listenerTreeMetaData = this._accessObjectPath(this._listenerTreeMetaData, entryNames);
+            let reverseListenerTree = this.accessObjectPath(this._reverseListenerTree, entryNames);
+            let listenerTreeMetaData = this.accessObjectPath(this._listenerTreeMetaData, entryNames);
 
             if (reverseListenerTree[matchingListenerIndex] !== listenerStructure) {
                 listenerTreeMetaData.listenersChanged = true
@@ -299,7 +378,7 @@ export class OptionObserver extends EventEmitter {
 
     _beginListenerTreeUpdates(entryNames) {
         /* The listener meta data sets a counter in order to match the new listeners in comparison to the old listeners*/
-        let numberOfExistingListenerPaths = this._accessObjectPath(this._reverseListenerTree, entryNames.concat('length'));
+        let numberOfExistingListenerPaths = this.accessObjectPath(this._reverseListenerTree, entryNames.concat('length'));
         if (numberOfExistingListenerPaths === notFound) {
             numberOfExistingListenerPaths = 0
         }
@@ -319,8 +398,9 @@ export class OptionObserver extends EventEmitter {
     _stopRecordingForEntry(entryName) {
         this._endListenerTreeUpdates(entryName);
         PrioritisedObject.removePropertyGetterSpy();
-        this.removeListener('optionTrigger', this._activeRecordings[entryName].optionRecorder);
-        this.removeListener('mapCalled', this._activeRecordings[entryName].arrayRecorder);
+        this.removeListener('optionTrigger', this._activeRecordings[entryName][optionRecorder]);
+        // Todo when we start listening for mapcalled, use this code (if that is what we'll do)
+        //this.removeListener('mapCalled', this._activeRecordings[entryName][arrayRecorder]);
         delete this._activeRecordings[entryName]
     }
 
@@ -361,13 +441,7 @@ export class OptionObserver extends EventEmitter {
         this._flushUpdates()
     }
 
-    _setup() {
 
-        this._createListenerTree();
-        //todo this order changed, we used to do the option merging after preprocessing. What is needed? Pass option to adjust behaviour?
-        this._updatesForNextTick[OptionObserver.preprocess] = new Array(this._preprocessMethods.length).fill(true);
-        this._markAllOptionsAsUpdated();
-    }
 
     _markAllOptionsAsUpdated() {
         let rootProperties = Object.keys(this.defaultOptions);
@@ -487,7 +561,8 @@ export class OptionObserver extends EventEmitter {
                 if (valueIsLeaf) {
                     this._handleNewOptionUpdateLeaf(nestedPropertyPath, updateObject, propertyName, defaultOptionParent, listenerTree, optionObject);
                 } else {
-                    this._handleIntermediateUpdateIfNecessary(listenerTree[propertyName]);
+                    //TODO Confirm that this function isn't needed!
+                    // this._handleIntermediateUpdateIfNecessary(listenerTree[propertyName]);
                 }
 
 
@@ -496,7 +571,7 @@ export class OptionObserver extends EventEmitter {
             false
         );
         this._flushArrayObserverChanges();
-        this._newOptionUpdates = {}
+        this._newOptionUpdates = {};
         this._handleResultingUpdates();
     }
 
@@ -567,16 +642,7 @@ export class OptionObserver extends EventEmitter {
         )
     }
 
-    _getUpdatesEntryNamesForLocalListenerTree(localListenerTree) {
-        let doubleNestedPaths = Object.keys(localListenerTree)
-            .concat(localListenerTree[OptionObserver.preprocess] ? OptionObserver.preprocess : [])
-            .map((key) => localListenerTree[key] === true ? [[key]] :
-                this._getDeeplyNestedListenerPaths(localListenerTree[key]).map((path) => [key].concat(path)));
 
-        /* Flatten double nested paths */
-        return [].concat(...doubleNestedPaths);
-
-    }
 
     _getDeeplyNestedListenerPaths(localListenerTree, accumulator = []) {
         if (localListenerTree === true) {
@@ -791,36 +857,7 @@ export class OptionObserver extends EventEmitter {
         this._accommodateObjectPath(object, path.slice(0, -1))[path[path.length - 1]] = stuffToInsert
     }
 
-    /**
-     * Similar to _.get, except that it returns notFound (a symbol) when not found
-     * @param object
-     * @param path
-     * @param traverseListeners
-     * @returns {*}
-     * @private
-     */
-    _accessObjectPath(object, path, traverseListeners = false) {
-        for (let pathString of path) {
-            if (!object || !object.hasOwnProperty(pathString)) {
-                if (traverseListeners) {
-                    if (Array.isArray(object)) {
-                        pathString = 0
 
-                    }
-                } else {
-                    return notFound
-                }
-            }
-            object = object[pathString];
-            /* If it's a specially registered array listener, the property to read is called value and is being
-             *  used on the listener tree */
-            if (object && object[isArrayListener] && traverseListeners) {
-                /* Return immediately, ignore remaining properties in path. TODO: Verify that this is what we want*/
-                return object.value;
-            }
-        }
-        return object
-    }
 
     _iterateInObjectPath(object, path, callback) {
         for (let pathString of path) {
@@ -915,13 +952,13 @@ export class OptionObserver extends EventEmitter {
             }
         }
 
-        let onChangeFunction = this._accessObjectPath(newValueParent, [onOptionChange, propertyName]);
+        let onChangeFunction = this.accessObjectPath(newValueParent, [onOptionChange, propertyName]);
 
         if (onChangeFunction !== notFound) {
             onChangeFunction(newValue)
         } else if (newValue instanceof InputOption) {
             this._accommodateInsideObject(newValueParent, [onOptionChange, propertyName], (newValue) => newValue[changeValue]);
-            newValue = newValue[getValue]();
+            newValue = newValue[unwrapValue]();
         }
 
         if (valueIsModelProperty) {
@@ -1037,7 +1074,7 @@ export class OptionObserver extends EventEmitter {
 
     _handleNewModelUpdate(nestedPropertyPath, newValue, listenerTree, key) {
         //TODO This implementation is a bit naive, won't work always (or in second thought, won't it?)
-        let oldListenerStructureBase = this._accessObjectPath(this._modelListeners, [oldValue.constructor.name]);
+        let oldListenerStructureBase = this.accessObjectPath(this._modelListeners, [oldValue.constructor.name]);
 
         if (oldListenerStructureBase === notFound || !oldListenerStructureBase[oldValue.id]) {
             return this._setupModel(nestedPropertyPath, newValue, listenerTree, key).startListening()
@@ -1166,6 +1203,7 @@ export class OptionObserver extends EventEmitter {
     _copyImportantSymbols(copyFrom, copyTo) {
         copyTo[layout.extra] = copyFrom[layout.extra]
     }
+
 
     _handleIntermediateUpdateIfNecessary(listenerTree) {
         if (!listenerTree || !listenerTree[listeners]) {

@@ -2,7 +2,7 @@
  * Clones an option object in a "lazy" way, which means that it is only (re-)cloned for the path which the getteres are triggered
  * //TODO Support caching
  */
-import {Utils}               from './Utils';
+import {Utils} from './Utils';
 import {storedArrayObserver} from './OptionObserver';
 
 /* */
@@ -13,8 +13,8 @@ let deleted = Symbol('deleted');
  */
 export class LazyLoadedOptionClone {
 
-    static get(TargetObjectType, optionToClone, listenerTree, nestedPropertyPath = [], optionToCloneParent = null) {
-        let root = new TargetObjectType(nestedPropertyPath, optionToClone, optionToCloneParent);
+    static get(TargetObjectType, optionToClone, listenerTree, nestedPropertyPath = [], optionObserver, optionToCloneParent = null) {
+        let root = new TargetObjectType(nestedPropertyPath, optionToClone, optionToCloneParent, optionObserver, listenerTree);
         let optionIsArray = Array.isArray(optionToClone);
         if (!Utils.isPlainObject(optionToClone) && !optionIsArray) {
             return root;
@@ -23,31 +23,37 @@ export class LazyLoadedOptionClone {
         let cachedShallowClone = {};
 
         //TODO Make sure caching works if stuff is replaced
-        let addCloneGetter = (property) =>  {
+        let addCloneGetter = (property) => {
             /* Clear any previous data in the cachedShallowClone (if it's marked as deleted)*/
-            if(cachedShallowClone[property] === deleted){
+            if (cachedShallowClone[property] === deleted) {
                 delete cachedShallowClone[property];
                 return;
             }
             Object.defineProperty(root, property, {
                 get: () => {
                     if (cachedShallowClone[property]) {
-                        if(cachedShallowClone[property] === deleted){
+                        if (cachedShallowClone[property] === deleted) {
                             return undefined;
                         }
                         return cachedShallowClone[property];
                     }
                     //TODO Implement a different solution for changing the value without consequences. This relies on 'shadow' that will be deprecated at some point
-                    return cachedShallowClone[property] = LazyLoadedOptionClone.get(TargetObjectType, optionToClone.shadow[property], listenerTree[property], nestedPropertyPath.concat(property), optionToClone)
+                    return cachedShallowClone[property] = LazyLoadedOptionClone.get(TargetObjectType,
+                        optionToClone.shadow[property],
+                        /* Access the listener tree by using dedicated method to be sure that it's done correctly */
+                        optionObserver.accessObjectPath(listenerTree, [property], true),
+                        nestedPropertyPath.concat(property),
+                        optionObserver,
+                        optionToClone)
                 }
             });
         };
 
         /* Arrays mean that the structure can change dynamically. In that case, we listen for added and removed
         *  properties, which would modify the clone structure */
-        if(optionIsArray){
+        if (optionIsArray) {
             let arrayObserver = listenerTree[storedArrayObserver];
-            if(!arrayObserver){
+            if (!arrayObserver) {
                 Utils.warn('Option passed to LazyLoadedOptionClone without properly initialized listener tree');
             } else {
                 arrayObserver.on('removed', ({index}) => cachedShallowClone[index] = deleted);
