@@ -1,7 +1,7 @@
 /**
  * Created by lundfall on 06/07/16.
  */
-import Surface               from 'famous/core/Surface';
+import {Surface}             from '../surfaces/Surface.js';
 import FamousContext         from 'famous/core/Context.js';
 import Timer                 from 'famous/utilities/Timer';
 import Easing                from 'famous/transitions/Easing.js';

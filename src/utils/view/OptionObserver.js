@@ -1,45 +1,47 @@
 /**
  * Created by lundfall on 23/02/2017.
  */
-import EventEmitter             from 'eventemitter3';
+import EventEmitter from 'eventemitter3';
 
-import cloneDeepWith            from 'lodash/cloneDeepWith';
-import difference               from 'lodash/difference';
-import each                     from 'lodash/each';
+import cloneDeepWith from 'lodash/cloneDeepWith';
+import difference from 'lodash/difference';
+import each from 'lodash/each';
 
-import Timer                    from 'famous/utilities/Timer.js';
-import {RenderablePrototype}    from 'famous/utilities/RenderablePrototype.js';
-import ElementOutput            from 'famous/core/ElementOutput.js';
+import Timer from 'famous/utilities/Timer.js';
+import {RenderablePrototype} from 'famous/utilities/RenderablePrototype.js';
+import ElementOutput from 'famous/core/ElementOutput.js';
 
-import {Utils}                  from './Utils.js';
-import {ArrayObserver}          from './ArrayObserver.js';
-import {InputOption, unwrapValue,
-    changeValue}                from './InputOption';
-import {ObjectHelper}           from '../ObjectHelper';
-import {PrioritisedObject}      from '../../data/PrioritisedObject';
-import {Model}                  from '../../core/Model';
-import {layout}                 from '../../layout/Decorators';
-import {PrioritisedArray}       from '../../data/PrioritisedArray';
-import {LazyLoadedOptionClone}  from './LazyLoadedOptionClone';
+import {Utils} from './Utils.js';
+import {ArrayObserver} from './ArrayObserver.js';
+import {
+    InputOption, unwrapValue,
+    changeValue
+} from './InputOption';
+import {ObjectHelper} from '../ObjectHelper';
+import {PrioritisedObject} from '../../data/PrioritisedObject';
+import {Model} from '../../core/Model';
+import {layout} from '../../layout/Decorators';
+import {PrioritisedArray} from '../../data/PrioritisedArray';
+import {LazyLoadedOptionClone} from './LazyLoadedOptionClone';
 
 
 /* Symbols are used for many properties in order to allow any arbitrary names of options. The names are
  * repeated for the symbols and variable names in order to make debuggability easier */
-let newChanges          = Symbol('newChanges'),
-    originalValue       = Symbol('originalValue'),
-    optionMetaData      = Symbol('optionMetaData'),
-    oldValue            = Symbol('oldValue'),
-    instanceIdentifier  = Symbol('instanceIdentifier'),
-    isArrayListener     = Symbol('isArrayListener'),
-    optionRecorder      = Symbol('optionRecorder'),
-    arrayRecorder       = Symbol('arrayRecorder');
+let newChanges = Symbol('newChanges'),
+    originalValue = Symbol('originalValue'),
+    oldValue = Symbol('oldValue'),
+    instanceIdentifier = Symbol('instanceIdentifier'),
+    isArrayListener = Symbol('isArrayListener'),
+    optionRecorder = Symbol('optionRecorder'),
+    arrayRecorder = Symbol('arrayRecorder');
 
 /* Some symbols are exported since they are used elsewhere. Note that the preprocess symbol is defined directly on
 *  the OptionObserver to make it easier to access from outside Arva (not just in internal classes) */
 export let onOptionChange = Symbol('onOptionChange'),
     storedArrayObserver = Symbol('storedArrayObserver'),
     notFound = Symbol('notFound'),
-    listeners = Symbol('listeners');
+    listeners = Symbol('listeners'),
+    optionMetaData = Symbol('optionMetaData');
 
 //TODO fix falsey value checks, should behave differently for undefined and false
 
@@ -442,7 +444,6 @@ export class OptionObserver extends EventEmitter {
     }
 
 
-
     _markAllOptionsAsUpdated() {
         let rootProperties = Object.keys(this.defaultOptions);
         this._updateOptionsStructure(rootProperties, this.options, [], rootProperties.map((rootProperty) => undefined));
@@ -562,7 +563,7 @@ export class OptionObserver extends EventEmitter {
                     this._handleNewOptionUpdateLeaf(nestedPropertyPath, updateObject, propertyName, defaultOptionParent, listenerTree, optionObject);
                 } else {
                     //TODO Confirm that this function isn't needed!
-                    // this._handleIntermediateUpdateIfNecessary(listenerTree[propertyName]);
+                    this._handleIntermediateUpdateIfNecessary(listenerTree[propertyName]);
                 }
 
 
@@ -1125,7 +1126,6 @@ export class OptionObserver extends EventEmitter {
             return {[listeners]: {}}
         }
     }
-
 
 
     _flushArrayObserverChanges() {

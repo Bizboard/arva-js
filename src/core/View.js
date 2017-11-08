@@ -12,7 +12,7 @@ import cloneDeep                from 'lodash/cloneDeep.js'
 import FamousView               from 'famous/core/View.js'
 import {RenderablePrototype}    from 'famous/utilities/RenderablePrototype.js'
 import LayoutController         from 'famous-flex/LayoutController.js'
-import Surface                  from 'famous/core/Surface.js'
+import {Surface}                from '../surfaces/Surface.js'
 import Engine                   from 'famous/core/Engine.js'
 import LayoutUtility            from 'famous-flex/LayoutUtility.js';
 

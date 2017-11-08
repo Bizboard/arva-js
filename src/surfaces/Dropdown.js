@@ -11,7 +11,7 @@ import {flow, layout, event}        from 'arva-js/layout/Decorators.js';
 import {combineOptions}             from 'arva-js/utils/CombineOptions.js';
 import {onOptionChange}             from '../utils/view/OptionObserver.js'
 
-import Surface                      from 'famous/core/Surface.js';
+import {Surface}                    from '../surfaces/Surface.js';
 
 
 export class Dropdown extends Surface {

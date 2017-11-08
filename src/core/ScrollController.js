@@ -15,9 +15,9 @@ import LayoutUtility           from 'famous-flex/LayoutUtility.js'
 
 /* Famous */
 import Particle                from 'famous/physics/bodies/Particle'
-import Transitionable           from 'famous/transitions/Transitionable.js'
+import Transitionable          from 'famous/transitions/Transitionable.js'
 import NativeScrollGroup       from 'famous/core/NativeScrollGroup'
-import Surface                 from 'famous/core/Surface.js'
+import {Surface}               from '../surfaces/Surface.js'
 import DOMBuffer               from 'famous/core/DOMBuffer.js'
 import PhysicsEngine           from 'famous/physics/PhysicsEngine'
 import Engine                  from 'famous/core/Engine.js'

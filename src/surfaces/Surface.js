@@ -1,7 +1,8 @@
 /**
  * Created by lundfall on 12/07/2017.
  */
-import FamousSurface from 'famous/core/Surface.js';
+import FamousSurface    from 'famous/core/Surface.js';
+import {optionMetaData} from '../utils/view/OptionObserver';
 
 /**
  * A base class for viewable content and event
@@ -19,4 +20,15 @@ import FamousSurface from 'famous/core/Surface.js';
  * @param {Array} [options.attributes] string dictionary of HTML attributes to set on target div
  * @param {string} [options.content] inner (HTML) content of surface
  */
+let existingWithFunction = FamousSurface.with;
+FamousSurface.with  = function (options) {
+    /* If the properties passed are options themselves, we make sure to destructure them in order to make sure that all
+    *  necessary listeners are registered */
+    if(options && options.properties && options.properties[optionMetaData]){
+        options.properties = {...options.properties};
+    }
+    return existingWithFunction.call(this, options);
+};
+
 export const Surface = FamousSurface;
+

@@ -3,7 +3,7 @@
  */
 import Bowser           from 'bowser';
 import Timer            from 'famous/utilities/Timer.js';
-import Surface          from 'famous/core/Surface.js';
+import {Surface}        from '../../surfaces/Surface.js';
 import ImageSurface     from 'famous/surfaces/ImageSurface.js';
 import ElementOutput    from 'famous/core/ElementOutput.js';
 
