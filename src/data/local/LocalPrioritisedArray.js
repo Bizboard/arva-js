@@ -18,12 +18,13 @@ export class LocalPrioritisedArray extends PrioritisedArray {
     /**
      * Override to make sure that we catch the 'removed' events by patching the model.remove function
      * of whatever is added, and also that we can follow 'changed' events
-     * @param item
-     * @param previousSiblingId
+     * @param {*} item
+     * @param {String} previousSiblingId
+     * @param {Boolean} emitValueEvent Passed to parent function
      * @returns {Object}
      */
-    add(item, previousSiblingId) {
-        let resultingModel = super.add(item, previousSiblingId);
+    add(item, previousSiblingId, emitValueEvent) {
+        let resultingModel = super.add(item, previousSiblingId, emitValueEvent);
         if (!(resultingModel instanceof this._dataType)) {
             resultingModel = item;
         }
