@@ -1026,6 +1026,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
         return [undefined, height];
     }
 
+
     /**
      * Either add or remove the prioritisedArray events to our event handlers.
      * The event handlers are cached, so they can be removed later on if needed.
@@ -1044,7 +1045,19 @@ export class DataBoundScrollView extends ReflowingScrollView {
             if(!this._eventCallbacks[index]){
                 this._eventCallbacks[index] = {};
             }
-            this._eventCallbacks[index]['child_added'] = this._onChildAdded.bind(this, index);
+            /* On the initial load, await all data to arrive and then sort it */
+            let initialDataIsSorted = !this.options.orderBy;
+            if(!initialDataIsSorted){
+                dataStore.once('value').then((data) => {
+                    let prevSiblingID;
+                    for(let item of data.sort((first, second) => !this.options.orderBy(first, second))){
+                        this._onChildAdded(index, item, prevSiblingID);
+                        prevSiblingID = item.id;
+                    }
+                    initialDataIsSorted = true;
+                });
+            }
+            this._eventCallbacks[index]['child_added'] = (child, prevID) => initialDataIsSorted && this._onChildAdded(index, child, prevID);
             this._eventCallbacks[index]['child_changed'] = this._onChildChanged.bind(this, index);
             this._eventCallbacks[index]['child_removed'] = this._onChildRemoved.bind(this, index);
             this._eventCallbacks[index]['child_moved'] = this._onChildMoved.bind(this, 0);
