@@ -95,7 +95,7 @@ export class SignalRArray extends LocalPrioritisedArray {
             handler.call(context, this);
         }
 
-        if ((event === 'getAll') && this._ready) {
+        if ((event === 'getAll' || event === 'value') && this._ready) {
             handler.call(context, this);
         }
 
