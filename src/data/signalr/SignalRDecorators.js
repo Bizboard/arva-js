@@ -261,6 +261,14 @@ export class SignalRConnection extends EventEmitter {
         this.emit('disconnected');
     }
 
+    goOnline() {
+        this.restart().then( ()=>{
+            this._connected = true;
+            this.emit('ready', this._connected);
+            this.emit('connected');
+        })
+    }
+
     /**
      * Makes the once function return a promise
      * @param event
@@ -452,27 +460,15 @@ export class SignalRConnection extends EventEmitter {
                 this.emit('stateChange', state);
                 this.emit('connected');
             });
-        } else if (state.newState === this.connectionStates.reconnecting) {
-            this._connected = false;
-            this.emit('disconnected');
-        } else if (state.newState === this.connectionStates.disconnected && this.options.shouldAttemptReconnect) {
-            this._connected = false;
-            this.emit('disconnected');
-            this.restart();
         }
     };
 
     restart() {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             this._reconnectTimeout = setTimeout(() => {
                 let start = this.connection.start();
-                start.done(() => {
-                    this._connected = true;
-                    this.emit('ready', this._connected);
-                    this.emit('connected');
-                    resolve(start);
-                })
-            }, 5000);
+                start.done( resolve ).catch( reject )
+            }, 5000)
         })
     }
 
