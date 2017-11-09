@@ -252,6 +252,7 @@ export class PrioritisedArray {
     return this.insertAt(model, this.length);
   }
 
+
   /**
    * Removes the model instance at the given position. Does not remove the model from the datasource, to do that
    * call model.remove() directly, or PrioArray[index].remove().
@@ -362,6 +363,14 @@ export class PrioritisedArray {
    */
   reduce() {
     return this._children.reduce.apply(this._children, arguments);
+  }
+
+  /**
+   * Proxies PrioArray.sort() to its underlying Array cache
+   * @returns {*}
+   */
+  sort() {
+    return this._children.sort.apply(this._children, arguments);
   }
 
   /**
