@@ -61,8 +61,9 @@ export class SignalRArray extends LocalPrioritisedArray {
 
         Promise.all(promises).then(() => {
             this._ready = true;
-            this._eventEmitter.emit('getAll');
-            this._eventEmitter.emit('value');
+            this._eventEmitter.emit('getAll', this);
+            /* Emit value event to conform to PrioritisedArray standard */
+            this._eventEmitter.emit('value', this);
             return this;
         })
     }
@@ -74,6 +75,7 @@ export class SignalRArray extends LocalPrioritisedArray {
     parseIDList(data) {
         let promises = [];
         for(const id of data) {
+            /* Pass 'false' to prevent from emitting 'value' event */
             promises.push(Injection.get(this._dataType, id).once('value').then((model) => this.add(model, null, false)));
         }
         return Promise.all(promises);
@@ -93,7 +95,7 @@ export class SignalRArray extends LocalPrioritisedArray {
             handler.call(context, this);
         }
 
-        if ((event === 'getAll') && this._ready) {
+        if ((event === 'getAll' || event === 'value') && this._ready) {
             handler.call(context, this);
         }
 
