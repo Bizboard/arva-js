@@ -43,7 +43,7 @@
       "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90"
     }
   },
-  "author": "Tom Clement <tom@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>",
+  "author": "Tom Clement <tom@bizboard.nl>, Hans van den Akker <hans@bizboard.nl>, Karl Lundfall <karl@bizboard.nl>",
   "license": "NPOSL-3.0",
   "devDependencies": {
     "babel": "^5.8.23",
