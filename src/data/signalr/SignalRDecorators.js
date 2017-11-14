@@ -340,7 +340,8 @@ export class SignalRConnection extends EventEmitter {
     }
 
     async authenticateUser({username, password}) {
-
+        username = encodeURIComponent(username);
+        password = encodeURIComponent(password);
         let formData = `username=${username}&password=${password}&grant_type=password`;
 
         try {
