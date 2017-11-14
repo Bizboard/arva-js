@@ -1052,7 +1052,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             if(!initialDataIsSorted){
                 dataStore.once('value').then((data) => {
                     let prevSiblingID;
-                    for(let item of data.sort((first, second) => !this.options.orderBy(first, second))){
+                    for(let item of data.sort((first, second) => data.sort((first, second) => this.options.orderBy(first, second) ? -1 : 1))){
                         this._onChildAdded(index, item, prevSiblingID);
                         prevSiblingID = item.id;
                     }
