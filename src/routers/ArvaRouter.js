@@ -70,9 +70,10 @@ export class ArvaRouter extends Router {
      * @param {Controller|Function|String} controller The controller instance, controller constructor, or controller name to go to.
      * @param {String} method The method to call in given controller.
      * @param {Object} params Dictionary of key-value pairs containing named arguments (i.e. {id: 1, test: "yes"})
+     * @param [animations] optional controllerAnimationsSpec
      * @returns {void}
      */
-    go(controller, method, params = null) {
+    go(controller, method, params = null, animations) {
 
         let controllerName = this._getControllerName(controller);
         let routeRoot = controllerName.replace('Controller', '');
@@ -90,7 +91,7 @@ export class ArvaRouter extends Router {
             history.pushState(null, null, hash);
         }
 
-        this.run();
+        this.run(animations);
     }
 
     /**
@@ -143,8 +144,9 @@ export class ArvaRouter extends Router {
     /**
      * On a route change, calls the corresponding controller method with the given parameter values.
      * @returns {Boolean} Whether the current route was successfully ran.
+     * @param [animations] optional controllerAnimationsSpec
      */
-    run() {
+    run(animations) {
         let url = window.location.hash.replace('#', '');
 
         if (url !== '') {
@@ -230,7 +232,7 @@ export class ArvaRouter extends Router {
                     this.routes[previousRoute.controller][':']['leave'](currentRoute);
                 }
             }
-            currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute) : (this._initialSpec || {});
+            currentRoute.spec = previousRoute ? this._getAnimationSpec(previousRoute, currentRoute, animations) : (this._initialSpec || {});
 
             /* Set the previousRoute and the history stack */
             this.previousRoute = this.routeStack[this.routeStack.length -1];
@@ -361,10 +363,11 @@ export class ArvaRouter extends Router {
      * router.setControllerSpecs(), which is called from the app constructor.
      * @param {Object} previousRoute Previous route object containing url, controller, method, keys, and values.
      * @param {Object} currentRoute Current route object containing url, controller, method, keys, and values.
+     * @param [animations] optional controllerAnimationsSpec
      * @returns {Object} A spec object if one is found, or an empty object otherwise.
      * @private
      */
-    _getAnimationSpec(previousRoute, currentRoute) {
+    _getAnimationSpec(previousRoute, currentRoute, animations ) {
         let fromController = previousRoute.controller;
         let toController = currentRoute.controller;
 
@@ -382,12 +385,20 @@ export class ArvaRouter extends Router {
             return {};
         }
 
+        let animationSpec = this._getControllerAnimations(currentRoute,previousRoute,fromController,toController,animations );
+
+        return animationSpec;
+    }
+
+
+    _getControllerAnimations(currentRoute,previousRoute,fromController,toController,animations = this.specs) {
         /* Same controller, different method or different parameters */
         if (currentRoute.controller === previousRoute.controller) {
 
             let direction = this._getRouteDirection(currentRoute);
-            if (this.specs && this.specs[fromController] && this.specs[fromController].methods) {
-                return this.specs[fromController].methods[direction];
+            if (animations && animations[fromController] && animations[fromController].methods) {
+
+                return animations[fromController].methods[direction];
             }
 
             /* Default method-to-method animations, used only if not overridden in app's controllers spec. */
@@ -405,8 +416,8 @@ export class ArvaRouter extends Router {
         }
 
         /* Different controller */
-        if (this.specs && this.specs.hasOwnProperty(toController) && this.specs[toController].controllers) {
-            let controllerSpecs = this.specs[toController].controllers;
+        if (animations && animations.hasOwnProperty(toController) && animations[toController].controllers) {
+            let controllerSpecs = animations[toController].controllers;
             for (let specIndex in controllerSpecs) {
                 let spec = controllerSpecs[specIndex];
                 if (spec.activeFrom && spec.activeFrom.indexOf(fromController) !== -1) {
@@ -415,6 +426,8 @@ export class ArvaRouter extends Router {
             }
         }
     }
+
+
 
     /**
      * Extracts a controller name from a given string, constructor, or controller instance. 'Controller' part is not included in the returned name.
