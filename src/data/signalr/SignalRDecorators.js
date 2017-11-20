@@ -133,7 +133,9 @@ export class signalr {
                         return await method.fn.call(this, [...params, {savedRequest: true}]);
                     }
                 }
-
+                if(!this.connection.connection.transport) {
+                    await this.connection.restart();
+                }
                 await this.connection.once('ready');
 
                 return new Promise((resolve, reject) =>
@@ -461,6 +463,12 @@ export class SignalRConnection extends EventEmitter {
                 this.emit('stateChange', state);
                 this.emit('connected');
             });
+        } else if(state.newState === this.connectionStates.reconnecting) {
+            setTimeout(() => {
+                if(state.newState === this.connectionStates.reconnecting) {
+                    this.restart();
+                }
+            }, 1000);
         }
     };
 
