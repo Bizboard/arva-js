@@ -461,6 +461,12 @@ export class SignalRConnection extends EventEmitter {
                 this.emit('stateChange', state);
                 this.emit('connected');
             });
+        } else if(state.newState === this.connectionStates.reconnecting) {
+            setTimeout(() => {
+                if(state.newState === this.connectionStates.reconnecting) {
+                    this.restart();
+                }
+            }, 1000);
         }
     };
 
