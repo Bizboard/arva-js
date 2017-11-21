@@ -139,27 +139,32 @@ export class signalr {
                 await this.connection.once('ready');
 
                 return new Promise((resolve, reject) =>
-                    this.proxy.invoke.call(this.proxy, serverCallbackName, ...params)
-                        .done(async (...params) => {
-                            let result = await method.fn.apply(this, params);
-                            if(isFunctionAvailableOffline){
-                                try {
-                                    signalr.saveToLocalStorage(this, signalr.getKeyString(serverCallbackName, this), params);
-                                } catch (e){
-                                    console.log("error saving to localstorage", e)
+                    try {
+                        this.proxy.invoke.call(this.proxy, serverCallbackName, ...params)
+                            .done(async (...params) => {
+                                let result = await method.fn.apply(this, params);
+                                if (isFunctionAvailableOffline) {
+                                    try {
+                                        signalr.saveToLocalStorage(this, signalr.getKeyString(serverCallbackName, this), params);
+                                    } catch (e) {
+                                        console.log("error saving to localstorage", e)
+                                    }
                                 }
-                            }
 
-                            /* Catch common default behaviour */
-                            if (result === undefined && params.length === 1) {
-                                result = params[0];
-                            }
+                                /* Catch common default behaviour */
+                                if (result === undefined && params.length === 1) {
+                                    result = params[0];
+                                }
 
-                            resolve(result)
-                        }).fail((e) => {
-                        reject(e)
-                        // console.debug(e);
-                    })
+                                resolve(result)
+                            }).fail((e) => {
+                            console.debug(e);
+                            reject(e)
+                            // console.debug(e);
+                        });
+                    } catch(ex) {
+                        console.debug(ex);
+                    }
                 )
             };
 
