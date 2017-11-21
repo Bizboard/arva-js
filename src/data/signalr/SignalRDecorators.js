@@ -264,6 +264,7 @@ export class SignalRConnection extends EventEmitter {
     }
 
     goOnline() {
+        this.init();
         this.restart().then( ()=>{
             this._connected = true;
             this.emit('ready', this._connected);
