@@ -165,7 +165,8 @@ export class signalr {
                                     });
                             } catch (ex) {
                                 console.debug(ex);
-                                await this.connection.restart();
+                                this.connection = this.connection.init();
+                                await this.connection.start();
                                 return await this.runServerFunction.apply(this, [serverCallbackName, isFunctionAvailableOffline, ...params])
                             }
                         }
