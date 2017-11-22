@@ -141,9 +141,6 @@ export class signalr {
                 let runServerFunction = (serverCallbackName, isFunctionAvailableOffline, ...params) => {
                     return new Promise(async (resolve, reject) => {
                             try {
-                                if (this.proxy.connection !== this.connection) {
-                                    this.proxy.connection = this.connection;
-                                }
                                 return this.proxy.invoke.call(this.proxy, serverCallbackName, ...params)
                                     .done(async (...params) => {
                                         let result = await method.fn.apply(this, params);
