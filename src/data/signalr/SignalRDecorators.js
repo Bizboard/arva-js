@@ -138,36 +138,41 @@ export class signalr {
                 }
                 await this.connection.once('ready');
 
-                return new Promise((resolve, reject) => {
-                        try {
-                            return this.proxy.invoke.call(this.proxy, serverCallbackName, ...params)
-                                .done(async (...params) => {
-                                    let result = await method.fn.apply(this, params);
-                                    if (isFunctionAvailableOffline) {
-                                        try {
-                                            signalr.saveToLocalStorage(this, signalr.getKeyString(serverCallbackName, this), params);
-                                        } catch (e) {
-                                            console.log("error saving to localstorage", e)
+                let runServerFunction = (serverCallbackName, isFunctionAvailableOffline, ...params) => {
+                    return new Promise(async (resolve, reject) => {
+                            try {
+                                return this.proxy.invoke.call(this.proxy, serverCallbackName, ...params)
+                                    .done(async (...params) => {
+                                        let result = await method.fn.apply(this, params);
+                                        if (isFunctionAvailableOffline) {
+                                            try {
+                                                signalr.saveToLocalStorage(this, signalr.getKeyString(serverCallbackName, this), params);
+                                            } catch (e) {
+                                                console.log("error saving to localstorage", e)
+                                            }
                                         }
-                                    }
 
-                                    /* Catch common default behaviour */
-                                    if (result === undefined && params.length === 1) {
-                                        result = params[0];
-                                    }
+                                        if (result === undefined && params.length === 1) {
+                                            result = params[0];
+                                        }
 
-                                    resolve(result)
-                                }).fail((e) => {
-                                console.debug(e);
-                                reject(e)
-                                // console.debug(e);
-                            });
-                        } catch (ex) {
-                            console.debug(ex);
-                            return false;
+
+                                        resolve(result)
+                                    }).fail((e) => {
+                                        console.debug(e);
+                                        reject(e)
+                                        // console.debug(e);
+                                    });
+                            } catch (ex) {
+                                console.debug(ex);
+                                await this.connection.restart();
+                                return await this.runServerFunction.apply(this, [serverCallbackName, isFunctionAvailableOffline, ...params])
+                            }
                         }
-                    }
-                )
+                    )
+                }
+                this.runServerFunction = runServerFunction;
+                return await this.runServerFunction.apply(this, [serverCallbackName, isFunctionAvailableOffline, ...params]);
             };
 
             this.connection.log(`[${this.hubName}] Mapping Server Callback ${method.fnName} to ${method.fn.name}`);
