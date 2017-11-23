@@ -4,8 +4,14 @@ import Timer from 'famous/utilities/Timer.js';
 
 export class WebGLSurface extends CanvasSurface {
 
-    constructor() {
-        super(...arguments);
+    constructor(options) {
+        if(!options.properties){
+            options.properties = {};
+        }
+        /* Force pointer events to be none in order to allow clicking underneath*/
+        options.properties = {pointerEvents: 'none'};
+
+        super(options);
         this._parameters = {  start_time  : new Date().getTime(),
             time        : 0,
             screenWidth : 0,
@@ -19,18 +25,7 @@ export class WebGLSurface extends CanvasSurface {
 				gl_Position = vec4( position, 1.0 );
 
 			}`;
-            let fragment_shader = `uniform float time;
-			uniform vec2 resolution;
-
-			void main( void ) {
-
-				vec2 position = - 1.0 + 2.0 * gl_FragCoord.xy / resolution.xy;
-				float red = abs( sin( position.x * position.y + time / 5.0 ) );
-				float green = abs( sin( position.x * position.y + time / 4.0 ) );
-				float blue = abs( sin( position.x * position.y + time / 3.0 ) );
-				gl_FragColor = vec4( red, green, blue, 1.0 );
-
-			}`;
+            let fragment_shader = this.options.shader;
             let canvas = this._element;
 
 
@@ -43,8 +38,8 @@ export class WebGLSurface extends CanvasSurface {
 
             // Create Vertex buffer (2 triangles)
 
-            let buffer = this._gl.createBuffer();
-            this._gl.bindBuffer( this._gl.ARRAY_BUFFER, buffer );
+            this._buffer = this._gl.createBuffer();
+            this._gl.bindBuffer( this._gl.ARRAY_BUFFER, this._buffer );
             this._gl.bufferData( this._gl.ARRAY_BUFFER, new Float32Array( [ - 1.0, - 1.0, 1.0, - 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0, 1.0, - 1.0, 1.0 ] ), this._gl.STATIC_DRAW );
 
             // Create Program
@@ -53,12 +48,20 @@ export class WebGLSurface extends CanvasSurface {
 
             this._timeLocation = this._gl.getUniformLocation( this._currentProgram, 'time' );
             this._resolutionLocation = this._gl.getUniformLocation( this._currentProgram, 'resolution' );
+            this._extraParams = {};
+            for(let extraParam in this.options.extraParams || {}){
+                this._extraParams[extraParam] = this._gl.getUniformLocation( this._currentProgram, extraParam );
+            }
 
             Timer.every(() => {
                 this._resizeCanvas();
                 this._render();
             }, 1)
         });
+    }
+
+    setExtraParam(name, value) {
+        this.options.extraParams[name] = value;
     }
 
     _resizeCanvas() {
@@ -93,13 +96,25 @@ export class WebGLSurface extends CanvasSurface {
         this._gl.uniform1f( this._timeLocation, this._parameters.time / 1000 );
         this._gl.uniform2f( this._resolutionLocation, this._parameters.screenWidth, this._parameters.screenHeight );
 
+        for(let extraParam in this.options.extraParams || {}){
+            let typeName = 'uniform1f';
+            let inputValue = this.options.extraParams[extraParam];
+            if(Array.isArray(this.options.extraParams[extraParam])){
+                typeName = 'uniform2f';
+            } else {
+                inputValue = [inputValue]
+            }
+            this._gl[typeName]( this._extraParams[extraParam], ...inputValue);
+        }
+
+
         // Render geometry
 
-        this._gl.bindBuffer( this._gl.ARRAY_BUFFER, buffer );
-        this._gl.vertexAttribPointer( vertex_position, 2, this._gl.FLOAT, false, 0, 0 );
-        this._gl.enableVertexAttribArray( vertex_position );
+        this._gl.bindBuffer( this._gl.ARRAY_BUFFER, this._buffer );
+        this._gl.vertexAttribPointer( this._vertex_position, 2, this._gl.FLOAT, false, 0, 0 );
+        this._gl.enableVertexAttribArray( this._vertex_position );
         this._gl.drawArrays( this._gl.TRIANGLES, 0, 6 );
-        this._gl.disableVertexAttribArray( vertex_position );
+        this._gl.disableVertexAttribArray( this._vertex_position );
     }
 
     _createProgram(vertex, fragment) {
