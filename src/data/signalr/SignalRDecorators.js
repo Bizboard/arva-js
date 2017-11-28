@@ -7,6 +7,11 @@ import 'whatwg-fetch';
 
 
 export class signalr {
+
+    static async getKeyValFromIDB(string) {
+        let value = await idbKeyVal.get(string);
+        return value;
+    }
     // Registers a client method. This method will be run when the server invokes the fnName specified. Defaults to the method name
     static registerClientMethod(fnName = null) {
         return function (target, name, descriptor) {
@@ -186,13 +191,24 @@ export class signalr {
     static fileNames = ["ProfilePicture"];
 
     static async saveToLocalStorage(model, keyString, data) {
-        for(let [key, value] of Object.entries(data)) {
+        for(let [key, value] of Object.entries(data[0])) {
             if (signalr.fileNames.includes(key)){
                 try {
                     let response = await fetch(`${model.connection.options.url}/${value}`);
+
                     if (response.ok){
-                        let file = response.blob();
-                        data[key] = file;
+                        let blob = await response.blob();
+
+
+                        let reader = new window.FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = () => {
+                            let file = reader.result;
+                            data[0][key] = file;
+
+                            this.cache[keyString] = data[0];
+                            return idbKeyVal.set(keyString, data[0]);
+                        }
                     }
                 } catch (e){
                     console.log("error saving file", value, "error", e)
