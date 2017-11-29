@@ -979,6 +979,9 @@ export const layout = {
         };
     },
 
+    //TODO Add a decorator/functionality to ignore columnDockPadding in the opposite direction
+    // for a specific docked renderable
+
     /**
      *
      * Adds a custom layout function to the view.
