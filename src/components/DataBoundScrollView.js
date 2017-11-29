@@ -21,6 +21,7 @@ import {combineOptions}             from '../utils/CombineOptions.js';
 /**
  * A FlexScrollView with enhanced functionality for maintaining a two-way connection with a PrioritisedArray.
  */
+//TODO Fix so that the background is scrollable (full size)
 export class DataBoundScrollView extends ReflowingScrollView {
 
 
