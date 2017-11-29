@@ -194,8 +194,12 @@ export class signalr {
         for(let [key, value] of Object.entries(data[0])) {
             if (signalr.fileNames.includes(key)){
                 try {
-                    let response = await fetch(`${model.connection.options.url}/${value}`);
-
+                    let response;
+                    if (data[0].IsFacebook) {
+                        response = await fetch(value);
+                    } else {
+                        response = await fetch(`${model.connection.options.url}/${value}`);
+                    }
                     if (response.ok){
                         let blob = await response.blob();
 
