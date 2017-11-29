@@ -20,6 +20,7 @@ export class DialogManager extends View {
     @layout.animate({showInitially: false, animation: AnimationController.Animation.Fade})
     /* Add huge translations to make sure that it appears above everything else */
     @layout.translate(0, 0, 9000)
+        //TODO Unify background component (Underlay/BackgroundLayer/etc) in order to expose to other libraries
     background = new Surface({
         properties: {
             backgroundColor: "rgba(0,0,0,0.4)"
