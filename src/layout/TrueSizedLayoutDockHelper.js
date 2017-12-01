@@ -94,7 +94,7 @@ TrueSizedLayoutDockHelper.prototype.parse = function (data) {
  */
 TrueSizedLayoutDockHelper.prototype.top = function (renderableName, size, space = 0, extraTranslation = [0, 0, 0], innerSize, otherSpecs) {
     let [width, height] = this._setupAccordingToDimension(size, 1);
-    if (this._data.top !== this._initialData.top) {
+    if (!this._initialData || this._data.top !== this._initialData.top) {
         this._data.top += space;
     }
 
@@ -120,7 +120,7 @@ TrueSizedLayoutDockHelper.prototype.top = function (renderableName, size, space 
  */
 TrueSizedLayoutDockHelper.prototype.left = function (renderableName, size, space = 0, extraTranslation = [0, 0, 0], innerSize, otherSpecs) {
     let [width, height] = this._setupAccordingToDimension(size, 0);
-    if (this._data.left !== this._initialData.left) {
+    if (!this._initialData || this._data.left !== this._initialData.left) {
         this._data.left += space;
     }
     this._context.set(renderableName, {
@@ -144,7 +144,7 @@ TrueSizedLayoutDockHelper.prototype.left = function (renderableName, size, space
  */
 TrueSizedLayoutDockHelper.prototype.bottom = function (renderableName, size, space = 0, extraTranslation = [0, 0, 0], innerSize, otherSpecs) {
     let [width, height] = this._setupAccordingToDimension(size, 1);
-    if (this._data.bottom !== this._initialData.bottom) {
+    if (!this._initialData || this._data.bottom !== this._initialData.bottom) {
         this._data.bottom -= space;
     }
     this._data.bottom -= this._resolveSingleSize(height);
@@ -168,7 +168,7 @@ TrueSizedLayoutDockHelper.prototype.bottom = function (renderableName, size, spa
  */
 TrueSizedLayoutDockHelper.prototype.right = function (renderableName, size, space = 0, extraTranslation = [0, 0, 0], innerSize, otherSpecs) {
     let [width, height] = this._setupAccordingToDimension(size, 0);
-    if (this._data.right !== this._initialData.right) {
+    if (!this._initialData || this._data.right !== this._initialData.right) {
         this._data.right -= space;
     }
     this._data.right -= this._resolveSingleSize(width);
@@ -210,18 +210,36 @@ TrueSizedLayoutDockHelper.prototype.getFillSize = function() {
  * @param {Number|Array} margins margins shorthand (e.g. '5', [10, 10], [5, 10, 5, 10])
  * @return {TrueSizedLayoutDockHelper} this
  */
-TrueSizedLayoutDockHelper.prototype.margins = function (margins) {
+TrueSizedLayoutDockHelper.prototype.margins = function (margins, initial = true) {
     margins = LayoutUtility.normalizeMargins(margins);
     this._data.left += margins[3];
     this._data.top += margins[0];
     this._data.right -= margins[1];
     this._data.bottom -= margins[2];
-    this._initialData.left = this._data.left;
-    this._initialData.right = this._data.right;
-    this._initialData.top = this._data.top;
-    this._initialData.bottom = this._data.bottom;
+    if(initial){
+        this._initialData.left = this._data.left;
+        this._initialData.right = this._data.right;
+        this._initialData.top = this._data.top;
+        this._initialData.bottom = this._data.bottom;
+    }
+
     return this;
 };
+
+/**
+ * Adjusts the margins in relation to the previously applied margins
+ * @returns {TrueSizedLayoutDockHelper}
+ */
+TrueSizedLayoutDockHelper.prototype.marginRelatively = function (newMargins, oldMargins) {
+    return this.margins([newMargins[0] - oldMargins[0],
+        newMargins[1] - oldMargins[1],
+        newMargins[2] - oldMargins[2],
+        newMargins[3] - oldMargins[3]], false);
+
+};
+
+
+
 
 TrueSizedLayoutDockHelper.prototype._resolveSingleSize = function (size) {
     return size < 0 ? ~size : size;

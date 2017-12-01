@@ -55,18 +55,22 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
      * @private
      */
     layout(dockedRenderables, filledRenderables, context, ownDecorations) {
-        let { extraTranslate, viewMargins: margins } = ownDecorations;
+        let { extraTranslate, viewMargins: margins = [0, 0, 0, 0]} = ownDecorations;
         let dockHelper = new TrueSizedLayoutDockHelper(context);
 
-        if (margins) {
-            dockHelper.margins(margins);
-        }
+        dockHelper.margins(margins);
 
         /* Process Renderables with a non-fill dock */
         let dockedNames = dockedRenderables ? dockedRenderables.keys() : [];
         for (let renderableName of dockedNames) {
             let [renderable, renderableCounterpart] = dockedRenderables.get(renderableName);
-            let { dockSize, translate, innerSize, space = (ownDecorations.dockSpacing || 0) } = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, margins);
+            let marginsForRenderable = renderable.decorations.dock.dynamicDockPadding && renderable.decorations.dock.dynamicDockPadding(context.size);
+            if(marginsForRenderable){
+                dockHelper.marginRelatively(
+                    marginsForRenderable, margins);
+            }
+            let { dockSize, translate, innerSize, space = (ownDecorations.dockSpacing || 0) } = this._prepareForDockedRenderable(renderable, renderableCounterpart, context, extraTranslate, marginsForRenderable || margins);
+
             let { callback, transition } = this._getRenderableFlowInformation(renderable);
             let { dock, rotate, origin, scale, skew, opacity } = renderable.decorations;
             let { dockMethod } = dock;
@@ -81,6 +85,12 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                     scale,
                     skew
                 });
+
+                /* Reset to the old margins */
+                if(marginsForRenderable){
+                    dockHelper.marginRelatively(
+                        margins, marginsForRenderable);
+                }
             }
         }
 

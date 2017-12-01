@@ -960,11 +960,19 @@ export const layout = {
      */
     columnDockPadding: function (maxContentWidth = 720, defaultPadding = [0, 16, 0, 16]) {
         return function (target) {
-            let decorations = prepPrototypeDecorations(target.prototype);
+            let decorations;
+            if (typeof target === 'function') {
+                decorations = prepPrototypeDecorations(target.prototype);
+            } else {
+                decorations = prepDecoratedRenderable(...arguments).decorations;
+                if(!decorations.dock){
+                    decorations.dock = {};
+                }
+                decorations = decorations.dock;
+            }
             let normalisedPadding = LayoutUtility.normalizeMargins(defaultPadding);
 
-            /* Default to 16px dockPadding */
-            layout.dockPadding(normalisedPadding);
+
 
             /* Calculate the dockPadding dynamically every time the View's size changes.
              * The results from calling this method are further handled in View.js.
