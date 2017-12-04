@@ -188,40 +188,57 @@ export class signalr {
 
     static cache = {};
 
-    static fileNames = ["ProfilePicture"];
+    static fileNames = ["ProfilePicture", "Images"];
 
     static async saveToLocalStorage(model, keyString, data) {
-        for(let [key, value] of Object.entries(data[0])) {
+        let furtherCashingRequired = true;
+        for(let [key, value] of Object.entries(model)) {
             if (signalr.fileNames.includes(key)){
+                furtherCashingRequired = false;
                 try {
-                    let response;
-                    if (data[0].IsFacebook) {
-                        response = await fetch(value);
-                    } else {
-                        response = await fetch(`${model.connection.options.url}/${value}`);
-                    }
-                    if (response.ok){
-                        let blob = await response.blob();
-
-
-                        let reader = new window.FileReader();
-                        reader.readAsDataURL(blob);
-                        reader.onloadend = () => {
-                            let file = reader.result;
-                            data[0][key] = file;
-
-                            this.cache[keyString] = data[0];
-                            return idbKeyVal.set(keyString, data[0]);
-                        }
-                    }
+                    this.saveImageToLocalStorage(value, key, model.shadow, keyString);
                 } catch (e){
                     console.log("error saving file", value, "error", e)
                 }
             }
         };
 
-        this.cache[keyString] = data;
-        return idbKeyVal.set(keyString, data);
+        if (furtherCashingRequired) {
+            this.cache[keyString] = data;
+            return idbKeyVal.set(keyString, data);
+        }
+    }
+
+    static async saveImageToLocalStorage(value, key, model, keyString) {
+        if (value.constructor === Array) {
+            model[key] = [];
+            for (let image of value) {
+                this.convertBlobToBase64(image, model, key, keyString, true);
+            }
+        } else {
+            this.convertBlobToBase64(value, model, key, keyString, false)
+        }
+    }
+
+    static async convertBlobToBase64(imageLink, model, key, keyString, keyValueIsArray) {
+        if (imageLink) {
+            let response = await fetch(imageLink);
+            if (response.ok){
+                let blob = await response.blob();
+                let reader = new window.FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = () => {
+                    let file = reader.result;
+                    keyValueIsArray ? model[key].push(file) : model[key] = file;
+                    this.cache[keyString] = model;
+                    return idbKeyVal.set(keyString, model);
+                }
+            }
+        } else {
+            keyValueIsArray ? model[key].push(undefined) : model[key] = undefined;
+            this.cache[keyString] = model;
+            return idbKeyVal.set(keyString, model);
+        }
     }
 
     static getFromLocalStorage(model, keyString) {
