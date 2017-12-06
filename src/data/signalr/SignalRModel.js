@@ -83,8 +83,8 @@ export class SignalRModel extends LocalModel {
     update(id, data) {
     }
 
-    _onSetterTriggered({propertyName, newValue}) {
-
+    _onSetterTriggered() {
+        return Promise.resolve();
     }
 
     _toCamelCase(first, ...rest) {

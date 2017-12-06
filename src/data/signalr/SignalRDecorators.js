@@ -210,7 +210,7 @@ export class signalr {
     }
 
     static async saveImageToLocalStorage(value, key, model, keyString) {
-        if (value.constructor === Array) {
+        if (value && value.constructor === Array) {
             model[key] = [];
             for (let image of value) {
                 this.convertBlobToBase64(image, model, key, keyString, true);
