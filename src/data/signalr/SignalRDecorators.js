@@ -188,7 +188,15 @@ export class signalr {
 
     static cache = {};
 
-    static fileNames = ["ProfilePicture", "Images"];
+    /* TODO first of all, filenames should be a variable you can set per project. Second of all, to make
+    caching the events in TradeSquare work you can add Images to this array. I removed this now, since it's slowing down the app,
+    whilst it should do the opposite. What we want ideally is that caching of events happens in the background, so the prefered order
+    of flow is: download events, show eventScrollView, store events in cache. Right now, this is: download events, store events in cache, show
+    screen. However, if a user clicks on an event right away, this might be problematic.*/
+
+
+    // static fileNames = ["ProfilePicture", "Images"];
+    static fileNames = ["ProfilePicture"];
 
     static async saveToLocalStorage(model, keyString, data) {
         let furtherCashingRequired = true;
