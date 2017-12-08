@@ -602,9 +602,7 @@ export class View extends FamousView {
             }.bind(this)
         });
 
-        this._eventInput.on('recursiveReflow', () => {
-            this.reflowRecursively();
-        });
+        this._eventInput.on('recursiveReflow', this.reflowRecursively.bind(this));
 
         /* Add the layoutController to this View's rendering context. */
         this._prepareLayoutController();
