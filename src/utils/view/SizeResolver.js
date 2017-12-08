@@ -19,6 +19,8 @@ import {Utils}                      from './Utils.js';
 
 import ElementOutput                from 'famous/core/ElementOutput';
 
+let isWebKit = browser.check('webkit');
+
 /**
  * Used by the view to keep track of sizes. Emits events to communicate with the view to do certain actions
  */
@@ -543,7 +545,7 @@ export class SizeResolver extends EventEmitter {
     }
 
     _doesBrowserNeedBugFixForSurface(surface) {
-        if (!browser.check('webkit')) {
+        if (!isWebKit) {
             return false;
         }
         if (!SizeResolver._invalidatedFonts) {

@@ -54,14 +54,13 @@ export class Controller extends EventEmitter {
          * If the plugin is not set up to run, which is done e.g. when not minifying your code, we default back to the runtime constructor name.*/
         let controllerName = this.constructor._name || Object.getPrototypeOf(this).constructor.name;
 
-        ObjectHelper.bindAllMethods(this, this);
 
         /* Add the controller route to the router. */
         let routeName = controllerName.replace('Controller', '');
         routeName += '/:method';
 
         /* handle router url changes and execute the appropiate controller method. */
-        this.router.add(routeName, {enter: this.onRouteCalled, leave: this.onLeave}, this);
+        this.router.add(routeName, {enter: this.onRouteCalled.bind(this), leave: this.onLeave.bind(this)}, this);
     }
 
     /**

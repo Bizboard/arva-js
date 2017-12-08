@@ -114,7 +114,7 @@ export class DialogManager extends View {
             this._eventOutput.emit('dialogShown');
         });
 
-        this.dialog.on('closeDialog', this.close);
+        this.dialog.on('closeDialog', this.close.bind(this));
 
         /* Showing the background immediately propagates user's click event that triggered the show() directly to the background,
          * closing the dialog again. Delaying showing the background circumvents this issue. */

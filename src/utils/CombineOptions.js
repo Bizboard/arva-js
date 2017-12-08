@@ -11,29 +11,7 @@ import cloneDeepWith        from 'lodash/cloneDeepWith.js';
 
 function famousMerge(defaultParam, specifiedParam) {
     if (Array.isArray(defaultParam) && Array.isArray(specifiedParam)) {
-        let i, results = [];
-        for (i = 0; i < specifiedParam.length; i++) {
-            let defaultElement = defaultParam[i];
-            let specifiedElement = specifiedParam[i];
-
-            /* This is one special case that we want to take into account,
-             (more spcecifically, we want to be able to set the size to undefined) */
-            if (specifiedElement === undefined) {
-                results.push(specifiedElement);
-            } else {
-                let resultingElement;
-                if (typeof specifiedElement !== 'object' || typeof resultingElement !== 'object') {
-                    resultingElement = specifiedElement;
-                } else {
-                    resultingElement = mergeWith(defaultElement, specifiedElement, famousMerge);
-                }
-                results.push(resultingElement);
-            }
-        }
-        for (; i < defaultParam.length; i++) {
-            results.push(defaultParam[i]);
-        }
-        return results;
+        return specifiedParam;
     }
 
 

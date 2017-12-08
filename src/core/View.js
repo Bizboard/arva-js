@@ -64,7 +64,6 @@ export class View extends FamousView {
 
         /* Bind all local methods to the current object instance, so we can refer to 'this'
          * in the methods as expected, even when they're called from event handlers.        */
-        ObjectHelper.bindAllMethods(this, this);
 
 
         this._copyPrototypeProperties();
@@ -76,6 +75,7 @@ export class View extends FamousView {
 
         this._createLayoutController();
         this._initTrueSizedBookkeeping();
+
 
     }
 
@@ -427,13 +427,13 @@ export class View extends FamousView {
      */
     _initUtils() {
         this._sizeResolver = new SizeResolver();
-        this._sizeResolver.on('layoutControllerReflow', this._requestLayoutControllerReflow);
+        this._sizeResolver.on('layoutControllerReflow', this._requestLayoutControllerReflow.bind(this));
         this._sizeResolver.on('reflow', () => this.layout.reflowLayout());
-        this._sizeResolver.on('reflowRecursively', this.reflowRecursively);
+        this._sizeResolver.on('reflowRecursively', this.reflowRecursively.bind(this));
         this._dockedRenderablesHelper = new DockedLayoutHelper(this._sizeResolver);
         this._fullSizeLayoutHelper = new FullSizeLayoutHelper(this._sizeResolver);
         this._traditionalLayoutHelper = new TraditionalLayoutHelper(this._sizeResolver);
-        this._renderableHelper = new RenderableHelper(this._bindToSelf, this._setPipeToSelf, this.renderables, this._sizeResolver);
+        this._renderableHelper = new RenderableHelper(this._bindToSelf.bind(this), this._setPipeToSelf.bind(this), this.renderables, this._sizeResolver);
     }
 
     /** Requests for a parent LayoutController trying to resolve the size of this view
@@ -648,7 +648,7 @@ export class View extends FamousView {
         let { scrollableOptions } = this.decorations;
         if (scrollableOptions) {
             this._scrollView = new ReflowingScrollView(scrollableOptions);
-            this.layout.getSize = this.getSize;
+            this.layout.getSize = this.getSize.bind(this);
             this._scrollView.push(this.layout);
             this.pipe(this._scrollView);
             this.add(this._scrollView);

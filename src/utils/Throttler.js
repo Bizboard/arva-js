@@ -30,7 +30,6 @@ export class Throttler {
         this.queue = [];
         this.executionTimer = null;
 
-        ObjectHelper.bindAllMethods(this, this);
     }
 
     /**

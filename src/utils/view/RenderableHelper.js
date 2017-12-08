@@ -590,7 +590,7 @@ export class RenderableHelper {
         let steps = flowOptions.viewStates[stateName];
 
         if(!steps) {
-            (console.warn || console.log)(`Flow state name '${stateName}' does not exist`);
+            Utils.warn(`Warning: flow state name '${stateName}' does not exist`);
             return false;
         }
 

@@ -45,9 +45,6 @@ export class PrioritisedArray {
 
     options = options || {};
 
-    /* Bind all local methods to the current object instance, so we can refer to "this"
-     * in the methods as expected, even when they're called from event handlers.        */
-    ObjectHelper.bindAllMethods(this, this);
 
     /**** Private properties ****/
     this._ids = {};
@@ -556,10 +553,10 @@ export class PrioritisedArray {
     return (...otherArgs) => {
       if (!this._dataSource.ready) {
         this.once('ready', () => {
-          return callback(...otherArgs)
+          return callback.call(this, ...otherArgs)
         });
       } else {
-        return callback(...otherArgs)
+        return callback.call(this, ...otherArgs)
       }
     }
   }

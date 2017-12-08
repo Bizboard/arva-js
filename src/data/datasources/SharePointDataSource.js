@@ -45,9 +45,6 @@ export class SharePointDataSource extends DataSource {
         this._originalPath = path;
         this.options = options;
 
-        /* Bind all local methods to the current object instance, so we can refer to 'this'
-         * in the methods as expected, even when they're called from event handlers.        */
-        ObjectHelper.bindAllMethods(this, this);
 
         /* Don't initialize this datasource when there is no path selected to retrieve data from. */
         if (this.key().length > 0) {
@@ -350,7 +347,7 @@ export class SharePointDataSource extends DataSource {
             let newChildSnapshot = new SharePointSnapshot(data, this);
             callback(newChildSnapshot);
         };
-        this._dataReference.on('value', this._onValueCallback);
+        this._dataReference.on('value', this._onValueCallback.bind(this));
     }
 
     /**
@@ -374,7 +371,7 @@ export class SharePointDataSource extends DataSource {
             let newChildSnapshot = new SharePointSnapshot(data, this);
             callback(newChildSnapshot, previousSiblingId);
         };
-        this._dataReference.on('child_added', this._onAddCallback);
+        this._dataReference.on('child_added', this._onAddCallback.bind(this));
     }
 
     /**
@@ -398,7 +395,7 @@ export class SharePointDataSource extends DataSource {
             let newChildSnapshot = new SharePointSnapshot(data, this);
             callback(newChildSnapshot, previousSiblingId);
         };
-        this._dataReference.on('child_changed', this._onChangeCallback);
+        this._dataReference.on('child_changed', this._onChangeCallback.bind(this));
     }
 
     /**
@@ -448,7 +445,7 @@ export class SharePointDataSource extends DataSource {
             callback(removedChildSnapshot);
         };
 
-        this._dataReference.on('child_removed', this._onRemoveCallback);
+        this._dataReference.on('child_removed', this._onRemoveCallback.bind(this));
     }
 
     /**

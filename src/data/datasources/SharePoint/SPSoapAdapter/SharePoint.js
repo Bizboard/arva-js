@@ -26,7 +26,6 @@ export class SharePoint extends EventEmitter {
     constructor(options = {}) {
         super();
 
-        ObjectHelper.bindAllMethods(this, this);
 
         let endpoint = UrlParser(options.endPoint);
         if (!endpoint) throw Error('Invalid configuration.');

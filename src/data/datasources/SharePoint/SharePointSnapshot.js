@@ -18,9 +18,6 @@ export class SharePointSnapshot extends Snapshot {
         this._dataSource = dataSource;
         this._kvpair = kvpair;
 
-        /* Bind all local methods to the current object instance, so we can refer to "this"
-         * in the methods as expected, even when they're called from event handlers.        */
-        ObjectHelper.bindAllMethods(this, this);
     }
 
     get key() {

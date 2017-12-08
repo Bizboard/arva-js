@@ -18,7 +18,6 @@ export class Router extends EventEmitter {
     constructor() {
         super();
         // make classes behave like context bound
-        ObjectHelper.bindAllMethods(this, this);
 
         // make the router aware of controllers active in the application
         // each controller will need to subscribe itself to this container.

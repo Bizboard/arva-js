@@ -20,8 +20,7 @@ export class ReflowingScrollView extends FlexScrollView {
      */
     constructor(options = {}) {
         super(options);
-        ObjectHelper.bindAllMethods(this, this);
-        this._eventInput.on('recursiveReflow', this._reflowWhenPossible)
+        this._eventInput.on('recursiveReflow', this._reflowWhenPossible.bind(this))
     }
 
     _reflowWhenPossible() {

@@ -93,7 +93,6 @@ export class FirebaseDataSource extends DataSource {
 
         /* Bind all local methods to the current object instance, so we can refer to "this"
          * in the methods as expected, even when they're called from event handlers. */
-        ObjectHelper.bindAllMethods(this, this);
     }
 
     dataExists() {
@@ -592,7 +591,7 @@ export class FirebaseDataSource extends DataSource {
      **/
     setChildRemovedCallback(callback) {
         this._onRemoveCallback = callback;
-        this.on('child_removed', this._onRemoveCallback);
+        this.on('child_removed', this._onRemoveCallback.bind(this));
     }
 
     /**

@@ -29,7 +29,6 @@ export class BrandingEngine {
         this.options = {};
 
         /* Bind all methods to this object's scoping. */
-        ObjectHelper.bindAllMethods(this, this);
     }
 
     /**

@@ -197,15 +197,8 @@ class Injector {
 
         /* Add custom construction parameters to construction */
         args = args.concat(constructionParams);
+        instance = provider.create(args);
 
-        try {
-            instance = provider.create(args);
-        } catch (e) {
-            resolvingMsg = constructResolvingMessage(resolving);
-            var originalMsg = 'ORIGINAL ERROR: ' + e.message;
-            e.message = `Error during instantiation of ${toString(combinedToken)}!${resolvingMsg}\n${originalMsg}`;
-            throw e;
-        }
 
         if (!hasAnnotation(provider.provider, TransientScopeAnnotation)) {
             this._cache.set(combinedToken, instance);
