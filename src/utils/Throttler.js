@@ -55,7 +55,7 @@ export class Throttler {
 
     async _setTimer() {
         if (!this.timer) {
-            this.timer = this._timerFunction(this._executeTopAction, this.delay);
+            this.timer = this._timerFunction(this._executeTopAction.bind(this), this.delay);
         }
     }
 

@@ -148,7 +148,7 @@ export class PrioritisedObject extends EventEmitter {
             case 'value':
                 if (!haveListeners) {
                     /* Only subscribe to the dataSource if there are no previous listeners for this event type. */
-                    this._dataSource.setValueChangedCallback(this._onChildValue);
+                    this._dataSource.setValueChangedCallback(this._onChildValue.bind(this));
                 } else {
                     if (this._dataSource.ready) {
                         /* If there are previous listeners, fire the value callback once to present the subscriber with inital data. */
@@ -159,23 +159,23 @@ export class PrioritisedObject extends EventEmitter {
             case 'added':
 
                 if (haveListeners) {
-                    this._dataSource.setChildAddedCallback(this._onChildAdded);
+                    this._dataSource.setChildAddedCallback(this._onChildAdded.bind(this));
                 }
                 break;
             case 'changed':
                 /* We include the changed event in the value callback */
                 if (!this._hasListenersOfType('value')) {
-                    this._dataSource.setValueChangedCallback(this._onChildValue);
+                    this._dataSource.setValueChangedCallback(this._onChildValue.bind(this));
                 }
                 break;
             case 'moved':
                 if (!haveListeners) {
-                    this._dataSource.setChildMovedCallback(this._onChildMoved);
+                    this._dataSource.setChildMovedCallback(this._onChildMoved.bind(this));
                 }
                 break;
             case 'removed':
                 if (!haveListeners) {
-                    this._dataSource.setChildRemovedCallback(this._onChildRemoved);
+                    this._dataSource.setChildRemovedCallback(this._onChildRemoved.bind(this));
                 }
                 break;
             default:
@@ -324,7 +324,7 @@ export class PrioritisedObject extends EventEmitter {
         if (!dataSource) {
             return;
         }
-        dataSource.once('value', this._buildFromSnapshot);
+        dataSource.once('value', this._buildFromSnapshot.bind(this));
     }
 
     /**

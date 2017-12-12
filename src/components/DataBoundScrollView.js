@@ -1040,7 +1040,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
      */
     _setupDataStoreListeners(dataStore, index, shouldActivate) {
         let methodName = shouldActivate ? 'on' : 'off';
-        let method = dataStore[methodName];
+        let method = dataStore[methodName].bind(dataStore);
 
         /* We have to cache the event handler functions, otherwise we can't remove them later on if needed */
         if(shouldActivate){
