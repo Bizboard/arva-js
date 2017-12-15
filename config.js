@@ -25,7 +25,7 @@ System.config({
     "eventemitter3": "npm:eventemitter3@1.2.0",
     "famous": "github:bizboard/famous@release/v0.4.7",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
-    "famous-flex": "github:bizboard/famous-flex@1.4.3",
+    "famous-flex": "github:bizboard/famous-flex@1.4.4",
     "fastclick": "npm:fastclick@1.0.6",
     "firebase": "github:firebase/firebase-bower@3.7.3",
     "fs": "github:jspm/nodelibs-fs@0.1.2",
@@ -38,7 +38,7 @@ System.config({
     "traceur": "github:jmcriffey/bower-traceur@0.0.92",
     "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.90",
     "xml2js": "npm:xml2js@0.4.16",
-    "github:bizboard/famous-flex@1.4.3": {
+    "github:bizboard/famous-flex@1.4.4": {
       "es6-map": "npm:es6-map@0.1.5"
     },
     "github:jspm/nodelibs-assert@0.1.0": {
