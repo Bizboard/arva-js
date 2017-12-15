@@ -198,18 +198,20 @@ export class signalr {
     // static fileNames = ["ProfilePicture", "Images"];
     static fileNames = ["ProfilePicture"];
 
-    static async saveToLocalStorage(model, keyString, data) {
+    static saveToLocalStorage(model, keyString, data) {
         let furtherCashingRequired = true;
         for(let [key, value] of Object.entries(model)) {
             if (signalr.fileNames.includes(key)){
                 furtherCashingRequired = false;
                 try {
-                    this.saveImageToLocalStorage(value, key, model.shadow, keyString);
+                    //TODO The code is messy since this both stores the image AND stores the data.
+                    // Refactor in order to only store the image, and don't use boolean flag to save model afterwards
+                    this.saveImageToLocalStorage(value, key, data[0], keyString);
                 } catch (e){
                     console.log("error saving file", value, "error", e)
                 }
             }
-        };
+        }
 
         if (furtherCashingRequired) {
             this.cache[keyString] = data;
