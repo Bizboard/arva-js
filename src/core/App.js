@@ -41,11 +41,13 @@ export class App {
         let defaultRouter = this.constructor.router || ArvaRouter;
         let defaultDataSource = this.constructor.defaultDataSource;
         
-        /* Allow user taps to emit immediately as click events,
-         * instead of having the default 300ms delay. */
-        FastClick(document.body);
-        
-        /* Add default class providers to DI engine */
+        if(!this.constructor.disableFastClick) {
+            /* Allow user taps to emit immediately as click events,
+             * instead of having the default 300ms delay. */
+            FastClick(document.body);
+        }
+
+            /* Add default class providers to DI engine */
         Injection.addProviders(defaultRouter, FamousContextSingleton, NewAnimationController);
 
         if(defaultDataSource){
