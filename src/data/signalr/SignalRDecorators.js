@@ -195,8 +195,8 @@ export class signalr {
     screen. However, if a user clicks on an event right away, this might be problematic.*/
 
 
-    // static fileNames = ["ProfilePicture", "Images"];
-    static fileNames = ["ProfilePicture"];
+    static fileNames = ["ProfilePicture", "Images"];
+    // static fileNames = ["ProfilePicture"];
 
     static saveToLocalStorage(model, keyString, data) {
         let furtherCashingRequired = true;
