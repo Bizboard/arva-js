@@ -94,7 +94,10 @@ export class Model extends PrioritisedObject {
             /* Get the last part of the path and set to the ID */
             this._id = dataSource.key();
         }
-
+        if(!this._dataSource) {
+            this._dataSource = dataSource;
+            dataWasPushed = false;
+        }
         /* Re-construct core PrioritisedObject with new dataSource */
         if (options.dataSnapshot) {
             this._buildFromSnapshot(options.dataSnapshot);
