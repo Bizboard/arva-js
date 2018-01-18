@@ -312,6 +312,7 @@ export class PrioritisedArray {
   replaceContents(newContents) {
     while (this.length) {
       this._children[0].remove();
+      this.remove(0);
     }
     this._referenceLength = 0;
     for (let item of newContents) {
