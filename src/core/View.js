@@ -397,7 +397,7 @@ export class View extends FamousView {
     _initUtils() {
         this._sizeResolver = new SizeResolver();
         this._sizeResolver.on('layoutControllerReflow', this._requestLayoutControllerReflow);
-        this._sizeResolver.on('reflow', () => this.layout.reflowLayout());
+        this._sizeResolver.on('reflow', () => this.layout && this.layout.reflowLayout());
         this._sizeResolver.on('reflowRecursively', this.reflowRecursively);
         this._dockedRenderablesHelper = new DockedLayoutHelper(this._sizeResolver);
         this._fullSizeLayoutHelper = new FullSizeLayoutHelper(this._sizeResolver);
