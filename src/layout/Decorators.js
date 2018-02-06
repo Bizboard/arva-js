@@ -8,6 +8,7 @@
  */
 import merge                    from 'lodash/merge.js';
 import extend                   from 'lodash/extend.js';
+import browser                   from 'bowser';
 
 import AnimationController      from 'famous-flex/AnimationController.js';
 import LayoutUtility            from 'famous-flex/LayoutUtility.js';
@@ -888,6 +889,10 @@ export const layout = {
      * @returns {Function} A decorator function
      */
     nativeScrollable: function (options = {}) {
+        /* Hot-fix: native scrollable has bugs on Safari */
+        if (browser.safari) {
+            return layout.scrollable(options);
+        }
         let {scrollY = true, scrollX= false} = options;
         return function (target) {
             let decorations = prepPrototypeDecorations(target.prototype);
