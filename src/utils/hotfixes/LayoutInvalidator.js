@@ -30,6 +30,12 @@ if (browser.gecko) {
 }
 /* Safari has an issue with elements coming back from scale 0 (context.hide==true) not being painted */
 if (browser.safari) {
+
+    /* After the keyboard has popped up, then invalidate the whole view */
+    window.addEventListener('native.keyboardhide', () => {
+        invalidateLayoutForElement(document.querySelector('.famous-root'))
+    });
+
     let oldCommitFunction = ElementOutput.prototype.commit;
     ElementOutput.prototype.commit = function (context) {
         oldCommitFunction.call(this, context);
