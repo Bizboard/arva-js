@@ -111,7 +111,7 @@ export class View extends FamousView {
         /* Backup: If size can't be resolved, then see if there's a size specified on the decorator */
         if (!size && renderable.decorations) {
             let decoratedSize = renderable.decorations.size;
-            let isValidSize = (inputSize) => typeof inputSize == 'number' && inputSize > 0;
+            let isValidSize = (inputSize) => typeof inputSize === 'number' && inputSize > 0;
             if (decoratedSize && decoratedSize.every(isValidSize)) {
                 size = decoratedSize;
             }
