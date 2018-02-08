@@ -407,7 +407,7 @@ export class SizeResolver extends EventEmitter {
      */
     async _evaluateTrueSizedSurface(renderable) {
         //TODO Re-enable the canvas sizing once its been stabilizied
-        return this._setupSurfaceGetsSizeFromDOM(renderable, contextSize);
+        return this._setupSurfaceGetsSizeFromDOM(renderable);
 
         let trueSizedSurfaceInfo = this._trueSizedSurfaceInfo.get(renderable);
 
