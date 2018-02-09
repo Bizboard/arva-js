@@ -118,6 +118,10 @@ export class PrioritisedArray {
       for (let i = 0; i < this.length; i++) {
         this._childAddedThrottler.add(() => {
           let model = this._children[i];
+            /* If the model was deleted right after, then do nothing */
+            if(!model){
+                return;
+            }
           let previousSiblingID = i > 0 ? this._children[i - 1].id : null;
           handler.call(context, model, previousSiblingID);
         });
