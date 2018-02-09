@@ -457,7 +457,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
                  */
             } else if (previousSiblingID !== undefined && previousSiblingID != null) {
                 /* We don't have an orderBy method, but do have a previousSiblingID we can use to find the correct insertion index. */
-                let childData = this._findData(previousSiblingID) || {};
+                let childData = this._findData(previousSiblingID, dataStoreIndex) || {};
 
                 let siblingIndex = childData.position || -1;
                 if (siblingIndex !== -1) {
@@ -768,6 +768,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
     _onChildAdded(dataStoreIndex, child, previousSiblingID) {
         if(!child){
             console.log('Warning: Child added received with undefined child, in DataBoundScrollView');
+            return;
         }
         /* Mark the entry as undeleted */
         this._removedEntries[`${child.id}${dataStoreIndex}`] = false;
