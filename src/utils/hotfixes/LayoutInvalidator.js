@@ -37,6 +37,12 @@ if (browser.safari) {
             invalidateLayoutForElement(this._element);
         }
         this._wasHidden = context.hide;
+    };
+
+    if(cordova && cordova.platformId === 'ios'){
+        window.addEventListener("orientationchange", function(){
+            window.dispatchEvent(new Event('resize'));
+        });
     }
 
 }
