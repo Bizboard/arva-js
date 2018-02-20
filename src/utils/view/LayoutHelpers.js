@@ -240,7 +240,7 @@ export class DockedLayoutHelper extends BaseLayoutHelper {
                         } else if (dockSizeInfo.dockingDirection == dimension) {
                             dockSize[dimension] += singleFillSize;
                         } else {
-                            dockSize[dimension] = Math.min(singleFillSize, dockSize[dimension]);
+                            dockSize[dimension] = Math.max(singleFillSize, dockSize[dimension]);
                         }
                     }
                 }
