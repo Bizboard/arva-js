@@ -29,7 +29,7 @@ export class LocalPrioritisedArray extends PrioritisedArray {
             resultingModel = item;
         }
         let originalRemoveFunction = resultingModel.remove;
-        let onChildRemoved = this._onChildRemoved;
+        let onChildRemoved = this._onChildRemoved.bind(this);
         resultingModel.remove = function () {
             onChildRemoved({ key: this.id, val: () => this.shadow });
             originalRemoveFunction.apply(this, arguments);
