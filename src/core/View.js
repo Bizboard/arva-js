@@ -235,6 +235,14 @@ export class View extends FamousView {
     setRenderableFlowState(renderableName = '', stateName = '') {
         return this._renderableHelper.setRenderableFlowState(renderableName, stateName);
     }
+    /**
+     * @param {String} renderableName. The name of the renderable
+     * @param {String} stateName. The name of the state as declared in the first argument of the decorator
+     * @returns {*}
+     */
+    _timedSetRenderableFlowState(renderableName = '', stateName = '', skipInitialTime) {
+        return this._renderableHelper.timedSetRenderableFlowState(renderableName, stateName, skipInitialTime);
+    }
 
     /**
      * Sets a renderable flow state as declared in the @flow.viewState
@@ -360,7 +368,14 @@ export class View extends FamousView {
     async repeatFlowState(renderableName = '', stateName = '', persistent = true) {
         if (!this._runningRepeatingFlowStates[renderableName]) {
             this._runningRepeatingFlowStates[renderableName] = { persistent };
-            while (this._runningRepeatingFlowStates[renderableName] && (await this.setRenderableFlowState(renderableName, stateName) || persistent)) {
+            let isCancelled = false;
+            let timeLostLastIteration = 0;
+            while (this._runningRepeatingFlowStates[renderableName] && !isCancelled) {
+                let [flowNotInterrupted, timeLost] = await this._timedSetRenderableFlowState(renderableName, stateName, timeLost);
+                timeLostLastIteration = timeLost;
+                if(!persistent && !flowNotInterrupted){
+                    isCancelled = true;
+                }
             }
             delete this._runningRepeatingFlowStates[renderableName];
             return true;

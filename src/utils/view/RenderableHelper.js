@@ -102,7 +102,7 @@ export class RenderableHelper {
             }
         }
     }
-    
+
     /**
      * Pipes the renderable to a list of other renderables
      * @param {Renderable} renderable
@@ -150,7 +150,7 @@ export class RenderableHelper {
     }
 
     /**
-     * Determines whether the renderable counterpart (i.e. animationcontroller or containersurface) should be used 
+     * Determines whether the renderable counterpart (i.e. animationcontroller or containersurface) should be used
      * when piping, or the renderable itself
      * @param {String} renderableName The name of the renderable
      * @returns {Renderable} the renderable or its counterpart
@@ -208,7 +208,7 @@ export class RenderableHelper {
         }
         return false;
     }
-    
+
     /**
      * Processes the renderable counter-part of the renderable. The counterpart is different from the renderable
      * in @layout.draggable, @layout.swipable, @layout.animate, and others.
@@ -306,7 +306,7 @@ export class RenderableHelper {
             }
         }
     }
-    
+
     /**
      * Processes an animated renderable
      * @param renderable
@@ -543,8 +543,7 @@ export class RenderableHelper {
     }
 
 
-    async setRenderableFlowState(renderableName = '', stateName = '') {
-
+    async timedSetRenderableFlowState(renderableName = '', stateName = '', skipInitialTime = 0){
         let renderable = this._renderables[renderableName];
         if (!renderable || !renderable.decorations || !renderable.decorations.flow) {
             return Utils.warn(`setRenderableFlowState called on non-existing or renderable '${renderableName}' without flowstate`);
@@ -557,8 +556,20 @@ export class RenderableHelper {
         let flowWasInterrupted = false;
 
         flowOptions.currentState = stateName;
+        let timeStart = Date.now();
+        let animationTime = 0;
         for (let {transformations, options} of flowOptions.states[stateName].steps) {
-            flowOptions.currentTransition = options.transition;
+            let {transition} = options;
+            if(skipInitialTime && transition.duration){
+                let newSkipInitialTime = transition.duration < skipInitialTime ? skipInitialTime - transition.duration : 0;
+                transition = {...transition, duration: Math.max(0, transition.duration - skipInitialTime)};
+                skipInitialTime = newSkipInitialTime;
+            }
+            flowOptions.currentTransition = transition;
+            let {duration} = transition;
+            if(duration){
+                animationTime += duration;
+            }
             this.decorateRenderable(renderableName, ...transformations);
 
             /* Make sure FlowLayoutNode.set() is called next render tick */
@@ -583,7 +594,14 @@ export class RenderableHelper {
             emit('flowStep', {state: stateName});
         }
 
-        return !flowWasInterrupted;
+        let timeEnd = Date.now();
+        let timeSpent = timeEnd - timeStart;
+        return [!flowWasInterrupted, timeSpent - animationTime]
+    }
+
+    async setRenderableFlowState(renderableName = '', stateName = '') {
+        let [flowNotInterrupted] = await this.timedSetRenderableFlowState(renderableName, stateName);
+        return flowNotInterrupted;
     }
 
     async setViewFlowState(stateName = '', flowOptions) {
@@ -691,7 +709,7 @@ export class RenderableHelper {
 
         return renderable;
     }
-    
+
     _determineSwipeEvents(renderable, swipableOptions = {}, endX = 0, endY = 0) {
 
         if (!renderable || !renderable._eventOutput) return;
@@ -783,9 +801,9 @@ export class RenderableHelper {
 
         dockedRenderables.remove(renderableName);
         dockedRenderables.insert(index, renderableName, renderableToRearrange);
-        
+
         return true;
 
     }
-    
+
 }
