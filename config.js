@@ -24,7 +24,7 @@ System.config({
     "core-js": "npm:core-js@1.2.6",
     "eventemitter3": "npm:eventemitter3@1.2.0",
     "famous-bkimagesurface": "github:ijzerenhein/famous-bkimagesurface@1.0.3",
-    "fastclick": "npm:fastclick@1.0.6",
+    "fastclick": "github:bizboard/fastclick@v.1.0.7",
     "firebase": "github:firebase/firebase-bower@3.7.3",
     "fs": "github:jspm/nodelibs-fs@0.1.2",
     "lodash": "npm:lodash@4.13.1",
@@ -70,6 +70,7 @@ System.config({
       "assert": "github:jspm/nodelibs-assert@0.1.0",
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2",
+      "systemjs-json": "github:systemjs/plugin-json@0.1.2",
       "util": "npm:util@0.10.3"
     },
     "npm:babel-runtime@5.8.38": {
@@ -146,7 +147,8 @@ System.config({
     },
     "npm:util@0.10.3": {
       "inherits": "npm:inherits@2.0.1",
-      "process": "github:jspm/nodelibs-process@0.1.2"
+      "process": "github:jspm/nodelibs-process@0.1.2",
+      "systemjs-json": "github:systemjs/plugin-json@0.1.2"
     },
     "npm:vm-browserify@0.0.4": {
       "indexof": "npm:indexof@0.0.1"
