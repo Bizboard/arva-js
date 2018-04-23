@@ -43,7 +43,7 @@ export class App {
         
         /* Allow user taps to emit immediately as click events,
          * instead of having the default 300ms delay. */
-        FastClick(document.body);
+        FastClick.attach(document.body);
         
         /* Add default class providers to DI engine */
         Injection.addProviders(defaultRouter, FamousContextSingleton, NewAnimationController);
