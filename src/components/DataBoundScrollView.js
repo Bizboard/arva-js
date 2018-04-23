@@ -590,7 +590,7 @@ export class DataBoundScrollView extends ReflowingScrollView {
             return false;
         }
 
-        let { position, groupValue } = data;
+        let {groupValue } = data;
         let newGroupValue = null;
 
         if (this._isGrouped) {
@@ -604,6 +604,9 @@ export class DataBoundScrollView extends ReflowingScrollView {
             let newSurface = await this.options.itemTemplate(child);
             newSurface.dataId = child.id;
             newSurface.dataStoreIndex = dataStoreIndex;
+            /* Position could have changed while waiting for itemTemplate, so call findData again to make
+            *  sure that the latest update-information is retrieved */
+            const {position} = this._findData(child.id, dataStoreIndex);
             this._subscribeToClicks(newSurface, child);
             this._insertId(child.id, position, newSurface, child, {}, dataStoreIndex);
             this._replace(position, newSurface, true);
