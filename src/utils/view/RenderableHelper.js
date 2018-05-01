@@ -661,8 +661,8 @@ export class RenderableHelper {
 
         sync.on('update', (data)=> {
             let [x,y] = position.get();
-            x += !swipableOptions.snapX ? data.delta[0] : 0;
-            y += !swipableOptions.snapY ? data.delta[1] : 0;
+            x += data.delta[0];
+            y += data.delta[1];
             let {yRange = [0, 0], xRange = [0, 0]} = swipableOptions;
             y = limit(yRange[0], y, yRange[1]);
             x = limit(xRange[0], x, xRange[1]);
