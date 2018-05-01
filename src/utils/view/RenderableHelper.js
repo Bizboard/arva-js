@@ -682,7 +682,7 @@ export class RenderableHelper {
                 duration: (750 - Math.abs((data.velocity[0] * 150)))
             });
 
-            this._determineSwipeEvents(renderable, swipableOptions, endX, endY);
+            this._determineSwipeEvents(renderable, swipableOptions, x, y);
 
         });
 
